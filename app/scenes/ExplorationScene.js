@@ -21,36 +21,50 @@ let hoverHandler = null;
 let active = false;
 
 // Measure how many columns/rows fit in the center pane using the same glyph width.
+
+
 function __measureViewportCells(padCols=1, padRows=1){
-  try{
+  try {
     const center = shell.center || document.getElementById('center');
     if (!center) return { cols: (getCamera().w|0)||21, rows: (getCamera().h|0)||13 };
-    // Create a hidden probe row with many border glyphs to average width
+
+    // Build a probe that matches the real renderer structure exactly.
     const BORDER_GLYPH = "\uE800";
-    const wrap = document.createElement('div');
-    wrap.style.visibility = 'hidden';
-    wrap.style.position = 'absolute';
-    wrap.style.left = '-9999px';
-    wrap.style.top = '0';
-    const span = document.createElement('span');
-    span.className = 'cell';
-    span.textContent = BORDER_GLYPH.repeat(80);
-    wrap.appendChild(span);
-    center.appendChild(wrap);
-    const rect = span.getBoundingClientRect();
-    wrap.remove();
+    const probeHost = document.createElement('div');
+    probeHost.style.position = 'absolute';
+    probeHost.style.left = '-9999px';
+    probeHost.style.top = '0';
+    probeHost.style.visibility = 'hidden';
 
-    const cw = Math.max(6, Math.round(rect.width/80)) || 10;
-    const ch = Math.max(10, Math.round(rect.height)) || 16;
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.style.whiteSpace = 'nowrap';
 
-    const r = center.getBoundingClientRect();
-    const SAFETY = 1;
-    let cols = Math.floor((r.width  - SAFETY)/cw) - padCols;
-    let rows = Math.floor((r.height - SAFETY)/ch) - padRows;
-    cols = Math.max(10, cols);
-    rows = Math.max(8,  rows);
+    const cell = document.createElement('span');
+    cell.className = 'cell';
+    cell.textContent = BORDER_GLYPH;
+
+    row.appendChild(cell);
+    probeHost.appendChild(row);
+    center.appendChild(probeHost);
+
+    // Measure the actual row and cell sizes the browser will use.
+    const rowH = Math.max(1, row.offsetHeight);
+    const cellW = Math.max(1, cell.getBoundingClientRect().width);
+
+    // Clean up probe.
+    probeHost.remove();
+
+    // Compute how many rows/cols fit in the visible center pane.
+    // clientWidth/Height include padding but exclude borders & scrollbars — good enough here.
+    const SAFETY = 2; // shave tiny buffer to avoid accidental overflow
+    let cols = Math.floor((center.clientWidth  - SAFETY) / cellW) - (padCols|0);
+    let rows = Math.floor((center.clientHeight - SAFETY) / rowH ) - (padRows|0);
+
+    cols = Math.max(10, cols|0);
+    rows = Math.max(8,  rows|0);
     return { cols, rows };
-  } catch{
+  } catch {
     const cam = getCamera();
     return { cols: cam.w|0 || 21, rows: cam.h|0 || 13 };
   }
@@ -80,6 +94,7 @@ function __lockTopbarToArea() {
 }
 
 function safeRender(){
+  __clampCameraToWorld();
   try {
     const cam = getCamera();
     const { bright, dim } = recomputeVisibility({ px: state.player.x|0, py: state.player.y|0 });
@@ -89,6 +104,48 @@ function safeRender(){
       brightSet: bright, dimSet: dim
     });
     renderMinimap();
+    // Post-render fit: shrink rows/cols until host fits center pane (prevents vertical clipping)
+    try {
+      const center = shell.center || document.getElementById('center');
+      const host = shell.map || document.getElementById('asciiMap');
+      if (center && host) {
+        const camNow = getCamera();
+        let guard = 8; // avoid infinite loops
+        // Vertical fit
+        while (host.scrollHeight > host.clientHeight && (camNow.h|0) > 8 && guard-- > 0) {
+          if (typeof setViewportSize === 'function') {
+            setViewportSize(camNow.w|0, (camNow.h|0)-1, state.map.width|0, state.map.height|0);
+          } else if (typeof setCamera === 'function') {
+            camNow.h = (camNow.h|0) - 1;
+            setCamera(camNow);
+          }
+          // re-render with smaller height
+          const { bright: _b, dim: _d } = recomputeVisibility({ px: state.player.x|0, py: state.player.y|0 });
+          renderDOMMap(camNow.w|0, camNow.h|0, { x: state.player.x|0, y: state.player.y|0 }, {
+            world: { width: state.map.width|0, height: state.map.height|0 },
+            view: { x: camNow.x|0, y: camNow.y|0 },
+            brightSet: _b, dimSet: _d
+          });
+        }
+        // Horizontal fit (rare with hidden overflow, but keep symmetric)
+        guard = 8;
+        while (host.scrollWidth > host.clientWidth && (camNow.w|0) > 10 && guard-- > 0) {
+          if (typeof setViewportSize === 'function') {
+            setViewportSize((camNow.w|0)-1, camNow.h|0, state.map.width|0, state.map.height|0);
+          } else if (typeof setCamera === 'function') {
+            camNow.w = (camNow.w|0) - 1;
+            setCamera(camNow);
+          }
+          const { bright: _b2, dim: _d2 } = recomputeVisibility({ px: state.player.x|0, py: state.player.y|0 });
+          renderDOMMap(camNow.w|0, camNow.h|0, { x: state.player.x|0, y: state.player.y|0 }, {
+            world: { width: state.map.width|0, height: state.map.height|0 },
+            view: { x: camNow.x|0, y: camNow.y|0 },
+            brightSet: _b2, dimSet: _d2
+          });
+        }
+      }
+    } catch {}
+
   try { logSystem(`Cam x=${cam.x}, y=${cam.y}, w=${cam.w}, h=${cam.h} | Player x=${state.player.x}, y=${state.player.y} | Map ${state.map.width}x${state.map.height}`); } catch {}
 
   } catch(err){
@@ -161,6 +218,7 @@ export default {
           setCamera(camTmp);
         }
         centerOn(state.player.x|0, state.player.y|0, Ww, Hh);
+        __clampCameraToWorld();
       } catch {}
       
       // Initial render
@@ -192,6 +250,7 @@ export default {
             setCamera(camTmp);
           }
           centerOn(state.player.x|0, state.player.y|0, Ww, Hh);
+        __clampCameraToWorld();
           safeRender();
         } catch {}
       }, false);
@@ -213,3 +272,19 @@ export default {
     try { state.__topbarObserver && state.__topbarObserver.disconnect && state.__topbarObserver.disconnect(); } catch {}
   }
 };
+
+function __clampCameraToWorld(){
+  try {
+    const cam = getCamera();
+    const W = state.map?.width|0, H = state.map?.height|0;
+    if (!cam || !W || !H) return;
+    const maxX = Math.max(0, (W|0) - (cam.w|0));
+    const maxY = Math.max(0, (H|0) - (cam.h|0));
+    let changed = false;
+    if (cam.x < 0) { cam.x = 0; changed = true; }
+    if (cam.y < 0) { cam.y = 0; changed = true; }
+    if (cam.x > maxX) { cam.x = maxX; changed = true; }
+    if (cam.y > maxY) { cam.y = maxY; changed = true; }
+    if (changed && typeof setCamera === 'function') setCamera(cam);
+  } catch {}
+}

@@ -15,7 +15,10 @@ function ensureHost() {
   }
   host.innerHTML = "";
   host.classList.add("dom-map");
+  // Keep text rendering flexible; do not force monospace or fixed cell sizes.
   host.style.whiteSpace = "normal";
+  // Keep horizontal scrollbars off for the map area.
+  host.style.overflowX = "hidden";
   return host;
 }
 
