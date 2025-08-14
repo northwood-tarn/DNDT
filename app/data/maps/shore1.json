@@ -1,0 +1,34 @@
+{
+  "id": "shore1",
+  "title": "Shore \u2014 Night",
+  "profile": "ExplorationMap",
+  "width": 40,
+  "height": 18,
+  "start": {
+    "x": 1,
+    "y": 1
+  },
+  "minimap": true,
+  "labels": [
+    {
+      "x": 20,
+      "y": 9,
+      "text": "Old Pier"
+    }
+  ],
+  "triggers": [
+    {
+      "x": 2,
+      "y": 2,
+      "type": "dialogue",
+      "treeId": "campIntro"
+    },
+    {
+      "x": 20,
+      "y": 9,
+      "type": "room",
+      "areaId": "dockside",
+      "entry": "end_of_pier"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "ember_standard",
+  "lines": [
+    { "speaker": "The Ember", "text": "You feel warmth reaching through the ash." },
+    { "choices": [
+      { "text": "Rest here.", "next": 2 },
+      { "text": "Do not rest.", "next": 3 }
+    ]},
+    { "speaker": "The Ember", "text": "You are restored.", "end": true },
+    { "speaker": "The Ember", "text": "The warmth recedes.", "end": true }
+  ]
+}

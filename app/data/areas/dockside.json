@@ -1,0 +1,120 @@
+{
+  "id": "dockside",
+  "title": "Dockside (Night Rain)",
+  "profile": "ExplorationDialog",
+  "hud": {
+    "weather": "Rain",
+    "torch": false
+  },
+  "startNode": "end_of_pier",
+  "nodes": {
+    "end_of_pier": {
+      "desc": [
+        "Fog and rain stitch the black water to the pier.",
+        "Ropes groan. Lanterns rattle against their hooks.",
+        "Your cloak drinks the night. Somewhere, a gull laughs once."
+      ],
+      "options": [
+        {
+          "label": "Peer into the water",
+          "go": "water"
+        },
+        {
+          "label": "Try the dock office door (locked)",
+          "go": "dock_office"
+        },
+        {
+          "label": "Rummage through the fish baskets",
+          "go": "baskets"
+        }
+      ],
+      "exitKeys": [
+        "q",
+        "Escape"
+      ],
+      "onExit": {
+        "to": "ExplorationScene"
+      }
+    },
+    "water": {
+      "desc": [
+        "You lean over the slick rail. Rain beads the surface into a single moving mirror.",
+        "Below: ladders descending into a throat. Nothing stirs but the tide."
+      ],
+      "options": [
+        {
+          "label": "Back to the end of the pier",
+          "go": "end_of_pier"
+        }
+      ]
+    },
+    "dock_office": {
+      "desc": [
+        "A locked plank door under a lopsided awning. Water drums the lintel."
+      ],
+      "check": {
+        "skill": "Sleight of Hand",
+        "dc": 18,
+        "logFormat": "Sleight of Hand check: d20({roll}) +{bonus} = {total} vs DC {dc} \u2192 {result}",
+        "onSuccess": {
+          "go": "office_interior",
+          "log": "The pick whispers. Tumblers surrender."
+        },
+        "onFail": {
+          "go": "office_locked_colder",
+          "log": "The ward bites back. Your fingers go wooden with the cold."
+        }
+      }
+    },
+    "office_interior": {
+      "desc": [
+        "Inside: ledgers swollen with damp, a cold stove, a single stool\u2014",
+        "nothing to take but the quiet."
+      ],
+      "options": [
+        {
+          "label": "Step back into the rain",
+          "go": "end_of_pier"
+        }
+      ]
+    },
+    "office_locked_colder": {
+      "desc": [
+        "The pick skates. The dock office remains shut.",
+        "You feel the cold deepen with the hour."
+      ],
+      "options": [
+        {
+          "label": "Back to the end of the pier",
+          "go": "end_of_pier"
+        }
+      ]
+    },
+    "baskets": {
+      "desc": [
+        "Wicker mounds huddle against the wall, gleaming with rain.",
+        "Beneath a crust of netting you find a brass tally token stamped with a gull."
+      ],
+      "onceFlag": "found_gull_token",
+      "give": [
+        {
+          "itemId": "brass_tally_token",
+          "qty": 1
+        }
+      ],
+      "options": [
+        {
+          "label": "Back to the end of the pier",
+          "go": "end_of_pier"
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "id": "brass_tally_token",
+      "name": "Brass Tally Token (gull)",
+      "type": "quest"
+    }
+  ]
+}

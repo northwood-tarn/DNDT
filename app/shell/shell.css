@@ -1,0 +1,92 @@
+:root {
+  --bg: #0b0f14;
+  --panel: #111823;
+  --panel-2: #0e1520;
+  --acc: #9bb7ff; /* blue used for headings */
+  --text: #e6e6e6;
+  --muted: #9aa9c7;
+  --mono: ui-monospace, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); }
+.app-grid {
+  display: grid;
+  grid-template-rows: 36px 1fr 140px;
+  grid-template-columns: 320px 1fr 320px;
+  grid-template-areas:
+    "top top top"
+    "left center right"
+    "bottom bottom bottom";
+  gap: 8px;
+  padding: 8px;
+  height: 100%;
+}
+.top { grid-area: top; background: var(--panel); border: 1px solid #2d3b5e; display:flex; align-items:center; padding: 0 10px; font: 12px/1 var(--mono); letter-spacing: .5px; color: #9aa9c7; }
+.left { grid-area: left; background: var(--panel-2); border: 1px solid #22314d; padding: 8px; overflow:auto;}
+.center { grid-area: center; background: #0a0f16; border: 1px solid #22314d; padding: 8px; overflow:auto; display:flex; align-items:flex-start; justify-content:flex-start; }
+.right { grid-area: right; background: var(--panel-2); border: 1px solid #22314d; padding: 8px; overflow:auto; display:flex; align-items:flex-start; justify-content:flex-start; text-align:left; }
+.bottom { grid-area: bottom; background: #0a0f16; border: 1px solid #22314d; padding: 6px; overflow:auto;}
+.log { font: 12px/1.35 var(--mono); white-space: pre-wrap; }
+#asciiMap { margin:0; font: 14px/1.05 var(--mono); color: #cfd8e6; }
+button { background:#162234; color: #e6e6e6; border:1px solid #2d3b5e; padding:6px 10px; border-radius:6px; cursor:pointer; }
+button:hover { background:#1b2a42; }
+.btn-narrow { width: 220px; }
+input, select { background:#101826; color:#e6e6e6; border:1px solid #22314d; padding:6px; border-radius:6px; }
+hr { border: none; border-top: 1px solid #22314d; margin: 10px 0; }
+
+/* Title screen */
+.title-wrap { width: 100%; display:flex; flex-direction:column; align-items:center; gap: 8px; }
+.title-sunburst { width: min(70%, 720px); image-rendering: pixelated; opacity: 0; animation: fadeInSun 5s ease forwards; }
+@keyframes fadeInSun { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+.title-hero { font-family: var(--mono); letter-spacing: .18em; font-size: 24px; font-weight: 700; text-align: center; color: var(--text); }
+.title-tagline { font-family: var(--mono); letter-spacing: .28em; font-size: 18px; font-weight: 700; text-align: center; color: #2d3b5e; }
+
+/* Enforce shell font everywhere in panes (stamp out Times) */
+.left *, .center *, .right * { font-family: var(--mono) !important; }
+
+/* Section title (blue, caps) reused in right pane for ABILITIES / SKILLS */
+.section-title { font: 11px/1 var(--mono); letter-spacing: 1px; text-transform: uppercase; color: var(--acc); }
+
+/* Compact confirm buttons so they never overflow */
+.btn-confirm { padding: 2px 8px; line-height: 1.1; font-size: 12px; white-space: nowrap; max-width: 84px; }
+
+/* Smaller skills text in the right pane to avoid crowding */
+.skills-list { font-size: 12px; }
+
+/* … keep your existing rules … */
+
+/* Ensure the UI everywhere uses the shell mono */
+.left *, .center *, .right * { font-family: var(--mono) !important; }
+
+/* Blue/caps headings reused across panes */
+.section-title {
+  font: 11px var(--mono);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #9aa9c7;
+}
+
+/* small helpers used by CharacterSelect */
+.muted { color: #9aa9c7; }
+.mono  { font: 12px/1.35 var(--mono); }
+
+.btn-confirm { padding: 2px 8px; line-height: 1.1; font-size: 12px; white-space: nowrap; max-width: 84px; }
+
+/* === GameGlyphs font and DOM-map enforcement === */
+@font-face {
+  font-family: 'GameGlyphs';
+  src: url('../assets/fonts/fontello_min.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Force the custom glyph font on the DOM map container so PC/border render reliably */
+#asciiMap.dom-map {
+  font-family: 'GameGlyphs', var(--mono) !important;
+}
+
+/* Lighting tints: only bright/dim get a background; dark stays transparent (no trails) */
+#asciiMap.dom-map .cell.lit  { background-color: rgba(255,255,255,0.06); }
+#asciiMap.dom-map .cell.dim  { background-color: rgba(255,255,255,0.035); }
+#asciiMap.dom-map .cell.dark { background-color: transparent; filter: none; opacity: 1; }
