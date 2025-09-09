@@ -1,0 +1,92 @@
+{
+  "id": "aya",
+  "name": "Aya",
+  "class": "Fighter",
+  "subclass": "Champion",
+  "level": 3,
+  "xp": 900,
+  "abilities": {
+    "str": 16,
+    "dex": 14,
+    "con": 14,
+    "int": 10,
+    "wis": 12,
+    "cha": 10
+  },
+  "proficiencies": {
+    "armor": [
+      "light",
+      "medium",
+      "heavy",
+      "shield"
+    ],
+    "weapons": [
+      "simple",
+      "martial"
+    ],
+    "saves": [
+      "str",
+      "con"
+    ],
+    "skills": [
+      "athletics",
+      "perception"
+    ]
+  },
+  "equipment": {
+    "armor": {
+      "id": "chain_mail",
+      "ac": 16,
+      "dexCap": 0
+    },
+    "shield": {
+      "id": "shield",
+      "bonus": 2
+    },
+    "weapons": [
+      {
+        "id": "longsword",
+        "damage": "1d8+3",
+        "type": "melee",
+        "ability": "str"
+      },
+      {
+        "id": "shortbow",
+        "damage": "1d6+2",
+        "type": "ranged",
+        "ability": "dex",
+        "range": [
+          80,
+          320
+        ]
+      }
+    ]
+  },
+  "vitals": {
+    "maxHp": 28,
+    "hp": 28,
+    "hitDice": {
+      "d10": 3
+    },
+    "tempHp": 0
+  },
+  "combat": {
+    "initiativeBonus": 0,
+    "attackBonusBase": 5
+  },
+  "inventory": [
+    {
+      "id": "healing_potion",
+      "name": "Healing Potion",
+      "qty": 2
+    },
+    {
+      "id": "rope_50_ft",
+      "name": "Rope (50 ft)",
+      "qty": 1
+    }
+  ],
+  "quests": {},
+  "flags": {},
+  "notes": "Canonical blueprint for Aya; save files overlay on top at runtime."
+}

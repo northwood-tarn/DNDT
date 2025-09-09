@@ -1,19 +1,13 @@
-// text-mode engine/sceneRouter.js
-// Minimal scene router that avoids DOM/window. Use with sceneManager and inputManager.
 
+// engine/sceneRouter.js — augmented minimal registry router
 let currentScene = null;
-
-export function changeScene(newScene, data) {
-  if (currentScene && typeof currentScene.cleanup === 'function') {
-    currentScene.cleanup();
-  }
-  currentScene = newScene;
-  if (currentScene && typeof currentScene.start === 'function') {
-    currentScene.start(data);
-  }
+const registry = new Map();
+export function registerScene(name, sceneObj){ registry.set(name, sceneObj); }
+export function changeScene(nameOrObj, data){
+  const scene = (typeof nameOrObj==='string') ? registry.get(nameOrObj) : nameOrObj;
+  if (currentScene && typeof currentScene.cleanup==='function'){ try{ currentScene.cleanup(); }catch{} }
+  currentScene = scene;
+  if (currentScene && typeof currentScene.start==='function'){ currentScene.start(data||{}); }
   return currentScene;
 }
-
-export function getCurrentScene() {
-  return currentScene;
-}
+export function getCurrentScene(){ return currentScene; }

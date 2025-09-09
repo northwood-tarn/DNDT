@@ -23,10 +23,19 @@ function ensureHost() {
 }
 
 export function renderDOMMap(width, height, player, opts = {}) {
+  // NEW: renderScale (default 3x) and tileSizePx (default 8px) for display sizing
+  const renderScale = Number(opts.renderScale ?? 3);
+  const tileSizePx = Number(opts.tileSizePx ?? 8);
+
   const { brightSet = null, dimSet = null, world = null, view = { x: 0, y: 0 } } = opts;
   const px = player?.x ?? 1;
   const py = player?.y ?? 1;
   const host = ensureHost();
+  // Apply visual scaling without changing logical grid math
+  host.style.transformOrigin = "top left";
+  host.style.transform = `scale(${renderScale})`;
+  host.dataset.renderScale = String(renderScale);
+  host.dataset.tileSizePx = String(tileSizePx);
 
   const frag = document.createDocumentFragment();
   for (let vy = 0; vy < height; vy++) {
@@ -39,6 +48,13 @@ export function renderDOMMap(width, height, player, opts = {}) {
       const wy = (view?.y ?? 0) + vy;
 
       const span = document.createElement("span");
+      // size each cell to the logical tile size; scale applied on host
+      span.style.display = "inline-block";
+      span.style.width = `${tileSizePx}px`;
+      span.style.height = `${tileSizePx}px`;
+      span.style.lineHeight = `${tileSizePx}px`;
+      // font-size a bit under tile size so PUA glyphs fit comfortably
+      span.style.fontSize = `${Math.max(1, Math.floor(tileSizePx * 0.9))}px`;
       span.className = "cell";
       span.dataset.wx = String(wx);
       span.dataset.wy = String(wy);

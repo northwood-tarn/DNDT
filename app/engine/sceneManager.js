@@ -2,6 +2,13 @@ export const sceneManager = {
   currentScene: null,
 
   init(startScene) {
+    try {
+      // Ensure exit routing is active for exploration -> combat/dialogue/area transitions
+      const { initExitRouter } = require("./flow/ExitRouter.js");
+      if (typeof initExitRouter === "function") initExitRouter();
+    } catch (e) {
+      console.warn("sceneManager: ExitRouter init failed (non-fatal):", e);
+    }
     this.replace(startScene);
   },
 

@@ -1,12 +1,13 @@
 // app/boot/start.js
 // Boot with a DEV_QUICKSTART toggle. When enabled, jump straight to DocksideIntro
-// with a pre-generated Fighter (AYA) and a full skills table.
+// with a bootstrapped Fighter (AYA) loaded via bootstrapPlayer and a full skills table.
 
 import TitleMenuScene from "../scenes/TitleMenuScene.js";
-import DocksideIntro from "../scenes/DocksideIntro.js";
+import DocksideIntro from "../areas/00_dockside/Dockside.js";
 import { dispatch } from "../engine/inputManager.js";
 import { sceneManager } from "../engine/sceneManager.js";
 import { state } from "../state/stateStore.js";
+import { bootstrapPlayer } from "../state/bootstrapPlayer.js"; // ← NEW: ensure player exists
 
 const DEV_QUICKSTART = true; // flip to false to restore normal Title Menu flow
 
@@ -25,78 +26,54 @@ function wireKeyboard() {
   });
 }
 
-function seedAya() {
-  // Abilities typical for a level-1 Fighter (point-buy-ish)
-  const abilities = { STR: 16, DEX: 14, CON: 14, INT: 8, WIS: 12, CHA: 10 };
+// Pick a scene launch function your manager supports (start/replace/goto/push)
+const launch =
+  (typeof sceneManager.start === "function" && sceneManager.start.bind(sceneManager)) ||
+  (typeof sceneManager.replace === "function" && sceneManager.replace.bind(sceneManager)) ||
+  (typeof sceneManager.goto === "function" && sceneManager.goto.bind(sceneManager)) ||
+  (typeof sceneManager.push === "function" && sceneManager.push.bind(sceneManager)) ||
+  ((Scene, args) => {
+    // Last-resort: many scenes in this codebase are plain objects with start()
+    if (Scene && typeof Scene.start === "function") return Scene.start(args || {});
+    // If it happens to be a constructor, try instantiating
+    try {
+      const inst = new Scene(args || {});
+      if (typeof inst.start === "function") return inst.start(args || {});
+      return inst;
+    } catch (e) {
+      console.error("No usable scene launch API found.", e);
+    }
+  });
 
-  // Full skills table with governing ability and proficiency flag
-  const skills = [
-    { name: "Athletics",        ability: "STR", proficient: true },
-    { name: "Acrobatics",       ability: "DEX", proficient: false },
-    { name: "Sleight of Hand",  ability: "DEX", proficient: false },
-    { name: "Stealth",          ability: "DEX", proficient: false },
-    { name: "Arcana",           ability: "INT", proficient: false },
-    { name: "History",          ability: "INT", proficient: false },
-    { name: "Investigation",    ability: "INT", proficient: false },
-    { name: "Nature",           ability: "INT", proficient: false },
-    { name: "Religion",         ability: "INT", proficient: false },
-    { name: "Animal Handling",  ability: "WIS", proficient: false },
-    { name: "Insight",          ability: "WIS", proficient: false },
-    { name: "Medicine",         ability: "WIS", proficient: false },
-    { name: "Perception",       ability: "WIS", proficient: true },
-    { name: "Survival",         ability: "WIS", proficient: true },
-    { name: "Deception",        ability: "CHA", proficient: false },
-    { name: "Intimidation",     ability: "CHA", proficient: true },
-    { name: "Performance",      ability: "CHA", proficient: false },
-    { name: "Persuasion",       ability: "CHA", proficient: false }
-  ];
-
-  state.player = {
-    name: "AYA",
-    class: "Fighter",
-    background: "Acolyte",
-    feat: "Alert",
-    level: 1,
-    abilities,
-    hp: 12,
-    maxHp: 12,
-    skills,
-    x: 2, y: 2,
-    inventory: [{ id: "map_fragment", name: "Map Fragment", type: "consumable", qty: 2 }]
-  };
-
-  // Default world (fields) so scenes have dimensions immediately
-  state.map = { id: "fields", width: 90, height: 60 };
-}
-
-function start() {
+async function start() {
   wireKeyboard();
 
+  // 1) Ensure player exists before any scene runs (no more manual seedAya)
+  try {
+    await bootstrapPlayer({ characterId: "aya", saveSlot: "slot-001" });
+  } catch (e) {
+    console.error("[boot] bootstrapPlayer failed; falling back to Title Menu", e);
+    return TitleMenuScene.start ? TitleMenuScene.start() : launch(TitleMenuScene, {});
+  }
+
+  // 2) Normal flow managed by the engine
   if (DEV_QUICKSTART) {
     try {
-      seedAya();
-    } catch (e) {
-      console.warn("DEV_QUICKSTART seed failed; falling back to Title Menu", e);
-      TitleMenuScene.start();
-      return;
-    }
-    // Jump straight into the intro scene
-    try {
-      sceneManager.replace(DocksideIntro);
+      // Jump straight into the intro scene using the engine's launcher
+      launch(DocksideIntro, { areaId: "00_dockside" });
       return;
     } catch (e) {
       console.error("Failed to start DocksideIntro, falling back to Title Menu", e);
-      TitleMenuScene.start();
-      return;
+      return TitleMenuScene.start ? TitleMenuScene.start() : launch(TitleMenuScene, {});
     }
   }
 
-  // Normal flow: show title menu
-  TitleMenuScene.start();
+  // 3) Title menu flow
+  return TitleMenuScene.start ? TitleMenuScene.start() : launch(TitleMenuScene, {});
 }
 
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", start);
+  document.addEventListener("DOMContentLoaded", () => { start(); }, { once: true });
 } else {
   start();
 }

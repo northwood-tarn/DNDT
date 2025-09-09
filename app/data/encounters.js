@@ -1,4 +1,3 @@
-
 // data/encounters.js
 
 export const encounters = {
@@ -24,5 +23,10 @@ export const encounters = {
 
   combat_boss_knight: {
     enemies: ["knight"]
+  }
+
+  ,
+  combat_goblins_2: {
+    enemies: ["goblin","goblin"]
   }
 };

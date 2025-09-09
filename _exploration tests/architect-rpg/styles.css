@@ -1,0 +1,16 @@
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #000;
+  height: 100%;
+  color: #fff;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+#gameCanvas {
+  display: block;
+  margin: 16px auto;
+  border: 1px solid #fff;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}

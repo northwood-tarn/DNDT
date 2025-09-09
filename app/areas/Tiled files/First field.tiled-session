@@ -1,0 +1,132 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "/Users/jon/Dropbox/CURRENT/dndt/DNDT/app/areas/field.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "": {
+            "scaleInDock": 1.5,
+            "scaleInEditor": 1
+        },
+        "#big kit": {
+            "scaleInDock": 5.5
+        },
+        "#monsters": {
+            "scaleInDock": 5.5
+        },
+        "/Users/jon/Dropbox/CURRENT/dndt/DNDT/app/areas/combat_arena.tmx": {
+            "scale": 3.2837,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 58.31836038614978,
+                "y": 65.93172336084295
+            }
+        },
+        "/Users/jon/Dropbox/CURRENT/dndt/DNDT/app/areas/combat_arena.tmx#floor": {
+            "scaleInDock": 3
+        },
+        "/Users/jon/Dropbox/CURRENT/dndt/DNDT/app/areas/combat_arena.tmx#ground": {
+            "scaleInDock": 1
+        },
+        "/Users/jon/Dropbox/CURRENT/dndt/DNDT/app/areas/combat_arena.tmx#monsters": {
+            "scaleInDock": 3
+        },
+        "/Users/jon/Dropbox/CURRENT/dndt/DNDT/app/areas/field.tmx": {
+            "scale": 0.2231,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 638.7270282384582,
+                "y": 768.713581353653
+            }
+        },
+        "/Users/jon/Dropbox/CURRENT/dndt/DNDT/app/areas/second field.tmx": {
+            "scale": 4.6593,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 206.36147060717275,
+                "y": 210.97589766703152
+            }
+        },
+        "/Users/jon/Dropbox/CURRENT/dndt/DNDT/app/areas/second field.tmx#ground": {
+            "scaleInDock": 1
+        },
+        "/Users/jon/Dropbox/CURRENT/dndt/DNDT/app/areas/the_field.tmx": {
+            "scale": 0.331,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 1209.9697885196374,
+                "y": 935.0453172205437
+            }
+        },
+        "first field.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 246.99999999999997,
+                "y": 154.33333333333331
+            }
+        },
+        "first field.tmx#Objects": {
+            "scaleInEditor": 1
+        },
+        "first field.tmx#big set": {
+            "scaleInDock": 4,
+            "scaleInEditor": 3.69
+        },
+        "first field.tmx#ground": {
+            "scaleInDock": 1.5
+        },
+        "first field.tmx#monsters": {
+            "scaleInDock": 2,
+            "scaleInEditor": 3.69
+        },
+        "ground.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "second field.tmx": {
+            "scale": 5.5,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 58.09090909090909,
+                "y": 58.909090909090914
+            }
+        },
+        "second field.tmx#ground": {
+            "scaleInDock": 1
+        }
+    },
+    "last.exportedFilePath": "/Users/jon/Dropbox/CURRENT/dndt/DNDT/app/areas/maps",
+    "last.imagePath": "/Users/jon/Dropbox/CURRENT/dndt/DNDT/app/assets/sprites",
+    "last.objectTemplatePath": "/Users/jon/Dropbox/CURRENT/dndt/DNDT/app/areas/templates",
+    "map.fixedSize": false,
+    "map.height": 14,
+    "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 8,
+    "map.tileWidth": 8,
+    "map.width": 14,
+    "openFiles": [
+        "/Users/jon/Dropbox/CURRENT/dndt/DNDT/app/areas/field.tmx"
+    ],
+    "project": "",
+    "recentFiles": [
+        "/Users/jon/Dropbox/CURRENT/dndt/DNDT/app/areas/field.tmx",
+        "/Users/jon/Dropbox/CURRENT/dndt/DNDT/app/areas/the_field.tmx",
+        "/Users/jon/Dropbox/CURRENT/dndt/DNDT/app/areas/combat_arena.tmx",
+        "/Users/jon/Dropbox/CURRENT/dndt/DNDT/app/areas/second field.tmx",
+        "second field.tmx",
+        "first field.tmx",
+        "ground.tsx"
+    ],
+    "tileset.embedInMap": true,
+    "tileset.tileSize": {
+        "height": 8,
+        "width": 8
+    }
+}

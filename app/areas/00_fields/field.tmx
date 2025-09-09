@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="289" height="249" tilewidth="32" tileheight="32" infinite="1" nextlayerid="4" nextobjectid="8">
+ <editorsettings>
+  <export target="maps/the_field.tmj.json" format="json"/>
+ </editorsettings>
+ <imagelayer id="2" name="Image Layer 1">
+  <image source="fields/1757068937_83544 copy.png" width="2100" height="1680"/>
+ </imagelayer>
+ <objectgroup id="3" name="Object Layer 1">
+  <object id="2" type="collision" x="950.909" y="330.788">
+   <polygon points="0,0 133.333,206.061 24.2424,500 -106.061,572.727 -718.182,457.576 -745.455,406.061 -648.485,-36.3636 -730.303,-33.3333 -757.576,9.09091 -887.879,12.1212 -915.152,-45.4545 -909.091,-96.9697 -815.152,-169.697 -751.515,-142.424 -733.333,-45.4545 -645.455,-48.4848 -624.242,-145.455 -545.455,-157.576 -496.97,-172.727 -524.242,-293.939 -490.909,-321.212 -415.152,-321.212 -336.364,-296.97 -318.182,-260.606 -357.576,-209.091 -424.242,-157.576 -448.485,-142.424 -24.2424,-57.5758"/>
+  </object>
+  <object id="3" type="spawn" x="1600.61" y="1281.88">
+   <point/>
+  </object>
+ </objectgroup>
+</map>

@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Text D&D — Shell</title>
-  <link rel="stylesheet" href="../styles/shell.css">
+  <link rel="stylesheet" href="../styles/shell.css" />
+  <link rel="icon" href="../assets/dndlogo.png" />
 </head>
 <body>
   <div id="app-root" class="app-grid">
@@ -14,7 +15,13 @@
     <aside id="right" class="right"></aside>
     <section id="bottomLog" class="bottom"><div id="messageLog" class="log"></div></section>
   </div>
+
+  <!-- Keep shell mount helpers -->
   <script type="module" src="../renderer/shellMount.js"></script>
+
+  <!-- IMPORTANT: bring back the real boot entry -->
   <script type="module" src="../boot/start.js"></script>
+
+  <!-- Remove any <script src="../renderer.js"> you previously added -->
 </body>
 </html>
