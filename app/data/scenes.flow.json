@@ -1,0 +1,383 @@
+{
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "Boot",
+      "type": "scene",
+      "filePath": "app/scenes/BootScene.js",
+      "description": "Initialize environment and router"
+    },
+    {
+      "id": "Preload",
+      "type": "scene",
+      "filePath": "app/scenes/PreloadScene.js",
+      "description": "Load core assets/settings"
+    },
+    {
+      "id": "Splash",
+      "type": "scene",
+      "filePath": "app/scenes/SplashScene.js",
+      "description": "Logos, skip allowed"
+    },
+    {
+      "id": "MainMenu",
+      "type": "scene",
+      "filePath": "app/scenes/MainMenuScene.js",
+      "description": "Root menu"
+    },
+    {
+      "id": "ProfileSelect",
+      "type": "scene",
+      "filePath": "app/scenes/ProfileSelectScene.js",
+      "description": "Create/select/delete profile"
+    },
+    {
+      "id": "CharacterSelect",
+      "type": "scene",
+      "filePath": "app/scenes/CharacterSelectScene.js",
+      "description": "Choose pre-made character"
+    },
+    {
+      "id": "LoadGame",
+      "type": "scene",
+      "filePath": "app/scenes/LoadGameScene.js",
+      "description": "Select save; validate"
+    },
+    {
+      "id": "Settings",
+      "type": "scene",
+      "filePath": "app/scenes/SettingsScene.js",
+      "description": "Settings tabs"
+    },
+    {
+      "id": "Credits",
+      "type": "scene",
+      "filePath": "app/scenes/CreditsScene.js",
+      "description": "Credits scroll"
+    },
+    {
+      "id": "SaveError",
+      "type": "scene",
+      "filePath": "app/scenes/SaveErrorScene.js",
+      "description": "Save invalid/corrupt"
+    },
+    {
+      "id": "Intro",
+      "type": "scene",
+      "filePath": "app/scenes/IntroScene.js",
+      "description": "Basic onboarding"
+    },
+    {
+      "id": "Exploration",
+      "type": "scene",
+      "filePath": "app/scenes/ExplorationScene.js",
+      "description": "Grid movement & interaction"
+    },
+    {
+      "id": "Dialogue",
+      "type": "scene",
+      "filePath": "app/scenes/DialogueScene.js",
+      "description": "Branching dialogue"
+    },
+    {
+      "id": "Battle",
+      "type": "scene",
+      "filePath": "app/scenes/BattleScene.js",
+      "description": "Turn-based combat"
+    },
+    {
+      "id": "PostBattleRewards",
+      "type": "scene",
+      "filePath": "app/scenes/PostBattleRewardsScene.js",
+      "description": "Rewards screen"
+    },
+    {
+      "id": "Loot",
+      "type": "scene",
+      "filePath": "app/scenes/LootScene.js",
+      "description": "Pickup/container"
+    },
+    {
+      "id": "Rest",
+      "type": "scene",
+      "filePath": "app/scenes/RestScene.js",
+      "description": "Ember menu (heal/save/fast travel)"
+    },
+    {
+      "id": "Merchant",
+      "type": "scene",
+      "filePath": "app/scenes/MerchantScene.js",
+      "description": "Shop UI"
+    },
+    {
+      "id": "AreaTransition",
+      "type": "scene",
+      "filePath": "app/scenes/AreaTransitionScene.js",
+      "description": "Load/unload areas"
+    },
+    {
+      "id": "SystemCutscene",
+      "type": "scene",
+      "filePath": "app/scenes/SystemCutsceneScene.js",
+      "description": "Non-narrative cut-ins"
+    },
+    {
+      "id": "FinalBoss",
+      "type": "scene",
+      "filePath": "app/scenes/FinalBossScene.js",
+      "description": "Final battle"
+    },
+    {
+      "id": "Ending",
+      "type": "scene",
+      "filePath": "app/scenes/EndingScene.js",
+      "description": "Epilogue/credits handoff"
+    },
+    {
+      "id": "GameOver",
+      "type": "scene",
+      "filePath": "app/scenes/GameOverScene.js",
+      "description": "Retry or menu"
+    },
+    {
+      "id": "PauseOverlay",
+      "type": "overlay",
+      "filePath": "app/overlays/PauseOverlay.js",
+      "description": "Pause menu"
+    },
+    {
+      "id": "LanternaHUDOverlay",
+      "type": "overlay",
+      "filePath": "app/overlays/LanternaHUDOverlay.js",
+      "description": "Lantern/oil HUD"
+    },
+    {
+      "id": "NotificationOverlay",
+      "type": "overlay",
+      "filePath": "app/overlays/NotificationOverlay.js",
+      "description": "Toast notifications"
+    },
+    {
+      "id": "StatusEffectsOverlay",
+      "type": "overlay",
+      "filePath": "app/overlays/StatusEffectsOverlay.js",
+      "description": "Active effects"
+    },
+    {
+      "id": "TargetInfoOverlay",
+      "type": "overlay",
+      "filePath": "app/overlays/TargetInfoOverlay.js",
+      "description": "Inspect/hover info"
+    },
+    {
+      "id": "SkillCheckOverlay",
+      "type": "overlay",
+      "filePath": "app/overlays/SkillCheckOverlay.js",
+      "description": "Roll breakdown"
+    },
+    {
+      "id": "PromptOverlay",
+      "type": "overlay",
+      "filePath": "app/overlays/PromptOverlay.js",
+      "description": "Confirmation prompts"
+    },
+    {
+      "id": "JournalOverlay",
+      "type": "overlay",
+      "filePath": "app/overlays/JournalOverlay.js",
+      "description": "Tabs: Quests/Notes/Codex"
+    },
+    {
+      "id": "InventoryOverlay",
+      "type": "overlay",
+      "filePath": "app/overlays/InventoryOverlay.js",
+      "description": "Equipment/inventory"
+    },
+    {
+      "id": "CharacterOverlay",
+      "type": "overlay",
+      "filePath": "app/overlays/CharacterOverlay.js",
+      "description": "Character sheet"
+    },
+    {
+      "id": "MapOverlay",
+      "type": "overlay",
+      "filePath": "app/overlays/MapOverlay.js",
+      "description": "Fast travel between Embers"
+    }
+  ],
+  "edges": [
+    {
+      "from": "Boot",
+      "to": "Preload"
+    },
+    {
+      "from": "Preload",
+      "to": "Splash"
+    },
+    {
+      "from": "Splash",
+      "to": "MainMenu"
+    },
+    {
+      "from": "MainMenu",
+      "to": "ProfileSelect",
+      "condition": "New Game"
+    },
+    {
+      "from": "ProfileSelect",
+      "to": "CharacterSelect"
+    },
+    {
+      "from": "ProfileSelect",
+      "to": "MainMenu",
+      "condition": "Back"
+    },
+    {
+      "from": "MainMenu",
+      "to": "LoadGame",
+      "condition": "Load"
+    },
+    {
+      "from": "MainMenu",
+      "to": "Settings",
+      "condition": "Settings"
+    },
+    {
+      "from": "MainMenu",
+      "to": "Credits",
+      "condition": "Credits"
+    },
+    {
+      "from": "CharacterSelect",
+      "to": "Intro"
+    },
+    {
+      "from": "LoadGame",
+      "to": "SaveError",
+      "condition": "Invalid save"
+    },
+    {
+      "from": "Credits",
+      "to": "MainMenu"
+    },
+    {
+      "from": "SaveError",
+      "to": "LoadGame"
+    },
+    {
+      "from": "SaveError",
+      "to": "MainMenu"
+    },
+    {
+      "from": "Intro",
+      "to": "Exploration"
+    },
+    {
+      "from": "Exploration",
+      "to": "Dialogue"
+    },
+    {
+      "from": "Exploration",
+      "to": "Battle"
+    },
+    {
+      "from": "Exploration",
+      "to": "Loot"
+    },
+    {
+      "from": "Exploration",
+      "to": "Rest"
+    },
+    {
+      "from": "Exploration",
+      "to": "AreaTransition"
+    },
+    {
+      "from": "Exploration",
+      "to": "Merchant"
+    },
+    {
+      "from": "Exploration",
+      "to": "SystemCutscene"
+    },
+    {
+      "from": "Dialogue",
+      "to": "Exploration",
+      "condition": "End"
+    },
+    {
+      "from": "Dialogue",
+      "to": "Battle",
+      "condition": "Escalate"
+    },
+    {
+      "from": "Battle",
+      "to": "PostBattleRewards",
+      "condition": "Victory"
+    },
+    {
+      "from": "Battle",
+      "to": "GameOver",
+      "condition": "Defeat"
+    },
+    {
+      "from": "PostBattleRewards",
+      "to": "Exploration"
+    },
+    {
+      "from": "Loot",
+      "to": "Exploration"
+    },
+    {
+      "from": "Rest",
+      "to": "Exploration",
+      "condition": "Exit"
+    },
+    {
+      "from": "Rest",
+      "to": "MapOverlay",
+      "condition": "Fast Travel"
+    },
+    {
+      "from": "MapOverlay",
+      "to": "AreaTransition",
+      "condition": "Destination selected"
+    },
+    {
+      "from": "AreaTransition",
+      "to": "Exploration"
+    },
+    {
+      "from": "Merchant",
+      "to": "Exploration"
+    },
+    {
+      "from": "SystemCutscene",
+      "to": "Exploration"
+    },
+    {
+      "from": "Exploration",
+      "to": "FinalBoss",
+      "condition": "Final Gate"
+    },
+    {
+      "from": "FinalBoss",
+      "to": "Ending",
+      "condition": "Victory"
+    },
+    {
+      "from": "FinalBoss",
+      "to": "GameOver",
+      "condition": "Defeat"
+    },
+    {
+      "from": "Ending",
+      "to": "Credits"
+    },
+    {
+      "from": "Credits",
+      "to": "MainMenu"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 // utils/damageUtils.js — text-mode
-import { isDueling, isUsingTwoHandedWeapon } from "../utils/combatUtils.js";
-import { rollWithDetail } from "../utils/dice.js";
+import { isDueling, isUsingTwoHandedWeapon } from "./combatUtils.js";
+import { rollWithDetail } from "./dice.js";
 
 function parseDieString(s) {
   const m = String(s || "1d6").match(/^(\d*)d(\d+)$/i);

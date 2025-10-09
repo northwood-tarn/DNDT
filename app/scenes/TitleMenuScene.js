@@ -1,7 +1,7 @@
 // app/scenes/TitleMenuScene.js
-import { mountRight, mountCenter, setTop } from "../renderer/shellMount.js";
 import CharacterSelect from "./CharacterSelect.js";
 import { sceneManager } from "../engine/sceneManager.js";
+import { Assets } from "../utils/Assets.js";
 
 let introAudio = null;
 
@@ -21,16 +21,15 @@ function makeMenu() {
     return b;
   };
 
-const btnNew = mk('New Game', () => {
-  try { if (introAudio) introAudio.pause(); } catch {}
-  console.log('[TitleMenu] New Game clicked', { CharacterSelect });
-  if (!CharacterSelect || typeof CharacterSelect.start !== 'function') {
-    console.error('[TitleMenu] CharacterSelect missing/invalid', CharacterSelect);
-    alert('Character creation scene failed to load. Check app/scenes/CharacterSelect.js (default export with start).');
-    return;
-  }
-  sceneManager.replace(CharacterSelect);
-});
+  const btnNew = mk('New Game', () => {
+    try { if (introAudio) introAudio.pause(); } catch {}
+    if (!CharacterSelect || typeof CharacterSelect.start !== 'function') {
+      console.error('[TitleMenu] CharacterSelect missing/invalid', CharacterSelect);
+      alert('Character creation scene failed to load. Check app/scenes/CharacterSelect.js (default export with start).');
+      return;
+    }
+    sceneManager.replace(CharacterSelect);
+  });
 
   const btnLoad = mk('Load Game', async () => {
     try {
@@ -75,7 +74,8 @@ function makeCenter() {
   wrap.style.position = 'relative';
 
   const img = document.createElement('img');
-  img.src = '../assets/mainscreen.png';
+  // Use centralized asset path (string)
+  img.src = Assets.path('ui.mainscreen');
   img.alt = 'Main Screen';
   img.style.maxWidth = '100%';
   img.style.maxHeight = '100%';
@@ -86,7 +86,8 @@ function makeCenter() {
   const startFade = () => {
     requestAnimationFrame(() => {
       try {
-        introAudio = new Audio('../assets/intro_theme.mp3');
+        // Centralized music path
+        introAudio = new Audio(Assets.path('music.intro'));
         introAudio.currentTime = 0;
         introAudio.volume = 0.9;
         introAudio.play().catch(() => {});

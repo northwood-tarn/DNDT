@@ -1,11 +1,11 @@
 // app/scenes/CombatScene.js — consumes state.combat.actors (unified contract)
 // No construction of actors here; this scene only runs combat.
+// Refactored to remove shellMount dependency. Uses direct DOM (#top, #center).
 
-import { mountCenter, setTop } from "../renderer/shellMount.js";
 import { renderChoiceList, enableChoiceHotkeys, disableChoiceHotkeys, setChoiceScope } from "../ui/choiceHotkeys.js";
 import { state } from "../state/stateStore.js";
 import { logCombat } from "../engine/log.js";
-import { ensureTurnEconomy, resetTurnEconomy, canUseAction, canUseBonus, canUseMove, spendAction, spendBonus, spendMove, isMeleeRange, getDistanceFromPC, setDistanceFromPC } from "../systems/turnEconomy.js";
+import { ensureTurnEconomy, resetTurnEconomy, canUseAction, canUseBonus, canUseMove, spendAction, spendBonus, spendMove, isMeleeRange } from "../systems/turnEconomy.js";
 import { rollWithDetail } from "../utils/dice.js";
 
 function el(tag, attrs = {}, children = []){
@@ -20,11 +20,24 @@ function el(tag, attrs = {}, children = []){
 }
 function p(t){ return `<p style="margin:6px 0">${t}</p>`; }
 function strong(t){ return `<strong>${t}</strong>`; }
+
+function setTopTitle(title){
+  const top = document.getElementById("top");
+  if (top) top.textContent = title || "";
+}
+function mountCenterEl(el){
+  const center = document.getElementById("center");
+  if (center){
+    center.innerHTML = "";
+    center.appendChild(el);
+  }
+}
 function mountHTML(html){
   const div = el("div", { style: { whiteSpace: "pre-wrap", lineHeight: "1.45", fontSize:"0.95rem" } });
   div.innerHTML = html;
-  mountCenter(div);
-  setChoiceScope(document.getElementById("center"));
+  mountCenterEl(div);
+  const center = document.getElementById("center");
+  if (center) setChoiceScope(center);
   try { disableChoiceHotkeys(); } catch {}
   return div;
 }
@@ -32,7 +45,7 @@ function mountHTML(html){
 function renderHPBar(cur, max){
   const outer = el("div", { style:{ width:"140px", height:"8px", border:"1px solid #22314d", borderRadius:"6px", background:"#0f1725", marginRight:"6px" } });
   const pct = Math.max(0, Math.min(1, (max>0?cur/max:0)));
-  const inner = el("div", { style:{ width:`${Math.floor(pct*100)}%`, height:"100%", borderRadius:"6px", background: pct>0.5 ? "#9bb7ff" : "#6c7fbf" } });
+  const inner = el("div", { style:{ width:`${Math.floor(pct*100)}%`, height:"100%", borderRadius:"6px" } });
   outer.appendChild(inner);
   const txt = el("span", { textContent: ` ${cur}/${max}`, style:{ fontSize:"10px", opacity:"0.8" }});
   const wrap = el("div", { style:{ display:"flex", alignItems:"center", gap:"4px" }}, [outer, txt]);
@@ -97,7 +110,7 @@ export default {
       return;
     }
 
-    setTop(sc.title || "Combat");
+    setTopTitle(sc.title || "Combat");
 
     // Use canonical actors from loader
     const actors = sc.actors.map(a => ({ ...a }));

@@ -1,0 +1,239 @@
+{
+  "version": 1,
+  "behaviors": {
+    "darkness_response_v1": {
+      "description": "Enemy behavior when inside or adjacent to a Darkness sphere that blocks sight for all.",
+      "priority": 50,
+      "conditions": [
+        {
+          "if": "actor.in_darkness == true",
+          "then": "apply"
+        },
+        {
+          "if": "actor.has_ranged_aoe == true and targets_in_darkness >= 2",
+          "then": "prefer_aoe"
+        }
+      ],
+      "rules": [
+        {
+          "name": "ExitDarknessIfBlind",
+          "when": "actor.in_darkness == true",
+          "do": [
+            {
+              "action": "path_to_edge_of_area",
+              "params": {
+                "area_tag": "darkness",
+                "min_distance_ft": 5
+              }
+            },
+            {
+              "action": "ready_attack_if_caster_seen",
+              "params": {
+                "trigger": "enemy_enters_los"
+              }
+            }
+          ]
+        },
+        {
+          "name": "BlindFireAOE",
+          "when": "actor.in_darkness == true and actor.has_ranged_aoe == true and targets_in_darkness >= 2",
+          "do": [
+            {
+              "action": "cast_aoe_at_approx_last_known_positions",
+              "params": {
+                "spread_bias": 0.25
+              }
+            }
+          ]
+        },
+        {
+          "name": "SkirtPerimeter",
+          "when": "actor.adjacent_to_darkness == true",
+          "do": [
+            {
+              "action": "path_along_perimeter",
+              "params": {
+                "area_tag": "darkness",
+                "keep_distance_ft": 5
+              }
+            },
+            {
+              "action": "seek_line_of_sight_to_caster",
+              "params": {
+                "max_steps": 6
+              }
+            }
+          ]
+        },
+        {
+          "name": "FleeIfLowConfidence",
+          "when": "actor.in_darkness == true and actor.hp_pct <= 0.25",
+          "do": [
+            {
+              "action": "disengage_or_dash_to_safety",
+              "params": {
+                "min_range_ft": 30
+              }
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "This is a conservative first pass to avoid AI thrashing inside Darkness.",
+        "Does not assume any special senses; treats all actors as sight-blocked.",
+        "Relies on engine-provided flags: in_darkness, adjacent_to_darkness, targets_in_darkness, last_known_positions."
+      ]
+    },
+    "hadar_avoidance_v1": {
+      "description": "Enemy behavior adjustments for Hunger of Hadar: avoid ending turn inside; evacuate if inside on turn start.",
+      "priority": 55,
+      "conditions": [
+        {
+          "if": "area.hunger_of_hadar_exists == true",
+          "then": "apply"
+        }
+      ],
+      "rules": [
+        {
+          "name": "EvacuateOnTurnStart",
+          "when": "actor.in_hadar == true and phase == 'turn_start'",
+          "do": [
+            {
+              "action": "dash_or_move_to_exit_area",
+              "params": {
+                "area_tag": "hunger_of_hadar",
+                "min_distance_ft": 10
+              }
+            }
+          ]
+        },
+        {
+          "name": "AvoidEndingInHadar",
+          "when": "phase == 'planning'",
+          "do": [
+            {
+              "action": "path_bias_avoid_area_end",
+              "params": {
+                "area_tag": "hunger_of_hadar",
+                "penalty": 15
+              }
+            }
+          ]
+        },
+        {
+          "name": "PerimeterPlayIfBlind",
+          "when": "actor.adjacent_to_hadar == true",
+          "do": [
+            {
+              "action": "path_along_perimeter",
+              "params": {
+                "area_tag": "hunger_of_hadar",
+                "keep_distance_ft": 5
+              }
+            },
+            {
+              "action": "seek_line_of_sight_to_caster",
+              "params": {
+                "max_steps": 6
+              }
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Assumes engine flags: in_hadar, adjacent_to_hadar, area.hunger_of_hadar_exists, phase.",
+        "Pairs with Darkness behavior; both block sight. Difficult terrain already slows pathfinding."
+      ]
+    },
+    "fear_response_v1": {
+      "description": "Enemy behavior while affected by Fear: must flee, break line-of-sight to source, and avoid ending turn with LoS.",
+      "priority": 60,
+      "conditions": [
+        {
+          "if": "actor.has_condition_Frightened == true",
+          "then": "apply"
+        }
+      ],
+      "rules": [
+        {
+          "name": "PlanToFlee",
+          "when": "phase == 'planning'",
+          "do": [
+            {
+              "action": "set_goal_increase_distance_from_source",
+              "params": {
+                "condition": "Frightened",
+                "maximise": true
+              }
+            },
+            {
+              "action": "path_bias_break_line_of_sight",
+              "params": {
+                "source_from_condition": "Frightened",
+                "weight": 12
+              }
+            },
+            {
+              "action": "prefer_dash_over_attack",
+              "params": {
+                "if_can_increase_distance_ft": 10
+              }
+            },
+            {
+              "action": "avoid_ending_with_los_to_source",
+              "params": {
+                "source_from_condition": "Frightened",
+                "penalty": 8
+              }
+            }
+          ]
+        },
+        {
+          "name": "DisengageIfEngaged",
+          "when": "actor.is_engaged_in_melee == true and phase == 'turn_start'",
+          "do": [
+            {
+              "action": "use_disengage_then_move_away",
+              "params": {
+                "min_distance_ft": 15,
+                "source_from_condition": "Frightened"
+              }
+            }
+          ]
+        },
+        {
+          "name": "MoveAwayExecution",
+          "when": "phase == 'movement'",
+          "do": [
+            {
+              "action": "move_to_increase_distance_from_source",
+              "params": {
+                "condition": "Frightened"
+              }
+            }
+          ]
+        },
+        {
+          "name": "FallbackIfTrapped",
+          "when": "phase == 'action' and actor.could_not_increase_distance == true",
+          "do": [
+            {
+              "action": "take_dodge_action",
+              "params": {}
+            },
+            {
+              "action": "ready_attack_if_source_approaches",
+              "params": {
+                "source_from_condition": "Frightened"
+              }
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Assumes engine provides: has_condition_Frightened, is_engaged_in_melee, could_not_increase_distance, and a way to resolve the condition's source.",
+        "Pairs with Fear spell logic that forces Dash and allows an end-of-turn save if out of LoS."
+      ]
+    }
+  }
+}

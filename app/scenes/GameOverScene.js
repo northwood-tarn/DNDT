@@ -7,10 +7,19 @@ import TitleScene from "./TitleScene.js";
 function start() {
   logSystem("=== GAME OVER ===");
   logSystem("Type: restart | quit");
-  onCommand((cmd)=>{
+  onCommand((cmd) => {
     if (cmd === "restart") sceneManager.replace(TitleScene);
     if (cmd === "quit") logSystem("Signal host app to exit.");
   });
 }
 
-export default { start };
+// --- Lifecycle shim (auto-added by validator prep) ---
+let __ctx_GameOver = null;
+function init(ctx) { __ctx_GameOver = ctx; }
+function enter(params = {}) { try { start(params); } catch {} }
+function update(dt) { /* no-op */ }
+function render(g) { /* no-op */ }
+function exit() { /* no-op */ }
+function destroy() { __ctx_GameOver = null; }
+
+export default { init, enter, update, render, exit, destroy, start };

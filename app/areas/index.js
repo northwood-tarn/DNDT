@@ -3,7 +3,7 @@
 
 import { AREAS, getArea as _getArea } from "./registry.js";
 
-export const DEFAULT_AREA_ID = "00_dockside";
+export const DEFAULT_AREA_ID = "dockside";
 
 export function getArea(id) {
   return _getArea(id);

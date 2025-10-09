@@ -1,6 +1,6 @@
-import { state } from '../engine/stateStore.js';
+import { state } from '../state/stateStore.js';
 export function updateVisibility(grid=state.tileGrid, px=state.player.x, py=state.player.y){
-  if(!grid) return;
+  if(!grid || !state?.player) return;
   const R=6;
   for(let x=0;x<grid.length;x++){
     for(let y=0;y<grid[0].length;y++){

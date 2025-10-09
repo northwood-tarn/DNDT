@@ -1,45 +1,84 @@
-// app/main.js
-// Entry point: bootstrap the player, then launch the starting scene.
-// If your project uses a different entry scene, adjust the two imports below.
+// app/main.js (ESM)
+// Centralized Pixi import
+import { PIXI, getApp } from "./engine/pixi.js";
+// Initialize routing
+import { initExitRouter } from "./flow/ExitRouter.js";
 
-import { bootstrapPlayer } from "./state/bootstrapPlayer.js";
-import { sceneManager } from "./engine/sceneManager.js";
+let app;
 
-async function startGame(){
-  // 1) Ensure player is loaded (blueprint + save + derived stats)
-  await bootstrapPlayer({ characterId: "aya", saveSlot: "slot-001" });
-
-  // 2) Route to your existing starting screen.
-  // Try Dockside area scene first; fall back to ExplorationScene.
-  try {
-    const mod = await import("./areas/00_dockside/Dockside.js");
-    const StartScene = (mod && (mod.default || mod.Docker || mod.Dockside)) || null;
-    if (StartScene) {
-      sceneManager.start(StartScene, { areaId: "00_dockside" });
-      return;
-    }
-  } catch (e) {
-    console.warn("Dockside start not found, falling back:", e);
-  }
-
-  try {
-    const mod = await import("./scenes/ExplorationScene.js");
-    const ExplorationScene = mod.default || mod.ExplorationScene || null;
-    if (ExplorationScene){
-      sceneManager.start(ExplorationScene, { areaId: "00_dockside" });
-      return;
-    }
-  } catch (e) {
-    console.error("Fallback scene failed to load:", e);
-  }
-
-  // Absolute last resort: show a minimal message in the shell if available.
-  try {
-    const { mountCenter, setTop } = await import("./renderer/shellMount.js");
-    setTop("Start");
-    mountCenter("Failed to locate a start scene. Check app/main.js routing.");
-  } catch {}
+function routeToDockside(){
+  // Clear any title text and overlay UI
+  const top = document.getElementById('top'); if (top) top.textContent = '';
+  const uiRoot = document.getElementById('ui-root'); if (uiRoot) uiRoot.innerHTML = '';
+  // Hand off to ExitRouter to load the dialogue/text area
+  window.dispatchEvent(new CustomEvent("game:exit", {
+    detail: { toArea: "dockside" }
+  }));
 }
 
-// Kick off
+async function startGame() {
+  // Ensure exit routing is listening
+  try { initExitRouter(); } catch (e) { console.warn('ExitRouter init failed:', e); }
+
+  // Create/reuse a Pixi v8 app and mount its canvas into #center.
+  app = await getApp({ resizeTo: window, backgroundAlpha: 0, antialias: true });
+  const center = document.getElementById('center') || document.body;
+  if (!app.canvas.isConnected) {
+    center.appendChild(app.canvas);
+  }
+
+  // --- Title screen (DOM overlay) ---
+  const uiRoot = document.getElementById('ui-root');
+  if (uiRoot) {
+    uiRoot.innerHTML = '';
+
+    const splash = document.createElement('img');
+    splash.className = 'splash';
+    splash.src = './assets/images/mainscreen.png';
+    splash.alt = 'Main Screen';
+    uiRoot.appendChild(splash);
+
+    const menu = document.createElement('div');
+    menu.className = 'menu';
+
+    const mk = (label, onClick) => {
+      const b = document.createElement('button');
+      b.textContent = label;
+      b.onclick = onClick;
+      return b;
+    };
+
+    // NEW GAME -> Dockside (dialogue/text area via ExitRouter)
+    menu.appendChild(mk('New Game', routeToDockside));
+
+    menu.appendChild(mk('Load Game', async () => {
+      const saves = await (window.api?.listSaves?.() ?? Promise.resolve([]));
+      if (!saves || !saves.length) return alert('No saves found.');
+      alert('Saves: ' + saves.join(', '));
+    }));
+
+    menu.appendChild(mk('Settings', () => alert('Settings coming soon')));
+    menu.appendChild(mk('Quit', async () => {
+      if (window.api?.quit) await window.api.quit();
+      else window.close();
+    }));
+
+    uiRoot.appendChild(menu);
+  }
+
+  // --- Intro audio ---
+  const audio = new Audio('./assets/audio/intro_theme.mp3');
+  audio.volume = 0.9;
+  try {
+    await audio.play();
+  } catch {
+    const unlock = async () => {
+      try { await audio.play(); } finally {
+        window.removeEventListener('pointerdown', unlock);
+      }
+    };
+    window.addEventListener('pointerdown', unlock, { once: true });
+  }
+}
+
 startGame();

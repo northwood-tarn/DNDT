@@ -1,79 +1,42 @@
 // app/boot/start.js
-// Boot with a DEV_QUICKSTART toggle. When enabled, jump straight to DocksideIntro
-// with a bootstrapped Fighter (AYA) loaded via bootstrapPlayer and a full skills table.
+// Boots straight into Dockside with Aya preloaded, and wires the exit router.
 
-import TitleMenuScene from "../scenes/TitleMenuScene.js";
-import DocksideIntro from "../areas/00_dockside/Dockside.js";
-import { dispatch } from "../engine/inputManager.js";
-import { sceneManager } from "../engine/sceneManager.js";
-import { state } from "../state/stateStore.js";
-import { bootstrapPlayer } from "../state/bootstrapPlayer.js"; // ← NEW: ensure player exists
+import { initExitRouter } from "../flow/ExitRouter.js";
+import { startAtArea } from "./startAtArea.js";
 
-const DEV_QUICKSTART = true; // flip to false to restore normal Title Menu flow
-
-function wireKeyboard() {
-  const map = new Map([
-    ["ArrowUp", "up"], ["ArrowDown", "down"], ["ArrowLeft", "left"], ["ArrowRight", "right"],
-    ["w", "up"], ["s", "down"], ["a", "left"], ["d", "right"],
-    ["W", "up"], ["S", "down"], ["A", "left"], ["D", "right"],
-    ["Enter", "confirm"], ["Escape", "back"]
-  ]);
-  window.addEventListener("keydown", (e) => {
-    const cmd = map.get(e.key);
-    if (!cmd) return;
-    e.preventDefault();
-    try { dispatch(cmd); } catch {}
-  });
+function ensureGlobalState(){
+  if (!window.state) window.state = {};
+  if (!window.state.player) {
+    window.state.player = {
+      id: "aya",
+      name: "Aya",
+      class: "Fighter",
+      level: 1,
+      // Minimal stats (expand as your engine requires)
+      hp: 12, maxHp: 12, ac: 16,
+      abilities: { str: 16, dex: 12, con: 14, int: 10, wis: 10, cha: 8 },
+      skills: { athletics: 2, perception: 1, sleight_of_hand: 1 },
+      inventory: [
+        { id: "oil_premium", name: "Premium Lantern Oil", type: "oil", qty: 60 },
+        { id: "oil_basilisk", name: "Basilisk Oil", type: "oil", qty: 30 },
+        // A few sensible defaults so the UI has something to show
+        { id: "longsword", name: "Longsword", type: "weapon", qty: 1 },
+        { id: "chain_mail", name: "Chain Mail", type: "armor", qty: 1 }
+      ],
+      equipment: { mainHand: "longsword", armor: "chain_mail" }
+    };
+  }
 }
 
-// Pick a scene launch function your manager supports (start/replace/goto/push)
-const launch =
-  (typeof sceneManager.start === "function" && sceneManager.start.bind(sceneManager)) ||
-  (typeof sceneManager.replace === "function" && sceneManager.replace.bind(sceneManager)) ||
-  (typeof sceneManager.goto === "function" && sceneManager.goto.bind(sceneManager)) ||
-  (typeof sceneManager.push === "function" && sceneManager.push.bind(sceneManager)) ||
-  ((Scene, args) => {
-    // Last-resort: many scenes in this codebase are plain objects with start()
-    if (Scene && typeof Scene.start === "function") return Scene.start(args || {});
-    // If it happens to be a constructor, try instantiating
-    try {
-      const inst = new Scene(args || {});
-      if (typeof inst.start === "function") return inst.start(args || {});
-      return inst;
-    } catch (e) {
-      console.error("No usable scene launch API found.", e);
-    }
-  });
-
-async function start() {
-  wireKeyboard();
-
-  // 1) Ensure player exists before any scene runs (no more manual seedAya)
-  try {
-    await bootstrapPlayer({ characterId: "aya", saveSlot: "slot-001" });
-  } catch (e) {
-    console.error("[boot] bootstrapPlayer failed; falling back to Title Menu", e);
-    return TitleMenuScene.start ? TitleMenuScene.start() : launch(TitleMenuScene, {});
-  }
-
-  // 2) Normal flow managed by the engine
-  if (DEV_QUICKSTART) {
-    try {
-      // Jump straight into the intro scene using the engine's launcher
-      launch(DocksideIntro, { areaId: "00_dockside" });
-      return;
-    } catch (e) {
-      console.error("Failed to start DocksideIntro, falling back to Title Menu", e);
-      return TitleMenuScene.start ? TitleMenuScene.start() : launch(TitleMenuScene, {});
-    }
-  }
-
-  // 3) Title menu flow
-  return TitleMenuScene.start ? TitleMenuScene.start() : launch(TitleMenuScene, {});
+async function boot(){
+  ensureGlobalState();
+  initExitRouter();                 // listen for 'game:exit' events
+  await startAtArea("dockside"); // jump straight into Dockside (Night Rain)
 }
 
+// Start immediately (works for both module and classic script boots)
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", () => { start(); }, { once: true });
+  document.addEventListener("DOMContentLoaded", boot);
 } else {
-  start();
+  boot();
 }

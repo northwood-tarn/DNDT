@@ -1,22 +1,29 @@
 // app/areas/registry.js
-// Canonical area registry — KEYS MATCH FOLDER NAMES (with numeric prefixes).
-// Use these IDs everywhere: start.js, encounters, returnAreaId, scene args, etc.
+// Paths are relative to the app root (no leading slash).
 
 export const AREAS = {
   "00_fields": {
-    tmj: "/app/areas/00_fields/fields.tmj.json",
-    image: "/app/areas/00_fields/fields.png"
+    id: "00_fields",
+    title: "Fields",
+    kind: "exploration_map",
+    assets: {
+      tmj: "areas/00_fields/fields.tmj.json",
+      image: "areas/00_fields/fields.png"
+    }
   },
   "00_dockside": {
-    tmj: "/app/areas/00_dockside/dockside.tmj.json",
-    image: "/app/areas/00_dockside/dockside.png"
+    id: "dockside",
+    title: "Dockside (Night Rain)",
+    kind: "dialogue_area",
+    profile: "DialogExplore",
+    script: "./areas/00_dockside/dockside.json"
   }
 };
 
-// Simple accessor; returns null if missing (callers should handle the null).
 export function getArea(id) {
-  return AREAS[id] || null;
+  if (AREAS[id]) return AREAS[id];
+  const hit = Object.values(AREAS).find(a => a.id === id);
+  return hit || null;
 }
 
-// Optional export if anyone needs to inspect valid keys.
 export const AREA_KEYS = Object.keys(AREAS);

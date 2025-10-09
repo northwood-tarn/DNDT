@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AreaConfig",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "acts": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      }
+    },
+    "map": {
+      "type": "object",
+      "properties": {
+        "tileset": {
+          "type": "string"
+        },
+        "seed": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "viewport": {
+          "type": "object",
+          "properties": {
+            "zoom": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "camera": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "locked",
+                "free",
+                "panned",
+                null
+              ]
+            }
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "weather": {
+      "type": "object",
+      "properties": {
+        "effect": {
+          "type": "string",
+          "enum": [
+            "none",
+            "rain",
+            "fog",
+            "dust",
+            "ghost"
+          ]
+        },
+        "intensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "icon": {
+          "type": "string"
+        },
+        "tint": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "layerAlpha": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "transitionMs": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "randomize": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "pool": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "effect": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "rain",
+                  "fog",
+                  "dust",
+                  "ghost"
+                ]
+              },
+              "weight": {
+                "type": "number"
+              },
+              "intensity": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": [
+              "effect"
+            ]
+          }
+        }
+      },
+      "required": [
+        "effect",
+        "intensity",
+        "icon"
+      ]
+    },
+    "ui": {
+      "type": "object",
+      "properties": {
+        "showFlameInCombat": {
+          "type": "boolean"
+        },
+        "terminalHeightVh": {
+          "type": "number"
+        },
+        "fontScale": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      }
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "weather"
+  ]
+}

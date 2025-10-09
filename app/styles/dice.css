@@ -1,0 +1,89 @@
+/* styles/dice.css */
+/* Wireframe D20 overlay for dialogue screens — subtle teal glow, quick spin/reveal */
+
+:root {
+  --dice-teal: rgba(0, 185, 185, 0.7);
+  --dice-teal-dim: rgba(0, 185, 185, 0.25);
+  --dice-fg: rgba(235, 244, 241, 0.95);
+}
+
+.dice-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+  transition: opacity 320ms ease;
+  opacity: 0;
+}
+
+.dice-overlay.is-spinning,
+.dice-overlay.is-revealed {
+  opacity: 1;
+}
+
+.dice-overlay.is-hidden {
+  opacity: 0;
+}
+
+.dice-wrap {
+  position: relative;
+  width: min(22vmin, 260px);
+  aspect-ratio: 1/1;
+  filter: drop-shadow(0 0 0.65rem rgba(0, 185, 185, 0.25));
+}
+
+.dice-svg {
+  width: 100%;
+  height: 100%;
+  opacity: 0.85;
+}
+
+.d20-face {
+  fill: transparent;
+  stroke: var(--dice-teal);
+  stroke-width: 2.2;
+}
+
+.d20-stroke {
+  stroke: var(--dice-teal-dim);
+  stroke-width: 1.2;
+}
+
+.dice-num {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: min(9vmin, 96px);
+  letter-spacing: 0.02em;
+  color: var(--dice-fg);
+  font-family: "Baskerville", "Libre Baskerville", Georgia, serif;
+  mix-blend-mode: screen;
+  text-shadow: 0 0 8px rgba(0, 185, 185, 0.25);
+}
+
+/* optional total / mod badge */
+.dice-badge {
+  position: absolute;
+  bottom: -0.6rem;
+  right: 0;
+  font-family: "Avenir Next", "Avenir", Inter, system-ui, sans-serif;
+  font-size: min(2.2vmin, 14px);
+  color: var(--dice-fg);
+  opacity: 0.82;
+}
+.dice-badge.is-empty { display: none; }
+
+/* Spin animation */
+@keyframes dice-spin {
+  0%   { transform: rotate(0deg) translateY(0) scale(1); }
+  40%  { transform: rotate(160deg) translateY(3%) scale(1.02); }
+  70%  { transform: rotate(275deg) translateY(-2%) scale(0.99); }
+  100% { transform: rotate(360deg) translateY(0) scale(1); }
+}
+
+.dice-overlay.is-spinning .dice-svg .d20 {
+  transform-origin: 50% 50%;
+  animation: dice-spin 1.1s cubic-bezier(.22,.61,.36,1) both;
+}

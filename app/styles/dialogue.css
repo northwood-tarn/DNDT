@@ -1,0 +1,37 @@
+/* dialogue.css — base styles for dialogue UI */
+
+body {
+  font-family: "Avenir Light", sans-serif;
+  color: #d9e2e7;
+  background: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+.dialogue-container {
+  max-width: 70%;
+  margin: 4rem auto;
+  line-height: 1.6;
+}
+
+.speaker {
+  font-weight: bold;
+  color: #a0b6c2;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.option {
+  margin: 1rem 0;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.option:hover {
+  color: #89c4f4;
+}
+
+.meta {
+  font-size: 0.85em;
+  color: #a186be; /* purple for rolls */
+}

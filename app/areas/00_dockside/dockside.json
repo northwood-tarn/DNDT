@@ -30,6 +30,10 @@
         {
           "label": "Rummage through the fish baskets",
           "go": "baskets"
+        },
+        {
+          "label": "Go to the Second Field",
+          "go": "to_fields"
         }
       ],
       "exitKeys": [
@@ -137,6 +141,23 @@
           "go": "end_of_pier"
         }
       ]
+    },
+    "to_fields": {
+      "desc": [
+        "You leave the dock and head toward the fields."
+      ],
+      "options": [
+        {
+          "label": "Continue",
+          "go": "EXIT"
+        }
+      ],
+      "onExit": {
+        "to": "ExplorationScene",
+        "data": {
+          "areaId": "00_fields"
+        }
+      }
     }
   },
   "items": [

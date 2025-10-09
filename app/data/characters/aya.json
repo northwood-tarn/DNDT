@@ -84,7 +84,17 @@
       "id": "rope_50_ft",
       "name": "Rope (50 ft)",
       "qty": 1
-    }
+    },
+{
+  "id": "oil_premium",
+  "name": "Premium Lantern Oil",
+  "qty": 60
+},
+{
+  "id": "oil_basilisk",
+  "name": "Basilisk Oil",
+  "qty": 30
+}
   ],
   "quests": {},
   "flags": {},

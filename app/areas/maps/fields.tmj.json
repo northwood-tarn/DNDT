@@ -169,9 +169,9 @@
                  "width":0,
                  "x":1600.60606060606,
                  "y":1281.87878787879
-                }, 
-                ],
-         "opacity":1,
+                }
+                ]
+         ,"opacity":1,
          "type":"objectgroup",
          "visible":true,
          "x":0,

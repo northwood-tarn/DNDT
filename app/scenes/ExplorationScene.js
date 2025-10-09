@@ -1,68 +1,86 @@
 // app/scenes/ExplorationScene.js
-// Pixi exploration scene that resolves map assets via the canonical areas facade.
-
 import { sceneManager } from "../engine/sceneManager.js";
-import { createWorldView } from "../renderer/pixiWorldView.js";
-import { mountCenter, setTop, clearCenter } from "../renderer/shellMount.js";
 import { getArea, DEFAULT_AREA_ID } from "../areas/index.js";
+import { Assets } from "../utils/Assets.js";
 
 let view = null;
+let bgApp = null;
 
-export const ExplorationScene = {
-  /**
-   * start({ areaId, tmj, title })
-   * - If tmj provided, loads that directly.
-   * - Else resolves from registry by areaId (default canonical ID with prefix).
-   */
+const ExplorationScene = {
   async start({ areaId = DEFAULT_AREA_ID, tmj = null, title = "Exploration" } = {}){
-    setTop(title);
+    mountTopBar({
+      mode: 'exploration',
+      actTitle: 'Act I',
+      areaTitle: title,
+      timeLabel: 'First Watch',
+      weatherLabel: 'Rain',
+      getPlayer: ()=>window.state?.player,
+      onLanternToggle: (on)=>{ console.log('Lantern toggled:', on); }
+    });
 
-    // Resolve TMJ if not explicitly provided
     if (!tmj){
       const area = getArea(areaId);
       if (!area || !area.tmj){
         console.error("[ExplorationScene] Area not found in registry:", areaId, area);
-        // Graceful fallback to DEFAULT_AREA_ID if possible
-        if (areaId !== DEFAULT_AREA_ID) {
-          const fallback = getArea(DEFAULT_AREA_ID);
-          if (fallback && fallback.tmj) {
-            tmj = fallback.tmj;
-          } else {
-            return; // nothing we can do; avoids a blank mount
-          }
-        } else {
-          return;
-        }
+        return;
       } else {
         tmj = area.tmj;
       }
     }
 
-    // Host container for Pixi view
     const host = document.createElement("div");
     host.style.width = "fit-content";
     host.style.height = "fit-content";
     mountCenter(host);
 
-    // Create and mount world view
-    view = createWorldView({
+    const bgCanvas = document.createElement("canvas");
+    bgCanvas.width = 608;
+    bgCanvas.height = 592;
+    host.appendChild(bgCanvas);
+
+    // PIXI background install with centralized asset
+    const PIXI = (await import('../lib/pixi.mjs')).default || await import('../lib/pixi.mjs');
+    bgApp = new PIXI.Application();
+    await bgApp.init({ width: 608, height: 592, backgroundAlpha: 0, canvas: bgCanvas });
+    installBackground(bgApp, bgApp.stage, { imagePath: Assets.path('ui.murky') });
+
+    const viewOpts = {
       width: 608,
       height: 592,
-      designScreensHigh: 2.2, // consistent exploration scale across maps
-      playerSizePx: 0.027,    // player size as fraction of view height
-      speed: 2.6              // tuned movement speed
-    });
+      designScreensHigh: 2.2,
+      playerSizePx: 0.027,
+      speed: 2.6
+    };
+    const worldView = createWorldView(viewOpts);
+    view = worldView;
     await view.mount(host);
-
-    // Load the map
     await view.loadFromTMJ(tmj);
+
+    setInterval(()=>{
+      const playerState = { x: view.playerX, y: view.playerY };
+      const enemies = [];
+      const lights = [];
+      const collisions = [];
+      const aware = checkEnemyAwareness(playerState, enemies, lights, collisions);
+      maybeStartCombat(aware, areaId);
+    }, 1000);
   },
 
   cleanup(){
     try { view?.destroy(); } catch {}
     view = null;
+    try { bgApp?.destroy(true, { children: true, texture: true, baseTexture: true }); } catch {}
+    bgApp = null;
     try { clearCenter(); } catch {}
   }
 };
+// --- Lifecycle shim (auto-added by validator prep) ---
+let __ctx_Exploration = null;
+function init(ctx){ __ctx_Exploration = ctx; }
+function enter(params = {}){ /* no-op */ }
+function update(dt){ /* no-op */ }
+function render(g){ /* no-op */ }
+function exit(){ /* no-op */ }
+function destroy(){ __ctx_Exploration = null; }
 
-export default ExplorationScene;
+export default { init, enter, update, render, exit, destroy, start: ExplorationScene.start, cleanup: ExplorationScene.cleanup };

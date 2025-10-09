@@ -1,62 +1,61 @@
-// app/systems/initiative.js
-// Standardised initiative system wired to abilities.js (single-player friendly).
-// Uses the existing dice mechanic's advantage/disadvantage if available.
-// Falls back to manual best-of/take-lowest if the dice API doesn't support adv flags.
+// systems/initiative.js — unified initiative system (ESM)
 //
-// Exports:
-// - rollInitiative(actors, opts={ state }) -> { order, rolls, surprised }
-// - insertIntoInitiative(order, actorId, afterRound) -> new order
+// Merges the simple state-driven approach (auto-populate from combat state, getters/nextTurn)
+// with the richer, rules-aware approach (advantage, bonuses, deterministic tie-breaks).
 //
-// Actors format (minimal):
-//   { id, name, abilities: { dex: 14 }, initBonus?: number, surprised?: boolean }
-//   // If you don't store abilities.dex, you can still pass { dexMod } directly.
-//   // Any per-actor initiative advantage/disadvantage should be expressed via effects on state
-//   // (e.g., Alert adds flat bonus; Feral Instinct adds advantage).
+// Key exports:
+// - rollInitiative(actors=[], opts={ state }) -> { order, rolls, surprised }
+// - insertIntoInitiative(order, actorId, afterRound=false) -> string[]
+// - buildActorsFromState(state) -> minimal actors[] (adapts current state.combat shape)
+// - applyInitiativeToState(state, result) -> mutates state.combat.{turnOrder,turnIndex,rolls}
+// - getCurrentCombatant(state) -> actor id
+// - nextTurn(state) -> void
 //
 // Notes:
-// - We derive (mod, adv, bonus) from abilities.getInitiativeComponents(actor, state).
-// - Ties break by higher DEX mod, then name, then stable index.
-// - Surprise is recorded but enforcement (skipping first turn) is done by the caller.
+// - Uses utils/dice.js and systems/abilities.js for mods/advantage/bonuses.
+// - Preserves convenience functions to work with existing state.combat turn handling.
+// - Sorting: total desc, dexMod desc, name asc, stable index asc.
 //
-
+// Dependencies expected in your repo:
+//   ../utils/dice.js             (rollWithDetail)
+//   ./abilities.js               (getInitiativeComponents, getAbilityMod)
+//   ../data/enemies.js           (getEnemyStats) — only used by buildActorsFromState adapter
+//
 import { rollWithDetail } from "../utils/dice.js";
 import { getInitiativeComponents, getAbilityMod } from "./abilities.js";
+import { getEnemyStats } from "../data/enemies.js";  // adapter only
 
 function d20WithAdv(adv=0){
   // Try native advantage on the dice API first
   try {
     const res = rollWithDetail("1d20", { adv });
-    if (res && typeof res.total === 'number') {
+    if (res && typeof res.total === "number") {
       const rolls = res.rolls || (res.detail ? res.detail : [res.roll ?? res.total]);
       return { d20: res.total, detail: rolls };
     }
-  } catch (e) {
-    // fall through to manual
-  }
+  } catch(_) {}
   // Manual fallback
   const a = rollWithDetail("1d20");
   const r1 = a.roll ?? a.total;
   if (!adv) return { d20: r1, detail: [r1] };
   const b = rollWithDetail("1d20");
-  const r2 = b.roll ?? b.total;
+  const r2 = (b.roll ?? b.total);
   return adv > 0
     ? { d20: Math.max(r1, r2), detail: [r1, r2] }
     : { d20: Math.min(r1, r2), detail: [r1, r2] };
 }
 
 export function rollInitiative(actors=[], opts={}){
-  const gameState = opts.state; // optional; used for effects (bonuses/advantage)
+  const gameState = opts.state;
   const withRolls = actors.map((a, index) => {
     const name = a.name || a.id;
-    // Get derived components from abilities (mod, adv, bonus)
+    // Derived components from abilities (mod, adv, bonus)
     const { mod, adv, bonus } = getInitiativeComponents(a, gameState);
-    // Roll d20 with advantage flag (−1/0/+1)
     const r = d20WithAdv(adv || 0);
     const total = r.d20 + (mod || 0) + (bonus || 0);
-    // Also compute dexMod independently for tie-break (stable even if effects change mid-combat)
-    const dexMod = (typeof a.dexMod === 'number')
+    const dexMod = (typeof a.dexMod === "number")
       ? a.dexMod
-      : getAbilityMod(a, 'dex', gameState);
+      : getAbilityMod(a, "dex", gameState);
     return {
       id: a.id,
       name,
@@ -66,11 +65,10 @@ export function rollInitiative(actors=[], opts={}){
       bonus: bonus || 0,
       d20: r.d20,
       detail: r.detail || [r.d20],
-      total,
+      total
     };
   });
 
-  // Sort: total desc, dexMod desc, name asc, index asc
   withRolls.sort((x,y) => {
     if (y.total !== x.total) return y.total - x.total;
     if (y.dexMod !== x.dexMod) return y.dexMod - x.dexMod;
@@ -93,4 +91,64 @@ export function insertIntoInitiative(order, actorId, afterRound=false){
   if (afterRound) next.push(actorId);
   else next.splice(order.length, 0, actorId);
   return next;
+}
+
+// ---- Adapters for current combat state shape ----
+export function buildActorsFromState(state){
+  const actors = [];
+  if (!state || !state.combat) return actors;
+
+  // Player
+  if (state.combat.player) {
+    const p = state.combat.player;
+    const dexMod = getAbilityMod(state.player || p, "dex", state);
+    actors.push({
+      id: "player",
+      name: (state.player && (state.player.name || "player")) || "player",
+      dexMod,
+      abilities: state.player?.abilities || p.abilities,
+      initBonus: state.player?.initBonus || 0,
+      surprised: !!state.player?.surprised
+    });
+  }
+
+  // Enemies
+  const list = Array.isArray(state.combat.enemies) ? state.combat.enemies : [];
+  list.forEach((enemy, idx) => {
+    const stats = getEnemyStats(enemy.id) || {};
+    const dexMod = (typeof stats.dexMod === "number")
+      ? stats.dexMod
+      : getAbilityMod(stats, "dex", state);
+    actors.push({
+      id: `${enemy.id}_${idx}`,
+      name: enemy.name || enemy.id,
+      enemyId: enemy.id,
+      dexMod,
+      abilities: stats.abilities || { dex: stats.dex },
+      initBonus: stats.initBonus || 0,
+      surprised: !!enemy.surprised
+    });
+  });
+
+  return actors;
+}
+
+export function applyInitiativeToState(state, result){
+  if (!state || !state.combat || !result) return;
+  state.combat.turnOrder = result.order.slice();
+  state.combat.turnIndex = 0;
+  state.combat.initiativeRolls = result.rolls;
+  state.combat.surprised = result.surprised;
+}
+
+export function getCurrentCombatant(state){
+  const order = state?.combat?.turnOrder || [];
+  const idx = state?.combat?.turnIndex ?? 0;
+  return order[idx];
+}
+
+export function nextTurn(state){
+  const order = state?.combat?.turnOrder || [];
+  if (!order.length) return;
+  state.combat.turnIndex = (state.combat.turnIndex + 1) % order.length;
 }

@@ -121,9 +121,104 @@ export const ORIGIN_FEATS = [
       p.spells.perDay["magic_missile"] = p.spells.perDay["magic_missile"] || { perDay: 1, used: 0, refresh: "long_rest" };
       p.notes = [...(p.notes||[]), "Magic Initiate (Wizard): Mage Hand, Fire Bolt; Magic Missile 1/day"];
     }
-  }
-];
+  },
+
+  
+{
+    id: "metamagic_extend",
+    name: "Metamagic: Extend",
+    description: "You have studied the logic of spell duration. Starts at 2 uses per long rest. Each additional Metamagic feat you take increases the uses of ALL your Metamagic feats by +1 (including this one).",
+    apply(p) {
+      // Ensure metamagic scaffolding
+      p.metamagic = p.metamagic || { total: 0, has: {}, uses: {} };
+      const BASE = { extend: 2, enlarge: 2, quicken: 1, twin: 1 };
+      // Mark acquisition of this feat if not already
+      if (!p.metamagic.has.extend) {
+        p.metamagic.has.extend = true;
+        p.metamagic.total = (p.metamagic.total || 0) + 1;
+      }
+      // Recompute uses for all owned metamagic feats: base + (total - 1)
+      const total = p.metamagic.total || 0;
+      const owned = p.metamagic.has || {};
+      p.metamagic.uses = p.metamagic.uses || {};
+      Object.keys(owned).forEach(key => {
+        if (owned[key]) {
+          p.metamagic.uses[key] = BASE[key] + Math.max(0, total - 1);
+        }
+      });
+      p.notes = [...(p.notes||[]), "Metamagic Extend: double spell duration (uses auto-scale with total metamagic feats)"];
+    }
+  },
+  {
+    id: "metamagic_enlarge",
+    name: "Metamagic: Enlarge",
+    description: "You can manipulate a spell’s area/shape. Starts at 2 uses per long rest. Each additional Metamagic feat you take increases the uses of ALL your Metamagic feats by +1 (including this one).",
+    apply(p) {
+      p.metamagic = p.metamagic || { total: 0, has: {}, uses: {} };
+      const BASE = { extend: 2, enlarge: 2, quicken: 1, twin: 1 };
+      if (!p.metamagic.has.enlarge) {
+        p.metamagic.has.enlarge = true;
+        p.metamagic.total = (p.metamagic.total || 0) + 1;
+      }
+      const total = p.metamagic.total || 0;
+      const owned = p.metamagic.has || {};
+      p.metamagic.uses = p.metamagic.uses || {};
+      Object.keys(owned).forEach(key => {
+        if (owned[key]) {
+          p.metamagic.uses[key] = BASE[key] + Math.max(0, total - 1);
+        }
+      });
+      p.notes = [...(p.notes||[]), "Metamagic Enlarge: expand/shape AoE (uses auto-scale with total metamagic feats)"];
+    }
+  },
+  {
+    id: "metamagic_quicken",
+    name: "Metamagic: Quicken",
+    description: "You can accelerate spellcasting. Starts at 1 use per long rest. Each additional Metamagic feat you take increases the uses of ALL your Metamagic feats by +1 (including this one).",
+    apply(p) {
+      p.metamagic = p.metamagic || { total: 0, has: {}, uses: {} };
+      const BASE = { extend: 2, enlarge: 2, quicken: 1, twin: 1 };
+      if (!p.metamagic.has.quicken) {
+        p.metamagic.has.quicken = true;
+        p.metamagic.total = (p.metamagic.total || 0) + 1;
+      }
+      const total = p.metamagic.total || 0;
+      const owned = p.metamagic.has || {};
+      p.metamagic.uses = p.metamagic.uses || {};
+      Object.keys(owned).forEach(key => {
+        if (owned[key]) {
+          p.metamagic.uses[key] = BASE[key] + Math.max(0, total - 1);
+        }
+      });
+      p.notes = [...(p.notes||[]), "Metamagic Quicken: cast 1-action spell as bonus action (uses auto-scale with total metamagic feats)"];
+    }
+  },
+  {
+    id: "metamagic_twin",
+    name: "Metamagic: Twin",
+    description: "You can duplicate a single-target spell. Starts at 1 use per long rest. Each additional Metamagic feat you take increases the uses of ALL your Metamagic feats by +1 (including this one).",
+    apply(p) {
+      p.metamagic = p.metamagic || { total: 0, has: {}, uses: {} };
+      const BASE = { extend: 2, enlarge: 2, quicken: 1, twin: 1 };
+      if (!p.metamagic.has.twin) {
+        p.metamagic.has.twin = true;
+        p.metamagic.total = (p.metamagic.total || 0) + 1;
+      }
+      const total = p.metamagic.total || 0;
+      const owned = p.metamagic.has || {};
+      p.metamagic.uses = p.metamagic.uses || {};
+      Object.keys(owned).forEach(key => {
+        if (owned[key]) {
+          p.metamagic.uses[key] = BASE[key] + Math.max(0, total - 1);
+        }
+      });
+      p.notes = [...(p.notes||[]), "Metamagic Twin: duplicate single-target spell (uses auto-scale with total metamagic feats)"];
+    }
+  },
+];  
 
 export function getFeatById(id) {
   return ORIGIN_FEATS.find(f => f.id === id) || null;
 }
+
+

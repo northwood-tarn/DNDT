@@ -1,6 +1,14 @@
-// app/systems/turnEconomy.js
-// Centralized action economy utilities (Action, Bonus, Move) with simple range helpers.
-
+// app/systems/turnEconomy.js — per-actor action economy + distance helpers (ESM)
+//
+// API:
+//   newTurnEconomy() -> economy bag
+//   resetTurnEconomy(actor) / ensureTurnEconomy(actor)
+//   canUseAction/Bonus/Move, spendAction/Bonus/Move
+//   setDisengaged(actor), setDashed(actor)  // dashed marks and *spends* action+move
+//   startTurn(actor) / endTurn(actor)       // QoL aliases (startTurn resets economy)
+//   resetTurnEconomyForAll(state)           // resets for every actor in state.combat.actors[]
+//   getDistanceFromPC(actor), setDistanceFromPC(actor, feet), isMeleeRange(actor)
+//
 export function newTurnEconomy() {
   return { actionUsed: false, bonusUsed: false, moveUsed: false, disengagedThisTurn: false, dashedThisTurn: false };
 }
@@ -23,11 +31,35 @@ export function spendBonus(actor)     { ensureTurnEconomy(actor).bonusUsed = tru
 export function spendMove(actor)      { ensureTurnEconomy(actor).moveUsed = true;   }
 
 export function setDisengaged(actor)  { ensureTurnEconomy(actor).disengagedThisTurn = true; }
-export function setDashed(actor)      { ensureTurnEconomy(actor).dashedThisTurn = true; spendAction(actor); spendMove(actor); }
+
+// Dash should atomically mark the flag *and* spend Action + Move for this turn.
+export function setDashed(actor)      {
+  const e = ensureTurnEconomy(actor);
+  e.dashedThisTurn = true;
+  e.actionUsed = true;
+  e.moveUsed = true;
+}
+
+// ---- Turn lifecycle helpers ----
+export function startTurn(actor) {
+  // reset per-turn economy and flags
+  resetTurnEconomy(actor);
+}
+
+// Placeholder for symmetry; keep if you later want per-turn end hooks.
+export function endTurn(actor) {
+  // no-op for now
+}
+
+// Reset all actors' economy bags (canonical combat shape preferred)
+export function resetTurnEconomyForAll(state) {
+  const actors = (state?.combat?.actors && Array.isArray(state.combat.actors))
+    ? state.combat.actors
+    : [ state?.combat?.player, ...(state?.combat?.enemies || []) ].filter(Boolean);
+  for (const a of actors) resetTurnEconomy(a);
+}
 
 // ---- Range helpers ----
-// Normalize and read a numeric "distanceFromPC" (feet) stored on actors relative to the single PC.
-// If missing, default to 5 ft for melee-range creatures.
 export function getDistanceFromPC(actor) {
   const d = typeof actor.distanceFromPC === "number" ? actor.distanceFromPC : 5;
   return Math.max(0, d|0);

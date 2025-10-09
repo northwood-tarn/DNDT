@@ -1,5 +1,5 @@
 // app/scenes/CharacterSelect.js — panes with blue headings, Lucky fallback, 2‑col abilities, Skilled picker (refined)
-import { setTop } from "../renderer/shellMount.js";
+
 import { sceneManager } from "../engine/sceneManager.js";
 import ExplorationScene from "./ExplorationScene.js";
 import DocksideIntro from "../areas/00_dockside/Dockside.js";
@@ -8,7 +8,6 @@ import { classes } from "../data/classes.js";
 import { backgrounds } from "../data/backgrounds.js";
 import { ORIGIN_FEATS as feats } from "../data/feats.js";
 import { proficiencyForLevel } from "../rules/proficiency.js";
-import * as Shell from "../renderer/shellMount.js";
 import { savePlayer } from "../systems/saveSystem.js";
 import { applyStarterInventory } from "../systems/starterInventory.js";
 import { initSlotsFor, refreshPerDayFeats } from "../engine/spellSlots.js";

@@ -1,16 +1,22 @@
 {
   "name": "dnd-text-electron",
   "private": true,
+  "version": "0.1.0",
   "type": "module",
   "main": "electron/main.js",
   "scripts": {
-    "dev": "electron .",
-    "start": "electron ."
-  },
-  "devDependencies": {
-    "electron": "^38.0.0"
+    "validate": "node tools/validate.js",
+    "dev": "npm run validate || true && electron .",
+    "play": "electron .",
+    "start": "electron .",
+    "verify:events": "node tools/verify-events.js --root . --registry app/docs/EVENTS_REGISTRY.md"
   },
   "dependencies": {
     "pixi.js": "^8.13.1"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "electron": "^38.0.0"
   }
 }

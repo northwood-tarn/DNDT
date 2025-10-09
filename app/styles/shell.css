@@ -131,3 +131,39 @@ hr { border: none; border-top: 1px solid #22314d; margin: 10px 0; }
 #asciiMap.dom-map .cell {
   font-family: 'GameGlyphs', var(--mono) !important;
 }
+
+.drag-region {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 40px;
+  width: 100%;
+  -webkit-app-region: drag;
+  z-index: 9999;
+  background: transparent; /* invisible but still draggable */
+}
+
+/* Ensure the drag region sits above Pixi canvas (requires placement after canvas in HTML) */
+.drag-region {
+  z-index: 9999 !important;
+}
+
+/*
+  To ensure proper layering, index.html must include the following structure:
+
+  <div id="game-root"></div>
+  <div class="drag-region"></div>
+
+  The drag-region div must be placed after the game-root div (which hosts the Pixi canvas)
+  so that the drag region appears above the Pixi canvas layers.
+*/
+
+:fullscreen .drag-region,
+:-webkit-full-screen .drag-region {
+  display: none;
+  -webkit-app-region: no-drag;
+}
+
+button, a, input, textarea {
+  -webkit-app-region: no-drag;
+}
