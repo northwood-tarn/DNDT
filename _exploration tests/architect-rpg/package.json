@@ -1,0 +1,9 @@
+{
+  "name": "architect-rpg",
+  "version": "1.0.0",
+  "description": "Top-down architectural exploration demo (Electron) - 40x30 world, 19x18 viewport, collisions, ravine + bridge.",
+  "main": "main.js",
+  "private": true,
+  "scripts": { "start": "electron ." },
+  "devDependencies": { "electron": "^31.0.0" }
+}
