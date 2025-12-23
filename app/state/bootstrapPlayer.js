@@ -2,7 +2,7 @@
 // Path fix: aya.json lives under /app/data/characters/, and saves may live under /app/saves or /app/data/saves.
 // This loader logs resolved URLs and fetch outcomes so path issues are obvious in-console.
 
-import { state } from "./stateStore.js";
+import { getState } from "./stateStore.js";
 import { computeAC, computeInitiativeMod, getAbilityMod, getProficiencyBonus } from "../systems/derivedStats.js";
 
 async function loadJSONRelative(relPath){
@@ -80,13 +80,15 @@ export async function bootstrapPlayer(opts = {}){
   const merged = deepMerge(blueprint, save.player || {});
   const playerWithDerived = computeDerived(merged);
   console.log("[bootstrap] finished — state.player set:", playerWithDerived);
-  state.player = playerWithDerived;
-  return state.player;
+  const globalState = getState();
+  globalState.player = playerWithDerived;
+  return globalState.player;
 }
 
 export async function resetToBlueprint(characterId = "aya"){
   console.log("[bootstrap] resetToBlueprint called for", characterId);
   const blueprint = await loadJSONRelative(`../data/characters/${characterId}.json`);
-  state.player = computeDerived(blueprint);
-  return state.player;
+  const globalState = getState();
+  globalState.player = computeDerived(blueprint);
+  return globalState.player;
 }

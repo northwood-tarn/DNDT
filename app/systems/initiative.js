@@ -7,7 +7,7 @@
 // - rollInitiative(actors=[], opts={ state }) -> { order, rolls, surprised }
 // - insertIntoInitiative(order, actorId, afterRound=false) -> string[]
 // - buildActorsFromState(state) -> minimal actors[] (adapts current state.combat shape)
-// - applyInitiativeToState(state, result) -> mutates state.combat.{turnOrder,turnIndex,rolls}
+// - applyInitiativeToState(state, result) -> mutates state.combat.{order,turnIdx,rolls} (and legacy aliases)
 // - getCurrentCombatant(state) -> actor id
 // - nextTurn(state) -> void
 //
@@ -135,20 +135,42 @@ export function buildActorsFromState(state){
 
 export function applyInitiativeToState(state, result){
   if (!state || !state.combat || !result) return;
-  state.combat.turnOrder = result.order.slice();
-  state.combat.turnIndex = 0;
-  state.combat.initiativeRolls = result.rolls;
+  // Canonical fields
+  state.combat.order = result.order.slice();
+  state.combat.turnIdx = 0;
+  state.combat.rolls = result.rolls;
   state.combat.surprised = result.surprised;
+  // Legacy aliases for compatibility with older callers
+  state.combat.turnOrder = state.combat.order;
+  state.combat.turnIndex = state.combat.turnIdx;
+  state.combat.initiativeRolls = state.combat.rolls;
 }
 
 export function getCurrentCombatant(state){
-  const order = state?.combat?.turnOrder || [];
-  const idx = state?.combat?.turnIndex ?? 0;
+  if (!state || !state.combat) return undefined;
+  const combat = state.combat;
+  const order = Array.isArray(combat.order) && combat.order.length
+    ? combat.order
+    : (combat.turnOrder || []);
+  const idx = (typeof combat.turnIdx === "number")
+    ? combat.turnIdx
+    : (combat.turnIndex ?? 0);
   return order[idx];
 }
 
 export function nextTurn(state){
-  const order = state?.combat?.turnOrder || [];
+  if (!state || !state.combat) return;
+  const combat = state.combat;
+  const order = Array.isArray(combat.order) && combat.order.length
+    ? combat.order
+    : (combat.turnOrder || []);
   if (!order.length) return;
-  state.combat.turnIndex = (state.combat.turnIndex + 1) % order.length;
+  const currentIdx = (typeof combat.turnIdx === "number")
+    ? combat.turnIdx
+    : (combat.turnIndex ?? 0);
+  const nextIdx = (currentIdx + 1) % order.length;
+  // Canonical
+  combat.turnIdx = nextIdx;
+  // Legacy alias
+  combat.turnIndex = nextIdx;
 }

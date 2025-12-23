@@ -23,15 +23,7 @@ export const sceneManager = {
   set current(v) { this.currentScene = v; },
 
   async init(startScene, data) {
-    // Fire up flow routing (non-blocking, best-effort)
-    try {
-      const mod = await import("../flow/ExitRouter.js");
-      if (mod && typeof mod.initExitRouter === "function") {
-        mod.initExitRouter();
-      }
-    } catch (e) {
-      console.warn("sceneManager: ExitRouter init failed (non-fatal):", e);
-    }
+    // No-op: routing is now handled by sceneRouter via BootScene.attachExitListener
     if (startScene) this.replace(startScene, data);
   },
 

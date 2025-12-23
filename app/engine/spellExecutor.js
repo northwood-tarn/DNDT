@@ -1,4 +1,3 @@
-
 // app/engine/spellExecutor.js
 // Generic spell executor for combat usage.
 // Reads pure-data from app/data/spells.js and applies saves/damage/effects.
@@ -35,7 +34,13 @@ function getSpellSaveDC(caster) {
 // 15-ft cube centered on caster (Thunderwave-style)
 function targetsInSelfCube(state, caster, feet) {
   const tiles = Math.max(1, Math.floor(feet / 5));
-  const all = [ ...(state?.combat?.enemies || []), state?.combat?.player ].filter(Boolean);
+  const combat = state?.combat;
+  let all = [];
+  if (combat?.actors && Array.isArray(combat.actors)) {
+    all = combat.actors.filter(Boolean);
+  } else {
+    all = [ ...(combat?.enemies || []), combat?.player ].filter(Boolean);
+  }
   const inCube = [];
   for (const t of all) {
     if (!t || t === caster) continue;
@@ -49,7 +54,13 @@ function targetsInSelfCube(state, caster, feet) {
 // N‑ft radius around an origin (for Sleep, Fog Cloud, etc.)
 function targetsInRadius(state, origin, feet) {
   const tiles = Math.max(1, Math.floor(feet / 5));
-  const all = [ ...(state?.combat?.enemies || []), state?.combat?.player ].filter(Boolean);
+  const combat = state?.combat;
+  let all = [];
+  if (combat?.actors && Array.isArray(combat.actors)) {
+    all = combat.actors.filter(Boolean);
+  } else {
+    all = [ ...(combat?.enemies || []), combat?.player ].filter(Boolean);
+  }
   const inRad = [];
   for (const t of all) {
     if (!t) continue;
@@ -132,7 +143,10 @@ export function executeSpell({ state, caster, spellId, targets = null, origin = 
         roundsMax: null,
         remove: (reason) => {
           // If we choose to end the effect on concentration loss, wake any target that is still marked from this spell
-          const everyone = [ ...(state?.combat?.enemies || []), state?.combat?.player ].filter(Boolean);
+          const combat = state?.combat;
+          const everyone = (combat?.actors && Array.isArray(combat.actors))
+            ? combat.actors.filter(Boolean)
+            : [ ...(combat?.enemies || []), combat?.player ].filter(Boolean);
           for (const t of everyone) {
             if (!t?._sleepFromSpell) continue;
             // Only wake those still Unconscious from this source
@@ -154,7 +168,11 @@ export function executeSpell({ state, caster, spellId, targets = null, origin = 
     const center = origin || caster;
     const radiusFt = spell.area?.size || 20;
     const radiusTiles = Math.max(1, Math.floor(radiusFt / 5));
-    if (!state.combat) state.combat = {};
+    // Only register zones if we have an active combat container; combatRunner owns state.combat.
+    if (!state || !state.combat) {
+      log("Fog Cloud cast outside of an active combat state; skipping zone registration.");
+      return;
+    }
     if (!Array.isArray(state.combat.zones)) state.combat.zones = [];
     const zone = { type: "fog", center: { x: center.x, y: center.y }, radiusTiles, heavy: true };
     state.combat.zones.push(zone);

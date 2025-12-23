@@ -8,7 +8,6 @@ import { classes } from "../data/classes.js";
 import { backgrounds } from "../data/backgrounds.js";
 import { ORIGIN_FEATS as feats } from "../data/feats.js";
 import { proficiencyForLevel } from "../rules/proficiency.js";
-import { savePlayer } from "../systems/saveSystem.js";
 import { applyStarterInventory } from "../systems/starterInventory.js";
 import { initSlotsFor, refreshPerDayFeats } from "../engine/spellSlots.js";
 

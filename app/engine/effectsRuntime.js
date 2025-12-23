@@ -14,7 +14,7 @@ function ensureEffectsArray(actor) {
  * Apply immediate, on-hit effects (e.g., push) to a single target.
  * Call this right after you confirm a failed save or a hit.
  * @param {Object} args
- * @param {Object} args.state - game state (expects state.combat.tileGrid and state.combat.enemies)
+ * @param {Object} args.state - game state (expects state.combat.tileGrid and state.combat.actors; falls back to player/enemies)
  * @param {Object} args.source - actor applying the effect (e.g., caster)
  * @param {Object} args.target - target actor
  * @param {Array<Object>} args.effects - array of effect descriptors (from spell.hooks.applyEffect or similar)
@@ -30,7 +30,15 @@ export function applyOnHitEffects({ state, source, target, effects = [], log = (
       case "push": {
         const grid = state?.combat?.tileGrid;
         if (!grid) break;
-        const actors = [state?.combat?.player, ...(state?.combat?.enemies || [])].filter(Boolean);
+
+        // Prefer canonical combat.actors; fall back to legacy player/enemies if needed.
+        let actors = [];
+        if (state?.combat?.actors && Array.isArray(state.combat.actors)) {
+          actors = state.combat.actors.filter(Boolean);
+        } else {
+          actors = [state?.combat?.player, ...(state?.combat?.enemies || [])].filter(Boolean);
+        }
+
         const res = applyPush({
           grid,
           actor: target,
@@ -38,7 +46,7 @@ export function applyOnHitEffects({ state, source, target, effects = [], log = (
           maxFeet: eff.distanceFt ?? 0,
           actors
         });
-        if (res.moved > 0) {
+        if (res && res.moved > 0) {
           log(`${target.name || "Target"} is pushed ${res.moved * 5} ft.`);
         }
         break;

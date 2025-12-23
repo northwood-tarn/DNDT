@@ -12,6 +12,7 @@
     "verify:events": "node tools/verify-events.js --root . --registry app/docs/EVENTS_REGISTRY.md"
   },
   "dependencies": {
+    "inkjs": "^2.3.2",
     "pixi.js": "^8.13.1"
   },
   "devDependencies": {

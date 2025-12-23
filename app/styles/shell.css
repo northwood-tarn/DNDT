@@ -6,9 +6,36 @@
   --text: #e6e6e6;
   --muted: #9aa9c7;
   --mono: ui-monospace, Menlo, Monaco, Consolas, "Courier New", monospace;
+
+  /* === Dialogue typography tokens (LOCKED SPEC) === */
+  --font-ui: "Myriad Pro", "Myriad", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  --font-prose: "Baskerville", "Baskerville Old Face", "Garamond", "Times New Roman", serif;
+  --font-speaker: "Avenir Light", "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* Sizes (pt → px): 30pt≈40px, 20pt≈27px, 16pt≈21px, 15pt≈20px, 12pt≈16px */
+  --dlg-location-size: 40px;
+  --dlg-prose-size: 27px;
+  --dlg-speaker-size: 21px;
+  --dlg-choice-size: 20px;
+  --dlg-tag-size: 16px;
+
+  --dlg-location-color: rgba(255, 255, 255, 0.10);
+  --dlg-prose-color: rgba(120, 123, 123, 0.90); /* #787b7b @ 90% */
+  --dlg-speaker-color: rgba(255, 255, 255, 0.30);
+
+  --dlg-skill-color: #634a72;
+  --dlg-class-color: #845b02;
+
+  --dlg-prose-tracking: 0.02em;
+
+  /* Skill-check icon (end-of-line marker) */
+  --dlg-check-icon-content: "⚄"; /* Unicode die face (fallback). Swap to "⚅" or "🎲" if you prefer */
+  --dlg-check-icon-size: 16px;
+  --dlg-check-icon-color: rgba(255, 255, 255, 0.35);
+  --dlg-check-icon-gap: 10px;
 }
 * { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); }
+html, body { height: 100%; margin: 0; background-color: var(--bg); color: var(--text); }
 .app-grid {
   display: grid;
   grid-template-rows: 36px 1fr 140px;
@@ -23,9 +50,24 @@ html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text);
 }
 .top { grid-area: top; background: var(--panel); border: 1px solid #2d3b5e; display:flex; align-items:center; padding: 0 10px; font: 12px/1 var(--mono); letter-spacing: .5px; color: #9aa9c7; }
 .left { grid-area: left; background: var(--panel-2); border: 1px solid #22314d; padding: 8px; overflow:auto;}
-.center { grid-area: center; background: #0a0f16; border: 1px solid #22314d; padding: 8px; overflow:auto; display:flex; align-items:flex-start; justify-content:flex-start; }
+.center {
+  grid-area: center;
+  background: transparent;
+  border: 1px solid #22314d;
+  padding: 8px;
+  overflow: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
 .right { grid-area: right; background: var(--panel-2); border: 1px solid #22314d; padding: 8px; overflow:auto; display:flex; align-items:flex-start; justify-content:flex-start; text-align:left; }
-.bottom { grid-area: bottom; background: #0a0f16; border: 1px solid #22314d; padding: 6px; overflow:auto;}
+.bottom {
+  grid-area: bottom;
+  background: transparent;
+  border: 1px solid #22314d;
+  padding: 6px;
+  overflow: auto;
+}
 .log { font: 12px/1.35 var(--mono); white-space: pre-wrap; }
 #asciiMap { margin:0; font: 14px/1.05 var(--mono); color: #cfd8e6; }
 button { background:#162234; color: #e6e6e6; border:1px solid #2d3b5e; padding:6px 10px; border-radius:6px; cursor:pointer; }
@@ -41,8 +83,8 @@ hr { border: none; border-top: 1px solid #22314d; margin: 10px 0; }
 .title-hero { font-family: var(--mono); letter-spacing: .18em; font-size: 24px; font-weight: 700; text-align: center; color: var(--text); }
 .title-tagline { font-family: var(--mono); letter-spacing: .28em; font-size: 18px; font-weight: 700; text-align: center; color: #2d3b5e; }
 
-/* Enforce shell font everywhere in panes (stamp out Times) */
-.left *, .center *, .right * { font-family: var(--mono) !important; }
+/* Enforce shell font in the left pane (debug/metadata), but not globally in center/right */
+.left * { font-family: var(--mono) !important; }
 
 /* Section title (blue, caps) reused in right pane for ABILITIES / SKILLS */
 .section-title { font: 11px/1 var(--mono); letter-spacing: 1px; text-transform: uppercase; color: var(--acc); }
@@ -56,7 +98,7 @@ hr { border: none; border-top: 1px solid #22314d; margin: 10px 0; }
 /* … keep your existing rules … */
 
 /* Ensure the UI everywhere uses the shell mono */
-.left *, .center *, .right * { font-family: var(--mono) !important; }
+.left * { font-family: var(--mono) !important; }
 
 /* Blue/caps headings reused across panes */
 .section-title {
@@ -166,4 +208,124 @@ hr { border: none; border-top: 1px solid #22314d; margin: 10px 0; }
 
 button, a, input, textarea {
   -webkit-app-region: no-drag;
+}
+
+#game-root {
+  position: absolute;
+  inset: 0;
+}
+
+body:not(.shell-mode) .app-grid {
+  display: none;
+}
+
+/* === PIXI canvas layering (engine background) === */
+#pixi-root {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none; /* background only */
+}
+
+#pixi-root canvas {
+  display: block;
+}
+
+/* === DOM UI sits above PIXI === */
+#game-root {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: transparent;
+}
+
+/* === Dialogue semantic styling (uses tokens above) === */
+
+/* Location header: · LOCATION · */
+.dialogue-location {
+  font-family: var(--font-ui);
+  font-size: var(--dlg-location-size);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dlg-location-color);
+  text-align: center;
+  margin: 0 0 10px 0;
+}
+.dialogue-location::before { content: "· "; }
+.dialogue-location::after  { content: " ·"; }
+
+/* Prose line */
+.dialogue-prose {
+  font-family: var(--font-prose);
+  font-size: var(--dlg-prose-size);
+  font-style: italic;
+  letter-spacing: var(--dlg-prose-tracking);
+  color: var(--dlg-prose-color);
+  margin: 0 0 22px 0;
+}
+
+/* Speaker name */
+.dialogue-speaker,
+.dialogue-name {
+  font-family: var(--font-speaker);
+  font-size: var(--dlg-speaker-size);
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dlg-speaker-color);
+  margin: 0 0 10px 0;
+}
+
+/* Choice list */
+.dialogue-choices { margin: 0; padding: 0; }
+
+.dialogue-choice {
+  font-family: var(--font-prose);
+  font-size: var(--dlg-choice-size);
+  font-style: normal;
+  color: var(--text);
+  margin: 0 0 22px 0; /* vertical rhythm */
+}
+.dialogue-choice.is-desc { font-style: italic; }
+
+/* Skill-check marker: add class `has-check` on the choice line */
+.dialogue-choice.has-check::after {
+  content: var(--dlg-check-icon-content);
+  display: inline-block;
+  margin-left: var(--dlg-check-icon-gap);
+  font-family: var(--font-ui);
+  font-size: var(--dlg-check-icon-size);
+  line-height: 1;
+  color: var(--dlg-check-icon-color);
+  vertical-align: baseline;
+}
+
+/* The number + dot prefix (e.g., "2 ·") */
+.dialogue-choice .choice-num {
+  display: inline-block;
+  min-width: 1.4em;
+  font-variant-numeric: tabular-nums;
+}
+.dialogue-choice .choice-dot { padding: 0 10px 0 6px; }
+
+/* Skill / class tags */
+.dialogue-tag-skill,
+.dialogue-skill {
+  font-family: var(--font-ui);
+  font-size: var(--dlg-tag-size);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dlg-skill-color);
+}
+
+.dialogue-tag-class,
+.dialogue-class {
+  font-family: var(--font-ui);
+  font-size: var(--dlg-tag-size);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dlg-class-color);
 }

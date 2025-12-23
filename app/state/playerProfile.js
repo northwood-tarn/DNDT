@@ -2,14 +2,17 @@
 // Canonical selectors & mutators for the Player. All systems should use this facade.
 // Reads/writes `state.player` (populated at boot: aya.json -> save overlay -> derived stats).
 
-import { state } from "./stateStore.js";
+import { getState } from "./stateStore.js";
 import { getAbilityMod, getProficiencyBonus, computeAC, computeInitiativeMod } from "../systems/derivedStats.js";
 import { getConsumableById } from "../data/consumables.js";
 import { rollWithDetail } from "../utils/dice.js";
 import { ensureTurnEconomy, spendAction, spendBonus } from "../systems/turnEconomy.js";
 
 // ---------- Selectors ----------
-export function getPlayer() { return state.player || {}; }
+export function getPlayer() {
+  const s = getState();
+  return s.player || {};
+}
 
 export function getAbility(scoreKey){ const p = getPlayer(); return (p.abilities && p.abilities[scoreKey]) || 10; }
 export function getAbilityModSel(scoreKey){ return getAbilityMod(getAbility(scoreKey)); }
@@ -34,7 +37,10 @@ export function getInitiativeMod(){
 }
 
 // ---------- Mutators ----------
-export function setPlayer(p){ state.player = p; }
+export function setPlayer(p){
+  const s = getState();
+  s.player = p;
+}
 
 export function applyDamage(n){
   const p=getPlayer();

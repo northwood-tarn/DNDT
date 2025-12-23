@@ -3,10 +3,14 @@
 // Refactored to remove shellMount dependency. Uses direct DOM (#top, #center).
 
 import { renderChoiceList, enableChoiceHotkeys, disableChoiceHotkeys, setChoiceScope } from "../ui/choiceHotkeys.js";
-import { state } from "../state/stateStore.js";
+import { getState } from "../state/stateStore.js";
 import { logCombat } from "../engine/log.js";
 import { ensureTurnEconomy, resetTurnEconomy, canUseAction, canUseBonus, canUseMove, spendAction, spendBonus, spendMove, isMeleeRange } from "../systems/turnEconomy.js";
 import { rollWithDetail } from "../utils/dice.js";
+import { getCombatState, getActors as getCombatActors } from "../systems/combatSelectors.js";
+
+let initialRoute = null;
+let returnRoute = null;
 
 function el(tag, attrs = {}, children = []){
   const e = document.createElement(tag);
@@ -103,8 +107,14 @@ function toHit(attacker, targetAC, adv = 0){
 function rollDmg(expr){ const r = rollWithDetail(expr ?? "1d6"); return Math.max(0, r.total); }
 
 export default {
-  async start() {
-    const sc = state.combat;
+  async start(route = {}) {
+    initialRoute = route || {};
+    // Normalise return target (may be undefined)
+    returnRoute = (route && route.returnTo) ? route.returnTo : null;
+
+    // Prefer canonical combat state via selectors; fall back to raw state.combat if needed.
+    const globalState = getState();
+    const sc = getCombatState(globalState) || globalState.combat;
     if (!sc || !Array.isArray(sc.actors) || sc.actors.length === 0) {
       mountHTML(p(strong("Combat cannot start — no actors from loader.")));
       return;
@@ -112,8 +122,8 @@ export default {
 
     setTopTitle(sc.title || "Combat");
 
-    // Use canonical actors from loader
-    const actors = sc.actors.map(a => ({ ...a }));
+    // Use canonical actors from loader (clone so scene-local mutations don't corrupt global state)
+    const actors = getCombatActors(sc).map(a => ({ ...a }));
     actors.forEach(a => ensureTurnEconomy(a));
 
     // Roll initiative (once at entry)
@@ -155,8 +165,43 @@ export default {
       return -1;
     }
     function checkEnd(){
-      if (!alive(PC)) { centerLog([p(strong("You fall. Defeat."))]); return true; }
-      if (foes().length === 0) { centerLog([p(strong("Enemies lie still. Victory!"))]); return true; }
+      // Defeat: PC is down
+      if (!alive(PC)) {
+        centerLog([p(strong("You fall. Defeat."))]);
+        const route = {
+          toScene: "gameOver",
+          reason: "combat_defeat"
+        };
+        window.dispatchEvent(new CustomEvent("game:exit", { detail: route }));
+        return true;
+      }
+
+      // Victory: all foes down
+      if (foes().length === 0) {
+        centerLog([p(strong("Enemies lie still. Victory!"))]);
+
+        // Prefer an explicit return target, if one was provided when combat started
+        let route;
+        if (returnRoute && returnRoute.scene) {
+          route = {
+            toScene: returnRoute.scene,
+            reason: "combat_victory",
+            areaId: returnRoute.areaId || initialRoute.areaId || "unknown_area",
+            entryKnot: returnRoute.entryKnot
+          };
+        } else {
+          // Fallback: return to exploration in the last known area
+          route = {
+            toScene: "exploration",
+            reason: "combat_victory",
+            areaId: initialRoute.areaId || "unknown_area"
+          };
+        }
+
+        window.dispatchEvent(new CustomEvent("game:exit", { detail: route }));
+        return true;
+      }
+
       return false;
     }
     function beginTurn(){
