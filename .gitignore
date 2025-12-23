@@ -12,3 +12,6 @@ electron/
 # OS & IDE junk
 .DS_Store
 Thumbs.db
+
+# macOS junk
+.DS_Store
