@@ -18,3 +18,10 @@ Thumbs.db
 
 # macOS junk
 .DS_Store
+
+# dependencies
+node_modules/
+**/node_modules/
+
+# macOS junk
+.DS_Store
