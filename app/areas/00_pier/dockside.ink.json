@@ -1,1 +1,1846 @@
-{"inkVersion":21,"root":[["#","^AREA_ID dockside","/#","#","^AREA_NAME DOCKSIDE","/#","#","^AREA_TYPE exterior","/#","#","^MUSIC_THEME dockside_night","/#","#","^LIGHTING_STATE dim","/#","#","^AMBIENT_SFX tide","/#","#","^AREA_TAGS salt damp wooden","/#","#","^DEFAULT_ENTRY pier_zone_intro","/#","#","^NEXT_AREAS 00_quarter 01_wharf","/#",{"->":"pier_zone_intro"},"#","^ZONE_ID dock_pier","/#","#","^ZONE_LABEL End of Pier","/#",["done",{"#f":5,"#n":"g-0"}],null],"done",{"pier_zone_intro":[["^The tide sighs beneath the worn planks. Lamps gutter in the wind.","\n","^Rotting rope coils near a crate stamped with old customs seals.","\n",["ev",{"^->":"pier_zone_intro.0.4.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-0","flg":2},{"s":["^Look down into the black water.",{"->":"$r","var":true},null]}],["ev",{"^->":"pier_zone_intro.0.5.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-1","flg":2},{"s":["^Try the heavy door of the dock office. (Athletics check)",{"->":"$r","var":true},null]}],["ev",{"^->":"pier_zone_intro.0.6.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-2","flg":2},{"s":["^Head toward the old fisher huts. ",{"->":"$r","var":true},null]}],["ev",{"^->":"pier_zone_intro.0.7.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-3","flg":2},{"s":["^Walk back along the pier toward the main landing. ",{"->":"$r","var":true},null]}],["ev",{"^->":"pier_zone_intro.0.8.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-4","flg":2},{"s":["^Climb down the ladder to the waterline.",{"->":"$r","var":true},null]}],{"c-0":["ev",{"^->":"pier_zone_intro.0.c-0.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.4.s"},[{"#n":"$r2"}],"\n","^A faint swirl passes beneath your reflection.","\n",{"->":"pier_zone_hub"},{"#f":5}],"c-1":["ev",{"^->":"pier_zone_intro.0.c-1.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.5.s"},[{"#n":"$r2"}],"\n","#","^SKILL_CHECK Athletics 14 office_door_success office_door_fail","/#","end",{"#f":5}],"c-2":["ev",{"^->":"pier_zone_intro.0.c-2.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.6.s"},[{"#n":"$r2"}],"\n","#","^EXIT_ZONE dock_huts","/#","#","^EXIT_DIR W","/#",{"->":"huts_zone_intro"},{"#f":5}],"c-3":["ev",{"^->":"pier_zone_intro.0.c-3.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.7.s"},[{"#n":"$r2"}],"\n","#","^EXIT_ZONE dock_landing","/#","#","^EXIT_DIR E","/#",{"->":"landing_zone_intro"},{"#f":5}],"c-4":["ev",{"^->":"pier_zone_intro.0.c-4.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.8.s"},[{"#n":"$r2"}],"\n","#","^EXIT_ZONE dock_waterline","/#","#","^EXIT_DIR S","/#",{"->":"waterline_zone_intro"},{"#f":5}]}],{"#f":1}],"pier_zone_hub":[["^What next?","\n",["ev",{"^->":"pier_zone_hub.0.2.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-0","flg":2},{"s":["^Try the dock office door again.",{"->":"$r","var":true},null]}],["ev",{"^->":"pier_zone_hub.0.3.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-1","flg":2},{"s":["^Move toward the fisher huts.",{"->":"$r","var":true},null]}],["ev",{"^->":"pier_zone_hub.0.4.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-2","flg":2},{"s":["^Head to the landing.",{"->":"$r","var":true},null]}],["ev",{"^->":"pier_zone_hub.0.5.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-3","flg":2},{"s":["^Climb to the waterline.",{"->":"$r","var":true},null]}],{"c-0":["ev",{"^->":"pier_zone_hub.0.c-0.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.2.s"},[{"#n":"$r2"}],"\n","#","^SKILL_CHECK Athletics 14 office_door_success office_door_fail","/#","end",{"#f":5}],"c-1":["ev",{"^->":"pier_zone_hub.0.c-1.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.3.s"},[{"#n":"$r2"}],"\n","#","^EXIT_ZONE dock_huts","/#","#","^EXIT_DIR W","/#",{"->":"huts_zone_intro"},{"#f":5}],"c-2":["ev",{"^->":"pier_zone_hub.0.c-2.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.4.s"},[{"#n":"$r2"}],"\n","#","^EXIT_ZONE dock_landing","/#","#","^EXIT_DIR E","/#",{"->":"landing_zone_intro"},{"#f":5}],"c-3":["ev",{"^->":"pier_zone_hub.0.c-3.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.5.s"},[{"#n":"$r2"}],"\n","#","^EXIT_ZONE dock_waterline","/#","#","^EXIT_DIR S","/#",{"->":"waterline_zone_intro"},{"#f":5}]}],{"pier_zone_sideway":[["^What next?","\n",["ev",{"^->":"pier_zone_hub.pier_zone_sideway.0.2.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-0","flg":2},{"s":["^Try the dock office door again.",{"->":"$r","var":true},null]}],["ev",{"^->":"pier_zone_hub.pier_zone_sideway.0.3.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-1","flg":2},{"s":["^Move toward the fisher huts.",{"->":"$r","var":true},null]}],["ev",{"^->":"pier_zone_hub.pier_zone_sideway.0.4.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-2","flg":2},{"s":["^Head to the landing.",{"->":"$r","var":true},null]}],["ev",{"^->":"pier_zone_hub.pier_zone_sideway.0.5.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-3","flg":2},{"s":["^Climb to the waterline.",{"->":"$r","var":true},null]}],{"c-0":["ev",{"^->":"pier_zone_hub.pier_zone_sideway.0.c-0.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.2.s"},[{"#n":"$r2"}],"\n","#","^SKILL_CHECK Athletics 14 office_door_success office_door_fail","/#","end",{"#f":5}],"c-1":["ev",{"^->":"pier_zone_hub.pier_zone_sideway.0.c-1.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.3.s"},[{"#n":"$r2"}],"\n","#","^EXIT_ZONE dock_huts","/#","#","^EXIT_DIR W","/#",{"->":"huts_zone_intro"},{"#f":5}],"c-2":["ev",{"^->":"pier_zone_hub.pier_zone_sideway.0.c-2.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.4.s"},[{"#n":"$r2"}],"\n","#","^EXIT_ZONE dock_landing","/#","#","^EXIT_DIR E","/#",{"->":"landing_zone_intro"},{"#f":5}],"c-3":["ev",{"^->":"pier_zone_hub.pier_zone_sideway.0.c-3.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.5.s"},[{"#n":"$r2"}],"\n","#","^EXIT_ZONE dock_waterline","/#","#","^EXIT_DIR S","/#",{"->":"waterline_zone_intro"},{"#f":5}]}],{"#f":1}],"#f":1}],"office_door_success":[["^Your shoulder slams into the swollen timber. Something snaps.","\n","^The door creaks inward.","\n","#","^SET_FLAG dock_office_open","/#",["ev",{"^->":"office_door_success.0.7.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-0","flg":2},{"s":["^Step inside the office.",{"->":"$r","var":true},null]}],{"c-0":["ev",{"^->":"office_door_success.0.c-0.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.7.s"},[{"#n":"$r2"}],"\n","#","^EXIT_ZONE dock_office","/#","#","^EXIT_DIR N","/#",{"->":"office_zone_intro"},{"#f":5}]}],{"#f":1}],"office_door_fail":[["^The frame shudders but holds. Your shoulder throbs.","\n",["ev",{"^->":"office_door_fail.0.2.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-0","flg":2},{"s":["^Step back and reconsider.",{"->":"$r","var":true},null]}],{"c-0":["ev",{"^->":"office_door_fail.0.c-0.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.2.s"},[{"#n":"$r2"}],"\n",{"->":"pier_zone_hub"},"#","^ZONE_ID dock_huts","/#","#","^ZONE_LABEL Abandoned Huts","/#",{"#f":5}]}],{"#f":1}],"huts_zone_intro":[["^Driftwood huts huddle against the wind. Nets hang stiff with salt.","\n","^Something skitters beneath a collapsed crate.","\n",["ev",{"^->":"huts_zone_intro.0.4.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-0","flg":2},{"s":["^Peer into one of the huts. ",{"->":"$r","var":true},null]}],["ev",{"^->":"huts_zone_intro.0.5.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-1","flg":2},{"s":["^Return to the end of the pier.",{"->":"$r","var":true},null]}],["ev",{"^->":"huts_zone_intro.0.6.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-2","flg":2},{"s":["^Head to the landing.",{"->":"$r","var":true},null]}],{"c-0":["ev",{"^->":"huts_zone_intro.0.c-0.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.4.s"},[{"#n":"$r2"}],"\n","^You find only damp bedding and the smell of old smoke.","\n",{"->":".^.^.^"},{"#f":5}],"c-1":["ev",{"^->":"huts_zone_intro.0.c-1.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.5.s"},[{"#n":"$r2"}],"\n","#","^EXIT_ZONE dock_pier","/#","#","^EXIT_DIR E","/#",{"->":"pier_zone_intro"},{"#f":5}],"c-2":["ev",{"^->":"huts_zone_intro.0.c-2.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.6.s"},[{"#n":"$r2"}],"\n","#","^EXIT_ZONE dock_landing","/#","#","^EXIT_DIR S","/#",{"->":"landing_zone_intro"},"#","^ZONE_ID dock_landing","/#","#","^ZONE_LABEL Main Landing","/#",{"#f":5}]}],{"#f":1}],"landing_zone_intro":[["^The wider boards here sag under the weight of old cargo memories.","\n","^An overturned cart blocks part of the walkway.","\n",["ev",{"^->":"landing_zone_intro.0.4.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-0","flg":2},{"s":["^Inspect the overturned cart.",{"->":"$r","var":true},null]}],["ev",{"^->":"landing_zone_intro.0.5.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-1","flg":2},{"s":["^Walk back to the end of the pier.",{"->":"$r","var":true},null]}],["ev",{"^->":"landing_zone_intro.0.6.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-2","flg":2},{"s":["^Slip toward the waterline stairs.",{"->":"$r","var":true},null]}],{"c-0":["ev",{"^->":"landing_zone_intro.0.c-0.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.4.s"},[{"#n":"$r2"}],"\n","^Its axles are splintered clean through.","\n",{"->":".^.^.^"},{"#f":5}],"c-1":["ev",{"^->":"landing_zone_intro.0.c-1.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.5.s"},[{"#n":"$r2"}],"\n","#","^EXIT_ZONE dock_pier","/#","#","^EXIT_DIR W","/#",{"->":"pier_zone_intro"},{"#f":5}],"c-2":["ev",{"^->":"landing_zone_intro.0.c-2.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.6.s"},[{"#n":"$r2"}],"\n","#","^EXIT_ZONE dock_waterline","/#","#","^EXIT_DIR S","/#",{"->":"waterline_zone_intro"},"#","^ZONE_ID dock_waterline","/#","#","^ZONE_LABEL Waterline","/#",{"#f":5}]}],{"#f":1}],"waterline_zone_intro":[["^Slick stone steps descend into the lapping dark. Kelp clings like hair.","\n","^A rope dangles from a rusted mooring ring.","\n",["ev",{"^->":"waterline_zone_intro.0.4.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-0","flg":2},{"s":["^Look beneath the pier.",{"->":"$r","var":true},null]}],["ev",{"^->":"waterline_zone_intro.0.5.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-1","flg":2},{"s":["^Climb back up to the pier.",{"->":"$r","var":true},null]}],["ev",{"^->":"waterline_zone_intro.0.6.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-2","flg":2},{"s":["^Walk toward the landing.",{"->":"$r","var":true},null]}],{"c-0":["ev",{"^->":"waterline_zone_intro.0.c-0.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.4.s"},[{"#n":"$r2"}],"\n","^Thick shadows hide whatever lurks down there.","\n",{"->":".^.^.^"},{"#f":5}],"c-1":["ev",{"^->":"waterline_zone_intro.0.c-1.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.5.s"},[{"#n":"$r2"}],"\n","#","^EXIT_ZONE dock_pier","/#","#","^EXIT_DIR N","/#",{"->":"pier_zone_intro"},{"#f":5}],"c-2":["ev",{"^->":"waterline_zone_intro.0.c-2.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.6.s"},[{"#n":"$r2"}],"\n","#","^EXIT_ZONE dock_landing","/#","#","^EXIT_DIR N","/#",{"->":"landing_zone_intro"},"#","^ZONE_ID dock_office","/#","#","^ZONE_LABEL Dock Office","/#",{"#f":5}]}],{"#f":1}],"office_zone_intro":[["^Dust motes drift through thin light from a cracked window.","\n","^Ledger pages lie scattered, warped with damp.","\n",["ev",{"^->":"office_zone_intro.0.4.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-0","flg":2},{"s":["^Sort through the torn pages.",{"->":"$r","var":true},null]}],["ev",{"^->":"office_zone_intro.0.5.$r1"},{"temp=":"$r"},"str",{"->":".^.s"},[{"#n":"$r1"}],"/str","/ev",{"*":".^.^.c-1","flg":2},{"s":["^Step back outside.",{"->":"$r","var":true},null]}],{"c-0":["ev",{"^->":"office_zone_intro.0.c-0.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.4.s"},[{"#n":"$r2"}],"\n","^Most entries are illegible. One name repeats, over and over.","\n","#","^PC_DELTA local_gossip +1","/#",{"->":".^.^.^"},{"#f":5}],"c-1":["ev",{"^->":"office_zone_intro.0.c-1.$r2"},"/ev",{"temp=":"$r"},{"->":".^.^.5.s"},[{"#n":"$r2"}],"\n","#","^EXIT_ZONE dock_pier","/#","#","^EXIT_DIR S","/#",{"->":"pier_zone_intro"},{"#f":5}]}],{"#f":1}],"#f":1}],"listDefs":{}}
+{
+    "inkVersion": 21,
+    "root": [
+        [
+            "#",
+            "^AREA_ID dockside",
+            "/#",
+            "#",
+            "^AREA_NAME DOCKSIDE",
+            "/#",
+            "#",
+            "^AREA_TYPE exterior",
+            "/#",
+            "#",
+            "^MUSIC_THEME dockside_night",
+            "/#",
+            "#",
+            "^LIGHTING_STATE dim",
+            "/#",
+            "#",
+            "^AMBIENT_SFX tide",
+            "/#",
+            "#",
+            "^AREA_TAGS salt damp wooden",
+            "/#",
+            "#",
+            "^DEFAULT_ENTRY pier_zone_intro",
+            "/#",
+            "#",
+            "^NEXT_AREAS 00_quarter 01_wharf",
+            "/#",
+            {
+                "->": "pier_zone_intro"
+            },
+            "#",
+            "^ZONE_ID dock_pier",
+            "/#",
+            "#",
+            "^ZONE_LABEL End of Pier",
+            "/#",
+            [
+                "done",
+                {
+                    "#f": 5,
+                    "#n": "g-0"
+                }
+            ],
+            null
+        ],
+        "done",
+        {
+            "pier_zone_intro": [
+                [
+                    "^The tide sighs beneath the worn planks. Lamps gutter in the wind. Rotting rope coils near a crate stamped with old customs seals.",
+                    "\n",
+                    "^Unnerving.",
+                    "\n",
+                    [
+                        "ev",
+                        {
+                            "^->": "pier_zone_intro.0.4.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-0",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Look down into the black water.",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    [
+                        "ev",
+                        {
+                            "^->": "pier_zone_intro.0.5.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-1",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Try the heavy door of the dock office. <span class=\"dialogue-skill\">Athletics</span>",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    [
+                        "ev",
+                        {
+                            "^->": "pier_zone_intro.0.6.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-2",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Head toward the old fisher huts. ",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    [
+                        "ev",
+                        {
+                            "^->": "pier_zone_intro.0.7.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-3",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Walk back along the pier toward the main landing. ",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    [
+                        "ev",
+                        {
+                            "^->": "pier_zone_intro.0.8.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-4",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Climb down the ladder to the waterline.",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    {
+                        "c-0": [
+                            "ev",
+                            {
+                                "^->": "pier_zone_intro.0.c-0.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.4.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "^A faint swirl passes beneath your reflection.",
+                            "\n",
+                            {
+                                "->": "pier_zone_hub"
+                            },
+                            {
+                                "#f": 5
+                            }
+                        ],
+                        "c-1": [
+                            "ev",
+                            {
+                                "^->": "pier_zone_intro.0.c-1.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.5.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "#",
+                            "^SKILL_CHECK Athletics 14 office_door_success office_door_fail",
+                            "/#",
+                            "end",
+                            {
+                                "#f": 5
+                            }
+                        ],
+                        "c-2": [
+                            "ev",
+                            {
+                                "^->": "pier_zone_intro.0.c-2.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.6.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "#",
+                            "^EXIT_ZONE dock_huts",
+                            "/#",
+                            "#",
+                            "^EXIT_DIR W",
+                            "/#",
+                            {
+                                "->": "huts_zone_intro"
+                            },
+                            {
+                                "#f": 5
+                            }
+                        ],
+                        "c-3": [
+                            "ev",
+                            {
+                                "^->": "pier_zone_intro.0.c-3.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.7.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "#",
+                            "^EXIT_ZONE dock_landing",
+                            "/#",
+                            "#",
+                            "^EXIT_DIR E",
+                            "/#",
+                            {
+                                "->": "landing_zone_intro"
+                            },
+                            {
+                                "#f": 5
+                            }
+                        ],
+                        "c-4": [
+                            "ev",
+                            {
+                                "^->": "pier_zone_intro.0.c-4.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.8.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "#",
+                            "^EXIT_ZONE dock_waterline",
+                            "/#",
+                            "#",
+                            "^EXIT_DIR S",
+                            "/#",
+                            {
+                                "->": "waterline_zone_intro"
+                            },
+                            {
+                                "#f": 5
+                            }
+                        ]
+                    }
+                ],
+                {
+                    "#f": 1
+                }
+            ],
+            "pier_zone_hub": [
+                [
+                    "^What next?",
+                    "\n",
+                    [
+                        "ev",
+                        {
+                            "^->": "pier_zone_hub.0.2.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-0",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Try the dock office door again.",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    [
+                        "ev",
+                        {
+                            "^->": "pier_zone_hub.0.3.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-1",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Move toward the fisher huts.",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    [
+                        "ev",
+                        {
+                            "^->": "pier_zone_hub.0.4.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-2",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Head to the landing.",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    [
+                        "ev",
+                        {
+                            "^->": "pier_zone_hub.0.5.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-3",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Climb to the waterline.",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    {
+                        "c-0": [
+                            "ev",
+                            {
+                                "^->": "pier_zone_hub.0.c-0.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.2.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "#",
+                            "^SKILL_CHECK Athletics 14 office_door_success office_door_fail",
+                            "/#",
+                            "end",
+                            {
+                                "#f": 5
+                            }
+                        ],
+                        "c-1": [
+                            "ev",
+                            {
+                                "^->": "pier_zone_hub.0.c-1.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.3.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "#",
+                            "^EXIT_ZONE dock_huts",
+                            "/#",
+                            "#",
+                            "^EXIT_DIR W",
+                            "/#",
+                            {
+                                "->": "huts_zone_intro"
+                            },
+                            {
+                                "#f": 5
+                            }
+                        ],
+                        "c-2": [
+                            "ev",
+                            {
+                                "^->": "pier_zone_hub.0.c-2.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.4.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "#",
+                            "^EXIT_ZONE dock_landing",
+                            "/#",
+                            "#",
+                            "^EXIT_DIR E",
+                            "/#",
+                            {
+                                "->": "landing_zone_intro"
+                            },
+                            {
+                                "#f": 5
+                            }
+                        ],
+                        "c-3": [
+                            "ev",
+                            {
+                                "^->": "pier_zone_hub.0.c-3.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.5.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "#",
+                            "^EXIT_ZONE dock_waterline",
+                            "/#",
+                            "#",
+                            "^EXIT_DIR S",
+                            "/#",
+                            {
+                                "->": "waterline_zone_intro"
+                            },
+                            {
+                                "#f": 5
+                            }
+                        ]
+                    }
+                ],
+                {
+                    "pier_zone_sideway": [
+                        [
+                            "^What next?",
+                            "\n",
+                            [
+                                "ev",
+                                {
+                                    "^->": "pier_zone_hub.pier_zone_sideway.0.2.$r1"
+                                },
+                                {
+                                    "temp=": "$r"
+                                },
+                                "str",
+                                {
+                                    "->": ".^.s"
+                                },
+                                [
+                                    {
+                                        "#n": "$r1"
+                                    }
+                                ],
+                                "/str",
+                                "/ev",
+                                {
+                                    "*": ".^.^.c-0",
+                                    "flg": 2
+                                },
+                                {
+                                    "s": [
+                                        "^Try the dock office door again.",
+                                        {
+                                            "->": "$r",
+                                            "var": true
+                                        },
+                                        null
+                                    ]
+                                }
+                            ],
+                            [
+                                "ev",
+                                {
+                                    "^->": "pier_zone_hub.pier_zone_sideway.0.3.$r1"
+                                },
+                                {
+                                    "temp=": "$r"
+                                },
+                                "str",
+                                {
+                                    "->": ".^.s"
+                                },
+                                [
+                                    {
+                                        "#n": "$r1"
+                                    }
+                                ],
+                                "/str",
+                                "/ev",
+                                {
+                                    "*": ".^.^.c-1",
+                                    "flg": 2
+                                },
+                                {
+                                    "s": [
+                                        "^Move toward the fisher huts.",
+                                        {
+                                            "->": "$r",
+                                            "var": true
+                                        },
+                                        null
+                                    ]
+                                }
+                            ],
+                            [
+                                "ev",
+                                {
+                                    "^->": "pier_zone_hub.pier_zone_sideway.0.4.$r1"
+                                },
+                                {
+                                    "temp=": "$r"
+                                },
+                                "str",
+                                {
+                                    "->": ".^.s"
+                                },
+                                [
+                                    {
+                                        "#n": "$r1"
+                                    }
+                                ],
+                                "/str",
+                                "/ev",
+                                {
+                                    "*": ".^.^.c-2",
+                                    "flg": 2
+                                },
+                                {
+                                    "s": [
+                                        "^Head to the landing.",
+                                        {
+                                            "->": "$r",
+                                            "var": true
+                                        },
+                                        null
+                                    ]
+                                }
+                            ],
+                            [
+                                "ev",
+                                {
+                                    "^->": "pier_zone_hub.pier_zone_sideway.0.5.$r1"
+                                },
+                                {
+                                    "temp=": "$r"
+                                },
+                                "str",
+                                {
+                                    "->": ".^.s"
+                                },
+                                [
+                                    {
+                                        "#n": "$r1"
+                                    }
+                                ],
+                                "/str",
+                                "/ev",
+                                {
+                                    "*": ".^.^.c-3",
+                                    "flg": 2
+                                },
+                                {
+                                    "s": [
+                                        "^Climb to the waterline.",
+                                        {
+                                            "->": "$r",
+                                            "var": true
+                                        },
+                                        null
+                                    ]
+                                }
+                            ],
+                            {
+                                "c-0": [
+                                    "ev",
+                                    {
+                                        "^->": "pier_zone_hub.pier_zone_sideway.0.c-0.$r2"
+                                    },
+                                    "/ev",
+                                    {
+                                        "temp=": "$r"
+                                    },
+                                    {
+                                        "->": ".^.^.2.s"
+                                    },
+                                    [
+                                        {
+                                            "#n": "$r2"
+                                        }
+                                    ],
+                                    "\n",
+                                    "#",
+                                    "^SKILL_CHECK Athletics 14 office_door_success office_door_fail",
+                                    "/#",
+                                    "end",
+                                    {
+                                        "#f": 5
+                                    }
+                                ],
+                                "c-1": [
+                                    "ev",
+                                    {
+                                        "^->": "pier_zone_hub.pier_zone_sideway.0.c-1.$r2"
+                                    },
+                                    "/ev",
+                                    {
+                                        "temp=": "$r"
+                                    },
+                                    {
+                                        "->": ".^.^.3.s"
+                                    },
+                                    [
+                                        {
+                                            "#n": "$r2"
+                                        }
+                                    ],
+                                    "\n",
+                                    "#",
+                                    "^EXIT_ZONE dock_huts",
+                                    "/#",
+                                    "#",
+                                    "^EXIT_DIR W",
+                                    "/#",
+                                    {
+                                        "->": "huts_zone_intro"
+                                    },
+                                    {
+                                        "#f": 5
+                                    }
+                                ],
+                                "c-2": [
+                                    "ev",
+                                    {
+                                        "^->": "pier_zone_hub.pier_zone_sideway.0.c-2.$r2"
+                                    },
+                                    "/ev",
+                                    {
+                                        "temp=": "$r"
+                                    },
+                                    {
+                                        "->": ".^.^.4.s"
+                                    },
+                                    [
+                                        {
+                                            "#n": "$r2"
+                                        }
+                                    ],
+                                    "\n",
+                                    "#",
+                                    "^EXIT_ZONE dock_landing",
+                                    "/#",
+                                    "#",
+                                    "^EXIT_DIR E",
+                                    "/#",
+                                    {
+                                        "->": "landing_zone_intro"
+                                    },
+                                    {
+                                        "#f": 5
+                                    }
+                                ],
+                                "c-3": [
+                                    "ev",
+                                    {
+                                        "^->": "pier_zone_hub.pier_zone_sideway.0.c-3.$r2"
+                                    },
+                                    "/ev",
+                                    {
+                                        "temp=": "$r"
+                                    },
+                                    {
+                                        "->": ".^.^.5.s"
+                                    },
+                                    [
+                                        {
+                                            "#n": "$r2"
+                                        }
+                                    ],
+                                    "\n",
+                                    "#",
+                                    "^EXIT_ZONE dock_waterline",
+                                    "/#",
+                                    "#",
+                                    "^EXIT_DIR S",
+                                    "/#",
+                                    {
+                                        "->": "waterline_zone_intro"
+                                    },
+                                    {
+                                        "#f": 5
+                                    }
+                                ]
+                            }
+                        ],
+                        {
+                            "#f": 1
+                        }
+                    ],
+                    "#f": 1
+                }
+            ],
+            "office_door_success": [
+                [
+                    "^Your shoulder slams into the swollen timber. Something snaps.",
+                    "\n",
+                    "^The door creaks inward.",
+                    "\n",
+                    "#",
+                    "^SET_FLAG dock_office_open",
+                    "/#",
+                    [
+                        "ev",
+                        {
+                            "^->": "office_door_success.0.7.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-0",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Step inside the office.",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    {
+                        "c-0": [
+                            "ev",
+                            {
+                                "^->": "office_door_success.0.c-0.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.7.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "#",
+                            "^EXIT_ZONE dock_office",
+                            "/#",
+                            "#",
+                            "^EXIT_DIR N",
+                            "/#",
+                            {
+                                "->": "office_zone_intro"
+                            },
+                            {
+                                "#f": 5
+                            }
+                        ]
+                    }
+                ],
+                {
+                    "#f": 1
+                }
+            ],
+            "office_door_fail": [
+                [
+                    "^The frame shudders but holds. Your shoulder throbs.",
+                    "\n",
+                    [
+                        "ev",
+                        {
+                            "^->": "office_door_fail.0.2.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-0",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Step back and reconsider.",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    {
+                        "c-0": [
+                            "ev",
+                            {
+                                "^->": "office_door_fail.0.c-0.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.2.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            {
+                                "->": "pier_zone_hub"
+                            },
+                            "#",
+                            "^ZONE_ID dock_huts",
+                            "/#",
+                            "#",
+                            "^ZONE_LABEL Abandoned Huts",
+                            "/#",
+                            {
+                                "#f": 5
+                            }
+                        ]
+                    }
+                ],
+                {
+                    "#f": 1
+                }
+            ],
+            "huts_zone_intro": [
+                [
+                    "^Driftwood huts huddle against the wind. Nets hang stiff with salt.",
+                    "\n",
+                    "^Something skitters beneath a collapsed crate.",
+                    "\n",
+                    [
+                        "ev",
+                        {
+                            "^->": "huts_zone_intro.0.4.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-0",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Peer into one of the huts. ",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    [
+                        "ev",
+                        {
+                            "^->": "huts_zone_intro.0.5.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-1",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Return to the end of the pier.",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    [
+                        "ev",
+                        {
+                            "^->": "huts_zone_intro.0.6.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-2",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Head to the landing.",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    {
+                        "c-0": [
+                            "ev",
+                            {
+                                "^->": "huts_zone_intro.0.c-0.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.4.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "^You find only damp bedding and the smell of old smoke.",
+                            "\n",
+                            {
+                                "->": ".^.^.^"
+                            },
+                            {
+                                "#f": 5
+                            }
+                        ],
+                        "c-1": [
+                            "ev",
+                            {
+                                "^->": "huts_zone_intro.0.c-1.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.5.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "#",
+                            "^EXIT_ZONE dock_pier",
+                            "/#",
+                            "#",
+                            "^EXIT_DIR E",
+                            "/#",
+                            {
+                                "->": "pier_zone_intro"
+                            },
+                            {
+                                "#f": 5
+                            }
+                        ],
+                        "c-2": [
+                            "ev",
+                            {
+                                "^->": "huts_zone_intro.0.c-2.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.6.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "#",
+                            "^EXIT_ZONE dock_landing",
+                            "/#",
+                            "#",
+                            "^EXIT_DIR S",
+                            "/#",
+                            {
+                                "->": "landing_zone_intro"
+                            },
+                            "#",
+                            "^ZONE_ID dock_landing",
+                            "/#",
+                            "#",
+                            "^ZONE_LABEL Main Landing",
+                            "/#",
+                            {
+                                "#f": 5
+                            }
+                        ]
+                    }
+                ],
+                {
+                    "#f": 1
+                }
+            ],
+            "landing_zone_intro": [
+                [
+                    "^The wider boards here sag under the weight of old cargo memories.",
+                    "\n",
+                    "^An overturned cart blocks part of the walkway.",
+                    "\n",
+                    [
+                        "ev",
+                        {
+                            "^->": "landing_zone_intro.0.4.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-0",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Inspect the overturned cart.",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    [
+                        "ev",
+                        {
+                            "^->": "landing_zone_intro.0.5.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-1",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Walk back to the end of the pier.",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    [
+                        "ev",
+                        {
+                            "^->": "landing_zone_intro.0.6.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-2",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Slip toward the waterline stairs.",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    {
+                        "c-0": [
+                            "ev",
+                            {
+                                "^->": "landing_zone_intro.0.c-0.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.4.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "^Its axles are splintered clean through.",
+                            "\n",
+                            {
+                                "->": ".^.^.^"
+                            },
+                            {
+                                "#f": 5
+                            }
+                        ],
+                        "c-1": [
+                            "ev",
+                            {
+                                "^->": "landing_zone_intro.0.c-1.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.5.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "#",
+                            "^EXIT_ZONE dock_pier",
+                            "/#",
+                            "#",
+                            "^EXIT_DIR W",
+                            "/#",
+                            {
+                                "->": "pier_zone_intro"
+                            },
+                            {
+                                "#f": 5
+                            }
+                        ],
+                        "c-2": [
+                            "ev",
+                            {
+                                "^->": "landing_zone_intro.0.c-2.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.6.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "#",
+                            "^EXIT_ZONE dock_waterline",
+                            "/#",
+                            "#",
+                            "^EXIT_DIR S",
+                            "/#",
+                            {
+                                "->": "waterline_zone_intro"
+                            },
+                            "#",
+                            "^ZONE_ID dock_waterline",
+                            "/#",
+                            "#",
+                            "^ZONE_LABEL Waterline",
+                            "/#",
+                            {
+                                "#f": 5
+                            }
+                        ]
+                    }
+                ],
+                {
+                    "#f": 1
+                }
+            ],
+            "waterline_zone_intro": [
+                [
+                    "^Slick stone steps descend into the lapping dark. Kelp clings like hair.",
+                    "\n",
+                    "^A rope dangles from a rusted mooring ring.",
+                    "\n",
+                    [
+                        "ev",
+                        {
+                            "^->": "waterline_zone_intro.0.4.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-0",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Look beneath the pier.",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    [
+                        "ev",
+                        {
+                            "^->": "waterline_zone_intro.0.5.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-1",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Climb back up to the pier.",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    [
+                        "ev",
+                        {
+                            "^->": "waterline_zone_intro.0.6.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-2",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Walk toward the landing.",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    {
+                        "c-0": [
+                            "ev",
+                            {
+                                "^->": "waterline_zone_intro.0.c-0.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.4.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "^Thick shadows hide whatever lurks down there.",
+                            "\n",
+                            {
+                                "->": ".^.^.^"
+                            },
+                            {
+                                "#f": 5
+                            }
+                        ],
+                        "c-1": [
+                            "ev",
+                            {
+                                "^->": "waterline_zone_intro.0.c-1.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.5.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "#",
+                            "^EXIT_ZONE dock_pier",
+                            "/#",
+                            "#",
+                            "^EXIT_DIR N",
+                            "/#",
+                            {
+                                "->": "pier_zone_intro"
+                            },
+                            {
+                                "#f": 5
+                            }
+                        ],
+                        "c-2": [
+                            "ev",
+                            {
+                                "^->": "waterline_zone_intro.0.c-2.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.6.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "#",
+                            "^EXIT_ZONE dock_landing",
+                            "/#",
+                            "#",
+                            "^EXIT_DIR N",
+                            "/#",
+                            {
+                                "->": "landing_zone_intro"
+                            },
+                            "#",
+                            "^ZONE_ID dock_office",
+                            "/#",
+                            "#",
+                            "^ZONE_LABEL Dock Office",
+                            "/#",
+                            {
+                                "#f": 5
+                            }
+                        ]
+                    }
+                ],
+                {
+                    "#f": 1
+                }
+            ],
+            "office_zone_intro": [
+                [
+                    "^Dust motes drift through thin light from a cracked window.",
+                    "\n",
+                    "^Ledger pages lie scattered, warped with damp.",
+                    "\n",
+                    [
+                        "ev",
+                        {
+                            "^->": "office_zone_intro.0.4.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-0",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Sort through the torn pages.",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    [
+                        "ev",
+                        {
+                            "^->": "office_zone_intro.0.5.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-1",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Step back outside.",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    {
+                        "c-0": [
+                            "ev",
+                            {
+                                "^->": "office_zone_intro.0.c-0.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.4.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "^Most entries are illegible. One name repeats, over and over.",
+                            "\n",
+                            "#",
+                            "^PC_DELTA local_gossip +1",
+                            "/#",
+                            {
+                                "->": ".^.^.^"
+                            },
+                            {
+                                "#f": 5
+                            }
+                        ],
+                        "c-1": [
+                            "ev",
+                            {
+                                "^->": "office_zone_intro.0.c-1.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.5.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "#",
+                            "^EXIT_ZONE dock_pier",
+                            "/#",
+                            "#",
+                            "^EXIT_DIR S",
+                            "/#",
+                            {
+                                "->": "pier_zone_intro"
+                            },
+                            {
+                                "#f": 5
+                            }
+                        ]
+                    }
+                ],
+                {
+                    "#f": 1
+                }
+            ],
+            "#f": 1
+        }
+    ],
+    "listDefs": {}
+}

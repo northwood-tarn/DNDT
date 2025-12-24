@@ -25,252 +25,38 @@ import { processTags, parseTags, isChoiceAvailable, performSkillCheck } from "./
 
 import { rollD20 } from "../utils/dice.js";
 import { getState } from "../state/stateStore.js";
+
 import restCounters from "../state/rest_counters.js";
 
-// ---------------------------------------------------------------------------
-// MurkyBackground: simple 2-sprite crossfade over a list of PNGs
-// ---------------------------------------------------------------------------
+function setSafeChoiceHTML(targetEl, raw) {
+  if (!targetEl) return;
 
-class MurkyBackground {
-  constructor({
-    app = null,
-    imagePaths = [],
-    fadeDuration = 8,   // seconds to fade A -> B
-    holdDuration = 5,   // seconds to hold on a single image
-    loop = true,
-    textures = null
-  } = {}) {
-    this.app = app;
-    this.imagePaths = imagePaths;
-    this.fadeDuration = fadeDuration;
-    this.holdDuration = holdDuration;
-    this.loop = loop;
-    this.textures = textures || null;
-
-    this._container = null;
-    this._spriteA = null;
-    this._spriteB = null;
-    this._currentIndex = 0;
-    this._nextIndex = 1;
-    this._state = "hold"; // "hold" | "fade"
-    this._time = 0;
-    this._tickerFn = this._onTick.bind(this);
+  // Default: plain text
+  if (typeof raw !== "string" || raw.indexOf("<") === -1) {
+    targetEl.textContent = raw ?? "";
+    return;
   }
 
-  attach(ctx) {
-    // --- Diagnostics so we stop guessing -----------------------------------
-    console.info(
-      "[MurkyBackground] attach() called",
-      { ctx, existingApp: this.app }
-    );
+  // Allow only <span class="dialogue-skill"> and <span class="dialogue-class">.
+  // If anything else looks like HTML, fall back to literal text.
+  const allowedSpan = /<span\s+class=("|')dialogue-(skill|class)\1>([\s\S]*?)<\/span>/gi;
 
-    // ctx may be:
-    //   - PIXI.Application
-    //   - { app, stage, layers, ... }
-    //   - { app }
-    let ctxApp = ctx && (ctx.app || ctx);
-
-    // If we already had an app and it's changing, clean up.
-    if (this.app && ctxApp && this.app !== ctxApp) {
-      console.info("[MurkyBackground] attach(): app changed, destroying old background");
-      this.destroy();
-    }
-
-    // Establish app: prefer ctx.app / ctx, fall back to getApp()
-    if (!this.app && ctxApp) {
-      this.app = ctxApp;
-    }
-
-    if (!this.app && typeof getApp === "function") {
-      const fallbackCtx = getApp();
-      console.info("[MurkyBackground] attach(): using getApp() fallback", fallbackCtx);
-      if (fallbackCtx) {
-        ctx = fallbackCtx;
-        this.app = fallbackCtx.app || fallbackCtx;
-        ctxApp = this.app;
-      }
-    }
-
-    if (!this.app) {
-      console.warn("[MurkyBackground] No PIXI app available; background disabled.");
-      return;
-    }
-
-    // --- Stage selection: prefer an explicit ctx.stage (e.g. fog layer),
-    // falling back to the app's root stage.
-    const stage =
-      (ctx && ctx.stage)
-        ? ctx.stage
-        : (this.app && this.app.stage)
-          ? this.app.stage
-          : null;
-
-    if (!stage) {
-      console.warn(
-        "[MurkyBackground] No valid app.stage to attach to; background disabled."
-      );
-      return;
-    }
-
-    // Bail out if no image paths configured
-    if (!this.imagePaths || this.imagePaths.length === 0) {
-      console.warn("[MurkyBackground] No imagePaths provided; background disabled.");
-      return;
-    }
-
-    console.info("[MurkyBackground] attach(): using app.stage as background layer");
-
-    // --- Container & sprites -----------------------------------------------
-    this._container = new PIXI.Container();
-
-    // Put the fog layer *above* any existing stage content
-    // (boot/main-menu backgrounds, etc.).
-    stage.addChild(this._container);
-
-    // Create two sprites, preferring preloaded textures when provided
-    const texA = (this.textures && this.textures[0])
-      ? this.textures[0]
-      : PIXI.Texture.from(this.imagePaths[0]);
-
-    const secondIndex = this.imagePaths.length > 1 ? 1 : 0;
-    const texB = (this.textures && this.textures[secondIndex])
-      ? this.textures[secondIndex]
-      : PIXI.Texture.from(this.imagePaths[secondIndex]);
-
-    this._spriteA = new PIXI.Sprite(texA);
-    this._spriteB = new PIXI.Sprite(texB);
-
-    this._spriteA.alpha = 1;
-    this._spriteB.alpha = 0;
-
-    this._spriteA.anchor.set(0.5);
-    this._spriteB.anchor.set(0.5);
-
-    this._container.addChild(this._spriteA);
-    this._container.addChild(this._spriteB);
-
-    // Use app renderer dimensions if available; fall back to window size.
-    const width = this.app.renderer ? this.app.renderer.width : window.innerWidth;
-    const height = this.app.renderer ? this.app.renderer.height : window.innerHeight;
-    this.resize(width, height);
-
-    this._currentIndex = 0;
-    this._nextIndex = this.imagePaths.length > 1 ? 1 : 0;
-    this._state = "hold";
-    this._time = 0;
+  // If removing allowed spans still leaves angle brackets, it contains other tags.
+  const withoutAllowed = raw.replace(allowedSpan, "");
+  if (withoutAllowed.includes("<") || withoutAllowed.includes(">")) {
+    targetEl.textContent = raw;
+    return;
   }
 
-  start() {
-    // Ensure we have an app and that attach() has successfully created a container.
-    // Prefer a rich context from getApp() (with layers/stage) if available.
-    const ctx = (typeof getApp === "function") ? getApp() : this.app;
+  // Render the allowed spans.
+  targetEl.innerHTML = raw;
+}
 
-    if (!this._container || !this.app) {
-      // attach() will safely no-op if ctx is invalid
-      this.attach(ctx || this.app);
-    }
-
-    // If we still don't have a valid app or ticker or container, bail out silently.
-    if (!this.app || !this.app.ticker || !this._container) {
-      return;
-    }
-
-    // PIXI's Ticker doesn't expose a stable listeners() API across versions,
-    // so we simply add our tick handler; duplicate adds are harmless.
-    this.app.ticker.add(this._tickerFn);
-  }
-
-  stop() {
-    if (this.app && this.app.ticker) {
-      this.app.ticker.remove(this._tickerFn);
-    }
-  }
-
-  destroy() {
-    this.stop();
-    if (this._container && this.app) {
-      try {
-        this.app.stage.removeChild(this._container);
-      } catch (_) {}
-    }
-    if (this._spriteA) this._spriteA.destroy({ texture: false, baseTexture: false });
-    if (this._spriteB) this._spriteB.destroy({ texture: false, baseTexture: false });
-
-    this._spriteA = null;
-    this._spriteB = null;
-    this._container = null;
-    this.app = null;
-  }
-
-  resize(width, height) {
-    if (!this._spriteA || !this._spriteB) return;
-    this._spriteA.x = width / 2;
-    this._spriteA.y = height / 2;
-    this._spriteB.x = width / 2;
-    this._spriteB.y = height / 2;
-
-    // Simple scaling to cover the view. You can refine this later.
-    const maxDimension = Math.max(width, height);
-    this._spriteA.width = maxDimension * 1.2;
-    this._spriteA.height = maxDimension * 1.2;
-    this._spriteB.width = maxDimension * 1.2;
-    this._spriteB.height = maxDimension * 1.2;
-  }
-
-  setImages(imagePaths) {
-    this.imagePaths = imagePaths || [];
-    // You could reload textures here if needed; for now, assume static.
-  }
-
-  setSpeed({ fadeDuration, holdDuration }) {
-    if (typeof fadeDuration === "number") this.fadeDuration = fadeDuration;
-    if (typeof holdDuration === "number") this.holdDuration = holdDuration;
-  }
-
-  _onTick() {
-    if (!this.app || !this._spriteA || !this._spriteB || this.imagePaths.length === 0) return;
-    const dt = (this.app.ticker.deltaMS || 16) / 1000;
-    this._time += dt;
-
-    if (this._state === "hold") {
-      if (this._time >= this.holdDuration) {
-        this._state = "fade";
-        this._time = 0;
-      }
-      return;
-    }
-
-    if (this._state === "fade") {
-      const t = Math.min(this._time / this.fadeDuration, 1);
-      this._spriteA.alpha = 1 - t;
-      this._spriteB.alpha = t;
-
-      if (t >= 1) {
-        // Swap roles and advance indices
-        this._currentIndex = this._nextIndex;
-        const next = (this._currentIndex + 1) % this.imagePaths.length;
-        this._nextIndex = next;
-
-        // Prepare next texture on the fading-out sprite
-        const temp = this._spriteA;
-        this._spriteA = this._spriteB;
-        this._spriteB = temp;
-
-        this._spriteB.alpha = 0;
-        const nextTex = (this.textures && this.textures[this._nextIndex])
-          ? this.textures[this._nextIndex]
-          : PIXI.Texture.from(this.imagePaths[this._nextIndex]);
-        this._spriteB.texture = nextTex;
-
-        this._state = "hold";
-        this._time = 0;
-
-        if (!this.loop && this._currentIndex === this.imagePaths.length - 1) {
-          this.stop();
-        }
-      }
-    }
-  }
+function plainTextForCompare(raw) {
+  if (typeof raw !== "string") return "";
+  // Strip inline HTML (we only allow spans, but be robust)
+  // and normalise whitespace.
+  return raw.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
 }
 
 // ---------------------------------------------------------------------------
@@ -285,7 +71,7 @@ export default class DialogueScene {
     this.entryKnot = null;
     this.returnTo = null;
 
-    this.bg = null;            // MurkyBackground instance
+    // this.bg = null;            // MurkyBackground instance
     this.rootEl = null;        // scene root DOM element
     this.headerEl = null;
     this.bodyEl = null;
@@ -303,6 +89,10 @@ export default class DialogueScene {
 
     // Bound event handlers
     this._onShortRestCompleted = this._onShortRestCompleted.bind(this);
+
+    // Choice click lock
+    this._choiceLocked = false;
+    this._lastChosenChoiceText = null;
   }
 
   // sceneManager will call this when replacing the scene
@@ -327,7 +117,7 @@ export default class DialogueScene {
     this.pc = pc;
     this.world = world;
 
-    await this._setupBackground();
+    // await this._setupBackground();
     this._setupDom();
 
     // Listen for rest completion events while this scene is active
@@ -405,10 +195,7 @@ export default class DialogueScene {
     // Detach event listeners
     window.removeEventListener("rest:short:completed", this._onShortRestCompleted);
 
-    if (this.bg) {
-      try { this.bg.destroy(); } catch (_) {}
-      this.bg = null;
-    }
+    // No background cleanup required.
 
     if (this.rootEl && this.rootEl.parentNode) {
       this.rootEl.parentNode.removeChild(this.rootEl);
@@ -426,37 +213,8 @@ export default class DialogueScene {
   }
 
   // -------------------------------------------------------------------------
-  // Background setup
+  // Background setup removed (MurkyBackground no longer used)
   // -------------------------------------------------------------------------
-
-  async _setupBackground() {
-    // Background policy (canonical): the global fog layer is initialised once at engine boot
-    // (e.g. PreloadScene calling ensureFogLayer(app)). DialogueScene must not create or
-    // re-initialise background systems.
-    //
-    // We keep MurkyBackground in this file for potential future use as an *optional overlay*,
-    // but the default behaviour here is to do nothing.
-
-    try {
-      const appMaybe = getApp();
-      const appCtx = (appMaybe && typeof appMaybe.then === "function")
-        ? await appMaybe
-        : appMaybe;
-
-      const app = appCtx && (appCtx.app || appCtx);
-      if (!app || !app.stage) {
-        console.warn("[DialogueScene] No PIXI app found; background disabled.");
-        return;
-      }
-
-      // No-op: fog is already attached globally.
-      // If you later want a Dialogue-specific overlay, re-enable MurkyBackground here,
-      // but it should attach to app.stage *above* fog (not replace it).
-      this.bg = null;
-    } catch (e) {
-      console.warn("[DialogueScene] Background init skipped due to error:", e);
-    }
-  }
 
   // -------------------------------------------------------------------------
   // DOM setup
@@ -473,14 +231,6 @@ if (!center) {
   center = document.body;
 }
 
-    // Ensure the host container itself is transparent so the canvas shows through.
-    // Use !important via setProperty to beat any CSS rule that tries to paint an opaque panel.
-    if (center) {
-      try {
-        center.style.setProperty("background", "transparent", "important");
-        center.style.setProperty("background-color", "transparent", "important");
-      } catch (_) {}
-    }
 
     // Capture existing children so we can clear old UI (e.g. main menu)
     const existingChildren = Array.from(center.children);
@@ -493,12 +243,6 @@ if (!center) {
     const root = document.createElement("div");
     root.className = "dialogue-scene";
 
-    // Let the PIXI background show through behind the dialogue scene.
-    // Force transparency even if CSS uses !important.
-    try {
-      root.style.setProperty("background", "transparent", "important");
-      root.style.setProperty("background-color", "transparent", "important");
-    } catch (_) {}
 
     // Header is the location line (· LOCATION ·)
     const header = document.createElement("div");
@@ -515,14 +259,6 @@ if (!center) {
     const minimap = document.createElement("div");
     minimap.className = "dialogue-minimap";
 
-    // Defensive: these sub-panels sometimes get a solid background via CSS.
-    // Keep them transparent so fog stays visible.
-    for (const el of [header, body, choices, minimap]) {
-      try {
-        el.style.setProperty("background", "transparent", "important");
-        el.style.setProperty("background-color", "transparent", "important");
-      } catch (_) {}
-    }
 
     root.appendChild(header);
     root.appendChild(body);
@@ -617,6 +353,16 @@ if (!center) {
       }
     }
 
+    // If Ink echoes the last chosen choice as the first line, suppress it once.
+    if (this._lastChosenChoiceText && lines.length) {
+      const first = plainTextForCompare(lines[0]);
+      if (first && first === this._lastChosenChoiceText) {
+        lines.shift();
+      }
+      // Clear after one pass so we don't hide legitimate repeated prose.
+      this._lastChosenChoiceText = null;
+    }
+
     // Render body
     if (this.bodyEl) {
       this.bodyEl.innerHTML = "";
@@ -707,11 +453,26 @@ if (!center) {
     }
   }
 
+  _beginChoiceChoreography(selectedRow) {
+    if (!this.choicesEl) return;
+
+    const all = this.choicesEl.querySelectorAll(".dialogue-choice");
+    all.forEach((el) => {
+      if (el === selectedRow) {
+        el.classList.add("is-selected");
+      } else {
+        el.classList.add("is-fading-out");
+      }
+    });
+  }
+  
+
   _renderChoices() {
     if (!this.story || !this.choicesEl) return;
 
     const choices = this.story.currentChoices || [];
     this.choicesEl.innerHTML = "";
+    this._choiceLocked = false;
 
     if (!choices.length) {
       // No choices and no further content: end of story
@@ -719,6 +480,9 @@ if (!center) {
       endRow.className = "dialogue-choice";
       endRow.setAttribute("role", "button");
       endRow.tabIndex = 0;
+
+      const prefix = document.createElement("span");
+      prefix.className = "choice-prefix";
 
       const num = document.createElement("span");
       num.className = "choice-num";
@@ -728,12 +492,14 @@ if (!center) {
       dot.className = "choice-dot";
       dot.textContent = "·";
 
+      prefix.appendChild(num);
+      prefix.appendChild(dot);
+
       const text = document.createElement("span");
       text.className = "choice-text";
       text.textContent = "Continue";
 
-      endRow.appendChild(num);
-      endRow.appendChild(dot);
+      endRow.appendChild(prefix);
       endRow.appendChild(text);
 
       const activate = () => this._handleEndOfStory();
@@ -775,6 +541,9 @@ if (!center) {
       row.setAttribute("role", "button");
       row.tabIndex = 0;
 
+      const prefix = document.createElement("span");
+      prefix.className = "choice-prefix";
+
       const num = document.createElement("span");
       num.className = "choice-num";
       num.textContent = String(rendered + 1);
@@ -783,22 +552,39 @@ if (!center) {
       dot.className = "choice-dot";
       dot.textContent = "·";
 
+      prefix.appendChild(num);
+      prefix.appendChild(dot);
+
       const text = document.createElement("span");
       text.className = "choice-text";
-      text.textContent = choice.text;
+      setSafeChoiceHTML(text, choice.text);
 
-      row.appendChild(num);
-      row.appendChild(dot);
+      row.appendChild(prefix);
       row.appendChild(text);
 
       const activate = () => {
-        try {
-          this.story.ChooseChoiceIndex(choice.index);
-        } catch (e) {
-          console.warn("[DialogueScene] Failed to choose choice:", e);
-          return;
-        }
-        this._advanceAndRender();
+        if (this._choiceLocked) return;
+        this._choiceLocked = true;
+
+        // IMPORTANT: Do NOT echo the selected choice text into the prose.
+        // (Ink already advances the narrative; UI should not duplicate the user's click.)
+
+        // Fade out the non-selected options first.
+        this._beginChoiceChoreography(row);
+        this._lastChosenChoiceText = plainTextForCompare(choice.text);
+
+        // Advance after a short beat so the player sees the chosen option alone.
+        window.setTimeout(() => {
+          try {
+            this.story.ChooseChoiceIndex(choice.index);
+          } catch (e) {
+            console.warn("[DialogueScene] Failed to choose choice:", e);
+            this._choiceLocked = false;
+            this._lastChosenChoiceText = null;
+            return;
+          }
+          this._advanceAndRender();
+        }, 500);
       };
 
       row.addEventListener("click", activate);
@@ -819,6 +605,9 @@ if (!center) {
       dead.className = "dialogue-choice";
       dead.style.opacity = "0.5";
 
+      const prefix = document.createElement("span");
+      prefix.className = "choice-prefix";
+
       const num = document.createElement("span");
       num.className = "choice-num";
       num.textContent = "";
@@ -827,12 +616,14 @@ if (!center) {
       dot.className = "choice-dot";
       dot.textContent = "·";
 
+      prefix.appendChild(num);
+      prefix.appendChild(dot);
+
       const text = document.createElement("span");
       text.className = "choice-text";
       text.textContent = "(No valid options)";
 
-      dead.appendChild(num);
-      dead.appendChild(dot);
+      dead.appendChild(prefix);
       dead.appendChild(text);
 
       this.choicesEl.appendChild(dead);
