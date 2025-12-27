@@ -33,5 +33,8 @@ contextBridge.exposeInMainWorld('api', {
   saveGame: (data, slot) => safeInvoke('saveGame', { data, slot }),
   loadGame: (slot) => safeInvoke('loadGame', { slot }),
   listSaves: () => safeInvoke('listSaves', {}),
-  clearGame: (slot) => safeInvoke('clearGame', { slot })
+  clearGame: (slot) => safeInvoke('clearGame', { slot }),
+
+  // Read local text files via main-process IPC (e.g., compiled Ink JSON)
+  readTextFile: (relPath) => safeInvoke('fs:readText', relPath)
 });

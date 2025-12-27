@@ -108,6 +108,7 @@ const SaveManager = {
     const finalSaveId = saveId || this.generateSaveId();
 
     const save = {
+      schemaVersion: 1,
       saveId: finalSaveId,
       runId,
       saveType,
@@ -117,6 +118,8 @@ const SaveManager = {
     };
 
     let saves = this.getAllSaves();
+    // Ensure saveId is unique (supports fixed-slot saves like dev slot 99).
+    saves = saves.filter((s) => s.saveId !== finalSaveId);
 
     // For autosave and quicksave, keep only one per runId.
     if (saveType === SAVE_TYPE_AUTOSAVE || saveType === SAVE_TYPE_QUICKSAVE) {
@@ -174,12 +177,38 @@ const SaveManager = {
   },
 
   /**
+   * Convenience wrapper: save to a fixed slot id (e.g. dev slot 99).
+   *
+   * Uses a stable saveId of the form "slot_<N>" and overwrites any existing save with that id.
+   */
+  saveSlot({ slotId, saveType = SAVE_TYPE_MANUAL, runId, metadata, payload }) {
+    if (slotId === undefined || slotId === null) {
+      throw new Error("[SaveManager] saveSlot requires slotId");
+    }
+    return this.createSave({
+      saveType,
+      runId,
+      metadata,
+      payload,
+      saveId: `slot_${slotId}`
+    });
+  },
+
+  /**
    * Return a specific save by id, or null if not found.
    */
   getSave(saveId) {
     if (!saveId) return null;
     const saves = this.getAllSaves();
     return saves.find((s) => s.saveId === saveId) || null;
+  },
+
+  /**
+   * Return a fixed-slot save by numeric slot id (e.g. 99), or null.
+   */
+  getSlot(slotId) {
+    if (slotId === undefined || slotId === null) return null;
+    return this.getSave(`slot_${slotId}`);
   },
 
   /**

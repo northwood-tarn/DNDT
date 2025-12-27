@@ -20,13 +20,109 @@ import { PIXI, getApp } from "../engine/pixi.js";
 // If your ink runtime is imported differently, adjust this:
 import { Story } from "../lib/inkjs.mjs";
 import RestUI from "../ui/RestUI.js";
-import { processTags, parseTags, isChoiceAvailable, performSkillCheck } from "./dialogueEngine.js";
+import {
+  processTags,
+  parseTags,
+  isChoiceAvailable,
+  performSkillCheck,
+  getSkillCheckAction
+} from "./dialogueEngine.js";
+import renderMiniMap from "../ui/renderMiniMap.js";
 
 
 import { rollD20 } from "../utils/dice.js";
-import { getState } from "../state/stateStore.js";
+import { getState, setState, derivePlayerStats } from "../state/stateStore.js";
+window.__DNDT_getState = getState;
 
 import restCounters from "../state/rest_counters.js";
+import { getArea } from "../areas/registry.generated.js";
+
+// Session-only cache (survives scene re-entry because it lives at module scope)
+const SESSION_SEEN_DESC = new Set();
+
+const SESSION_SEEN_SKILL_SCHEMA = new Set();
+
+function _normSkillKey(skill) {
+  return String(skill || "")
+    .trim()
+    .replace(/\s+/g, "_")
+    .toLowerCase();
+}
+
+function getPlayerSkillMod(player, skill) {
+  const key = _normSkillKey(skill);
+  if (!player || !key) return 0;
+
+  // Common shapes:
+  //  - player.skills.{investigation}: number | { mod/bonus/total }
+  //  - player.skillMods.{investigation}: number
+  //  - player.skill_mods.{investigation}: number
+  //  - player.stats.skills...
+  const candidates = [
+    player.skills,
+    player.skillMods,
+    player.skill_mods,
+    player.stats?.skills,
+    player.stats?.skillMods,
+    player.stats?.skill_mods
+  ].filter(Boolean);
+
+  for (const bag of candidates) {
+    // direct match
+    if (Object.prototype.hasOwnProperty.call(bag, key)) {
+      const v = bag[key];
+      if (typeof v === "number" && Number.isFinite(v)) return v;
+      if (v && typeof v === "object") {
+        const n = v.mod ?? v.bonus ?? v.total ?? v.value;
+        if (typeof n === "number" && Number.isFinite(n)) return n;
+      }
+    }
+    // case-insensitive match if stored as e.g. "Investigation"
+    for (const k of Object.keys(bag)) {
+      if (_normSkillKey(k) === key) {
+        const v = bag[k];
+        if (typeof v === "number" && Number.isFinite(v)) return v;
+        if (v && typeof v === "object") {
+          const n = v.mod ?? v.bonus ?? v.total ?? v.value;
+          if (typeof n === "number" && Number.isFinite(n)) return n;
+        }
+      }
+    }
+  }
+
+  // One-time schema hint per skill so we can adapt without console spam.
+  const stamp = key;
+  if (!SESSION_SEEN_SKILL_SCHEMA.has(stamp)) {
+    SESSION_SEEN_SKILL_SCHEMA.add(stamp);
+    try {
+      console.info("[DialogueScene][skill] could not resolve modifier; player keys:", {
+        skill: key,
+        playerKeys: Object.keys(player || {}),
+        skillsKeys: Object.keys(player?.skills || {}),
+        statsKeys: Object.keys(player?.stats || {})
+      });
+    } catch {}
+  }
+
+  return 0;
+}
+const isInkVarDeclared = (story, name) => { try { void story?.variablesState?.$(name); return true; } catch { return false; } };
+
+function isDescLine(tags) {
+  if (!Array.isArray(tags)) return false;
+  for (const t of tags) {
+    if (typeof t !== "string") continue;
+    const parts = t.trim().split(/\s+/);
+    if (!parts.length) continue;
+    if (parts[0].toUpperCase() === "STYLE" && String(parts[1] || "").toLowerCase() === "desc") return true;
+  }
+  return false;
+}
+
+function hasOnceDesc(tags) {
+  if (!Array.isArray(tags)) return false;
+  return tags.some(t => typeof t === "string" && t.trim().toUpperCase() === "ONCE_DESC");
+}
 
 function setSafeChoiceHTML(targetEl, raw) {
   if (!targetEl) return;
@@ -93,6 +189,7 @@ export default class DialogueScene {
     // Choice click lock
     this._choiceLocked = false;
     this._lastChosenChoiceText = null;
+    this._pendingExit = false;
   }
 
   // sceneManager will call this when replacing the scene
@@ -101,12 +198,10 @@ export default class DialogueScene {
     areaId,
     mode = "dialogue",
     entryKnot,
-    returnTo = null,
-    pc = null,
-    world = null
+    returnTo = null
   } = {}) {
-    if (!script) {
-      console.warn("[DialogueScene] No script passed to start()");
+    if (!script && !areaId) {
+      console.warn("[DialogueScene] No script or areaId passed to start()");
       return;
     }
 
@@ -114,11 +209,24 @@ export default class DialogueScene {
     this.mode = mode;
     this.entryKnot = entryKnot || null;
     this.returnTo = returnTo;
-    this.pc = pc;
-    this.world = world;
+    this._pendingExit = false;
+
+    // Prefer resolving script path via generated registry when we have an areaId.
+    // This prevents stale hardcoded paths like "./areas/00_pier/..." from breaking.
+    let resolvedScript = script;
+    if (this.areaId) {
+      const reg = getArea(this.areaId);
+      if (reg && typeof reg.script === "string") {
+        // If caller didn't provide a script, or provided an old "./areas/..." path, prefer registry.
+        if (reg && typeof reg.script === "string") {
+  resolvedScript = reg.script;
+        }
+      }
+    }
 
     // await this._setupBackground();
     this._setupDom();
+    this._updateMinimap();
 
     // Listen for rest completion events while this scene is active
     window.addEventListener("rest:short:completed", this._onShortRestCompleted);
@@ -128,7 +236,7 @@ export default class DialogueScene {
     //  1) script is already a compiled Ink JSON object
     //  2) script is a JSON string
     //  3) script is a relative path to a .json file (e.g. "./areas/00_pier/dockside.ink.json")
-    let storySource = script;
+    let storySource = resolvedScript;
 
     try {
       // Case 3: looks like a path to a JSON file
@@ -138,11 +246,18 @@ export default class DialogueScene {
         (storySource.startsWith("./") || storySource.startsWith("../"))
       ) {
         console.info("[DialogueScene] Loading Ink JSON from path:", storySource);
-        const response = await fetch(storySource);
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status} while fetching ${storySource}`);
+
+        // Prefer IPC filesystem read (Electron) to avoid fragile file:// URL resolution.
+        if (window.api && typeof window.api.readTextFile === "function") {
+          storySource = await window.api.readTextFile(storySource);
+        } else {
+          // Fallback: fetch (works in dev server setups where the file is actually served)
+          const response = await fetch(storySource);
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status} while fetching ${storySource}`);
+          }
+          storySource = await response.text();
         }
-        storySource = await response.text();
       }
 
       // Case 2: JSON string -> parse
@@ -163,6 +278,16 @@ export default class DialogueScene {
     } catch (e) {
       console.error("[DialogueScene] Failed to create Ink Story:", e);
       return;
+    }
+
+    // Determine entry knot:
+    //  - Prefer explicit `entryKnot` passed into start()
+    //  - Otherwise, fall back to Ink global tag: `DEFAULT_ENTRY <knot>`
+    if (!this.entryKnot && this.story && Array.isArray(this.story.globalTags)) {
+      const defaultEntryTag = this.story.globalTags.find(t => t.startsWith("DEFAULT_ENTRY "));
+      if (defaultEntryTag) {
+        this.entryKnot = defaultEntryTag.substring("DEFAULT_ENTRY ".length).trim() || null;
+      }
     }
 
     // Optionally jump to a specific entry knot
@@ -258,16 +383,14 @@ if (!center) {
 
     const minimap = document.createElement("div");
     minimap.className = "dialogue-minimap";
-
-
+    minimap.id = "minimap";
+  
     root.appendChild(header);
     root.appendChild(body);
     root.appendChild(choices);
 
-    // Only show minimap in "interior" mode for now
-    if (this.mode === "interior") {
-      root.appendChild(minimap);
-    }
+    // Minimap: shown whenever the scene is active; content depends on layouts + visited state.
+    root.appendChild(minimap);
 
     // Important: do NOT clear center.innerHTML; just add our overlay on top
     center.appendChild(root);
@@ -310,13 +433,24 @@ if (!center) {
   }
 
   _updateMinimap() {
-    if (!this.minimapEl || this.mode !== "interior") return;
+  if (!this.minimapEl) return;
 
-    const label = this.currentZoneLabel || this.currentZoneId || "";
-    // Minimal version: just show the current zone label.
-    // You can expand this later into a proper block-based map.
-    this.minimapEl.textContent = label;
-  }
+  const s = getState();
+  const player = s?.player || {};
+  const mapState = player?.map || {};
+
+  // Pull adjacency from the generated registry.
+  const reg = this.areaId ? getArea(this.areaId) : null;
+  const nextAreas = Array.isArray(reg?.nextAreas) ? reg.nextAreas : [];
+
+  renderMiniMap({
+    currentAreaId: this.areaId || "unknown_area",
+    nextAreas,
+    mapState,
+    container: this.minimapEl,
+    size: 150
+  });
+}
 
   // -------------------------------------------------------------------------
   // Ink story driving
@@ -336,7 +470,7 @@ if (!center) {
     // Collect all text until we hit choices or story ends
     const lines = [];
 
-    while (this.story.canContinue) {
+    while (this.story && this.story.canContinue && !this._pendingExit) {
       const text = (this.story.Continue() || "").trim();
       const tags = this.story.currentTags || [];
 
@@ -348,7 +482,19 @@ if (!center) {
       this._handleActions(actions);
       this._handleTags(tags);
 
+      // If an exit fired (scene swap/cleanup), stop immediately.
+      if (this._pendingExit || !this.story) return;
+
       if (text) {
+        // Session-only: descriptive prose is one-shot when tagged `STYLE desc` and ONCE_DESC.
+        if (isDescLine(tags) && hasOnceDesc(tags)) {
+          const path = this.story?.state?.currentPathString || "";
+          const key = `${this.areaId || ""}::${path}::${plainTextForCompare(text)}`;
+          if (SESSION_SEEN_DESC.has(key)) {
+            continue;
+          }
+          SESSION_SEEN_DESC.add(key);
+        }
         lines.push(text);
       }
     }
@@ -386,30 +532,9 @@ if (!center) {
 
     for (const action of actions) {
       switch (action.type) {
-        case "skill_check": {
-          const result = performSkillCheck({
-            skill: action.skill,
-            dc: action.dc,
-            player,
-            roller: rollD20
-          });
-
-          this.lastSkillCheckResult = result;
-
-          // Expose result to Ink via global variables, if desired.
-          try {
-            const vars = this.story.variablesState;
-            if (vars) {
-              vars["last_skill_success"] = result.success === true;
-              vars["last_skill_total"] = result.total;
-              vars["last_skill_dc"] = result.dc ?? 0;
-              vars["last_skill_name"] = result.skill || "";
-            }
-          } catch (e) {
-            console.warn("[DialogueScene] Failed to write skill check vars:", e);
-          }
+        case "skill_check":
+          // Skill checks are executed at choice-click time, not during render.
           break;
-        }
 
         case "start_combat": {
           const encounterId = action.encounterId;
@@ -432,10 +557,12 @@ if (!center) {
 
         case "exit_area": {
           const targetArea = action.areaId || this.areaId;
+          this._pendingExit = true;
           const exit = {
-            toScene: "exploration",
+            toScene: "dialogue",
             reason: "exit_area",
-            areaId: targetArea || "unknown_area"
+            areaId: targetArea || "unknown_area",
+            fromScene: "dialogue"
           };
           window.dispatchEvent(new CustomEvent("game:exit", { detail: exit }));
           break;
@@ -558,6 +685,14 @@ if (!center) {
       const text = document.createElement("span");
       text.className = "choice-text";
       setSafeChoiceHTML(text, choice.text);
+      // Append skill check label if present
+      const skillAction = getSkillCheckAction(actions);
+      if (skillAction && skillAction.skill) {
+        const skillSpan = document.createElement("span");
+        skillSpan.className = "dialogue-skill";
+        skillSpan.textContent = ` ${skillAction.skill.replace(/_/g, " ")}`;
+        text.appendChild(skillSpan);
+      }
 
       row.appendChild(prefix);
       row.appendChild(text);
@@ -572,6 +707,58 @@ if (!center) {
         // Fade out the non-selected options first.
         this._beginChoiceChoreography(row);
         this._lastChosenChoiceText = plainTextForCompare(choice.text);
+
+        // Run skill check once, at click time
+        const skillAction = getSkillCheckAction(actions);
+        if (skillAction) console.log("[DialogueScene][skillAction]", skillAction);
+        if (skillAction) {
+          const roll = (rollD20()?.total ?? 0);
+          // --- Modified block: calculate mod with derived equipment bonus ---
+          const baseMod = getPlayerSkillMod(player, skillAction.skill);
+          const derived = derivePlayerStats(getState());
+          const skillKey = _normSkillKey(skillAction.skill);
+          const equipBonus = Number(derived?.skillBonuses?.[skillKey] ?? 0) || 0;
+          const ac = Number(derived?.ac ?? 0) || 0;
+          const mod = baseMod + equipBonus;
+          // --- End modified block ---
+          const dc = Number(skillAction.dc ?? 0);
+          const total = roll + mod;
+          const success = total >= dc;
+          const result = {
+            skill: skillAction.skill,
+            dc,
+            roll,
+            mod,
+            total,
+            success,
+            ac
+          };
+          console.info("[DialogueScene][skill]", {
+            skill: result.skill,
+            dc: result.dc,
+            roll: result.roll,
+            mod: result.mod,
+            total: result.total,
+            success: result.success
+          });
+
+          this.lastSkillCheckResult = result;
+          // Annotate the chosen choice with success/failure styling
+          if (result && result.success === true) {
+            row.classList.add("skill-success");
+          } else if (result && result.success === false) {
+            row.classList.add("skill-failure");
+          }
+
+          const vars = this.story?.variablesState;
+          if (vars) {
+            // Write vars opportunistically. Ink throws if the VAR wasn't declared in the story.
+            try { vars.$("last_skill_success", result.success === true); } catch {}
+            try { vars["last_skill_total"] = result.total; } catch {}
+            try { vars["last_skill_dc"] = result.dc ?? 0; } catch {}
+            try { vars["last_skill_name"] = result.skill || ""; } catch {}
+          }
+        }
 
         // Advance after a short beat so the player sees the chosen option alone.
         window.setTimeout(() => {
@@ -682,19 +869,30 @@ if (!center) {
           }
           break;
         }
-
+        case "EXIT_ZONE": {
+          const zoneId = parts[1];
+          if (zoneId) {
+            this.currentZoneId = zoneId;
+            this.visitedZones.add(zoneId);
+            this._updateMinimap();
+          }
+          break;
+        }
         // --- Flow control / exits ---
         case "EXIT_AREA": {
           const targetArea = parts[1] || this.areaId;
+          this._pendingExit = true;
           const exit = {
-            toScene: "exploration",
+            toScene: "dialogue",
             reason: "exit_area_legacy",
-            areaId: targetArea || "unknown_area"
+            areaId: targetArea || "unknown_area",
+            fromScene: "dialogue"
           };
           window.dispatchEvent(new CustomEvent("game:exit", { detail: exit }));
-          break;
+          return;
         }
         case "START_COMBAT": {
+          this._pendingExit = true;
           const encounterId = parts[1];
           const exit = {
             toScene: "combat",
@@ -723,7 +921,123 @@ if (!center) {
         case "PC_DELTA":
         case "SET_FLAG":
         case "ONCE_FLAG":
-        case "GIVE_ITEM":
+          // These will be interpreted at the choice level or via a shared tag interpreter.
+          // For now we just log them; engine-side wiring comes next.
+          // console.debug("[DialogueScene] Tag (deferred):", tag);
+          break;
+        case "GIVE_ITEM": {
+          const itemId = parts[1];
+          const qtyRaw = parts[2];
+          const qty = Math.max(1, Number.isFinite(Number(qtyRaw)) ? Number(qtyRaw) : 1);
+
+          if (!itemId) break;
+
+          const s = getState();
+          const player = s?.player || {};
+          const inv = Array.isArray(player.inventory) ? [...player.inventory] : [];
+
+          // Support a couple of inventory entry shapes.
+          const idx = inv.findIndex(e => {
+            if (!e) return false;
+            if (typeof e === "string") return e === itemId;
+            if (typeof e === "object") return e.id === itemId || e.itemId === itemId;
+            return false;
+          });
+
+          if (idx === -1) {
+            inv.push({ id: itemId, qty });
+          } else {
+            const cur = inv[idx];
+            if (typeof cur === "string") {
+              // Promote string entry to object.
+              inv[idx] = { id: itemId, qty: qty + 1 };
+            } else {
+              const curQty = Number(cur.qty ?? cur.quantity ?? 0) || 0;
+              inv[idx] = { ...cur, id: cur.id ?? cur.itemId ?? itemId, qty: curQty + qty };
+            }
+          }
+
+          setState({
+            ...s,
+            player: {
+              ...player,
+              inventory: inv
+            }
+          });
+
+          console.info("[DialogueScene][inventory] give item", { itemId, qty });
+          break;
+        }
+
+        case "REMOVE_ITEM": {
+          const itemId = parts[1];
+          const qtyRaw = parts[2];
+          const qty = Math.max(1, Number.isFinite(Number(qtyRaw)) ? Number(qtyRaw) : 1);
+
+          if (!itemId) break;
+
+          const s = getState();
+          const player = s?.player || {};
+          const inv = Array.isArray(player.inventory) ? [...player.inventory] : [];
+
+          const idx = inv.findIndex(e => {
+            if (!e) return false;
+            if (typeof e === "string") return e === itemId;
+            if (typeof e === "object") return e.id === itemId || e.itemId === itemId;
+            return false;
+          });
+
+          if (idx === -1) {
+            // Nothing to remove.
+            break;
+          }
+
+          const cur = inv[idx];
+          if (typeof cur === "string") {
+            // If strings are used, they represent 1 unit.
+            inv.splice(idx, 1);
+          } else {
+            const curQty = Number(cur.qty ?? cur.quantity ?? 0) || 0;
+            const nextQty = curQty - qty;
+            if (nextQty > 0) {
+              inv[idx] = { ...cur, id: cur.id ?? cur.itemId ?? itemId, qty: nextQty };
+            } else {
+              inv.splice(idx, 1);
+            }
+          }
+
+          setState({
+            ...s,
+            player: {
+              ...player,
+              inventory: inv
+            }
+          });
+
+          console.info("[DialogueScene][inventory] remove item", { itemId, qty });
+          break;
+        }
+
+        case "GIVE_GOLD": {
+          const amountRaw = parts[1];
+          const amount = Number.isFinite(Number(amountRaw)) ? Number(amountRaw) : 0;
+          if (!amount) break;
+
+          const s = getState();
+          const player = s?.player || {};
+          const curGold = Number(player.gold ?? 0) || 0;
+
+          setState({
+            ...s,
+            player: {
+              ...player,
+              gold: curGold + amount
+            }
+          });
+
+          console.info("[DialogueScene][inventory] give gold", { amount, gold: curGold + amount });
+          break;
+        }
         case "STYLE":
           // These will be interpreted at the choice level or via a shared tag interpreter.
           // For now we just log them; engine-side wiring comes next.

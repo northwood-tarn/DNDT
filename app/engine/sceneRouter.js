@@ -6,6 +6,9 @@
 // 2) A RouteDescriptor-aware router that can respond to `game:exit`
 //    events and move between scenes in a predictable way.
 
+import SaveManager from "../scenes/SaveManager.js";
+import { getState, setState } from "../state/stateStore.js";
+
 /**
  * @typedef {"mainMenu" | "dialogue" | "exploration" | "combat" | "gameOver" | "systemCutscene"} SceneName
  */
@@ -187,7 +190,56 @@ export function routeTo(routeDescriptor) {
   console.info("[sceneRouter] routeTo called with descriptor:", routeDescriptor);
 
   const route = normalizeRoute(routeDescriptor);
+
+  // Hydrate runtime state from save if a saveId is provided
+  if (route.saveId) {
+    try {
+      const save = SaveManager.getSave(route.saveId);
+      if (save && save.payload) {
+        if (save.payload.player) setState({ player: save.payload.player });
+        if (save.payload.flags) setState({ flags: save.payload.flags });
+        if (save.payload.location) {
+          route.areaId = save.payload.location.areaId || route.areaId;
+          route.entryKnot = save.payload.location.entryKnot || route.entryKnot;
+        }
+        console.info("[sceneRouter] Hydrated state from save:", route.saveId);
+      } else {
+        console.warn("[sceneRouter] saveId provided but no payload found:", route.saveId);
+      }
+    } catch (e) {
+      console.warn("[sceneRouter] Failed to hydrate state from save:", e);
+    }
+  }
+
   if (!route) return;
+
+  // Minimap progress: mark the destination area as visited when routing into an area-driven scene.
+  // This keeps visited state canonical at the router level (single source of transitions).
+  if ((route.toScene === "dialogue" || route.toScene === "exploration") && route.areaId) {
+    try {
+      const s = getState();
+      const player = s?.player || {};
+      const map = player?.map || {};
+      const visitedAreas = map?.visitedAreas || {};
+
+      if (!visitedAreas[route.areaId]) {
+        setState({
+          player: {
+            ...player,
+            map: {
+              ...map,
+              visitedAreas: {
+                ...visitedAreas,
+                [route.areaId]: true,
+              },
+            },
+          },
+        });
+      }
+    } catch (e) {
+      console.warn("[sceneRouter] Failed to mark visited area for minimap:", e);
+    }
+  }
 
   console.info("[sceneRouter] Normalized route:", route);
 

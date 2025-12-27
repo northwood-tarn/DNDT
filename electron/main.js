@@ -7,6 +7,28 @@ function resolveFromApp(...segments) {
   return path.join(app.getAppPath(), ...segments);
 }
 
+function resolveSafeRelPath(relPath) {
+  // Accept paths like "./app/areas/00_docks/dockside.ink.json" and resolve against app root.
+  // Reject absolute paths and any attempt to escape via "..".
+  const base = app.getAppPath();
+  const raw = String(relPath ?? "").trim();
+
+  if (!raw) throw new Error("Missing relPath");
+  if (path.isAbsolute(raw)) throw new Error("Absolute paths are not allowed");
+
+  // Normalise leading "./"
+  const cleaned = raw.startsWith("./") ? raw.slice(2) : raw;
+
+  const abs = path.resolve(base, cleaned);
+  const baseResolved = path.resolve(base);
+
+  if (abs !== baseResolved && !abs.startsWith(baseResolved + path.sep)) {
+    throw new Error("Path traversal attempt blocked");
+  }
+
+  return abs;
+}
+
 let win;
 function createWindow() {
   const primary = screen.getPrimaryDisplay();
@@ -47,6 +69,17 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
+});
+
+// ===== FILE READ IPC (for local content like compiled Ink JSON) =====
+ipcMain.handle("fs:readText", async (_e, relPath) => {
+  try {
+    const abs = resolveSafeRelPath(relPath);
+    return fs.promises.readFile(abs, "utf-8");
+  } catch (err) {
+    console.error("fs:readText error:", err);
+    throw err;
+  }
 });
 
 // ===== SAVE/LOAD IPC (unchanged) =====

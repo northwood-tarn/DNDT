@@ -2,7 +2,6 @@
 
 import { sceneManager } from "../engine/sceneManager.js";
 import ExplorationScene from "./ExplorationScene.js";
-import DocksideIntro from "../areas/00_dockside/Dockside.js";
 import { state } from "../state/stateStore.js";
 import { classes } from "../data/classes.js";
 import { backgrounds } from "../data/backgrounds.js";

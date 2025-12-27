@@ -1,0 +1,340 @@
+{
+    "inkVersion": 21,
+    "root": [
+        [
+            "#",
+            "^AREA_ID boathouse",
+            "/#",
+            "#",
+            "^AREA_NAME The Boathouse",
+            "/#",
+            "#",
+            "^DEFAULT_ENTRY start",
+            "/#",
+            "#",
+            "^NEXT_AREAS dockside",
+            "/#",
+            "#",
+            "^MAP_EXITS dockside:S",
+            "/#",
+            [
+                "done",
+                {
+                    "#f": 5,
+                    "#n": "g-0"
+                }
+            ],
+            null
+        ],
+        "done",
+        {
+            "start": [
+                [
+                    "#",
+                    "^STYLE desc",
+                    "/#",
+                    "#",
+                    "^ONCE_DESC",
+                    "/#",
+                    "^The boathouse smells of rot and old river mud.",
+                    "\n",
+                    "^Water drips steadily from a cracked beam into a black puddle on the floor.",
+                    "\n",
+                    "#",
+                    "^STYLE desc",
+                    "/#",
+                    "#",
+                    "^ONCE_DESC",
+                    "/#",
+                    "^A skiff rests inside, half-flooded, its rope cut clean through.",
+                    "\n",
+                    "ev",
+                    {
+                        "VAR?": "inspected_skiff"
+                    },
+                    "!",
+                    "/ev",
+                    [
+                        {
+                            "->": ".^.b",
+                            "c": true
+                        },
+                        {
+                            "b": [
+                                "\n",
+                                [
+                                    "ev",
+                                    {
+                                        "^->": "start.0.22.b.1.$r1"
+                                    },
+                                    {
+                                        "temp=": "$r"
+                                    },
+                                    "str",
+                                    {
+                                        "->": ".^.s"
+                                    },
+                                    [
+                                        {
+                                            "#n": "$r1"
+                                        }
+                                    ],
+                                    "/str",
+                                    "/ev",
+                                    {
+                                        "*": ".^.^.c-0",
+                                        "flg": 2
+                                    },
+                                    {
+                                        "s": [
+                                            "^Inspect the skiff.",
+                                            {
+                                                "->": "$r",
+                                                "var": true
+                                            },
+                                            null
+                                        ]
+                                    }
+                                ],
+                                {
+                                    "->": ".^.^.^.23"
+                                },
+                                {
+                                    "c-0": [
+                                        "ev",
+                                        {
+                                            "^->": "start.0.22.b.c-0.$r2"
+                                        },
+                                        "/ev",
+                                        {
+                                            "temp=": "$r"
+                                        },
+                                        {
+                                            "->": ".^.^.1.s"
+                                        },
+                                        [
+                                            {
+                                                "#n": "$r2"
+                                            }
+                                        ],
+                                        "\n",
+                                        "#",
+                                        "^STYLE desc",
+                                        "/#",
+                                        "#",
+                                        "^ONCE_DESC",
+                                        "/#",
+                                        "^The cut is deliberate. Whatever did this wanted the boat loose.",
+                                        "\n",
+                                        "ev",
+                                        true,
+                                        "/ev",
+                                        {
+                                            "VAR=": "inspected_skiff",
+                                            "re": true
+                                        },
+                                        {
+                                            "->": "start"
+                                        },
+                                        {
+                                            "#f": 5
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "nop",
+                    "\n",
+                    "ev",
+                    {
+                        "VAR?": "searched_back"
+                    },
+                    "!",
+                    "/ev",
+                    [
+                        {
+                            "->": ".^.b",
+                            "c": true
+                        },
+                        {
+                            "b": [
+                                "\n",
+                                [
+                                    "ev",
+                                    {
+                                        "^->": "start.0.29.b.1.$r1"
+                                    },
+                                    {
+                                        "temp=": "$r"
+                                    },
+                                    "str",
+                                    {
+                                        "->": ".^.s"
+                                    },
+                                    [
+                                        {
+                                            "#n": "$r1"
+                                        }
+                                    ],
+                                    "/str",
+                                    "/ev",
+                                    {
+                                        "*": ".^.^.c-0",
+                                        "flg": 2
+                                    },
+                                    {
+                                        "s": [
+                                            "^Search the back of the boathouse.",
+                                            {
+                                                "->": "$r",
+                                                "var": true
+                                            },
+                                            null
+                                        ]
+                                    }
+                                ],
+                                {
+                                    "->": ".^.^.^.30"
+                                },
+                                {
+                                    "c-0": [
+                                        "ev",
+                                        {
+                                            "^->": "start.0.29.b.c-0.$r2"
+                                        },
+                                        "/ev",
+                                        {
+                                            "temp=": "$r"
+                                        },
+                                        {
+                                            "->": ".^.^.1.s"
+                                        },
+                                        [
+                                            {
+                                                "#n": "$r2"
+                                            }
+                                        ],
+                                        "\n",
+                                        "^You find nothing of value — only more questions.",
+                                        "\n",
+                                        "ev",
+                                        true,
+                                        "/ev",
+                                        {
+                                            "VAR=": "searched_back",
+                                            "re": true
+                                        },
+                                        {
+                                            "->": "start"
+                                        },
+                                        {
+                                            "#f": 5
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "nop",
+                    "\n",
+                    [
+                        "ev",
+                        {
+                            "^->": "start.0.32.$r1"
+                        },
+                        {
+                            "temp=": "$r"
+                        },
+                        "str",
+                        {
+                            "->": ".^.s"
+                        },
+                        [
+                            {
+                                "#n": "$r1"
+                            }
+                        ],
+                        "/str",
+                        "/ev",
+                        {
+                            "*": ".^.^.c-0",
+                            "flg": 2
+                        },
+                        {
+                            "s": [
+                                "^Leave the boathouse and return to the docks.",
+                                {
+                                    "->": "$r",
+                                    "var": true
+                                },
+                                null
+                            ]
+                        }
+                    ],
+                    {
+                        "c-0": [
+                            "ev",
+                            {
+                                "^->": "start.0.c-0.$r2"
+                            },
+                            "/ev",
+                            {
+                                "temp=": "$r"
+                            },
+                            {
+                                "->": ".^.^.32.s"
+                            },
+                            [
+                                {
+                                    "#n": "$r2"
+                                }
+                            ],
+                            "\n",
+                            "#",
+                            "^EXIT_AREA dockside",
+                            "/#",
+                            "done",
+                            {
+                                "#f": 5
+                            }
+                        ]
+                    }
+                ],
+                {
+                    "#f": 1
+                }
+            ],
+            "global decl": [
+                "ev",
+                false,
+                {
+                    "VAR=": "inspected_skiff"
+                },
+                false,
+                {
+                    "VAR=": "searched_back"
+                },
+                0,
+                {
+                    "VAR=": "last_skill_total"
+                },
+                0,
+                {
+                    "VAR=": "last_skill_dc"
+                },
+                "str",
+                "^",
+                "/str",
+                {
+                    "VAR=": "last_skill_name"
+                },
+                "/ev",
+                "end",
+                null
+            ],
+            "#f": 1
+        }
+    ],
+    "listDefs": {}
+}

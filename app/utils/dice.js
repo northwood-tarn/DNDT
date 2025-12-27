@@ -52,6 +52,7 @@ export function rollD(sides = 20) {
  */
 export function rollD20({ actor=null, allowLucky=true, logFn=null, askUseLucky=null, chooseResult=null, context={} } = {}) {
   const roll1 = rollD(20);
+  console.log("[dice] rollD20 initial roll:", roll1);
   let usedLucky = false;
   let roll2 = null;
 

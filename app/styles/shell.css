@@ -66,7 +66,25 @@ html, body { height: 100%; margin: 0; background-color: var(--bg); color: var(--
   background: transparent;
   border: 1px solid #22314d;
   padding: 6px;
-  overflow: auto;
+  overflow-y: auto;
+}
+
+/* === Live game log (overlay, fixed ~4 lines, toggled by F12) === */
+#game-log.game-log {
+  position: fixed;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  z-index: 9998;
+
+  font: 12px/1.35 var(--mono);
+  height: calc(4 * 1.35em);
+  overflow-y: auto;
+  white-space: pre-wrap;
+
+  padding: 6px 8px;
+  border: 1px solid #22314d;
+  background: rgba(11, 15, 20, 0.78);
 }
 .log { font: 12px/1.35 var(--mono); white-space: pre-wrap; }
 #asciiMap { margin:0; font: 14px/1.05 var(--mono); color: #cfd8e6; }
@@ -241,6 +259,31 @@ body:not(.shell-mode) .app-grid {
 
 /* === Dialogue semantic styling (uses tokens above) === */
 
+/* === Dialogue minimap positioning (150x150) ===
+   Goal: top-aligned with the dialogue option text, and inset from the right
+   by the same amount the dialogue content is inset from the left. */
+#game-root:has(.dialogue-location),
+#game-root:has(.dialogue-prose),
+#game-root:has(.dialogue-choice),
+#game-root:has(.dialogue-choices) {
+  position: relative;
+}
+
+/* The minimap container is created by DialogueScene and should carry this class */
+.dialogue-minimap {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+
+  /* match the dialogue horizontal inset (see the padding block below) */
+  right: 96px;
+
+  /* approximate alignment to the first choice line (below location + prose) */
+  top: calc(84px + var(--dlg-location-size) + 28px + var(--dlg-prose-size) + 28px);
+
+  pointer-events: none;
+}
+
 /* === Dialogue layout (push content in from window edges) ===
    Scoped using :has(...) so it only affects DialogueScene content. */
 #game-root:has(.dialogue-location),
@@ -352,6 +395,34 @@ body:not(.shell-mode) .app-grid {
   line-height: 1;
   color: var(--dlg-check-icon-color);
   vertical-align: baseline;
+}
+/* === Skill check result feedback (success / failure) === */
+@keyframes skillResultFade {
+  0% { opacity: 1; }
+  40% { opacity: 0.85; }
+  100% { opacity: 1; }
+}
+
+.dialogue-choice.skill-success {
+  color: #6fae8e;
+  animation: skillResultFade 0.6s ease-out;
+  animation-delay: 120ms;
+}
+
+.dialogue-choice.skill-failure {
+  color: #b36a6a;
+  animation: skillResultFade 0.6s ease-out;
+  animation-delay: 120ms;
+}
+
+.dialogue-choice.skill-success::after {
+  content: " ✓";
+  color: #6fae8e;
+}
+
+.dialogue-choice.skill-failure::after {
+  content: " ✕";
+  color: #b36a6a;
 }
 
 .dialogue-choice .choice-prefix {

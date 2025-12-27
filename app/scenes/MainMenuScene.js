@@ -1,5 +1,7 @@
 // app/scenes/MainMenuScene.js
 import { routeTo } from "../engine/sceneRouter.js";
+import SaveManager from "./SaveManager.js";
+import { ensureDevAyaSlot99 } from "../data/devSaves.js";
 
 export default class MainMenuScene {
   constructor(game, payload = {}) {
@@ -169,18 +171,21 @@ export default class MainMenuScene {
     const quickStartBtn = makeButton("Quick Start (Aya)", () => {
       console.log("[MainMenuScene] Quick Start (Aya) clicked");
 
-      const areaId = "00_pier";
-      const entryKnot = "pier_zone_intro";
-      const scriptPath = "./areas/00_pier/dockside.ink.json";
+      // Ensure dev save slot 99 exists and load from it
+      const save = ensureDevAyaSlot99(SaveManager);
+      if (!save || !save.payload) {
+        console.error("[MainMenuScene] Failed to ensure/load dev slot 99", save);
+        return;
+      }
+
+      const { location } = save.payload;
 
       routeTo({
         toScene: "dialogue",
         reason: "devQuickStartAya",
-        areaId,
-        entryKnot,
-        mode: "exterior",
-        script: scriptPath,
-        devQuickStart: true
+        areaId: location?.areaId || "dockside",
+        entryKnot: location?.entryKnot || "start",
+        saveId: save.saveId
       });
     });
 

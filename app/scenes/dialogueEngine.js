@@ -17,6 +17,7 @@ import { getState } from "../state/stateStore.js";
  *   { type: "set_flag", key: "heard_dock_rumours", value: true }
  *   { type: "pc_delta", stat: "hp", amount: -3 }
  *   { type: "skill_check", skill: "Perception", dc: 15 }
+ *   REQ_ITEM itemId [qty]
  */
 
 // ---------------------------------------------------------------------------
@@ -37,6 +38,7 @@ import { getState } from "../state/stateStore.js";
  *   REQ_CLASS className
  *   REQ_FLAG flagName
  *   REQ_SKILL skillName minBonus
+ *   REQ_ITEM itemId [qty]
  */
 export function parseTag(rawTag) {
   if (!rawTag || typeof rawTag !== "string") return null;
@@ -117,6 +119,16 @@ export function parseTag(rawTag) {
       };
     }
 
+    case "REQ_ITEM": {
+      const itemId = rest[0] || null;
+      const qty = Number(rest[1]);
+      return {
+        type: "req_item",
+        itemId,
+        qty: Number.isFinite(qty) ? qty : 1
+      };
+    }
+
     default:
       // Unknown tag head: keep raw for debugging but don’t crash.
       return { type: "unknown", raw: rawTag };
@@ -177,6 +189,40 @@ export function isRequirementMet(reqAction, state) {
       return bonus >= (reqAction.minBonus ?? 0);
     }
 
+    case "req_item": {
+      const itemId = reqAction.itemId;
+      const need = Number(reqAction.qty ?? 1) || 1;
+      if (!itemId) return false;
+
+      const inv = player.inventory;
+
+      // Support inventory as an array of entries (recommended), or a map/object.
+      if (Array.isArray(inv)) {
+        let have = 0;
+        for (const e of inv) {
+          if (!e) continue;
+          if (typeof e === "string") {
+            if (e === itemId) have += 1;
+          } else if (typeof e === "object") {
+            const id = e.id ?? e.itemId;
+            if (id !== itemId) continue;
+            const q = Number(e.qty ?? e.quantity ?? 1) || 1;
+            have += q;
+          }
+          if (have >= need) return true;
+        }
+        return have >= need;
+      }
+
+      if (inv && typeof inv === "object") {
+        const v = inv[itemId];
+        const have = Number(v ?? 0) || 0;
+        return have >= need;
+      }
+
+      return false;
+    }
+
     default:
       return true;
   }
@@ -195,12 +241,22 @@ export function isChoiceAvailable(parsedActions, state) {
   const s = state || getState() || {};
 
   for (const action of parsedActions) {
-    if (action.type === "req_class" || action.type === "req_flag" || action.type === "req_skill") {
+    if (action.type === "req_class" || action.type === "req_flag" || action.type === "req_skill" || action.type === "req_item") {
       if (!isRequirementMet(action, s)) return false;
     }
   }
 
   return true;
+}
+
+/**
+ * Extract the first skill_check action from a parsed action list.
+ * This does NOT perform the roll and does NOT mutate state.
+ * Intended to be used by the scene at choice-click time.
+ */
+export function getSkillCheckAction(parsedActions) {
+  if (!Array.isArray(parsedActions)) return null;
+  return parsedActions.find(a => a && a.type === "skill_check") || null;
 }
 
 // ---------------------------------------------------------------------------
@@ -358,6 +414,7 @@ export default {
   parseTags,
   isRequirementMet,
   isChoiceAvailable,
+  getSkillCheckAction,
   performSkillCheck,
   applyAction,
   processTags
