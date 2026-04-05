@@ -18,7 +18,12 @@ export const SPELL_SCHEMA = {
   target: { type: "self|creature|object|point|area", count: 1, friendly: true, requiresSight: true },
   area: { shape: "none|sphere|cube|line|cone|cylinder", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
   scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-  classes: [],
+  availability: {
+    classes: [],              // e.g. ["Wizard", "Cleric"] — replaces old `classes`
+    minCasterLevel: null,     // e.g. 10
+    featureGate: null,        // e.g. "JestersBookOfShortcuts"
+    hiddenUntilUnlocked: false
+  },
   source: "PHB",
   tags: [],
   text: "",
@@ -50,7 +55,12 @@ export const SPELLS = {
     target: { type: "point", count: 1, friendly: true, requiresSight: false },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Warlock"],
+    availability: {
+      classes: ["Warlock"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["illusion","dialogue","utility"],
     text: "Create a brief, simple illusion used only in dialogue or scripted scenes (distraction, phantom sounds, false sentry). This spell has no combat function and does not appear in combat actions.",
     dialogueRelated: true,
@@ -73,7 +83,12 @@ export const SPELLS = {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Warlock"],
+    availability: {
+      classes: ["Warlock"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["debuff","psychic","dialogue"],
     text: "You breathe terror into a creature\'s mind. The target makes a Wisdom save or has disadvantage on its next attack before the end of its next turn. Also unlocks intimidation/persuasion options in dialogue.",
     dialogueRelated: true,
@@ -96,7 +111,12 @@ export const SPELLS = {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "cantrip", slot: { text: null }, cantrip: { tiers: ["1d6","2d6","3d6","4d6"] } },
-    classes: ["Warlock"],
+    availability: {
+      classes: ["Warlock"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["attack","force","control"],
     text: "A shadowy tendril lashes a creature within 30 ft. Make a ranged spell attack: on hit, the target takes force damage (scales with level) and is pulled 5 ft toward you.",
     dialogueRelated: false,
@@ -119,7 +139,12 @@ export const SPELLS = {
     target: { type: "point", count: 1, friendly: true, requiresSight: true },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Sorcerer","Wizard","Bard"],
+    availability: {
+      classes: ["Sorcerer","Wizard","Bard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["utility","light"],
     text: "Create a single torch-size light at a point within 30 ft; bright 20 ft, dim +20 ft (concentration, 1 min).",
     dialogueRelated: false,
@@ -139,7 +164,12 @@ export const SPELLS = {
     target: { type: "creature", count: 1, friendly: true, requiresSight: false },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Cleric","Druid"],
+    availability: {
+      classes: ["Cleric","Druid"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["buff","utility"],
     text: "Once before the spell ends, the target adds 1d4 to one ability check.",
     dialogueRelated: false,
@@ -159,7 +189,12 @@ export const SPELLS = {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "cantrip", slot: { text: null }, cantrip: { tiers: [{level:5, add:"+1d8"},{level:11, add:"+2d8"},{level:17, add:"+3d8"}] } },
-    classes: ["Cleric"],
+    availability: {
+      classes: ["Cleric"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["damage"],
     text: "DEX save or radiant damage; no effect on a success.",
     dialogueRelated: false,
@@ -179,7 +214,12 @@ export const SPELLS = {
     target: { type: "point", count: 1, friendly: true, requiresSight: true },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Wizard","Sorcerer","Warlock","Bard","Artificer"],
+    availability: {
+      classes: ["Wizard","Sorcerer","Warlock","Bard","Artificer"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["utility"],
     text: "Create a spectral hand to manipulate an object within range. No attacks.",
     dialogueRelated: false,
@@ -199,7 +239,12 @@ export const SPELLS = {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "cantrip", slot: { text: null }, cantrip: { tiers: [{level:5, add:"+1d10"},{level:11, add:"+2d10"},{level:17, add:"+3d10"}] } },
-    classes: ["Wizard","Sorcerer","Artificer"],
+    availability: {
+      classes: ["Wizard","Sorcerer","Artificer"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["damage"],
     text: "Ranged spell attack; on hit, fire damage.",
     dialogueRelated: false,
@@ -220,7 +265,12 @@ export const SPELLS = {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "cantrip", slot: { text: null }, cantrip: { tiers: [{level:5, add:"+1d6"},{level:11, add:"+2d6"},{level:17, add:"+3d6"}] } },
-    classes: ["Druid"],
+    availability: {
+      classes: ["Druid"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["damage","control","pull"],
     text: "Ranged spell attack; on hit, 1d6 piercing and if the target is Large or smaller, pull it up to 10 feet closer to you.",
     dialogueRelated: false,
@@ -243,7 +293,12 @@ export const SPELLS = {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "cantrip", slot: { text: null }, cantrip: { tiers: [{level:5, add:"+1d4"},{level:11, add:"+2d4"},{level:17, add:"+3d4"}] } },
-    classes: ["Bard"],
+    availability: {
+      classes: ["Bard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["damage","debuff"],
     text: "WIS save or take 1d4 psychic damage and have Disadvantage on the next attack roll it makes before the end of its next turn.",
     dialogueRelated: false,
@@ -266,7 +321,12 @@ export const SPELLS = {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "cantrip", slot: { text: null }, cantrip: { tiers: [{level:5, add:"+1d12"},{level:11, add:"+2d12"},{level:17, add:"+3d12"}] } },
-    classes: ["Sorcerer","Warlock","Wizard","Druid"],
+    availability: {
+      classes: ["Sorcerer","Warlock","Wizard","Druid"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["damage"],
     text: "A puff of noxious gas. The target must succeed on a CON save or take poison damage.",
     dialogueRelated: false,
@@ -288,7 +348,12 @@ export const SPELLS = {
     target: { type: "area", count: 0, friendly: false, requiresSight: false },
     area: { shape: "sphere", size: 5, unit: "ft" },
     scaling: { type: "cantrip", slot: { text: null }, cantrip: { tiers: [{level:5, add:"+1d6"},{level:11, add:"+2d6"},{level:17, add:"+3d6"}] } },
-    classes: ["Cleric"],
+    availability: {
+      classes: ["Cleric"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["damage","area"],
     text: "You utter a divine word, and each creature of your choice that you can see within 5 feet must make a CON save or take radiant damage.",
     dialogueRelated: false,
@@ -311,7 +376,12 @@ export const SPELLS = {
     target: { type: "creature", count: 2, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "cantrip", slot: { text: null }, cantrip: { tiers: [{level:5, add:"+1d6"},{level:11, add:"+2d6"},{level:17, add:"+3d6"}] } },
-    classes: ["Wizard","Sorcerer"],
+    availability: {
+      classes: ["Wizard","Sorcerer"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["damage","splash"],
     text: "Choose one or two creatures within 5 feet of each other that you can see within 30 feet. Each target makes a DEX save or takes acid damage.",
     dialogueRelated: false,
@@ -334,7 +404,12 @@ export const SPELLS = {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "cantrip", slot: { text: null }, cantrip: { tiers: [{level:5, add:"+1d8"},{level:11, add:"+2d8"},{level:17, add:"+3d8"}] } },
-    classes: ["Wizard","Sorcerer","Warlock"],
+    availability: {
+      classes: ["Wizard","Sorcerer","Warlock"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["damage","debuff"],
     text: "Ranged spell attack; on hit, necrotic damage and the target can’t regain hit points until the start of your next turn. If the target is Undead, it also can’t regain hit points until the start of your next turn.",
     dialogueRelated: false,
@@ -357,7 +432,12 @@ export const SPELLS = {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "cantrip", slot: { text: null }, cantrip: { tiers: [{level:5, add:"+1d8"},{level:11, add:"+2d8"},{level:17, add:"+3d8"}] } },
-    classes: ["Wizard","Sorcerer","Artificer"],
+    availability: {
+      classes: ["Wizard","Sorcerer","Artificer"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["damage","debuff"],
     text: "Ranged spell attack; on hit, cold damage and the target’s speed is reduced by 10 feet until the start of your next turn.",
     dialogueRelated: false,
@@ -380,7 +460,12 @@ export const SPELLS = {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "cantrip", slot: { text: null }, cantrip: { tiers: [{level:5, add:"+1d8"},{level:11, add:"+2d8"},{level:17, add:"+3d8"}] } },
-    classes: ["Wizard","Sorcerer","Artificer"],
+    availability: {
+      classes: ["Wizard","Sorcerer","Artificer"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["damage","control"],
     text: "Melee spell attack; on hit, lightning damage and the target can’t take reactions until the end of its next turn.",
     dialogueRelated: false,
@@ -404,7 +489,12 @@ export const SPELLS = {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "cantrip", slot: { text: null }, cantrip: { tiers: [{level:5, add:"+1d8"},{level:11, add:"+2d8"},{level:17, add:"+3d8"}] } },
-    classes: ["Cleric","Warlock","Wizard"],
+    availability: {
+      classes: ["Cleric","Warlock","Wizard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["damage","save"],
     text: "Wisdom save or take necrotic damage. Target at full HP takes 1d8, otherwise 1d12.",
     dialogueRelated: false,
@@ -428,7 +518,12 @@ export const SPELLS = {
     target: { type: "self", count: 1, friendly: true, requiresSight: false },
     area: { shape: "none", size: 0, unit: "ft" },
     scaling: { type: "cantrip", slot: { text: null }, cantrip: { tiers: [{level:5, add:"+1d8"},{level:11, add:"+2d8"},{level:17, add:"+3d8"}] } },
-    classes: ["Druid"],
+    availability: {
+      classes: ["Druid"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["damage","utility","light"],
     text: "Flame in your hand sheds light. You can attack with it as a ranged spell attack (30 ft, 1d8 fire).",
     dialogueRelated: false,
@@ -452,7 +547,12 @@ export const SPELLS = {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, unit: "ft" },
     scaling: { type: "cantrip", slot: { text: null }, cantrip: { tiers: [{level:5, add:"+1d6"},{level:11, add:"+2d6"},{level:17, add:"+3d6"}] } },
-    classes: ["Druid","Warlock","Sorcerer","Wizard"],
+    availability: {
+      classes: ["Druid","Warlock","Sorcerer","Wizard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["damage","debuff"],
     text: "Con save or take 1d6 poison damage and be moved 5 feet in a random direction.",
     dialogueRelated: false,
@@ -476,7 +576,12 @@ export const SPELLS = {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, unit: "ft" },
     scaling: { type: "cantrip", slot: { text: null }, cantrip: { tiers: [{level:5, add:"+1d6"},{level:11, add:"+2d6"},{level:17, add:"+3d6"}] } },
-    classes: ["Druid","Sorcerer","Wizard"],
+    availability: {
+      classes: ["Druid","Sorcerer","Wizard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["damage","debuff"],
     text: "Con save or 1d6 cold damage, and the target has Disadvantage on the next weapon attack roll it makes before the end of its next turn.",
     dialogueRelated: false,
@@ -500,7 +605,12 @@ export const SPELLS = {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, unit: "ft" },
     scaling: { type: "cantrip", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Warlock"],
+    availability: {
+      classes: ["Warlock"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["damage"],
     text: "Ranged spell attack; on hit, force damage. At higher levels, creates multiple beams: 2 at 5th, 3 at 11th, 4 at 17th.",
     dialogueRelated: false,
@@ -524,7 +634,12 @@ export const SPELLS = {
     target: { type: "area", count: 0, friendly: false, requiresSight: false },
     area: { shape: "sphere", size: 5, unit: "ft" },
     scaling: { type: "cantrip", slot: { text: null }, cantrip: { tiers: [{level:5, add:"+1d6"},{level:11, add:"+2d6"},{level:17, add:"+3d6"}] } },
-    classes: ["Bard","Druid","Sorcerer","Warlock","Wizard"],
+    availability: {
+      classes: ["Bard","Druid","Sorcerer","Warlock","Wizard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["damage","area"],
     text: "Each creature other than you within 5 feet must succeed on a CON save or take thunder damage.",
     dialogueRelated: false,
@@ -548,7 +663,12 @@ export const SPELLS = {
     target: { type: "self", count: 1, friendly: true, requiresSight: false },
     area: { shape: "none", size: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Bard","Sorcerer","Warlock","Wizard"],
+    availability: {
+      classes: ["Bard","Sorcerer","Warlock","Wizard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["defense","buff"],
     text: "Until the end of your next turn, you have resistance against bludgeoning, piercing, and slashing damage from weapon attacks.",
     dialogueRelated: false,
@@ -570,7 +690,12 @@ export const SPELLS = {
     target: { type: "creature", count: 1, friendly: true, requiresSight: false },
     area: { shape: "none", size: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Cleric","Druid"],
+    availability: {
+      classes: ["Cleric","Druid"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["buff","utility"],
     text: "Once before the spell ends, the target can roll a d4 and add it to one saving throw of its choice.",
     dialogueRelated: false,
@@ -597,7 +722,12 @@ mind_sliver: {
       { level: 11, add: "+2d6" },
       { level: 17, add: "+3d6" }
     ] } },
-    classes: ["Sorcerer","Warlock","Wizard","Bard"],
+    availability: {
+      classes: ["Sorcerer","Warlock","Wizard","Bard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "PHB",
     tags: ["damage","debuff","psychic"],
     text: "INT save or take 1d6 psychic damage. On a failure, the target subtracts 1d4 from the next saving throw it makes before the end of your next turn.",
@@ -623,7 +753,12 @@ mind_sliver: {
     target: { type: "point", count: 1, friendly: true, requiresSight: false },
     area: { shape: "special", size: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Bard","Cleric","Druid","Sorcerer","Warlock","Wizard"],
+    availability: {
+      classes: ["Bard","Cleric","Druid","Sorcerer","Warlock","Wizard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "PHB",
     tags: ["utility","dialogue"],
     text: "You perform a simple magical effect: create a harmless sensory effect (spark, sound, odor, tremor, breeze, petals, motes of light), alter a minor feature of an object (clean, soil, chill, warm, flavor), conjure a tiny illusion or natural sign (whisper of leaves, flicker of fire, glow of stars), or make a small voice-like proclamation. Effects are cosmetic, last up to 1 hour, and cannot deal damage or impose conditions.",
@@ -656,7 +791,37 @@ mind_sliver: {
     target: { type: "creature", count: 3, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "slot", slot: { text: "+1 dart per slot level above 1st" }, cantrip: { tiers: [] } },
-    classes: ["Wizard","Sorcerer"],
+    availability: {
+      classes: ["Wizard","Sorcerer"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
+    tags: ["damage","auto_hit"],
+    text: "Create three darts of force. Each automatically hits for 1d4+1 force damage.",
+    dialogueRelated: false,
+    hooks: { autoHit: true, darts: 3, damage: { dice: "1d4+1", type: "force", addMod: false, perDart: true } }
+  },
+
+    magic_missile_jester: {
+    id: "magic_missile_jester",
+    name: "Magic Missile (Cantrip)",
+    level: 0,
+    school: "Evocation",
+    casting: { time: 1, unit: "action", reactionTrigger: null },
+    components: { v: true, s: true, m: false, material: null, consume: false, costGp: 0 },
+    concentration: false, ritual: false,
+    duration: { type: "instant", value: 0, unit: "rounds", special: null },
+    range: { type: "distance", distance: 120, unit: "ft", special: null },
+    target: { type: "creature", count: 3, friendly: false, requiresSight: true },
+    area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
+    scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
+    availability: {
+      classes: ["Wizard"],
+      minCasterLevel: 10,
+      featureGate: "JestersBookOfShortcuts",
+      hiddenUntilUnlocked: true
+    },
     tags: ["damage","auto_hit"],
     text: "Create three darts of force. Each automatically hits for 1d4+1 force damage.",
     dialogueRelated: false,
@@ -676,9 +841,39 @@ mind_sliver: {
     target: { type: "area", count: 0, friendly: false, requiresSight: false },
     area: { shape: "cone", size: 15, length: 15, width: 0, height: 0, unit: "ft" },
     scaling: { type: "slot", slot: { text: "+1d6 damage per slot level above 1st" }, cantrip: { tiers: [] } },
-    classes: ["Sorcerer","Wizard"],
+    availability: {
+      classes: ["Sorcerer","Wizard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["damage","area"],
     text: "15‑ft cone; DEX save, 3d6 fire on a fail or half on success.",
+    dialogueRelated: false,
+    hooks: { save: { ability: "DEX", dcFrom: "casterSpellDC", onSave: "half" }, damage: { dice: "3d6", type: "fire", addMod: false, perDart: false } }
+  },
+
+    burning_hands_jester: {
+    id: "burning_hands_jester",
+    name: "Burning Hands (Cantrip)",
+    level: 0,
+    school: "Evocation",
+    casting: { time: 1, unit: "action", reactionTrigger: null },
+    components: { v: true, s: true, m: false, material: null, consume: false, costGp: 0 },
+    concentration: false, ritual: false,
+    duration: { type: "instant", value: 0, unit: "rounds", special: null },
+    range: { type: "self", distance: 0, unit: "ft", special: null },
+    target: { type: "area", count: 0, friendly: false, requiresSight: false },
+    area: { shape: "cone", size: 15, length: 15, width: 0, height: 0, unit: "ft" },
+    scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
+    availability: {
+      classes: ["Wizard"],
+      minCasterLevel: 10,
+      featureGate: "JestersBookOfShortcuts",
+      hiddenUntilUnlocked: true
+    },
+    tags: ["damage","area"],
+    text: "15-ft cone; DEX save, 3d6 fire on a fail or half on success.",
     dialogueRelated: false,
     hooks: { save: { ability: "DEX", dcFrom: "casterSpellDC", onSave: "half" }, damage: { dice: "3d6", type: "fire", addMod: false, perDart: false } }
   },
@@ -696,7 +891,12 @@ mind_sliver: {
     target: { type: "area", count: 0, friendly: false, requiresSight: false },
     area: { shape: "cube", size: 15, unit: "ft" },
     scaling: { type: "slot", slot: { text: "+1d8 damage per slot level above 1st" }, cantrip: { tiers: [] } },
-    classes: ["Sorcerer","Wizard","Bard"],
+    availability: {
+      classes: ["Sorcerer","Wizard","Bard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["damage","control","area"],
     text: "Self‑centered 15‑ft cube; CON save for 2d8 thunder (half on success). On a failed save, target is pushed 10 ft.",
     dialogueRelated: false,
@@ -706,7 +906,34 @@ mind_sliver: {
       applyEffect: { kind: "push", distanceFt: 10, shape: "from_caster" }
     }
   },
-
+  thunderwave_jester: {
+    id: "thunderwave_jester",
+    name: "Thunderwave (Cantrip)",
+    level: 0,
+    school: "Evocation",
+    casting: { time: 1, unit: "action", reactionTrigger: null },
+    components: { v: true, s: true, m: false, material: null, consume: false, costGp: 0 },
+    concentration: false, ritual: false,
+    duration: { type: "instant", value: 0, unit: "rounds", special: null },
+    range: { type: "self", distance: 0, unit: "ft", special: null },
+    target: { type: "area", count: 0, friendly: false, requiresSight: false },
+    area: { shape: "cube", size: 15, unit: "ft" },
+    scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
+    availability: {
+      classes: ["Wizard"],
+      minCasterLevel: 10,
+      featureGate: "JestersBookOfShortcuts",
+      hiddenUntilUnlocked: true
+    },
+    tags: ["damage","control","area"],
+    text: "Self-centered 15-ft cube; CON save for 2d8 thunder (half on success). On a failed save, target is pushed 10 ft.",
+    dialogueRelated: false,
+    hooks: {
+      save: { ability: "CON", dcFrom: "casterSpellDC", onSave: "half" },
+      damage: { dice: "2d8", type: "thunder", addMod: false, perDart: false },
+      applyEffect: { kind: "push", distanceFt: 10, shape: "from_caster" }
+    }
+  },
   charm_person: {
     id: "charm_person",
     name: "Charm Person",
@@ -720,7 +947,12 @@ mind_sliver: {
     target: { type: "creature", count: 1, friendly: true, requiresSight: true },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "slot", slot: { text: "Target +1 creature per slot above 1st" }, cantrip: { tiers: [] } },
-    classes: ["Sorcerer","Wizard","Bard","Warlock","Druid"],
+    availability: {
+      classes: ["Sorcerer","Wizard","Bard","Warlock","Druid"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["social","control"],
     text: "Humanoid WIS save or charmed for 1 hour; knows after it ends.",
     dialogueRelated: true,
@@ -740,7 +972,12 @@ mind_sliver: {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "slot", slot: { text: "+1d8 per slot above 1st" }, cantrip: { tiers: [] } },
-    classes: ["Sorcerer","Wizard"],
+    availability: {
+      classes: ["Sorcerer","Wizard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["damage"],
     text: "Ranged spell attack for 3d8; choose acid, cold, fire, lightning, poison, or thunder on cast.",
     dialogueRelated: false,
@@ -760,7 +997,12 @@ mind_sliver: {
     target: { type: "self", count: 1, friendly: true, requiresSight: false },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Sorcerer","Wizard","Bard","Warlock"],
+    availability: {
+      classes: ["Sorcerer","Wizard","Bard","Warlock"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["utility","social","illusion"],
     text: "You appear unremarkable, blending with local norms for 1 hour. Investigation vs your Spell Save DC may see through it when scrutinized or acting oddly.",
     dialogueRelated: true,
@@ -780,7 +1022,12 @@ mind_sliver: {
     target: { type: "self", count: 1, friendly: true, requiresSight: false },
     area: { shape: "sphere", size: 30, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Sorcerer","Wizard","Bard","Cleric","Druid","Paladin","Ranger","Artificer","Warlock"],
+    availability: {
+      classes: ["Sorcerer","Wizard","Bard","Cleric","Druid","Paladin","Ranger","Artificer","Warlock"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["utility","detection"],
     text: "Sense presence of magic within 30 ft; see faint auras.",
     dialogueRelated: false,
@@ -800,7 +1047,37 @@ mind_sliver: {
     target: { type: "self", count: 1, friendly: true, requiresSight: false },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Sorcerer","Wizard","Bard","Warlock"],
+    availability: {
+      classes: ["Sorcerer","Wizard","Bard","Warlock"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
+    tags: ["utility","language"],
+    text: "For 1 hour, you understand spoken language you hear and can read text you touch.",
+    dialogueRelated: true,
+    hooks: { applyEffect: { kind: "comprehend_languages", spoken: true, written: true } }
+  },
+
+  comprehend_languages_jester: {
+    id: "comprehend_languages_jester",
+    name: "Comprehend Languages (Cantrip)",
+    level: 0,
+    school: "Divination",
+    casting: { time: 1, unit: "action", reactionTrigger: null },
+    components: { v: true, s: true, m: true, material: "A pinch of soot and salt", consume: false, costGp: 0 },
+    concentration: false, ritual: true,
+    duration: { type: "timed", value: 3600, unit: "seconds", special: null },
+    range: { type: "self", distance: 0, unit: "ft", special: null },
+    target: { type: "self", count: 1, friendly: true, requiresSight: false },
+    area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
+    scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
+    availability: {
+      classes: ["Wizard"],
+      minCasterLevel: 10,
+      featureGate: "JestersBookOfShortcuts",
+      hiddenUntilUnlocked: true
+    },
     tags: ["utility","language"],
     text: "For 1 hour, you understand spoken language you hear and can read text you touch.",
     dialogueRelated: true,
@@ -820,7 +1097,12 @@ mind_sliver: {
     target: { type: "self", count: 1, friendly: true, requiresSight: false },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Sorcerer","Wizard"],
+    availability: {
+      classes: ["Sorcerer","Wizard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["buff","mobility"],
     text: "You can Dash as a bonus action each turn while concentrating.",
     dialogueRelated: false,
@@ -840,7 +1122,37 @@ mind_sliver: {
     target: { type: "self", count: 1, friendly: true, requiresSight: false },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "slot", slot: { text: "+5 temp HP per slot above 1st" }, cantrip: { tiers: [] } },
-    classes: ["Sorcerer","Wizard"],
+    availability: {
+      classes: ["Sorcerer","Wizard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
+    tags: ["buff","temp_hp"],
+    text: "Gain 1d4+4 temporary hit points for 1 hour.",
+    dialogueRelated: false,
+    hooks: { healing: { dice: "1d4+4", modFrom: null, tempHP: true } }
+  },
+
+    false_life_jester: {
+    id: "false_life_jester",
+    name: "False Life (Cantrip)",
+    level: 0,
+    school: "Necromancy",
+    casting: { time: 1, unit: "action", reactionTrigger: null },
+    components: { v: true, s: true, m: true, material: "A small amount of alcohol or distilled spirits", consume: false, costGp: 0 },
+    concentration: false, ritual: false,
+    duration: { type: "timed", value: 3600, unit: "seconds", special: null },
+    range: { type: "self", distance: 0, unit: "ft", special: null },
+    target: { type: "self", count: 1, friendly: true, requiresSight: false },
+    area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
+    scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
+    availability: {
+      classes: ["Wizard"],
+      minCasterLevel: 10,
+      featureGate: "JestersBookOfShortcuts",
+      hiddenUntilUnlocked: true
+    },
     tags: ["buff","temp_hp"],
     text: "Gain 1d4+4 temporary hit points for 1 hour.",
     dialogueRelated: false,
@@ -860,7 +1172,12 @@ mind_sliver: {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "slot", slot: { text: "+1d8 per slot above 1st" }, cantrip: { tiers: [] } },
-    classes: ["Sorcerer","Wizard"],
+    availability: {
+      classes: ["Sorcerer","Wizard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["damage","debuff"],
     text: "Ranged spell attack for 2d8 poison damage; CON save or become Poisoned until end of your next turn.",
     dialogueRelated: false,
@@ -885,7 +1202,12 @@ mind_sliver: {
     target: { type: "point", count: 1, friendly: true, requiresSight: false },
     area: { shape: "cube", size: 15, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Sorcerer","Wizard","Bard"],
+    availability: {
+      classes: ["Sorcerer","Wizard","Bard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["utility","illusion","control"],
     text: "Create an image in a 15‑ft cube (no sound). Investigation vs your Spell Save DC can see through it on scrutiny.",
     dialogueRelated: true,
@@ -905,7 +1227,12 @@ mind_sliver: {
     target: { type: "area", count: 0, friendly: false, requiresSight: false },
     area: { shape: "sphere", size: 20, unit: "ft" },
     scaling: { type: "slot", slot: { text: "We can scale HP threshold later if desired" }, cantrip: { tiers: [] } },
-    classes: ["Sorcerer","Wizard","Bard"],
+    availability: {
+      classes: ["Sorcerer","Wizard","Bard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["control","debuff"],
     text: "Creatures in a 20‑ft radius with 20 HP or less must succeed on a CON save or fall Unconscious for 2 rounds (ends early if damaged).",
     dialogueRelated: false,
@@ -925,7 +1252,12 @@ mind_sliver: {
     target: { type: "point", count: 1, friendly: true, requiresSight: true },
     area: { shape: "sphere", size: 20, unit: "ft" },
     scaling: { type: "slot", slot: { text: "Radius +20 ft per slot above 1st (optional later)" }, cantrip: { tiers: [] } },
-    classes: ["Sorcerer","Wizard","Druid","Ranger"],
+    availability: {
+      classes: ["Sorcerer","Wizard","Druid","Ranger"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["control","obscurement"],
     text: "Create a 20‑ft radius sphere of fog; area is heavily obscured while you concentrate (10 minutes).",
     dialogueRelated: false,
@@ -945,7 +1277,12 @@ mind_sliver: {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, unit: "ft" },
     scaling: { type: "slot", slot: { text: "On hit, higher slots add +1 to the initial damage die size step (optional)" }, cantrip: { tiers: [] } },
-    classes: ["Sorcerer","Warlock","Wizard"],
+    availability: {
+      classes: ["Sorcerer","Warlock","Wizard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     tags: ["damage","sustain"],
     text: "Ranged spell attack for 1d12 lightning on hit. While you maintain concentration, at the start of your next turns you can deal 1d10, then 1d8, then 1d6, then 1d4; the spell then ends.",
     dialogueRelated: false,
@@ -966,7 +1303,12 @@ mind_sliver: {
     target: { type: "creature", count: 1, friendly: true, requiresSight: true },
     area: { shape: "none", size: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Cleric","Paladin"],
+    availability: {
+      classes: ["Cleric","Paladin"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "PHB",
     tags: ["buff","defense"],
     text: "A shimmering field surrounds a creature of your choice, granting +2 AC while you concentrate (up to 10 minutes).",
@@ -990,7 +1332,12 @@ mind_sliver: {
     target: { type: "creature", count: 1, friendly: true, requiresSight: false },
     area: { shape: "none", size: 0, unit: "ft" },
     scaling: { type: "slot", slot: { text: "+1d8 healing per slot above 1st" }, cantrip: { tiers: [] } },
-    classes: ["Cleric","Druid","Paladin","Bard","Artificer"],
+    availability: {
+      classes: ["Cleric","Druid","Paladin","Bard","Artificer"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "PHB",
     tags: ["healing"],
     text: "Touch a creature to restore hit points equal to 1d8 + your spellcasting ability modifier. Healing increases when cast with higher slots.",
@@ -1014,7 +1361,12 @@ mind_sliver: {
     target: { type: "creature", count: 3, friendly: true, requiresSight: true },
     area: { shape: "none", size: 0, unit: "ft" },
     scaling: { type: "slot", slot: { text: "Affect +1 creature per slot above 1st" }, cantrip: { tiers: [] } },
-    classes: ["Cleric","Paladin"],
+    availability: {
+      classes: ["Cleric","Paladin"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "PHB",
     tags: ["buff","party"],
     text: "Up to three creatures of your choice gain +1d4 to attack rolls and saving throws for 1 minute while you concentrate.",
@@ -1038,7 +1390,12 @@ mind_sliver: {
     target: { type: "self", count: 1, friendly: true, requiresSight: false },
     area: { shape: "sphere", size: 60, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Cleric"],
+    availability: {
+      classes: ["Cleric"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "Homebrew",
     tags: ["utility","exploration","sense"],
     text: "By attuning your divine senses, you gain a number of divine pulses equal to your proficiency bonus. Each pulse, as a bonus action, reveals the presence and nature of creatures or powerful forces within 60 feet. This includes whether they are magical, undead, fiend, celestial, or corrupted. The pulses last until you finish a long rest, after which they are replenished. This spell requires a 1st-level slot to activate the sense.",
@@ -1066,7 +1423,12 @@ mind_sliver: {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "slot", slot: { text: "+1d6 damage per slot above 1st" }, cantrip: { tiers: [] } },
-    classes: ["Cleric"],
+    availability: {
+      classes: ["Cleric"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "PHB",
     tags: ["damage","debuff","radiant"],
     text: "Make a ranged spell attack. On a hit, the target takes 4d6 radiant damage, and the next attack roll made against it before the start of your next turn has advantage.",
@@ -1092,7 +1454,12 @@ mind_sliver: {
     target: { type: "creature", count: 1, friendly: false, requiresSight: false },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "slot", slot: { text: "+1d10 damage per slot above 1st" }, cantrip: { tiers: [] } },
-    classes: ["Cleric"],
+    availability: {
+      classes: ["Cleric"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "PHB",
     tags: ["damage","necrotic"],
     text: "Make a melee spell attack against a creature you can reach. On a hit, the target takes 3d10 necrotic damage.",
@@ -1117,7 +1484,12 @@ mind_sliver: {
     target: { type: "self", count: 1, friendly: true, requiresSight: false },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Cleric"],
+    availability: {
+      classes: ["Cleric"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "PHB (tweaked)",
     tags: ["defense","buff"],
     text: "You ward yourself for a brief moment. Until the start of your next turn, when a creature targets you with an attack, it must make a Wisdom saving throw. On a failure, the attack fizzles and is wasted. The ward ends early if you make an attack or cast an offensive spell.",
@@ -1155,7 +1527,12 @@ mind_sliver: {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Cleric"],
+    availability: {
+      classes: ["Cleric"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "PHB (tweaked)",
     tags: ["control","debuff","dialogue"],
     text: "Speak a one-word command: Drop, Flee, or Betray. The target must succeed on a Wisdom saving throw or obey the chosen command. Drop: it drops what it is holding. Flee: it uses its movement to move directly away from you by the safest route. Betray (stub): it immediately makes one melee attack against its nearest ally, then the effect ends.",
@@ -1205,7 +1582,12 @@ mind_sliver: {
     target: { type: "creature", count: 1, friendly: true, requiresSight: false },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Sorcerer","Wizard","Artificer"],
+    availability: {
+      classes: ["Sorcerer","Wizard","Artificer"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "PHB",
     tags: ["buff","defense"],
     text: "You touch a willing creature not wearing armor. The target’s AC becomes 13 + its Dexterity modifier for the duration.",
@@ -1235,7 +1617,12 @@ mind_sliver: {
     target: { type: "self", count: 1, friendly: true, requiresSight: false },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Sorcerer","Wizard"],
+    availability: {
+      classes: ["Sorcerer","Wizard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "PHB",
     tags: ["defense","reaction"],
     text: "An invisible barrier of magical force appears and protects you. Until the start of your next turn, you have a +5 bonus to AC, including against the triggering attack, and you take no damage from Magic Missile.",
@@ -1265,7 +1652,12 @@ mind_sliver: {
     target: { type: "area", count: 0, friendly: false, requiresSight: true },
     area: { shape: "square", size: 20, length: 20, width: 20, height: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Wizard"], // gate to Fossicker/Wanderer via subclass logic
+    availability: {
+      classes: ["Wizard"], // gate to Fossicker/Wanderer via subclass logic
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "Homebrew",
     tags: ["control","area","difficult_terrain"],
     text: "Grasping roots/fungal mats erupt in a 20-foot square. Creatures in the area must succeed on a STR save or be Restrained by the growths until the spell ends. The area is difficult terrain. A Restrained creature can use its action to make a STR check against your spell save DC, freeing itself on a success.",
@@ -1297,7 +1689,12 @@ mind_sliver: {
     target: { type: "area", count: 0, friendly: false, requiresSight: true },
     area: { shape: "cube", size: 20, length: 20, width: 20, height: 20, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Wizard"],
+    availability: {
+      classes: ["Wizard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "Homebrew",
     tags: ["control","debuff","reveal"],
     text: "Each creature in a 20-foot cube must make a DEX save or be outlined in light for the duration. Affected creatures shed dim light and cannot benefit from being invisible. Attack rolls against an affected creature have advantage.",
@@ -1329,7 +1726,12 @@ mind_sliver: {
     target: { type: "self", count: 1, friendly: true, requiresSight: false },
     area: { shape: "sphere", size: 30, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: "Each casting grants a single pulse; no concentration." }, cantrip: { tiers: [] } },
-    classes: ["Wizard"],
+    availability: {
+      classes: ["Wizard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "Homebrew",
     tags: ["utility","exploration","sense"],
     text: "You emit a brief divinatory pulse that reveals sources of poison, poisonous creatures, poisons, and disease within 30 feet. The pulse reports what and where are affected (general locations) at the moment of casting. This is a single burst of insight (not sustained).",
@@ -1361,7 +1763,12 @@ mind_sliver: {
     target: { type: "creature", count: 1, friendly: true, requiresSight: false },
     area: { shape: "none", size: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Wizard", "Cleric", "Paladin"], // gate via Fossicker / Wanderer subclass logic
+    availability: {
+      classes: ["Wizard", "Cleric", "Paladin"], // gate via Fossicker / Wanderer subclass logic
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "Homebrew",
     tags: ["cleanse","support"],
     text: "You end one disease or condition afflicting the target: blinded, deafened, paralyzed, or poisoned.",
@@ -1388,7 +1795,12 @@ mind_sliver: {
     target: { type: "point", count: 1, friendly: false, requiresSight: true },
     area: { shape: "radius", size: 20, unit: "ft" }, // 20-foot radius
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Wizard"],
+    availability: {
+      classes: ["Wizard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "Homebrew",
     tags: ["area","control","hazard"],
     text: "The ground twists with jagged scrap and thorny growths in a 20-foot radius. The area is difficult terrain. A creature moving within the area takes 2d4 piercing damage for every 5 feet it travels there. The transformation is camouflaged; a creature must succeed on a Perception check against your spell save DC to spot the hazard when entering it for the first time.",
@@ -1419,7 +1831,12 @@ mind_sliver: {
     target: { type: "self", count: 1, friendly: true, requiresSight: false },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "slot", slot: { text: "+1d6 fire damage for every 2 slot levels above 2nd" }, cantrip: { tiers: [] } },
-    classes: ["Wizard"], // gate via Fossicker/Wanderer subclass logic
+    availability: {
+      classes: ["Wizard"], // gate via Fossicker/Wanderer subclass logic
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "Homebrew",
     tags: ["conjuration","weapon","light","concentration"],
     text: "A fiery blade appears in your hand. While the spell lasts, you can make a melee spell attack with the blade as a bonus action on each of your turns. On a hit, the target takes 3d6 fire damage (increases at higher slots). The blade sheds bright light in a 10-foot radius and dim light for an additional 10 feet. If you let go of the blade, it disappears, but you can use a bonus action to summon the blade back to your hand while the spell persists.",
@@ -1456,7 +1873,12 @@ mind_sliver: {
     target: { type: "self", count: 1, friendly: true, requiresSight: false },
     area: { shape: "none", size: 0, length: 0, width: 0, height: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Warlock","Sorcerer","Wizard","Bard"],
+    availability: {
+      classes: ["Warlock","Sorcerer","Wizard","Bard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "PHB",
     tags: ["mobility","bonus_action","teleport"],
     text: "Briefly wreathed in silvery mist, you teleport up to 30 feet to an unoccupied space you can see.",
@@ -1488,7 +1910,12 @@ mind_sliver: {
     target: { type: "point", count: 1, friendly: true, requiresSight: true },
     area: { shape: "sphere", size: 15, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Warlock","Sorcerer","Wizard"],
+    availability: {
+      classes: ["Warlock","Sorcerer","Wizard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "PHB",
     tags: ["control","obscurement","darkness","concentration"],
     text: "A 15‑ft‑radius sphere becomes fully dark for 1 minute (concentration). Vision is blocked for all creatures; ambient light is suppressed within the area. Cast on a point (not a creature).",
@@ -1520,7 +1947,12 @@ mind_sliver: {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Warlock","Cleric","Bard","Sorcerer","Wizard"],
+    availability: {
+      classes: ["Warlock","Cleric","Bard","Sorcerer","Wizard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "PHB",
     tags: ["control","paralyze","concentration"],
     text: "Humanoid makes a Wisdom save or becomes Paralyzed for the duration. The target can repeat the save at the end of each of its turns, ending the effect on a success.",
@@ -1551,7 +1983,12 @@ mind_sliver: {
     target: { type: "point", count: 1, friendly: true, requiresSight: true },
     area: { shape: "sphere", size: 10, unit: "ft" },
     scaling: { type: "slot", slot: { text: "+1d8 damage per slot level above 2nd" }, cantrip: { tiers: [] } },
-    classes: ["Warlock","Bard","Sorcerer","Wizard"],
+    availability: {
+      classes: ["Warlock","Bard","Sorcerer","Wizard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "PHB",
     tags: ["damage","area","thunder"],
     text: "A sudden loud ringing noise, painfully intense, erupts from a point. Creatures in a 10‑ft radius sphere must make a CON save, taking 3d8 thunder damage on a failed save, or half as much on a success.",
@@ -1577,7 +2014,12 @@ mind_sliver: {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, unit: "ft" },
     scaling: { type: "slot", slot: { text: "At higher levels, DMs may allow additional targets (optional)" }, cantrip: { tiers: [] } },
-    classes: ["Warlock","Bard","Cleric","Sorcerer","Wizard"],
+    availability: {
+      classes: ["Warlock","Bard","Cleric","Sorcerer","Wizard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "Homebrew (merged Hold Person/Monster)",
     tags: ["control","paralyze","concentration"],
     text: "Choose a creature you can see within range. The target must succeed on a Wisdom saving throw or be paralyzed for the duration. At the end of each of its turns, the target can make another Wisdom saving throw, ending the effect on itself on a success. This spell affects any creature type. The save DC becomes harder as you gain Warlock levels (every two levels above 3rd: +1 DC).",
@@ -1620,7 +2062,12 @@ mind_sliver: {
     target: { type: "area", count: 0, friendly: false, requiresSight: true },
     area: { shape: "cube", size: 20, length: 20, width: 20, height: 20, unit: "ft" },
     scaling: { type: "slot", slot: { text: "+1d12 damage per slot above 3rd" }, cantrip: { tiers: [] } },
-    classes: ["Wizard"], // gate to Fossicker/Wanderer via subclass logic
+    availability: {
+      classes: ["Wizard"], // gate to Fossicker/Wanderer via subclass logic
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "Homebrew",
     tags: ["area","damage","control","terrain"],
     text: "Jagged stone and rubble erupt in a 20-foot cube centered on a point you can see. Each creature in the area makes a Dexterity save, taking 3d12 bludgeoning damage on a fail or half as much on a success. The ground in the area becomes difficult terrain until cleared.",
@@ -1651,7 +2098,12 @@ mind_sliver: {
     target: { type: "self", count: 1, friendly: true, requiresSight: false },
     area: { shape: "donut", size: 5, length: 0, width: 0, height: 0, unit: "ft" }, // ring 5 ft from caster
     scaling: { type: "slot", slot: { text: "+1d4 damage per 2 slot levels above 3rd (5th, 7th)" }, cantrip: { tiers: [] } },
-    classes: ["Wizard"], // gate via subclass logic
+    availability: {
+      classes: ["Wizard"], // gate via subclass logic
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "Homebrew",
     tags: ["control","area","hazard","summoning"],
     text: "You conjure a gnashing ring of rats, roaches, and biting vermin that swarms in a 5-foot ring around you and moves with you. When a creature starts its turn in the ring or enters it for the first time on a turn, it must make a Dexterity save, taking 2d4 piercing damage on a failed save, or half as much on a success. The ring counts as difficult terrain. The swarm disperses when the spell ends.",
@@ -1686,7 +2138,12 @@ mind_sliver: {
     target: { type: "point", count: 1, friendly: false, requiresSight: true },
     area: { shape: "line", size: 50, length: 50, width: 1, height: 15, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Wizard"], // druid import for Fossicker/Wanderer
+    availability: {
+      classes: ["Wizard"], // druid import for Fossicker/Wanderer
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "Homebrew",
     tags: ["control","wall","area"],
     text: "A roaring wall of air rises from a line you choose, up to 50 feet long, 15 feet high, and 1 foot thick. When the wall appears, each creature in its space makes a Strength save, taking 3d8 bludgeoning damage on a failed save, or half as much on a success, and is pushed 5 feet to one side of the wall (your choice) on a failure. The wall persists, dispersing gases and fog, extinguishing small flames, and making ranged weapon attacks that pass through it have disadvantage (or are deflected, at the DM’s discretion for very light missiles). Small flying creatures cannot pass through the wall.",
@@ -1841,7 +2298,10 @@ export function getSpellById(id) {
   return SPELLS[id] || null;
 }
 export function listSpellsByClass(cls) {
-  return Object.values(SPELLS).filter(s => s.classes?.includes(cls));
+  return Object.values(SPELLS).filter(s => {
+    const classes = s.availability?.classes ?? s.classes ?? [];
+    return classes.includes(cls);
+  });
 }
   
 
@@ -1860,7 +2320,12 @@ export function listSpellsByClass(cls) {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Warlock","Wizard","Sorcerer","Bard"],
+    availability: {
+      classes: ["Warlock","Wizard","Sorcerer","Bard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "PHB",
     tags: ["reaction","utility","interruption"],
     text: "You attempt to interrupt a creature in the process of casting a spell. If the spell is 3rd level or lower, it fails and has no effect. If it is 4th level or higher, make an ability check using your spellcasting ability (DC 10 + the spell’s level). On a success, the spell fails; otherwise, it succeeds.",
@@ -1891,7 +2356,12 @@ export function listSpellsByClass(cls) {
     target: { type: "point", count: 1, friendly: true, requiresSight: true },
     area: { shape: "sphere", size: 20, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Warlock"],
+    availability: {
+      classes: ["Warlock"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "PHB",
     tags: ["control","area","darkness","hazard","concentration"],
     text: "You open a gateway to the dark between the stars. A 20‑ft‑radius sphere of darkness appears for 1 minute (concentration). The area is difficult terrain. Creatures that start their turn in the area take 2d6 cold damage. Creatures that end their turn in the area must succeed on a DEX save or take 2d6 acid damage. Vision is blocked for all creatures and light is suppressed within the area.",
@@ -1928,7 +2398,12 @@ export function listSpellsByClass(cls) {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, unit: "ft" },
     scaling: { type: "slot", slot: { text: "+1d8 damage per slot level above 4th" }, cantrip: { tiers: [] } },
-    classes: ["Warlock","Sorcerer","Wizard","Druid"],
+    availability: {
+      classes: ["Warlock","Sorcerer","Wizard","Druid"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "PHB",
     tags: ["damage","necrotic","single_target"],
     text: "Necromantic energy washes over a creature of your choice that you can see within range, draining moisture and vitality. The target must make a Constitution saving throw. The target takes 8d8 necrotic damage on a failed save, or half as much damage on a successful one.",
@@ -1953,7 +2428,12 @@ export function listSpellsByClass(cls) {
     target: { type: "creature", count: 1, friendly: false, requiresSight: true },
     area: { shape: "none", size: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Warlock","Cleric","Paladin","Sorcerer"],
+    availability: {
+      classes: ["Warlock","Cleric","Paladin","Sorcerer"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "PHB (adapted)",
     tags: ["control","banish","concentration"],
     text: "You banish a creature to a sealed stasis within the battlefield for up to 1 minute (concentration). The target makes a Charisma saving throw. On a failure, it is moved to an empty square and encased in an impenetrable magical shell: it cannot act, move, or be targeted or affected by any other effects. The target reappears when your concentration ends or after 1 minute. On a successful save, the spell has no effect.",
@@ -1988,7 +2468,12 @@ export function listSpellsByClass(cls) {
     target: { type: "point", count: 1, friendly: true, requiresSight: true },
     area: { shape: "line", length: 50, width: 10, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Warlock","Wizard","Sorcerer"],
+    availability: {
+      classes: ["Warlock","Wizard","Sorcerer"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "PHB (adapted)",
     tags: ["control","wall","concentration"],
     text: "Create an invisible, indestructible wall up to 50 ft long and 10 ft high that blocks movement, projectiles, and line of sight. The wall persists while you concentrate (up to 1 minute).",
@@ -2022,7 +2507,12 @@ export function listSpellsByClass(cls) {
     target: { type: "area", count: 0, friendly: false, requiresSight: true },
     area: { shape: "sphere", size: 20, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Warlock","Wizard","Sorcerer","Bard"],
+    availability: {
+      classes: ["Warlock","Wizard","Sorcerer","Bard"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "XGtE (adapted)",
     tags: ["damage","debuff","psychic","area","concentration"],
     text: "A 20‑foot‑radius psychic detonation. Creatures in the area make an INT save, taking 8d6 psychic damage on a failure or half on a success. On a failure, a creature is mentally scrambled for up to 1 minute while you concentrate; at the end of each of its turns it can make an INT save to end the effect.",
@@ -2060,7 +2550,12 @@ export function listSpellsByClass(cls) {
     target: { type: "self", count: 1, friendly: true, requiresSight: false },
     area: { shape: "none", size: 0, unit: "ft" },
     scaling: { type: "none", slot: { text: null }, cantrip: { tiers: [] } },
-    classes: ["Warlock","Wizard","Sorcerer"],
+    availability: {
+      classes: ["Warlock","Wizard","Sorcerer"],
+      minCasterLevel: null,
+      featureGate: null,
+      hiddenUntilUnlocked: false
+    },
     source: "PHB (adapted)",
     tags: ["mobility","concentration","teleport"],
     text: "You blur and displace. For up to 1 minute while concentrating, you can use a bonus action on each of your turns to teleport up to 60 feet to a space you can see.",

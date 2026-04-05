@@ -49,11 +49,35 @@ export default {
         description: "Take one additional action on your turn."
       }
     ],
+    4: [
+      {
+        name: "Ability Score Improvement",
+        type: "Passive",
+        description:
+          "Increase ability scores or take a feat (engine-defined advancement rule)."
+      }
+    ],
     5: [
       {
         name: "Extra Attack",
         type: "Passive",
         description: "When you take the Attack action, you can make two attacks."
+      }
+    ],
+    8: [
+      {
+        name: "Ability Score Improvement",
+        type: "Passive",
+        description:
+          "Increase ability scores or take a feat (engine-defined advancement rule)."
+      }
+    ],
+    12: [
+      {
+        name: "Ability Score Improvement",
+        type: "Passive",
+        description:
+          "Increase ability scores or take a feat (engine-defined advancement rule)."
       }
     ]
   },
@@ -62,8 +86,12 @@ export default {
       summary: "Steadfast paragon who turns steady blows into heroic finishes.",
       features: {
         3: [
-          { name: "Press the Attack", type: "Special", uses: "shortRest",
-            description: "Once per short rest, if your attack leaves a creature at or below 10% of its max HP, the creature is slain." }
+          {
+            name: "Execute",
+            type: "Special",
+            uses: "shortRest",
+            description: "When you hit a creature that is below 25% of its max HP, add +2d8 damage."
+          }
         ],
         7: [
           { name: "Second Wind Upgrade", type: "Passive",
@@ -84,7 +112,7 @@ export default {
         ],
         7: [
           { name: "Evasive Step", type: "Passive",
-            description: "When an adjacent enemy misses you with a melee attack, you may move 5 ft without provoking." }
+            description: "When an adjacent enemy misses you with a melee attack, you may make one basic melee weapon attack against it." }
         ],
         11: [
           { name: "Deadly Precision", type: "Passive",
@@ -100,11 +128,11 @@ export default {
             description: "Enter a 1-minute rage: advantage on STR checks/saves, +2 melee damage with STR, resistance to bludgeoning/piercing/slashing. Ends early if you don’t attack or take damage on your turn." },
           { name: "Reckless Attack", type: "Special",
             description: "On your turn, you can gain advantage on STR melee attacks; attacks against you have advantage until your next turn." },
-          { name: "Ferocious Swing", type: "Special",
-            description: "While raging, once per turn you may make a sweeping strike, making one attack roll that targets all adjacent enemies." }
+          { name: "Execute", type: "Action", uses: "longrest:1",
+            description: "While raging, once per turn when you hit, deal +1d6 damage to that target. If you had advantage on the attack, +1d6 more." }
         ],
         7: [
-          { name: "Primal Roar", type: "Bonus Action", uses: "shortRest",
+          { name: "Primal Roar", type: "Bonus Action", uses: "shortRest:1",
             description: "While raging, unleash a roar. Creatures of your choice within 10 ft must succeed on a WIS save or be frightened until the end of your next turn." }
         ],
         11: [

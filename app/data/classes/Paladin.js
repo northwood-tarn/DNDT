@@ -14,6 +14,14 @@ export default {
     note: "Fixed hit points (no rolling). At 1st level: 10 + CON modifier. From 2nd level onward: +6 + CON modifier each level."
   },
   features: {
+    4: [
+      {
+        name: "Ability Score Improvement",
+        type: "Passive",
+        description:
+          "Increase ability scores or take a feat (engine-defined advancement rule)."
+      }
+    ],
     5: [
       { feature: "Extra Attack", name: "Extra Attack", type: "Passive",
         description: "When you take the Attack action, you can make two attacks." }
@@ -89,6 +97,14 @@ export default {
         }
       }
     ],
+    8: [
+      {
+        name: "Ability Score Improvement",
+        type: "Passive",
+        description:
+          "Increase ability scores or take a feat (engine-defined advancement rule)."
+      }
+    ],
     10: [{
       feature: "Aura of Courage",
       name: "Aura of Courage",
@@ -101,7 +117,16 @@ export default {
         selfBuff: { immuneTo: ["frightened"] },
         enemyDebuff: { disadvantageOnSavesVsYourTags: ["fear"] }
       }
-    }]
+    }],
+
+    12: [
+      {
+        name: "Ability Score Improvement",
+        type: "Passive",
+        description:
+          "Increase ability scores or take a feat (engine-defined advancement rule)."
+      }
+    ]
   },
   subclasses: {
     "Oath of Vengeance": {
@@ -112,8 +137,8 @@ export default {
             description: "Choose a creature within 10 ft; for 1 minute, you have advantage on attack rolls against it." }
         ],
         7: [
-          { name: "Chains of Vengeance", type: "Reaction", uses: "shortRest",
-            description: "When your Vow target moves or attacks, you may force a STR save; on failure, it is restrained until the start of its next turn." }
+          { name: "Chains of Vengeance", type: "Passive", 
+            description: "When your Vow target moves or attacks, they must make a STR save; on failure, its attack misses and it is restrained until the start of its next turn." }
         ],
         11: [
           { name: "Relentless Pursuit", type: "Passive",

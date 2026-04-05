@@ -6,6 +6,7 @@
 // and then left alone.
 
 import { PIXI } from "./pixi.js";
+import { on } from "./events.js";
 
 let fogLayer = null;     // PIXI.Container
 let spriteA = null;      // PIXI.Sprite
@@ -19,6 +20,9 @@ let holdDuration = 6;    // seconds
 let textures = [];
 let tickerFn = null;
 let debugGfx = null;    // PIXI.Graphics (optional)
+
+let enabled = true;
+let suspended = false;
 
 // IMPORTANT: use root-absolute paths so module location / router paths don't matter.
 const IMAGE_PATHS = [
@@ -109,6 +113,7 @@ function resize(app) {
 }
 
 function tick(app) {
+  if (!enabled || suspended) return;
   if (!fogLayer || !spriteA || !spriteB || textures.length === 0) return;
 
   // If a scene cleared the stage, our container may have been detached.
@@ -259,6 +264,24 @@ export async function ensureFogLayer(app) {
 
   console.info("[fogLayer] Initialised global fog layer");
   return { app, stage: fogLayer };
+}
+
+on("scene:enter", ({ sceneId }) => {
+  if (sceneId === "exploration" || sceneId === "combat") {
+    disableFog();
+  } else {
+    enableFog();
+  }
+});
+
+export function enableFog() {
+  enabled = true;
+  if (fogLayer) fogLayer.visible = true;
+}
+
+export function disableFog() {
+  enabled = false;
+  if (fogLayer) fogLayer.visible = false;
 }
 
 export function destroyFogLayer(app) {

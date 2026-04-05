@@ -25,7 +25,55 @@ export default {
     }
   },
   features: {
-    // Keep your core wizard features (Spellcasting, Arcane Recovery, etc.) in your engine.
+    1: [
+      {
+        name: "Arcane Recovery",
+        type: "Special",
+        uses: "longRest",
+        description:
+          "When you finish a Short Rest, you can recover expended spell slots once per Long Rest. The spell slots can have a combined level equal to no more than half your Wizard level (round up), and none of the recovered slots can be 6th level or higher."
+      }
+    ],
+    4: [
+      {
+        name: "Ability Score Improvement",
+        type: "Passive",
+        description:
+          "Increase ability scores or take a feat (engine-defined advancement rule)."
+      }
+    ],
+    6: [
+      {
+        name: "Arcane Focus",
+        type: "Passive",
+        description:
+          "You have advantage on the first Concentration check you make each round (engine: concentration support)."
+      }
+    ],
+    8: [
+      {
+        name: "Ability Score Improvement",
+        type: "Passive",
+        description:
+          "Increase ability scores or take a feat (engine-defined advancement rule)."
+      }
+    ],
+    10: [
+      {
+        name: "Jester’s Book of Shortcuts",
+        type: "Special",
+        description:
+          "At 10th level, you gain access to Jester’s Book of Shortcuts, a marginal spellbook containing unsafe arcane techniques. Choose one spell from the book’s list (Comprehend Languages, False Life, Magic Missile, Burning Hands, Thunderwave). You may cast the chosen spell as a cantrip. When cast this way, the spell is always treated as though cast by a 2nd-level wizard, cannot be upcast, and does not scale with your character level. Like other cantrips, the spell is considered to be always prepared."
+      }
+    ],
+    12: [
+      {
+        name: "Ability Score Improvement",
+        type: "Passive",
+        description:
+          "Increase ability scores or take a feat (engine-defined advancement rule)."
+      }
+    ]
   },
   subclasses: {
     "Dirt Wizard": {
@@ -45,7 +93,7 @@ export default {
         ],
         13: [
           { name: "Indomitability", type: "Special", uses: "longRest",
-            description: "Once per long rest, when you would be reduced to 0 HP, instead drop to 1 HP and immediately regain one expended spell slot of 5th level or lower." }
+            description: "Once per long rest, when you would be reduced to 0 HP, instead drop to 1 HP and immediately regain your highest expended spell slot of 5th level or lower." }
         ]
       }
     },

@@ -40,6 +40,27 @@ export function setDashed(actor)      {
   e.moveUsed = true;
 }
 
+// ---- Round lifecycle helpers ----
+// Called at the start of each combat round.
+// This clears per-round flags (e.g. reactions) without spending actions.
+export function startRound(state) {
+  const actors = (state?.combat?.actors && Array.isArray(state.combat.actors))
+    ? state.combat.actors
+    : [ state?.combat?.player, ...(state?.combat?.enemies || []) ].filter(Boolean);
+
+  for (const a of actors) {
+    if (!a) continue;
+
+    // Ensure the economy bag exists but do not reset/spend actions
+    ensureTurnEconomy(a);
+
+    // Clear common per-round flags if present
+    if (typeof a.reactionUsed === "boolean") a.reactionUsed = false;
+    if (typeof a.usedReactionThisRound === "boolean") a.usedReactionThisRound = false;
+    if (typeof a.usedOpportunityAttackThisRound === "boolean") a.usedOpportunityAttackThisRound = false;
+  }
+}
+
 // ---- Turn lifecycle helpers ----
 export function startTurn(actor) {
   // reset per-turn economy and flags

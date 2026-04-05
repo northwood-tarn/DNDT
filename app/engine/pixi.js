@@ -4,6 +4,7 @@
 import * as PIXI from "https://cdnjs.cloudflare.com/ajax/libs/pixi.js/8.13.2/pixi.min.mjs";
 
 let app = null;
+let appInitPromise = null;
 
 function attachCanvasToDom(app) {
   if (!app) return;
@@ -44,22 +45,47 @@ function attachCanvasToDom(app) {
   }
 }
 
-export async function getApp({ width = 608, height = 592, resizeTo = window } = {}) {
+export function getApp({ width = 608, height = 592, resizeTo = window } = {}) {
   if (!app) {
     app = new PIXI.Application();
-    await app.init({ width, height, resizeTo, backgroundAlpha: 0, antialias: true });
+
+    // Kick off async init once, but return the app immediately so callers
+    // can safely access `app.stage` without awaiting.
+    appInitPromise = app
+      .init({ width, height, resizeTo, backgroundAlpha: 0, antialias: true })
+      .then(() => {
+        attachCanvasToDom(app);
+
+        // Dev convenience: expose the singleton for console inspection during scene transitions.
+        try {
+          if (typeof window !== "undefined") window.__PIXI_APP = app;
+        } catch {}
+
+        return app;
+      })
+      .catch((err) => {
+        console.error("[pixi] Failed to init PIXI.Application", err);
+        throw err;
+      });
+  } else {
+    // If init has completed, ensure the canvas is attached.
+    // If init is still in-flight, attachment will happen in the init promise.
+    if (appInitPromise) {
+      // no-op
+    } else {
+      attachCanvasToDom(app);
+    }
+
+    try {
+      if (typeof window !== "undefined") window.__PIXI_APP = app;
+    } catch {}
   }
 
-  // Make sure the PIXI canvas is attached behind the DOM-based UI.
-  attachCanvasToDom(app);
-
-  // Dev convenience: expose the singleton for console inspection during scene transitions.
-  // This is intentionally harmless in production builds.
-  try {
-    if (typeof window !== "undefined") window.__PIXI_APP = app;
-  } catch {}
-
   return app;
+}
+
+export function getAppReadyPromise() {
+  return appInitPromise || Promise.resolve(app);
 }
 
 export { PIXI };

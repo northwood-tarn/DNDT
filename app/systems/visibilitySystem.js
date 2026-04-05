@@ -7,6 +7,28 @@ import { getPlayerVisibility } from './lightingRules.js';
 import { buildLightSets } from './lightSources.js';
 import { logSystem } from '../engine/log.js';
 
+// Throttled debug state for light-source logging
+let __lastLightLogAt = 0;
+function __safeLightSummary(list) {
+  if (!Array.isArray(list)) return String(list);
+  return list.map((s) => {
+    if (!s) return null;
+    return {
+      id: s.id,
+      kind: s.kind,
+      on: s.on,
+      x: s.x,
+      y: s.y,
+      r: s.r ?? s.radius,
+      ambient: s.ambient,
+      persistent: s.persistent,
+      transient: s.transient,
+      follow: s.follow,
+      owner: s.owner,
+    };
+  });
+}
+
 /**
  * Recompute visibility sets (bright/dim) for the current frame.
  * @param {{px:number, py:number}} param0
@@ -26,8 +48,15 @@ export function recomputeVisibility({ px, py }) {
     (state?.map?.lights) ??
     [];
 
-  // DEBUG: log all current light sources to see what's in raw
-  logSystem(`LIGHT SOURCES: ${JSON.stringify(raw)}`);
+  try {
+    const now = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+    if (now - __lastLightLogAt > 1500) {
+      __lastLightLogAt = now;
+      logSystem(`LIGHT SOURCES (summary): ${JSON.stringify(__safeLightSummary(raw))}`);
+    }
+  } catch (_) {
+    // Ignore debug logging failures.
+  }
 
   // Allowed kinds are ambient/static fixtures. Anything tagged as player/hover/etc. is excluded.
   const ALLOW_KIND = new Set(['torch', 'lamp', 'lantern_static', 'brazier', 'camp', 'bonfire', 'crystal', 'portal', 'glow', 'ambient', 'sun', 'moon']);
@@ -61,4 +90,33 @@ export function recomputeVisibility({ px, py }) {
   });
 
   return { bright, dim };
+}
+
+// -----------------------------------------------------------------------------
+// Factory (used by explorationSystem)
+// -----------------------------------------------------------------------------
+// Keeps the explorationSystem call-site stable. This adapter simply exposes a
+// small instance API around the pure recomputeVisibility(...) function.
+export function createVisibilitySystem(options = {}) {
+  const {
+    // Optional hooks for pulling current player position
+    getPlayerPos,
+    // Optional override for providing state (if you later move off the imported singleton)
+    getState,
+  } = options;
+
+  function recomputeForPlayer() {
+    const st = typeof getState === 'function' ? getState() : state;
+    const pos = typeof getPlayerPos === 'function'
+      ? getPlayerPos(st)
+      : (st?.explore?.playerPos || st?.playerPos || st?.player?.pos || null);
+
+    if (!pos) return { bright: new Set(), dim: new Set() };
+    return recomputeVisibility({ px: pos.x | 0, py: pos.y | 0 });
+  }
+
+  return {
+    recomputeVisibility,
+    recomputeForPlayer,
+  };
 }

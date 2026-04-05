@@ -7,7 +7,10 @@
 //    events and move between scenes in a predictable way.
 
 import SaveManager from "../scenes/SaveManager.js";
+import { getArea } from "../areas/index.js";
 import { getState, setState } from "../state/stateStore.js";
+import { emit } from "./events.js";
+import { attachExplorationMovement } from "./inputManager.js";
 
 /**
  * @typedef {"mainMenu" | "dialogue" | "exploration" | "combat" | "gameOver" | "systemCutscene"} SceneName
@@ -37,6 +40,36 @@ import { getState, setState } from "../state/stateStore.js";
 let currentScene = null;
 let currentSceneName = null;
 const registry = new Map();
+
+// ---------------------------------------------------------------------------
+// Exploration input bridge (WASD/Arrows -> exploration:moveIntent)
+// ---------------------------------------------------------------------------
+
+let detachExplorationInput = null;
+
+function detachExplorationMovementBridge() {
+  if (typeof detachExplorationInput === "function") {
+    try {
+      detachExplorationInput();
+    } catch (e) {
+      console.warn("[sceneRouter] Failed detaching exploration input bridge:", e);
+    }
+  }
+  detachExplorationInput = null;
+}
+
+function attachExplorationMovementBridge() {
+  // Attach a tick-driven movement bridge. Actual movement legality is handled in explorationSystem.
+  detachExplorationMovementBridge();
+
+  detachExplorationInput = attachExplorationMovement({
+    emit,
+    isEnabled: () => currentSceneName === "exploration",
+    stepMs: 120,
+    tickEventName: "game:tick",
+    target: typeof window !== "undefined" ? window : null,
+  });
+}
 
 /**
  * Register a scene instance or factory under a logical name.
@@ -83,6 +116,13 @@ export function changeScene(nameOrObj, data) {
     }
   }
 
+  if (currentSceneName) {
+    if (currentSceneName === "exploration") {
+      detachExplorationMovementBridge();
+    }
+    emit("scene:exit", { sceneId: currentSceneName });
+  }
+
   // Cleanup previous scene if it exposes a cleanup hook
   if (currentScene && typeof currentScene.cleanup === "function") {
     try {
@@ -112,6 +152,12 @@ export function changeScene(nameOrObj, data) {
   }
 
   console.info("[sceneRouter] Starting scene:", currentSceneName, "with payload:", data || {});
+
+  emit("scene:enter", { sceneId: currentSceneName });
+
+  if (currentSceneName === "exploration") {
+    attachExplorationMovementBridge();
+  }
 
   if (currentScene && typeof currentScene.start === "function") {
     try {
@@ -172,6 +218,20 @@ function normalizeRoute(raw) {
   return route;
 }
 
+// Helper: map area.kind to SceneName
+function sceneForAreaKind(kind) {
+  switch (kind) {
+    case "dialogue":
+      return "dialogue";
+    case "exploration_map":
+      return "exploration";
+    case "combat":
+      return "combat";
+    default:
+      return null;
+  }
+}
+
 /**
  * Resolve a RouteDescriptor into a concrete scene name and payload,
  * then delegate to changeScene.
@@ -212,6 +272,40 @@ export function routeTo(routeDescriptor) {
   }
 
   if (!route) return;
+
+  // Canonical Area-kind → Scene routing.
+  // If an areaId is provided, the area's kind is the source of truth for which scene we route into.
+  if (route.areaId) {
+    const area = getArea(route.areaId);
+    if (!area) {
+      console.warn("[sceneRouter] routeTo: Unknown areaId:", route.areaId, "route=", route);
+      return;
+    }
+
+    const inferred = sceneForAreaKind(area.kind);
+    if (!inferred) {
+      console.warn("[sceneRouter] routeTo: Unsupported area kind:", area.kind, "areaId=", route.areaId);
+      return;
+    }
+
+    if (route.toScene !== inferred) {
+      console.info(
+        "[sceneRouter] routeTo: Overriding toScene based on area.kind:",
+        route.toScene,
+        "→",
+        inferred,
+        "(areaId=",
+        route.areaId,
+        ", kind=",
+        area.kind,
+        ")"
+      );
+      route.toScene = inferred;
+    }
+
+    // Ensure area-driven scenes always carry areaId (explicit contract) and pass through entryKnot when relevant.
+    // (We do not auto-invent entryKnot here.)
+  }
 
   // Minimap progress: mark the destination area as visited when routing into an area-driven scene.
   // This keeps visited state canonical at the router level (single source of transitions).

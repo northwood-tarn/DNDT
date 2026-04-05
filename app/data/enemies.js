@@ -1,5 +1,6 @@
 // app/data/enemies.js
 // Extended with vision + hostility fields for awareness system
+// Note: undead need to be ranked: profane, bound, sovereign. This will determine the effects of Turn Undead
 
 export const enemies = {
   goblin: {

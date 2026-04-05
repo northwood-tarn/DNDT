@@ -1,7 +1,17 @@
 // NOTE: `areas.generated.js` is produced by tools/genAreasRegistry.mjs.
 // On a fresh checkout / before the first generator run, it may not exist yet.
 // We treat it as optional so the app + tooling can boot in a clean state.
-const HAND_AREA_DATA = {};
+const HAND_AREA_DATA = {
+  fields: {
+    id: "fields",
+    title: "Fields",
+    kind: "exploration_map",
+    assets: {
+      tmj: "./areas/00_docks/fields.tmj",
+      image: "./areas/00_docks/map.png",
+    },
+  },
+};
 let GENERATED_AREA_PROFILES = {};
 try {
   const mod = await import("./areas.generated.js");

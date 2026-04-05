@@ -12,16 +12,31 @@
 /** @typedef {{
  *   id:string, title?:string, profile:'ExplorationMap',
  *   width:number, height:number,
+ *   tileSize:number,
+ *   image:string,
+ *   pixelWidth:number, pixelHeight:number,
  *   start:{x:number, y:number},
  *   minimap?: boolean,
  *   labels: Label[],
  *   triggers: Trigger[],
- *   triggersByKey: Record<string, Trigger>
+ *   triggersByKey: Record<string, Trigger>,
+ *
+ *   // Optional collision/solidity data (used by mapSystem/explorationSystem if present)
+ *   collisionGrid?: any,
+ *   blocked?: any,
+ *   solids?: any
  * }} ExplorationMap
  */
 
-const REQUIRED_KEYS = ['id','profile','width','height','start'];
+const REQUIRED_KEYS = ['id','profile','width','height','tileSize','image','start'];
 const PROFILE = 'ExplorationMap';
+
+// Canonical contract (engine assumptions)
+const CANON_TILE_SIZE = 48;
+
+// NOTE: We *used* to enforce canonical tiers (40x30/60x45/80x60).
+// In practice, areas evolve and editor exports vary; strict tier checks cause boot-time hard failures.
+// If you want tier enforcement later, do it via a build-time validation script, not runtime.
 
 export function validateExplorationMap(json){
   const issues = [];
@@ -45,6 +60,31 @@ export function validateExplorationMap(json){
   const w = Number(json.width), h = Number(json.height);
   if (!Number.isInteger(w) || w <= 0) issues.push('width must be a positive integer.');
   if (!Number.isInteger(h) || h <= 0) issues.push('height must be a positive integer.');
+
+  // Tile size (runtime should accept any positive integer; renderer can scale accordingly)
+  const ts = Number(json.tileSize);
+  if (!Number.isInteger(ts) || ts <= 0) {
+    issues.push('tileSize must be a positive integer.');
+  }
+
+  // Background image path
+  if (typeof json.image !== 'string' || !json.image.trim()) {
+    issues.push('image must be a non-empty string (relative PNG path).');
+  }
+
+  // Optional: explicit pixel dimensions must match derived values
+  const expectedPW = Number.isInteger(w) && Number.isInteger(ts) ? (w * ts) : null;
+  const expectedPH = Number.isInteger(h) && Number.isInteger(ts) ? (h * ts) : null;
+
+  if (json.pixelWidth !== undefined) {
+    const pw = Number(json.pixelWidth);
+    if (!Number.isInteger(pw) || pw <= 0) issues.push('pixelWidth must be a positive integer if present.');
+  }
+
+  if (json.pixelHeight !== undefined) {
+    const ph = Number(json.pixelHeight);
+    if (!Number.isInteger(ph) || ph <= 0) issues.push('pixelHeight must be a positive integer if present.');
+  }
 
   // Start
   const sx = Number(json?.start?.x), sy = Number(json?.start?.y);
@@ -126,7 +166,7 @@ export function normalizeTriggers(triggers = []){
 export function fromJSON(json){
   const v = validateExplorationMap(json);
   if (!v.ok){
-    const msg = 'ExplorationMap validation failed:\\n - ' + v.issues.join('\\n - ');
+    const msg = 'ExplorationMap validation failed:\n - ' + v.issues.join('\n - ');
     throw new Error(msg);
   }
 
@@ -137,9 +177,18 @@ export function fromJSON(json){
   const minimap = typeof json.minimap === 'boolean' ? json.minimap : undefined;
   const start = { x: Number(json.start.x), y: Number(json.start.y) };
 
+  const tileSize = Number(json.tileSize);
+  const image = String(json.image);
+  const pixelWidth = width * tileSize;
+  const pixelHeight = height * tileSize;
+
   const labels   = normalizeLabels(json.labels || []);
   const triggers = normalizeTriggers(json.triggers || []);
   const triggersByKey = indexTriggers(triggers);
+
+  const collisionGrid = json.collisionGrid !== undefined ? json.collisionGrid : undefined;
+  const blocked = json.blocked !== undefined ? json.blocked : undefined;
+  const solids = json.solids !== undefined ? json.solids : undefined;
 
   return {
     id,
@@ -147,16 +196,24 @@ export function fromJSON(json){
     profile: PROFILE,
     width,
     height,
+    tileSize,
+    image,
+    pixelWidth,
+    pixelHeight,
     start,
     ...(minimap !== undefined ? { minimap } : {}),
     labels,
     triggers,
-    triggersByKey
+    triggersByKey,
+    ...(collisionGrid !== undefined ? { collisionGrid } : {}),
+    ...(blocked !== undefined ? { blocked } : {}),
+    ...(solids !== undefined ? { solids } : {})
   };
 }
 
 // Optional helper: supply a dictionary of raw JSON blobs keyed by id
 // and get a loader function you can hand to mapSystem.loadMap.
+
 export function makeInMemoryLoader(rawById){
   return function loadMapById(id){
     const json = rawById[id];
@@ -165,11 +222,72 @@ export function makeInMemoryLoader(rawById){
   };
 }
 
+// Load an ExplorationMap for an area.
+// This is a small compatibility wrapper used by explorationSystem.
+// It supports:
+//  - area.map / area.mapJson: already-parsed ExplorationMap JSON
+//  - tmj: a TMJ path; delegates to tmjLoader when available
+//
+// NOTE: this module itself remains IO-free; TMJ loading is delegated.
+export async function loadMapFromArea({ areaId, area, tmj } = {}) {
+  // 1) If the area already carries a map JSON blob, just normalize it.
+  const raw = (area && (area.mapJson || area.map)) ? (area.mapJson || area.map) : null;
+  if (raw) {
+    return fromJSON(raw);
+  }
+
+  // 2) If we were given a TMJ path, delegate to tmjLoader.
+  if (tmj) {
+    // Lazy import to avoid circular deps and to keep this module mostly pure.
+    const mod = await import("./tmjLoader.js");
+
+    // Try a few plausible export names (project drift compatibility).
+    const candidates = [
+      "loadTMJAsExplorationMap",
+      "loadTMJToExplorationMap",
+      "loadTMJMap",
+      "loadTMJ",
+      "fromTMJ",
+      "parseTMJ",
+      "load",
+    ];
+
+    for (const name of candidates) {
+      const fn = mod && typeof mod[name] === "function" ? mod[name] : null;
+      if (!fn) continue;
+
+      const result = await fn({ areaId, area, tmj });
+
+      // If tmjLoader already returns an ExplorationMap-shaped object, accept it.
+      // If it returns raw JSON, normalize it.
+      if (result && result.profile === PROFILE) return result;
+      if (result && typeof result === "object" && (result.profile === PROFILE || result.width)) {
+        // Best-effort: if it looks like map JSON, validate/normalize.
+        try {
+          return fromJSON(result);
+        } catch (_) {
+          return result;
+        }
+      }
+
+      return result;
+    }
+
+    const keys = mod ? Object.keys(mod).sort().join(", ") : "(no module)";
+    throw new Error(
+      `tmjLoader does not export a known TMJ load function. Looked for: ${candidates.join(", ")}. Available exports: ${keys}`
+    );
+  }
+
+  throw new Error(`loadMapFromArea: no map data for area "${areaId || (area && area.id) || "(unknown)"}" (expected area.mapJson/area.map or tmj path)`);
+}
+
 export default {
   validateExplorationMap,
   fromJSON,
   indexTriggers,
   normalizeLabels,
   normalizeTriggers,
-  makeInMemoryLoader
+  makeInMemoryLoader,
+  loadMapFromArea
 };

@@ -36,13 +36,78 @@ export default {
       { name: "Thieves' Tools (Legacy Kit)", type: "Passive",
         description: "Your old, worn set of less‑than‑legal tools. When you pick a lock or disarm a trap, you have expertise (add double your proficiency bonus) on the check. Others can still attempt these tasks using improvised or found tools—this feature doesn’t gate the attempt; it just makes you notably better at it." }
     ],
-    // Base rogue features are unchanged here; no Extra Attack at 5.
-    // (Keep existing Sneak Attack/Cunning Action/etc. from your core engine.)
+    2: [
+      {
+        name: "Cunning Action",
+        type: "Bonus Action",
+        description: "You can take the Dash, Disengage, or Hide action as a bonus action on your turn."
+      }
+    ],
+    3: [
+      {
+        name: "Roguish Archetype",
+        type: "Passive",
+        description: "You choose a Rogue subclass and gain its features at the listed levels."
+      }
+    ],
+    4: [
+      {
+        name: "Ability Score Improvement",
+        type: "Passive",
+        description:
+          "Increase ability scores or take a feat (engine-defined advancement rule)."
+      }
+    ],
+    6: [
+      {
+        name: "Expertise",
+        type: "Passive",
+        description: "Choose two skill proficiencies. You gain double your proficiency bonus on ability checks that use those skills."
+      }
+    ],
+    7: [
+      {
+        name: "Evasion",
+        type: "Passive",
+        description: "When you succeed on a Dexterity saving throw to take half damage, you instead take no damage. When you fail such a save, you take only half damage."
+      }
+    ],
+    8: [
+      {
+        name: "Ability Score Improvement",
+        type: "Passive",
+        description:
+          "Increase ability scores or take a feat (engine-defined advancement rule)."
+      }
+    ],
+    11: [
+      {
+        name: "Reliable Talent",
+        type: "Passive",
+        description: "Whenever you make an ability check that uses a proficiency you have, treat a d20 roll of 9 or lower as a 10."
+      }
+    ],
+    12: [
+      {
+        name: "Ability Score Improvement",
+        type: "Passive",
+        description:
+          "Increase ability scores or take a feat (engine-defined advancement rule)."
+      }
+    ]
   },
+
   subclasses: {
     "Assassin": {
       summary: "Cold-blooded precision killer who excels at the opening strike. Save DC = 8 + proficiency bonus + Dexterity modifier.",
       features: {
+        1: [
+          {
+            name: "Killer’s Patience",
+            type: "Passive",
+            description: "When you roll initiative, you may choose to act last in the initiative order instead of using your rolled result. If you do, you gain +10 ft of movement during the first round of combat."
+          }
+        ],        
         3: [
           { name: "Assassinate", type: "Passive",
             description: "You have advantage on attack rolls against creatures that have not acted yet. Your hits against surprised creatures are critical hits." }
@@ -62,10 +127,10 @@ export default {
       }
     },
     "Cutthroat": {
-      summary: "Dirty-fighting enforcer who terrifies and overwhelms foes. Save DC = 8 + proficiency bonus + Charisma modifier.",
+      summary: "Dirty-fighting enforcer who terrifies and overwhelms foes.",
       features: {
         1: [
-          { name: "Cunning Words", type: "Bonus Action",
+          { name: "Low Blow", type: "Bonus Action",
             description: "Target a creature within 30 ft. It must succeed on a WIS save against your subclass save DC or take psychic damage equal to your Charisma modifier and have disadvantage on its next attack before the end of its turn." }
         ],
         3: [
@@ -79,6 +144,10 @@ export default {
         11: [
           { name: "Exploit Weakness", type: "Special", uses: "longRest",
             description: "Choose a creature you can see; until the end of the combat, your Sneak Attacks against it deal extra psychic damage equal to your Charisma modifier, and it cannot benefit from advantage." }
+        ],
+        13: [
+          { name: "Ultraviolence", type: "Special", uses: "longRest",
+            description: "You dig down into the most ferocious, violent and unbending aspect of yourself. Every successful weapon hit is immediately doubled by a second stab for free." }
         ]
       }
     },
@@ -113,4 +182,4 @@ export default {
       ]
     }
   }
-};
+}

@@ -27,7 +27,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-const DEFAULT_AREAS_DIR = "./areas";
+const DEFAULT_AREAS_DIR = "./app/areas";
 const DEFAULT_OUT_FILE = "./app/areas/registry.generated.js";
 const DEFAULT_PROFILES_OUT_FILE = "./app/areas/areas.generated.js";
 const DEFAULT_MINIMAP_OUT_FILE = "./app/ui/MiniMapLayouts.js";
@@ -394,6 +394,16 @@ async function main() {
   const StoryCtor = await loadInkjsStoryCtor();
   const allFiles = await collectFilesRecursive(areasDirAbs);
 
+  // Warn if any accidental .tmj.json files exist
+  const suspiciousTmjJson = allFiles.filter((p) => p.toLowerCase().endsWith(".tmj.json"));
+  if (suspiciousTmjJson.length) {
+    console.warn(
+      `[genAreasRegistry] NOTE: Found ${suspiciousTmjJson.length} '*.tmj.json' file(s). TMJ files should be '.tmj' (TMJ is already JSON). Example: ${relFromProjectRoot(
+        suspiciousTmjJson[0]
+      )}`
+    );
+  }
+
   // Candidate compiled Ink JSON files (conservative)
   const candidateInkFiles = allFiles.filter((p) => {
     const lower = p.toLowerCase();
@@ -471,6 +481,66 @@ async function main() {
     console.warn(
       "[genAreasRegistry] No areas generated. Did you export your compiled Ink JSON into the areas directory and keep the .ink.json suffix?"
     );
+  }
+
+  // --- Pass 2: discover TMJ-based exploration/combat areas ---
+  const areaDirs = new Set();
+  for (const abs of allFiles) {
+    const dir = path.dirname(abs);
+    if (dir.startsWith(areasDirAbs)) areaDirs.add(dir);
+  }
+
+  for (const dirAbs of areaDirs) {
+    const entries = await fs.readdir(dirAbs).catch(() => null);
+    if (!entries) continue;
+
+    const tmjFiles = entries.filter((f) => f.endsWith(".tmj"));
+    const pngFile = entries.find((f) => f === "map.png");
+
+    // If a directory has TMJ(s) but no map.png, we can't wire it yet.
+    if (!tmjFiles.length || !pngFile) continue;
+
+    // If there are multiple TMJs in one folder, that is supported for testing, but ambiguous
+    // because the convention is one map.png per area folder. We still generate entries and point
+    // all of them at the same map.png, and warn so it gets cleaned up later.
+    if (tmjFiles.length > 1) {
+      console.warn(
+        `[genAreasRegistry] NOTE: Multiple .tmj files in one folder; all will reference the same map.png: ${toPosixPath(
+          path.relative(process.cwd(), dirAbs)
+        )}`
+      );
+    }
+
+    for (const tmjFile of tmjFiles) {
+      // AREA_ID for TMJ areas is derived from the TMJ filename stem, not the folder.
+      // This allows multiple TMJ areas to live alongside Ink in the same chapter folder for testing.
+      const id = normalizeAreaId(path.basename(tmjFile, ".tmj"));
+
+      if (generated[id]) continue; // Ink already defines this area
+
+      const tmjAbs = path.join(dirAbs, tmjFile);
+      const imgAbs = path.join(dirAbs, pngFile);
+
+      const tmjPath = relFromProjectRoot(tmjAbs);
+      const imgPath = relFromProjectRoot(imgAbs);
+
+      // Sanity: we should never emit .tmj.json here.
+      if (/\.tmj\.json$/i.test(tmjPath)) {
+        console.warn(`[genAreasRegistry] WARNING: Refusing to emit suspicious TMJ path: ${tmjPath}`);
+        continue;
+      }
+
+      if (args.verbose) {
+        console.info(`[genAreasRegistry] Discovered TMJ area '${id}': ${tmjPath} (image: ${imgPath})`);
+      }
+
+      generated[id] = {
+        id,
+        title: id,
+        kind: "exploration_map",
+        assets: { tmj: tmjPath, image: imgPath },
+      };
+    }
   }
 
   // Drift detection + warnings

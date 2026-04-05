@@ -1,16 +1,18 @@
 // app/engine/camera.js
-import { state } from '../state/stateStore.js';
+import { getState } from "../state/stateStore.js";
 
 /** Return a COPY of the current camera */
 export function getCamera(){
-  const cam = state?.explore?.camera || { x:0, y:0, w:21, h:13 };
+  const cam = getState()?.explore?.camera || { x:0, y:0, w:21, h:13 };
   return { ...cam };
 }
 
 /** Merge cam props into the stored camera */
 export function setCamera(cam){
+  const state = getState();
+  if (!state) return;
   state.explore = state.explore || {};
-  state.explore.camera = { ...(state.explore.camera||{}), ...cam };
+  state.explore.camera = { ...(state.explore.camera || {}), ...cam };
 }
 
 /** Center the camera on (px,py) while staying inside the world */
