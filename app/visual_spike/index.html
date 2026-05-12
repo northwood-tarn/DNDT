@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DNDT Visual Spike</title>
+  <link rel="stylesheet" href="./visualSpike.css" />
+</head>
+<body>
+  <main id="spike-root">
+    <div id="stage"></div>
+    <div id="conversation-panel" hidden>
+      <div id="conversation-frame">
+        <div id="conversation-speaker"></div>
+        <div id="conversation-text"></div>
+        <div id="conversation-replies"></div>
+      </div>
+    </div>
+    <div id="hud" aria-live="polite">
+      <div>
+        <strong>DNDT visual spike</strong>
+        <span>Hold WASD or arrows to move freely. 1 shrine, 2 dock, 3 ritual road. G toggles collision overlay. E edits collision.</span>
+      </div>
+      <label class="grid-control">
+        <input id="grid-toggle" type="checkbox" />
+        <span>Collision</span>
+      </label>
+      <label class="grid-control">
+        <input id="collision-edit-toggle" type="checkbox" />
+        <span>Edit collision</span>
+      </label>
+      <label class="grid-control">
+        <input id="collision-invert-toggle" type="checkbox" />
+        <span>Invert collision</span>
+      </label>
+      <label class="grid-control">
+        <input id="water-edit-toggle" type="checkbox" />
+        <span>Edit water</span>
+      </label>
+      <button id="collision-reset" type="button">Reset collision</button>
+      <button id="water-reset" type="button">Reset water</button>
+      <button id="collision-save-button" type="button">Save collision</button>
+      <button id="water-save-button" type="button">Save water</button>
+      <div id="status">Animation harness mounted.</div>
+      <textarea id="collision-export" readonly spellcheck="false" aria-label="Collision polygon export"></textarea>
+    </div>
+  </main>
+  <script type="module">
+    import(`./visualSpike.js?v=no-fog-${Date.now()}`);
+  </script>
+</body>
+</html>

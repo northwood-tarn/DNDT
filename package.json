@@ -9,6 +9,7 @@
     "dev": "npm run validate || true && electron .",
     "play": "electron .",
     "start": "electron .",
+    "spike:author": "node app/visual_spike/authoringServer.mjs",
     "verify:events": "node tools/verify-events.js --root . --registry app/docs/EVENTS_REGISTRY.md"
   },
   "dependencies": {

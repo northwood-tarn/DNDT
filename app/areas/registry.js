@@ -66,3 +66,5 @@ export function getArea(id) {
 }
 
 export const AREA_KEYS = Object.keys(AREAS);
+
+export default AREAS;
