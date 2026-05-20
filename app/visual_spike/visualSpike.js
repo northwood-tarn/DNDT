@@ -1,23 +1,31 @@
 import * as PIXI from "../lib/pixi.mjs";
 import { easeInOutSine, TweenSet } from "./animation.js";
 
-const COLS = 12;
-const ROWS = 8;
 const CELL = 96;
-const WORLD_W = COLS * CELL;
-const WORLD_H = ROWS * CELL;
+const STANDARD_IMAGE_W = 1920;
+const STANDARD_IMAGE_H = 1080;
+const WORLD_W = STANDARD_IMAGE_W;
+const WORLD_H = STANDARD_IMAGE_H;
+const COLS = Math.ceil(WORLD_W / CELL);
+const ROWS = Math.ceil(WORLD_H / CELL);
 
 const COLLISION_SAVE_URL = "/api/visual-spike/collision";
 const WATER_SAVE_URL = "/api/visual-spike/water";
+const NAVIGATION_SAVE_URL = "/api/visual-spike/navigation";
+const MAP_KIND_DEFAULT_SCALE = {
+  combat: 1,
+  exploration: 1,
+  grand_exploration: 0.66,
+};
 const AREA_KEYS = {
   SHRINE: "shrine",
   DOCK: "dock",
   RITUAL_ROAD: "ritual-road",
 };
 const BACKGROUND_IMAGES = {
-  [AREA_KEYS.SHRINE]: "./assets/dockside_stage_uncluttered_v2.png",
-  [AREA_KEYS.DOCK]: "./assets/dock_transition_dock.png",
-  [AREA_KEYS.RITUAL_ROAD]: "./assets/ritual_road_ink_negative_space.png",
+  [AREA_KEYS.SHRINE]: "./assets/dockside_stage_uncluttered_v2_1920x1080.png",
+  [AREA_KEYS.DOCK]: "./assets/dock_transition_dock_1920x1080.png",
+  [AREA_KEYS.RITUAL_ROAD]: "./assets/ritual_road_ink_negative_space_1920x1080.png",
 };
 const AREA_DATA_FILES = {
   [AREA_KEYS.SHRINE]: {
@@ -31,6 +39,7 @@ const AREA_DATA_FILES = {
   [AREA_KEYS.RITUAL_ROAD]: {
     collision: "./collisionData.ritual-road.json",
     water: "./waterData.ritual-road.json",
+    navigation: "./navigationData.ritual-road.json",
   },
 };
 const CELL_FLAGS = {
@@ -49,9 +58,53 @@ const AREA_SPAWNS = {
   [AREA_KEYS.DOCK]: { x: CELL + CELL / 2, y: 5 * CELL + CELL / 2 },
   [AREA_KEYS.RITUAL_ROAD]: { x: 250, y: 720 },
 };
+const FALLBACK_NAVIGATION_DATA = {
+  schemaVersion: 1,
+  area: {
+    id: "ritual_road",
+    name: "Ritual road",
+    kind: "grand_exploration",
+    background: BACKGROUND_IMAGES[AREA_KEYS.RITUAL_ROAD],
+    image: { width: STANDARD_IMAGE_W, height: STANDARD_IMAGE_H },
+    defaults: { playerScale: MAP_KIND_DEFAULT_SCALE.grand_exploration },
+    extensions: {},
+  },
+  entryNodeId: "lower_gate",
+  nodes: [
+    { id: "lower_gate", label: "Black gate", x: 250, y: 720, scale: 0.66, trigger: { type: "none", payload: {} }, extensions: {} },
+    { id: "lower_bend", label: "Road bend", x: 350, y: 628, scale: 0.64, trigger: { type: "none", payload: {} }, extensions: {} },
+    { id: "gate_chapel", label: "Gate chapel", x: 218, y: 452, scale: 0.62, trigger: { type: "none", payload: {} }, extensions: {} },
+    { id: "middle_bend", label: "Causeway", x: 492, y: 520, scale: 0.6, trigger: { type: "none", payload: {} }, extensions: {} },
+    { id: "standing_stones", label: "Standing stones", x: 488, y: 346, scale: 0.58, trigger: { type: "none", payload: {} }, extensions: {} },
+    { id: "main_fork", label: "Main fork", x: 626, y: 422, scale: 0.56, trigger: { type: "none", payload: {} }, extensions: {} },
+    { id: "watchtower", label: "Watchtower shrine", x: 874, y: 306, scale: 0.52, trigger: { type: "none", payload: {} }, extensions: {} },
+    { id: "upper_bend", label: "Upper causeway", x: 716, y: 246, scale: 0.53, trigger: { type: "none", payload: {} }, extensions: {} },
+    { id: "fortress", label: "Shrine-fortress", x: 858, y: 126, scale: 0.5, trigger: { type: "area_transition", payload: {} }, extensions: {} },
+  ],
+  edges: [
+    { id: "lower_gate__lower_bend", from: "lower_gate", to: "lower_bend", points: [[250, 720], [286, 700], [318, 674], [350, 628]], extensions: {} },
+    { id: "lower_bend__gate_chapel", from: "lower_bend", to: "gate_chapel", points: [[350, 628], [332, 590], [292, 540], [248, 486], [218, 452]], extensions: {} },
+    { id: "lower_bend__middle_bend", from: "lower_bend", to: "middle_bend", points: [[350, 628], [392, 606], [446, 574], [492, 520]], extensions: {} },
+    { id: "middle_bend__standing_stones", from: "middle_bend", to: "standing_stones", points: [[492, 520], [432, 492], [370, 460], [408, 404], [488, 346]], extensions: {} },
+    { id: "middle_bend__main_fork", from: "middle_bend", to: "main_fork", points: [[492, 520], [536, 500], [576, 464], [626, 422]], extensions: {} },
+    { id: "main_fork__watchtower", from: "main_fork", to: "watchtower", points: [[626, 422], [686, 400], [738, 382], [798, 344], [874, 306]], extensions: {} },
+    { id: "main_fork__upper_bend", from: "main_fork", to: "upper_bend", points: [[626, 422], [606, 386], [650, 350], [704, 322], [716, 246]], extensions: {} },
+    { id: "upper_bend__fortress", from: "upper_bend", to: "fortress", points: [[716, 246], [736, 224], [776, 204], [820, 176], [858, 126]], extensions: {} },
+  ],
+  combatSpawns: [],
+  debug: { showOverlayByDefault: true },
+  extensions: {},
+};
 
 let vectorColliders = [];
 let waterAreas = [];
+let navigationData = cloneNavigationData(FALLBACK_NAVIGATION_DATA);
+let navigationNodes = [];
+let navigationNodeById = {};
+let navigationEdges = [];
+let navigationEdgeByKey = {};
+let backgroundTextureByPath = {};
+let discoveredNodeIds = new Set();
 
 const SWORD_FRAMES = [
   "./assets/protagonist_step_0_clean.png",
@@ -104,12 +157,6 @@ const SHRINE_STATIC_LIGHTS = [
 const DOCK_STATIC_LIGHTS = [
   { x: 330, y: 303, radius: 178, strength: 0.7, glow: 144, phase: 0.8, speed: 1.18 },
 ];
-const RITUAL_ROAD_STATIC_LIGHTS = [
-  { x: 214, y: 650, radius: 72, strength: 0.28, glow: 42, phase: 0.2, speed: 0.9 },
-  { x: 492, y: 346, radius: 86, strength: 0.24, glow: 48, phase: 1.7, speed: 0.8 },
-  { x: 890, y: 324, radius: 84, strength: 0.24, glow: 50, phase: 2.8, speed: 0.86 },
-  { x: 956, y: 146, radius: 116, strength: 0.3, glow: 62, phase: 3.4, speed: 0.72 },
-];
 const SHRINE_WATER_REFLECTIONS = [
   { source: SHRINE_STATIC_LIGHTS[0], x: 630, y: 386, width: 118, height: 190, alpha: 0.18, color: 0xc58b52 },
   { source: SHRINE_STATIC_LIGHTS[2], x: 870, y: 438, width: 95, height: 150, alpha: 0.12, color: 0xb9804a },
@@ -142,6 +189,7 @@ const areas = {
     staticLights: SHRINE_STATIC_LIGHTS,
     waterReflections: SHRINE_WATER_REFLECTIONS,
     playerScale: 1,
+    darknessAlpha: DARKNESS_ALPHA,
     collisionInverted: false,
   },
   [AREA_KEYS.DOCK]: {
@@ -152,6 +200,7 @@ const areas = {
     staticLights: DOCK_STATIC_LIGHTS,
     waterReflections: DOCK_WATER_REFLECTIONS,
     playerScale: 1,
+    darknessAlpha: DARKNESS_ALPHA,
     collisionInverted: false,
   },
   [AREA_KEYS.RITUAL_ROAD]: {
@@ -159,9 +208,10 @@ const areas = {
     texture: null,
     colliders: [],
     water: [],
-    staticLights: RITUAL_ROAD_STATIC_LIGHTS,
+    staticLights: [],
     waterReflections: [],
-    playerScale: 0.48,
+    playerScale: 0.66,
+    darknessAlpha: 0,
     collisionInverted: true,
   },
 };
@@ -174,24 +224,50 @@ const state = {
   conversing: false,
   conversationLine: 0,
   showGrid: false,
+  navEdit: false,
+  navTool: "node",
   collisionEdit: false,
   waterEdit: false,
   currentFrame: 0,
   hostileSpawned: false,
   input: new Set(),
   lastMoveStatusMS: 0,
+  currentNodeId: navigationData.entryNodeId,
+  selectedNodeId: null,
+  selectedEdgeKey: null,
+  selectedPathPointIndex: null,
+  pendingConnectionNodeId: null,
+  inflectionPreview: null,
+  draggingNav: null,
 };
 
 const statusEl = document.getElementById("status");
+const areaNameInputEl = document.getElementById("area-name-input");
+const mapKindSelectEl = document.getElementById("map-kind-select");
+const backgroundSelectEl = document.getElementById("background-select");
+const navEditToggleEl = document.getElementById("nav-edit-toggle");
+const navNodeToolEl = document.getElementById("nav-node-tool");
+const navConnectToolEl = document.getElementById("nav-connect-tool");
+const navInflectionToolEl = document.getElementById("nav-inflection-tool");
+const nodeDetailsEl = document.getElementById("node-details");
+const nodeLabelInputEl = document.getElementById("node-label-input");
+const nodeTriggerSelectEl = document.getElementById("node-trigger-select");
+const nodeScaleInputEl = document.getElementById("node-scale-input");
+const nodeDiscoveryStateSelectEl = document.getElementById("node-discovery-state-select");
+const nodeShowLabelToggleEl = document.getElementById("node-show-label-toggle");
+const nodeDescriptionInputEl = document.getElementById("node-description-input");
 const gridToggleEl = document.getElementById("grid-toggle");
 const collisionEditToggleEl = document.getElementById("collision-edit-toggle");
 const collisionInvertToggleEl = document.getElementById("collision-invert-toggle");
 const waterEditToggleEl = document.getElementById("water-edit-toggle");
+const navResetEl = document.getElementById("nav-reset");
 const collisionResetEl = document.getElementById("collision-reset");
 const waterResetEl = document.getElementById("water-reset");
+const navExportButtonEl = document.getElementById("nav-export-button");
+const navSaveButtonEl = document.getElementById("nav-save-button");
 const collisionSaveButtonEl = document.getElementById("collision-save-button");
 const waterSaveButtonEl = document.getElementById("water-save-button");
-const collisionExportEl = document.getElementById("collision-export");
+const dataExportEl = document.getElementById("data-export");
 const conversationPanelEl = document.getElementById("conversation-panel");
 const conversationSpeakerEl = document.getElementById("conversation-speaker");
 const conversationTextEl = document.getElementById("conversation-text");
@@ -205,6 +281,7 @@ let waterReflectionLayer;
 let lanternaWaterReflectionLayer;
 let darknessLayer;
 let lightGlowLayer;
+let navLayer;
 let gridLayer;
 let actorLayer;
 let playerActor;
@@ -212,6 +289,7 @@ let npcActor;
 let npcActors = [];
 let hostileActors = [];
 let activeNpcActor;
+let navOverlay;
 let gridOverlay;
 let darknessOverlay;
 let waterReflections = [];
@@ -285,6 +363,7 @@ async function init() {
   lanternaWaterReflectionLayer = new PIXI.Container();
   darknessLayer = new PIXI.Container();
   lightGlowLayer = new PIXI.Container();
+  navLayer = new PIXI.Container();
   gridLayer = new PIXI.Container();
   actorLayer = new PIXI.Container();
   actorLayer.sortableChildren = true;
@@ -294,6 +373,7 @@ async function init() {
     darknessLayer,
     lightGlowLayer,
     lanternaWaterReflectionLayer,
+    navLayer,
     actorLayer,
     gridLayer
   );
@@ -308,6 +388,7 @@ async function init() {
     dockWaterAreas,
     ritualRoadColliders,
     ritualRoadWaterAreas,
+    ritualRoadNavigation,
   ] = await Promise.all([
     loadAreaBackgrounds(),
     loadTextures(SWORD_FRAMES),
@@ -318,7 +399,13 @@ async function init() {
     loadWaterData(AREA_KEYS.DOCK, DOCK_WATER_AREAS),
     loadCollisionData(AREA_KEYS.RITUAL_ROAD, []),
     loadWaterData(AREA_KEYS.RITUAL_ROAD, []),
+    loadNavigationData(AREA_KEYS.RITUAL_ROAD, FALLBACK_NAVIGATION_DATA),
   ]);
+  navigationData = ritualRoadNavigation;
+  rebuildNavigationGraph();
+  backgroundTextureByPath = Object.fromEntries(
+    Object.entries(BACKGROUND_IMAGES).map(([areaKey, imagePath]) => [imagePath, backgroundTextures[areaKey]])
+  );
   areas[AREA_KEYS.SHRINE].texture = backgroundTextures[AREA_KEYS.SHRINE];
   areas[AREA_KEYS.SHRINE].colliders = cloneAreas(shrineColliders);
   areas[AREA_KEYS.SHRINE].water = cloneAreas(shrineWaterAreas);
@@ -336,6 +423,7 @@ async function init() {
   createWaterReflections();
   createStaticLighting();
   createLanternaWaterReflection();
+  drawNavigationOverlay();
   drawGrid();
   createPlayer(swordTextures);
   createNpc(npcTexture);
@@ -349,18 +437,39 @@ async function init() {
   window.addEventListener("keyup", onKeyUp, { passive: false });
   window.addEventListener("blur", clearMovementInput);
   app.canvas.addEventListener("pointerdown", onCanvasPointerDown);
+  app.canvas.addEventListener("pointermove", onCanvasPointerMove);
+  window.addEventListener("pointerup", onCanvasPointerUp);
+  areaNameInputEl?.addEventListener("change", () => updateNavigationAreaMetadata());
+  mapKindSelectEl?.addEventListener("change", () => updateNavigationAreaMetadata());
+  backgroundSelectEl?.addEventListener("change", () => updateNavigationAreaMetadata());
+  navEditToggleEl?.addEventListener("change", () => setNavEdit(navEditToggleEl.checked));
+  navNodeToolEl?.addEventListener("click", () => setNavTool("node"));
+  navConnectToolEl?.addEventListener("click", () => setNavTool("connect"));
+  navInflectionToolEl?.addEventListener("click", () => setNavTool("inflection"));
+  nodeLabelInputEl?.addEventListener("input", updateSelectedNodeDetails);
+  nodeTriggerSelectEl?.addEventListener("change", updateSelectedNodeDetails);
+  nodeScaleInputEl?.addEventListener("change", updateSelectedNodeDetails);
+  nodeDiscoveryStateSelectEl?.addEventListener("change", updateSelectedNodeDetails);
+  nodeShowLabelToggleEl?.addEventListener("change", updateSelectedNodeDetails);
+  nodeDescriptionInputEl?.addEventListener("input", updateSelectedNodeDetails);
   gridToggleEl?.addEventListener("change", () => setGridVisible(gridToggleEl.checked));
   collisionEditToggleEl?.addEventListener("change", () => setCollisionEdit(collisionEditToggleEl.checked));
   collisionInvertToggleEl?.addEventListener("change", () => setCollisionInverted(collisionInvertToggleEl.checked));
   waterEditToggleEl?.addEventListener("change", () => setWaterEdit(waterEditToggleEl.checked));
+  navResetEl?.addEventListener("click", resetNavigation);
   collisionResetEl?.addEventListener("click", resetAllCollision);
   waterResetEl?.addEventListener("click", resetAllWater);
+  navExportButtonEl?.addEventListener("click", exportNavigationData);
+  navSaveButtonEl?.addEventListener("click", saveNavigationToDisk);
   collisionSaveButtonEl?.addEventListener("click", saveCollisionToDisk);
   waterSaveButtonEl?.addEventListener("click", saveWaterToDisk);
   app.ticker.add(tick);
   setGridVisible(state.showGrid);
-  updateCollisionExport();
-  setStatus("Ritual road. Hold arrows/WASD to move freely. G toggles collision overlay; 1 shrine, 2 dock, 3 road.");
+  syncNavigationControls();
+  updateNavToolControls();
+  updateNodeDetailsPanel();
+  updateDataExport();
+  setStatus("Traversal ready. Click connected nodes or use WASD/arrows. N edits traversal.");
 }
 
 async function loadTextures(paths) {
@@ -369,9 +478,19 @@ async function loadTextures(paths) {
 
 async function loadAreaBackgrounds() {
   const entries = await Promise.all(
-    Object.entries(BACKGROUND_IMAGES).map(async ([key, path]) => [key, await PIXI.Assets.load(path)])
+    Object.entries(BACKGROUND_IMAGES).map(async ([key, path]) => {
+      const texture = await PIXI.Assets.load(path);
+      assertStandardBackgroundTexture(texture, path);
+      return [key, texture];
+    })
   );
   return Object.fromEntries(entries);
+}
+
+function assertStandardBackgroundTexture(texture, path) {
+  if (texture.width !== STANDARD_IMAGE_W || texture.height !== STANDARD_IMAGE_H) {
+    throw new Error(`${path} is ${texture.width}x${texture.height}; area backgrounds must be ${STANDARD_IMAGE_W}x${STANDARD_IMAGE_H}.`);
+  }
 }
 
 async function loadCollisionData(areaKey, fallback = []) {
@@ -396,6 +515,149 @@ async function loadWaterData(areaKey, fallback = []) {
     console.warn("[visual_spike] Could not load water data", err);
     return cloneAreas(fallback);
   }
+}
+
+async function loadNavigationData(areaKey, fallback) {
+  try {
+    const response = await fetch(AREA_DATA_FILES[areaKey].navigation, { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    return normalizeNavigationData(data, fallback);
+  } catch (err) {
+    console.warn("[visual_spike] Could not load navigation data", err);
+    return normalizeNavigationData(fallback, fallback);
+  }
+}
+
+function normalizeNavigationData(data, fallback) {
+  const source = data && typeof data === "object" ? data : fallback;
+  const area = source.area && typeof source.area === "object" ? source.area : fallback.area;
+  const kind = ["combat", "exploration", "grand_exploration"].includes(area.kind) ? area.kind : "exploration";
+  const defaultScale = Number(area.defaults?.playerScale);
+  const normalized = {
+    schemaVersion: Number.isFinite(Number(source.schemaVersion)) ? Number(source.schemaVersion) : 1,
+    area: {
+      id: toSafeId(area.id || area.name || "area"),
+      name: typeof area.name === "string" && area.name ? area.name : "Area",
+      kind,
+      background: typeof area.background === "string" && area.background ? area.background : fallback.area.background,
+      image: {
+        width: STANDARD_IMAGE_W,
+        height: STANDARD_IMAGE_H,
+      },
+      defaults: {
+        ...(area.defaults && typeof area.defaults === "object" ? area.defaults : {}),
+        playerScale: Number.isFinite(defaultScale) ? defaultScale : MAP_KIND_DEFAULT_SCALE[kind],
+      },
+      extensions: area.extensions && typeof area.extensions === "object" ? area.extensions : {},
+    },
+    entryNodeId: "",
+    nodes: [],
+    edges: [],
+    combatSpawns: normalizeCombatSpawns(source.combatSpawns),
+    debug: source.debug && typeof source.debug === "object" ? source.debug : {},
+    extensions: source.extensions && typeof source.extensions === "object" ? source.extensions : {},
+  };
+
+  const nodeIds = new Set();
+  normalized.nodes = (Array.isArray(source.nodes) ? source.nodes : fallback.nodes)
+    .map((node, index) => {
+      const id = toSafeId(node?.id || node?.label || `node_${index + 1}`);
+      if (nodeIds.has(id)) return null;
+      const x = Math.round(Number(node?.x));
+      const y = Math.round(Number(node?.y));
+      if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+      nodeIds.add(id);
+      const scale = Number(node?.scale);
+      return {
+        id,
+        label: typeof node?.label === "string" && node.label ? node.label : id.replaceAll("_", " "),
+        description: typeof node?.description === "string" ? node.description : "",
+        discovery: normalizeDiscovery(node?.discovery),
+        x,
+        y,
+        scale: Number.isFinite(scale) && scale > 0 ? scale : normalized.area.defaults.playerScale,
+        trigger: normalizeNodeTrigger(node?.trigger, node?.roles),
+        extensions: node?.extensions && typeof node.extensions === "object" ? node.extensions : {},
+      };
+    })
+    .filter(Boolean);
+
+  normalized.entryNodeId = nodeIds.has(source.entryNodeId)
+    ? source.entryNodeId
+    : normalized.nodes.find((node) => Array.isArray(source.nodes) && source.nodes.find((item) => toSafeId(item?.id || item?.label) === node.id)?.roles?.includes("entry"))?.id ?? normalized.nodes[0]?.id ?? "";
+
+  normalized.edges = (Array.isArray(source.edges) ? source.edges : fallback.edges)
+    .map((edge, index) => {
+      const from = toSafeId(edge?.from || "");
+      const to = toSafeId(edge?.to || "");
+      if (!nodeIds.has(from) || !nodeIds.has(to) || from === to) return null;
+      const fromNode = normalized.nodes.find((node) => node.id === from);
+      const toNode = normalized.nodes.find((node) => node.id === to);
+      const points = Array.isArray(edge?.points)
+        ? edge.points
+            .map((point) => Array.isArray(point) ? [Math.round(Number(point[0])), Math.round(Number(point[1]))] : null)
+            .filter((point) => point && Number.isFinite(point[0]) && Number.isFinite(point[1]))
+        : [];
+      const safePoints = points.length >= 2 ? points : [[fromNode.x, fromNode.y], [toNode.x, toNode.y]];
+      return {
+        id: toSafeId(edge?.id || `${from}__${to}`),
+        from,
+        to,
+        points: safePoints,
+        extensions: edge?.extensions && typeof edge.extensions === "object" ? edge.extensions : {},
+      };
+    })
+    .filter(Boolean);
+  return normalized;
+}
+
+function normalizeDiscovery(discovery) {
+  const state = discovery?.state === "discovered" ? "discovered" : "undiscovered";
+  return {
+    state,
+    showLabelWhenDiscovered: discovery?.showLabelWhenDiscovered !== false,
+  };
+}
+
+function normalizeNodeTrigger(trigger, legacyRoles = []) {
+  const legacy = Array.isArray(legacyRoles) ? legacyRoles : [];
+  const inferredType = legacy.includes("start_conversation")
+    ? "conversation"
+    : legacy.includes("combat_transition") || legacy.includes("encounter")
+      ? "combat"
+      : legacy.includes("exit")
+        ? "area_transition"
+        : "none";
+  const type = ["none", "conversation", "area_transition", "combat"].includes(trigger?.type)
+    ? trigger.type
+    : inferredType;
+  return {
+    type,
+    payload: trigger?.payload && typeof trigger.payload === "object" ? trigger.payload : {},
+  };
+}
+
+function normalizeCombatSpawns(spawns) {
+  if (!Array.isArray(spawns)) return [];
+  return spawns
+    .map((spawn, index) => {
+      const x = Math.round(Number(spawn?.x));
+      const y = Math.round(Number(spawn?.y));
+      if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+      return {
+        id: toSafeId(spawn?.id || `combat_spawn_${index + 1}`),
+        label: typeof spawn?.label === "string" && spawn.label ? spawn.label : `Combat spawn ${index + 1}`,
+        x: Math.max(0, Math.min(WORLD_W, x)),
+        y: Math.max(0, Math.min(WORLD_H, y)),
+        extensions: spawn?.extensions && typeof spawn.extensions === "object" ? spawn.extensions : {},
+      };
+    })
+    .filter(Boolean);
+}
+
+function cloneNavigationData(data) {
+  return JSON.parse(JSON.stringify(data));
 }
 
 function normalizeColliders(data) {
@@ -611,9 +873,10 @@ function renderStaticLighting(timeMS) {
 
   const t = timeMS * 0.001;
   const { ctx, texture } = darknessOverlay;
+  const darknessAlpha = areas[currentAreaKey]?.darknessAlpha ?? DARKNESS_ALPHA;
   ctx.clearRect(0, 0, WORLD_W, WORLD_H);
   ctx.globalCompositeOperation = "source-over";
-  ctx.fillStyle = `rgba(0, 0, 0, ${DARKNESS_ALPHA})`;
+  ctx.fillStyle = `rgba(0, 0, 0, ${darknessAlpha})`;
   ctx.fillRect(0, 0, WORLD_W, WORLD_H);
 
   ctx.globalCompositeOperation = "destination-out";
@@ -790,6 +1053,127 @@ function renderGridOverlay() {
   gridOverlay.stroke({ width: 2, color: 0xf0f0f0, alpha: 0.22, pixelLine: true });
 }
 
+function drawNavigationOverlay() {
+  renderNavigationOverlay();
+}
+
+function renderNavigationOverlay() {
+  if (!navLayer) return;
+  navLayer.removeChildren();
+  navOverlay = new PIXI.Graphics();
+  navLayer.addChild(navOverlay);
+  navOverlay.clear();
+  navOverlay.visible = currentAreaKey === AREA_KEYS.RITUAL_ROAD;
+  if (!navOverlay.visible) return;
+
+  for (const edge of navigationEdges) {
+    const isSelected = edgeKey(edge.from, edge.to) === state.selectedEdgeKey;
+    const touchesSelectedNode = state.selectedNodeId && (edge.from === state.selectedNodeId || edge.to === state.selectedNodeId);
+    drawPolyline(navOverlay, sampledCurvePoints(pathForEdge(edge.from, edge.to)));
+    navOverlay.stroke({
+      width: isSelected ? 6 : touchesSelectedNode ? 4 : 3,
+      color: isSelected ? 0xffd27d : touchesSelectedNode ? 0xd7e8b5 : 0x9eb78b,
+      alpha: isSelected ? 0.96 : touchesSelectedNode ? 0.76 : 0.58,
+      pixelLine: true,
+    });
+  }
+
+  if (state.navEdit && state.navTool === "inflection" && state.selectedEdgeKey) {
+    const edge = navigationEdgeByKey[state.selectedEdgeKey];
+    if (edge) {
+      edge.points.forEach((point, index) => {
+        const isEnd = index === 0 || index === edge.points.length - 1;
+        if (isEnd) return;
+        drawDiamond(navOverlay, point[0], point[1], index === state.selectedPathPointIndex ? 8 : 5);
+        navOverlay.fill({ color: index === state.selectedPathPointIndex ? 0xfff1c8 : 0x75d9ff, alpha: 0.92 });
+        drawDiamond(navOverlay, point[0], point[1], index === state.selectedPathPointIndex ? 10 : 7);
+        navOverlay.stroke({ width: 2, color: 0x031015, alpha: 0.72, pixelLine: true });
+      });
+    }
+  }
+
+  if (state.navEdit && state.navTool === "inflection" && state.inflectionPreview) {
+    const edge = navigationEdgeByKey[state.inflectionPreview.edgeKey];
+    if (edge) {
+      const points = previewEdgePoints(edge, state.inflectionPreview);
+      drawPolyline(navOverlay, sampledCurvePoints(points));
+      navOverlay.stroke({ width: 5, color: 0x75d9ff, alpha: 0.76, pixelLine: true });
+      drawDiamond(navOverlay, state.inflectionPreview.x, state.inflectionPreview.y, 7);
+      navOverlay.fill({ color: 0x75d9ff, alpha: 0.9 });
+    }
+  }
+
+  const current = navigationNodeById[state.currentNodeId];
+  const reachable = new Set(current?.links ?? []);
+  for (const node of navigationNodes) {
+    const isCurrent = node.id === state.currentNodeId;
+    const isReachable = reachable.has(node.id);
+    const isSelected = node.id === state.selectedNodeId;
+    const radius = isSelected ? 13 : isCurrent ? 11 : isReachable ? 9 : 8;
+    navOverlay.circle(node.x, node.y, radius + 5);
+    navOverlay.fill({
+      color: 0x020303,
+      alpha: 0.58,
+    });
+    navOverlay.circle(node.x, node.y, radius);
+    navOverlay.fill({
+      color: nodeColor(node, { isSelected, isCurrent, isReachable }),
+      alpha: isSelected ? 0.96 : isCurrent ? 0.9 : 0.78,
+    });
+    navOverlay.circle(node.x, node.y, radius + 3);
+    navOverlay.stroke({
+      width: isSelected || isCurrent ? 3 : 2,
+      color: isSelected ? 0xfff1c8 : isCurrent ? 0xf1e6bd : 0x0f1914,
+      alpha: isSelected || isCurrent ? 0.9 : 0.82,
+      pixelLine: true,
+    });
+    if (shouldShowNodeLabel(node, { isSelected, isCurrent })) addNodeLabel(node, { isSelected, isCurrent });
+  }
+}
+
+function shouldShowNodeLabel(node, { isSelected, isCurrent }) {
+  if (state.navEdit || isSelected) return true;
+  return (node.discovery?.state === "discovered" || discoveredNodeIds.has(node.id)) &&
+    node.discovery?.showLabelWhenDiscovered !== false;
+}
+
+function nodeColor(node, { isSelected, isCurrent, isReachable }) {
+  if (isSelected) return 0xffc96f;
+  if (isCurrent) return 0xf1e6bd;
+  if (node.id === navigationData.entryNodeId) return 0xaedb8e;
+  if (node.trigger?.type === "area_transition") return 0xd18f84;
+  if (node.trigger?.type === "conversation") return 0x9bc8d2;
+  if (node.trigger?.type === "combat") return 0xd69048;
+  if (isReachable) return 0xc5d994;
+  return 0x6d7f5b;
+}
+
+function addNodeLabel(node, { isSelected, isCurrent }) {
+  const label = new PIXI.Text({
+    text: node.label || node.id,
+    style: {
+      fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+      fontSize: isSelected || isCurrent ? 13 : 11,
+      fontWeight: "700",
+      fill: isSelected ? 0xfff1c8 : 0xe8eadf,
+      stroke: { color: 0x030504, width: 4 },
+    },
+  });
+  label.anchor.set(0.5, 1);
+  label.x = node.x;
+  label.y = node.y - 16;
+  label.alpha = isSelected || isCurrent || state.navEdit ? 0.98 : 0.76;
+  navLayer.addChild(label);
+}
+
+function drawDiamond(graphics, x, y, radius) {
+  graphics.moveTo(x, y - radius);
+  graphics.lineTo(x + radius, y);
+  graphics.lineTo(x, y + radius);
+  graphics.lineTo(x - radius, y);
+  graphics.closePath();
+}
+
 function drawPolygon(graphics, points) {
   if (!points.length) return;
   graphics.moveTo(points[0][0], points[0][1]);
@@ -805,6 +1189,114 @@ function drawPolyline(graphics, points) {
   for (let i = 1; i < points.length; i++) {
     graphics.lineTo(points[i][0], points[i][1]);
   }
+}
+
+function edgeKey(a, b) {
+  return [a, b].sort().join(":");
+}
+
+function pathForEdge(fromId, toId) {
+  const edge = navigationEdgeByKey[edgeKey(fromId, toId)];
+  const path = edge?.points;
+  if (!path) {
+    const from = navigationNodeById[fromId];
+    const to = navigationNodeById[toId];
+    return from && to ? [[from.x, from.y], [to.x, to.y]] : [];
+  }
+  const first = path[0];
+  const from = navigationNodeById[fromId];
+  if (from && first && Math.hypot(first[0] - from.x, first[1] - from.y) < 1) return path;
+  return [...path].reverse();
+}
+
+function sampledCurvePoints(points, samplesPerSegment = 14) {
+  if (points.length <= 2) return points.map((point) => [...point]);
+  const result = [];
+  for (let i = 0; i < points.length - 1; i++) {
+    for (let step = 0; step < samplesPerSegment; step++) {
+      const t = step / samplesPerSegment;
+      result.push(catmullRomPoint(points, i, t));
+    }
+  }
+  result.push([...points[points.length - 1]]);
+  return result;
+}
+
+function previewEdgePoints(edge, preview) {
+  if (!edge || !preview) return edge?.points ?? [];
+  const insertAt = Math.max(1, preview.segmentIndex + 1);
+  const points = edge.points.map((point) => [...point]);
+  points.splice(insertAt, 0, [preview.x, preview.y]);
+  return points;
+}
+
+function catmullRomPoint(points, index, t) {
+  const p0 = points[Math.max(0, index - 1)];
+  const p1 = points[index];
+  const p2 = points[Math.min(points.length - 1, index + 1)];
+  const p3 = points[Math.min(points.length - 1, index + 2)];
+  const t2 = t * t;
+  const t3 = t2 * t;
+  return [
+    0.5 * ((2 * p1[0]) + (-p0[0] + p2[0]) * t + (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * t2 + (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * t3),
+    0.5 * ((2 * p1[1]) + (-p0[1] + p2[1]) * t + (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * t2 + (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * t3),
+  ];
+}
+
+function rebuildNavigationGraph() {
+  navigationNodes = navigationData.nodes.map((node) => ({ ...node, links: [] }));
+  navigationNodeById = Object.fromEntries(navigationNodes.map((node) => [node.id, node]));
+  navigationEdges = navigationData.edges.filter((edge) => navigationNodeById[edge.from] && navigationNodeById[edge.to]);
+  navigationEdgeByKey = {};
+  for (const edge of navigationEdges) {
+    const from = navigationNodeById[edge.from];
+    const to = navigationNodeById[edge.to];
+    if (!from.links.includes(to.id)) from.links.push(to.id);
+    if (!to.links.includes(from.id)) to.links.push(from.id);
+    navigationEdgeByKey[edgeKey(edge.from, edge.to)] = edge;
+  }
+  if (!navigationNodeById[navigationData.entryNodeId]) {
+    navigationData.entryNodeId = navigationNodes[0]?.id ?? "";
+  }
+  state.currentNodeId = navigationNodeById[state.currentNodeId] ? state.currentNodeId : navigationData.entryNodeId;
+}
+
+function toSafeId(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "") || "id";
+}
+
+function pathLength(points) {
+  let length = 0;
+  for (let i = 1; i < points.length; i++) {
+    length += Math.hypot(points[i][0] - points[i - 1][0], points[i][1] - points[i - 1][1]);
+  }
+  return length;
+}
+
+function samplePath(points, progress) {
+  if (!points.length) return { x: 0, y: 0 };
+  const total = pathLength(points);
+  if (total <= 0) return { x: points[0][0], y: points[0][1] };
+  let target = total * Math.max(0, Math.min(1, progress));
+  for (let i = 1; i < points.length; i++) {
+    const [ax, ay] = points[i - 1];
+    const [bx, by] = points[i];
+    const segment = Math.hypot(bx - ax, by - ay);
+    if (target <= segment || i === points.length - 1) {
+      const t = segment > 0 ? target / segment : 0;
+      return {
+        x: ax + (bx - ax) * t,
+        y: ay + (by - ay) * t,
+      };
+    }
+    target -= segment;
+  }
+  const last = points[points.length - 1];
+  return { x: last[0], y: last[1] };
 }
 
 function pointInPolygon(x, y, points) {
@@ -832,14 +1324,164 @@ function canvasPointToWorld(event) {
 }
 
 function onCanvasPointerDown(event) {
-  if (!state.collisionEdit && !state.waterEdit) return;
   const point = canvasPointToWorld(event);
+  if (currentAreaKey === AREA_KEYS.RITUAL_ROAD && state.navEdit) {
+    handleNavEditPointerDown(point);
+    return;
+  }
+  if (currentAreaKey === AREA_KEYS.RITUAL_ROAD && !state.collisionEdit && !state.waterEdit) {
+    const hitNode = nearestNode(point.x, point.y, 22);
+    if (hitNode) {
+      selectNavigationNode(hitNode.id);
+      return;
+    }
+    travelToNearestReachableNode(point.x, point.y);
+    return;
+  }
+  if (!state.collisionEdit && !state.waterEdit) return;
   if (point.x < 0 || point.y < 0 || point.x > WORLD_W || point.y > WORLD_H) return;
   draftCollider.push([point.x, point.y]);
   renderGridOverlay();
-  updateCollisionExport();
+  updateDataExport();
   const draftType = state.waterEdit ? "Water" : isCollisionInverted() ? "Walkable" : "Blocked";
   setStatus(`${draftType} draft point ${draftCollider.length}: ${point.x},${point.y}. Enter closes; Backspace undoes; Escape clears.`);
+}
+
+function onCanvasPointerMove(event) {
+  if (state.navEdit && state.navTool === "inflection" && !state.draggingNav) {
+    const point = canvasPointToWorld(event);
+    const hitEdge = nearestEdge(point.x, point.y, 54);
+    state.inflectionPreview = hitEdge
+      ? { edgeKey: hitEdge.edgeKey, segmentIndex: hitEdge.segmentIndex, x: point.x, y: point.y }
+      : null;
+    renderNavigationOverlay();
+    return;
+  }
+
+  if (!state.draggingNav) return;
+  const point = canvasPointToWorld(event);
+  const x = Math.max(0, Math.min(WORLD_W, point.x));
+  const y = Math.max(0, Math.min(WORLD_H, point.y));
+  if (state.draggingNav.type === "node") {
+    const node = navigationData.nodes.find((item) => item.id === state.draggingNav.nodeId);
+    if (!node) return;
+    node.x = x;
+    node.y = y;
+    for (const edge of navigationData.edges) {
+      if (edge.from === node.id) edge.points[0] = [x, y];
+      if (edge.to === node.id) edge.points[edge.points.length - 1] = [x, y];
+    }
+    updateNodeDetailsPanel();
+  } else if (state.draggingNav.type === "point") {
+    const edge = navigationData.edges.find((item) => edgeKey(item.from, item.to) === state.draggingNav.edgeKey);
+    if (!edge) return;
+    edge.points[state.draggingNav.pointIndex] = [x, y];
+    state.inflectionPreview = null;
+  }
+  rebuildNavigationGraph();
+  renderNavigationOverlay();
+  updateDataExport();
+}
+
+function onCanvasPointerUp() {
+  state.draggingNav = null;
+}
+
+function handleNavEditPointerDown(point) {
+  if (state.navTool === "inflection") {
+    const hitPoint = nearestSelectedEdgePoint(point.x, point.y, 12);
+    if (hitPoint) {
+      state.selectedEdgeKey = hitPoint.edgeKey;
+      state.selectedPathPointIndex = hitPoint.pointIndex;
+      state.selectedNodeId = null;
+      state.inflectionPreview = null;
+      state.draggingNav = { type: "point", edgeKey: hitPoint.edgeKey, pointIndex: hitPoint.pointIndex };
+      renderNavigationOverlay();
+      updateNodeDetailsPanel();
+      setStatus("Inflection handle selected. Drag to shape the route; Backspace deletes; P previews.");
+      return;
+    }
+
+    const hitEdge = state.inflectionPreview ?? nearestEdge(point.x, point.y, 54) ?? nearestSelectedEdge(point.x, point.y);
+    if (hitEdge) {
+      const edge = navigationData.edges.find((item) => edgeKey(item.from, item.to) === hitEdge.edgeKey);
+      if (!edge) return;
+      const insertAt = Math.max(1, hitEdge.segmentIndex + 1);
+      edge.points.splice(insertAt, 0, [point.x, point.y]);
+      state.selectedEdgeKey = hitEdge.edgeKey;
+      state.selectedPathPointIndex = insertAt;
+      state.selectedNodeId = null;
+      state.inflectionPreview = null;
+      state.draggingNav = { type: "point", edgeKey: hitEdge.edgeKey, pointIndex: insertAt };
+      rebuildNavigationGraph();
+      renderNavigationOverlay();
+      updateNodeDetailsPanel();
+      updateDataExport();
+      setStatus("Inflection handle added to selected route.");
+      return;
+    }
+
+    setStatus(navigationEdges.length
+      ? "Path tool: click closer to a route to add an inflection handle."
+      : "Path tool needs a route. Switch to V, place two nodes, then link them.");
+    return;
+  }
+
+  if (state.navTool === "connect") {
+    const hitNode = nearestNode(point.x, point.y, 24);
+    if (!hitNode) {
+      setStatus("Connect tool: click a node, then another node.");
+      return;
+    }
+    if (!state.pendingConnectionNodeId) {
+      state.pendingConnectionNodeId = hitNode.id;
+      state.selectedNodeId = hitNode.id;
+      state.selectedEdgeKey = null;
+      state.selectedPathPointIndex = null;
+      renderNavigationOverlay();
+      updateDataExport();
+      setStatus(`${hitNode.label} selected for connection. Click the destination node.`);
+      return;
+    }
+    if (state.pendingConnectionNodeId === hitNode.id) {
+      setStatus("Connect tool: choose a different destination node.");
+      return;
+    }
+    connectNavigationNodes(state.pendingConnectionNodeId, hitNode.id);
+    state.selectedEdgeKey = edgeKey(state.pendingConnectionNodeId, hitNode.id);
+    state.selectedNodeId = null;
+    state.pendingConnectionNodeId = null;
+    state.selectedPathPointIndex = null;
+    state.navTool = "inflection";
+    state.inflectionPreview = midpointInflectionPreview(state.selectedEdgeKey);
+    renderNavigationOverlay();
+    updateNavToolControls();
+    updateDataExport();
+    setStatus("Route connected. Move to preview a bend, click to place it, or Escape to stop editing.");
+    return;
+  }
+
+  const hitNode = nearestNode(point.x, point.y, 22);
+  if (hitNode) {
+    selectNavigationNode(hitNode.id);
+    state.draggingNav = { type: "node", nodeId: hitNode.id };
+    setStatus(`${hitNode.label}. Drag to place. Use C to connect nodes.`);
+    renderNavigationOverlay();
+    updateDataExport();
+    return;
+  }
+
+  const node = createNavigationNode(point.x, point.y);
+  state.selectedNodeId = node.id;
+  state.selectedEdgeKey = null;
+  state.selectedPathPointIndex = null;
+  state.pendingConnectionNodeId = null;
+  state.inflectionPreview = null;
+  state.draggingNav = { type: "node", nodeId: node.id };
+  updateNodeDetailsPanel();
+  setStatus(`${node.label} added. Drag into place. Use C to connect nodes.`);
+  renderNavigationOverlay();
+  updateDataExport();
 }
 
 function closeDraftCollider() {
@@ -856,7 +1498,7 @@ function closeDraftCollider() {
     syncCurrentAreaData();
     refreshWaterMasks();
     renderGridOverlay();
-    updateCollisionExport();
+    updateDataExport();
     setStatus(`Water polygon added for ${areas[currentAreaKey].name}. Click Save water.`);
     return;
   }
@@ -871,7 +1513,7 @@ function closeDraftCollider() {
   draftCollider = [];
   syncCurrentAreaData();
   renderGridOverlay();
-  updateCollisionExport();
+  updateDataExport();
   setStatus(`${isCollisionInverted() ? "Walkable" : "Blocked"} polygon added for ${areas[currentAreaKey].name}. Click Save collision.`);
 }
 
@@ -879,7 +1521,7 @@ function undoDraftPoint() {
   if (!draftCollider.length) return;
   draftCollider.pop();
   renderGridOverlay();
-  updateCollisionExport();
+  updateDataExport();
   setStatus(`Collision draft point removed. ${draftCollider.length} point(s) remain.`);
 }
 
@@ -887,7 +1529,7 @@ function clearDraftCollider() {
   if (!draftCollider.length) return;
   draftCollider = [];
   renderGridOverlay();
-  updateCollisionExport();
+  updateDataExport();
   setStatus("Collision draft cleared.");
 }
 
@@ -896,7 +1538,7 @@ function resetAllCollision() {
   draftCollider = [];
   syncCurrentAreaData();
   renderGridOverlay();
-  updateCollisionExport();
+  updateDataExport();
   setStatus(`All collision information cleared for ${areas[currentAreaKey].name}. Click Save collision.`);
 }
 
@@ -906,8 +1548,294 @@ function resetAllWater() {
   syncCurrentAreaData();
   refreshWaterMasks();
   renderGridOverlay();
-  updateCollisionExport();
+  updateDataExport();
   setStatus(`All water information cleared for ${areas[currentAreaKey].name}. Click Save water.`);
+}
+
+function resetNavigation() {
+  navigationData = {
+    ...navigationData,
+    entryNodeId: "",
+    nodes: [],
+    edges: [],
+    combatSpawns: Array.isArray(navigationData.combatSpawns) ? navigationData.combatSpawns : [],
+    debug: navigationData.debug && typeof navigationData.debug === "object" ? navigationData.debug : {},
+    extensions: navigationData.extensions && typeof navigationData.extensions === "object" ? navigationData.extensions : {},
+  };
+  state.selectedNodeId = null;
+  state.selectedEdgeKey = null;
+  state.selectedPathPointIndex = null;
+  state.pendingConnectionNodeId = null;
+  state.inflectionPreview = null;
+  state.draggingNav = null;
+  rebuildNavigationGraph();
+  updatePlayerVisibility();
+  updateNodeDetailsPanel();
+  renderNavigationOverlay();
+  updateDataExport();
+  setStatus("Navigation reset. In edit nav, the first blank click places Node 1 as entry.");
+}
+
+function createNavigationNode(x, y) {
+  const base = `node_${navigationData.nodes.length + 1}`;
+  let id = base;
+  let suffix = 2;
+  while (navigationData.nodes.some((node) => node.id === id)) {
+    id = `${base}_${suffix++}`;
+  }
+  const scale = Number(navigationData.area.defaults?.playerScale) || MAP_KIND_DEFAULT_SCALE[navigationData.area.kind] || 1;
+  const node = {
+    id,
+    label: `Node ${navigationData.nodes.length + 1}`,
+    description: "",
+    discovery: {
+      state: "undiscovered",
+      showLabelWhenDiscovered: true,
+    },
+    x,
+    y,
+    scale,
+    trigger: {
+      type: "none",
+      payload: {},
+    },
+    extensions: {},
+  };
+  if (!navigationData.entryNodeId) navigationData.entryNodeId = id;
+  navigationData.nodes.push(node);
+  rebuildNavigationGraph();
+  return node;
+}
+
+function selectNavigationNode(nodeId) {
+  if (!navigationNodeById[nodeId]) return;
+  state.selectedNodeId = nodeId;
+  state.selectedEdgeKey = null;
+  state.selectedPathPointIndex = null;
+  updateNodeDetailsPanel();
+  renderNavigationOverlay();
+  updateDataExport();
+  setStatus(`${navigationNodeById[nodeId].label} selected.`);
+}
+
+function selectedNavigationNode() {
+  return navigationData.nodes.find((node) => node.id === state.selectedNodeId) ?? null;
+}
+
+function updateNodeDetailsPanel() {
+  if (!nodeDetailsEl) return;
+  const node = selectedNavigationNode();
+  const visible = Boolean(node && !state.navEdit);
+  nodeDetailsEl.hidden = !visible;
+  if (!visible) return;
+  if (nodeLabelInputEl && nodeLabelInputEl.value !== node.label) nodeLabelInputEl.value = node.label ?? "";
+  if (nodeTriggerSelectEl) {
+    const triggerType = node.trigger?.type ?? "none";
+    if (nodeTriggerSelectEl.value !== triggerType) nodeTriggerSelectEl.value = triggerType;
+  }
+  if (nodeScaleInputEl && Number(nodeScaleInputEl.value) !== node.scale) nodeScaleInputEl.value = String(node.scale ?? 1);
+  if (nodeDiscoveryStateSelectEl && nodeDiscoveryStateSelectEl.value !== (node.discovery?.state ?? "undiscovered")) {
+    nodeDiscoveryStateSelectEl.value = node.discovery?.state ?? "undiscovered";
+  }
+  if (nodeShowLabelToggleEl) {
+    nodeShowLabelToggleEl.checked = node.discovery?.showLabelWhenDiscovered !== false;
+  }
+  if (nodeDescriptionInputEl && nodeDescriptionInputEl.value !== (node.description ?? "")) {
+    nodeDescriptionInputEl.value = node.description ?? "";
+  }
+}
+
+function updateSelectedNodeDetails() {
+  const node = selectedNavigationNode();
+  if (!node) return;
+  node.label = nodeLabelInputEl?.value?.trim() || node.label || node.id;
+  const triggerType = nodeTriggerSelectEl?.value || "none";
+  node.trigger = {
+    type: ["none", "conversation", "area_transition", "combat"].includes(triggerType) ? triggerType : "none",
+    payload: node.trigger?.payload && typeof node.trigger.payload === "object" ? node.trigger.payload : {},
+  };
+  const scale = Number(nodeScaleInputEl?.value);
+  if (Number.isFinite(scale) && scale > 0) node.scale = Math.max(0.25, Math.min(1.5, scale));
+  node.discovery = {
+    state: nodeDiscoveryStateSelectEl?.value === "discovered" ? "discovered" : "undiscovered",
+    showLabelWhenDiscovered: nodeShowLabelToggleEl?.checked !== false,
+  };
+  node.description = nodeDescriptionInputEl?.value ?? "";
+  rebuildNavigationGraph();
+  if (node.id === state.currentNodeId && playerActor) playerActor.scale.set(node.scale);
+  renderNavigationOverlay();
+  updateDataExport();
+}
+
+function connectNavigationNodes(fromId, toId) {
+  if (navigationEdgeByKey[edgeKey(fromId, toId)]) return;
+  const from = navigationNodeById[fromId];
+  const to = navigationNodeById[toId];
+  if (!from || !to) return;
+  navigationData.edges.push({
+    id: toSafeId(`${fromId}__${toId}`),
+    from: fromId,
+    to: toId,
+    points: [[from.x, from.y], [to.x, to.y]],
+    extensions: {},
+  });
+  rebuildNavigationGraph();
+}
+
+function nearestNode(x, y, maxDistance = Infinity) {
+  return navigationNodes
+    .map((node) => ({ ...node, distance: Math.hypot(node.x - x, node.y - y) }))
+    .filter((node) => node.distance <= maxDistance)
+    .sort((a, b) => a.distance - b.distance)[0] ?? null;
+}
+
+function nearestSelectedEdgePoint(pointX, pointY, maxDistance) {
+  if (!state.selectedEdgeKey) return null;
+  const edge = navigationEdgeByKey[state.selectedEdgeKey];
+  if (!edge) return null;
+  return edge.points
+    .map((point, pointIndex) => ({
+      edgeKey: state.selectedEdgeKey,
+      pointIndex,
+      distance: Math.hypot(point[0] - pointX, point[1] - pointY),
+    }))
+    .filter((hit) => hit.pointIndex > 0 && hit.pointIndex < edge.points.length - 1)
+    .filter((hit) => hit.distance <= maxDistance)
+    .sort((a, b) => a.distance - b.distance)[0] ?? null;
+}
+
+function nearestEdge(x, y, maxDistance) {
+  let best = null;
+  for (const edge of navigationEdges) {
+    const curve = sampledCurvePoints(pathForEdge(edge.from, edge.to), 8);
+    for (let i = 1; i < curve.length; i++) {
+      const point = nearestPointOnSegment(x, y, curve[i - 1], curve[i]);
+      const distance = Math.hypot(x - point.x, y - point.y);
+      if (distance <= maxDistance && (!best || distance < best.distance)) {
+        best = { edgeKey: edgeKey(edge.from, edge.to), segmentIndex: approximateSourceSegment(edge.points, point.x, point.y), distance };
+      }
+    }
+  }
+  return best;
+}
+
+function nearestSelectedEdge(x, y) {
+  const edge = state.selectedEdgeKey ? navigationEdgeByKey[state.selectedEdgeKey] : null;
+  if (!edge) return null;
+  return {
+    edgeKey: state.selectedEdgeKey,
+    segmentIndex: approximateSourceSegment(edge.points, x, y),
+    distance: 0,
+  };
+}
+
+function midpointInflectionPreview(edgeKeyValue) {
+  const edge = navigationEdgeByKey[edgeKeyValue];
+  if (!edge || edge.points.length < 2) return null;
+  const points = sampledCurvePoints(edge.points, 12);
+  const midpoint = samplePath(points, 0.5);
+  return {
+    edgeKey: edgeKeyValue,
+    segmentIndex: approximateSourceSegment(edge.points, midpoint.x, midpoint.y),
+    x: Math.round(midpoint.x),
+    y: Math.round(midpoint.y),
+  };
+}
+
+function approximateSourceSegment(points, x, y) {
+  let bestIndex = 0;
+  let bestDistance = Infinity;
+  for (let i = 1; i < points.length; i++) {
+    const point = nearestPointOnSegment(x, y, points[i - 1], points[i]);
+    const distance = Math.hypot(x - point.x, y - point.y);
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      bestIndex = i - 1;
+    }
+  }
+  return bestIndex;
+}
+
+function setSelectedNodeScale(delta) {
+  const node = navigationData.nodes.find((item) => item.id === state.selectedNodeId);
+  if (!node) return;
+  node.scale = Math.max(0.25, Math.min(1.5, Math.round((node.scale + delta) * 100) / 100));
+  if (node.id === state.currentNodeId && playerActor) playerActor.scale.set(node.scale);
+  rebuildNavigationGraph();
+  updateNodeDetailsPanel();
+  renderNavigationOverlay();
+  updateDataExport();
+  setStatus(`${node.label} scale ${node.scale}.`);
+}
+
+function cycleSelectedNodeRole() {
+  const node = navigationData.nodes.find((item) => item.id === state.selectedNodeId);
+  if (!node) return;
+  const triggers = ["none", "conversation", "area_transition", "combat"];
+  const current = node.trigger?.type ?? "none";
+  const next = triggers[(triggers.indexOf(current) + 1) % triggers.length];
+  node.trigger = {
+    type: next,
+    payload: node.trigger?.payload && typeof node.trigger.payload === "object" ? node.trigger.payload : {},
+  };
+  rebuildNavigationGraph();
+  updateNodeDetailsPanel();
+  renderNavigationOverlay();
+  updateDataExport();
+  setStatus(`${node.label} trigger ${next}.`);
+}
+
+function markSelectedNodeEntry() {
+  const node = navigationData.nodes.find((item) => item.id === state.selectedNodeId);
+  if (!node) return;
+  navigationData.entryNodeId = node.id;
+  state.currentNodeId = node.id;
+  placePlayerAt({ x: node.x, y: node.y });
+  rebuildNavigationGraph();
+  updateNodeDetailsPanel();
+  renderNavigationOverlay();
+  updateDataExport();
+  setStatus(`${node.label} marked entry.`);
+}
+
+function deleteSelectedNavigationItem() {
+  if (state.selectedEdgeKey && state.selectedPathPointIndex !== null) {
+    const edge = navigationData.edges.find((item) => edgeKey(item.from, item.to) === state.selectedEdgeKey);
+    if (edge && state.selectedPathPointIndex > 0 && state.selectedPathPointIndex < edge.points.length - 1) {
+      edge.points.splice(state.selectedPathPointIndex, 1);
+      state.selectedPathPointIndex = null;
+      rebuildNavigationGraph();
+      renderNavigationOverlay();
+      updateNodeDetailsPanel();
+      updateDataExport();
+      setStatus("Bend point deleted.");
+    }
+    return;
+  }
+
+  if (state.selectedEdgeKey) {
+    navigationData.edges = navigationData.edges.filter((item) => edgeKey(item.from, item.to) !== state.selectedEdgeKey);
+    state.selectedEdgeKey = null;
+    rebuildNavigationGraph();
+    renderNavigationOverlay();
+    updateNodeDetailsPanel();
+    updateDataExport();
+    setStatus("Edge deleted.");
+    return;
+  }
+
+  if (state.selectedNodeId && state.selectedNodeId !== navigationData.entryNodeId) {
+    const id = state.selectedNodeId;
+    navigationData.nodes = navigationData.nodes.filter((node) => node.id !== id);
+    navigationData.edges = navigationData.edges.filter((edge) => edge.from !== id && edge.to !== id);
+    state.selectedNodeId = null;
+    rebuildNavigationGraph();
+    if (!navigationNodeById[state.currentNodeId]) placePlayerAt(entryNodePosition());
+    renderNavigationOverlay();
+    updateNodeDetailsPanel();
+    updateDataExport();
+    setStatus("Node deleted.");
+  }
 }
 
 async function saveCollisionToDisk() {
@@ -945,16 +1873,131 @@ async function saveWaterToDisk() {
   }
 }
 
-function setCollisionEdit(enabled) {
+async function saveNavigationToDisk() {
+  updateNavigationAreaMetadata();
+  try {
+    const response = await fetch(`${NAVIGATION_SAVE_URL}?area=${encodeURIComponent(AREA_KEYS.RITUAL_ROAD)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(navigationData),
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+    setStatus(`Navigation saved to ${payload.path || "navigationData.json"} (${payload.nodes} nodes, ${payload.edges} edges).`);
+  } catch (err) {
+    console.warn("[visual_spike] Navigation save failed", err);
+    setStatus(`Navigation save failed: ${err.message}. Start the authoring server with npm run spike:author.`);
+  }
+}
+
+function exportNavigationData() {
+  updateNavigationAreaMetadata();
+  const fileName = `${navigationData.area.id || "area"}-navigation.json`;
+  const blob = new Blob([`${JSON.stringify(navigationData, null, 2)}\n`], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  setStatus(`Navigation exported as ${fileName}.`);
+}
+
+function setNavEdit(enabled) {
+  state.navEdit = enabled;
+  if (enabled) {
+    setCollisionEdit(false, { silent: true });
+    setWaterEdit(false, { silent: true });
+  } else {
+    state.selectedEdgeKey = null;
+    state.selectedPathPointIndex = null;
+    state.pendingConnectionNodeId = null;
+    state.inflectionPreview = null;
+    state.draggingNav = null;
+    if (currentAreaKey === AREA_KEYS.RITUAL_ROAD && navigationNodes.length) placePlayerAt(entryNodePosition());
+  }
+  if (navEditToggleEl) navEditToggleEl.checked = enabled;
+  app.canvas.style.cursor = enabled ? "crosshair" : "";
+  updatePlayerVisibility();
+  updateNodeDetailsPanel();
+  renderNavigationOverlay();
+  updateDataExport();
+  setStatus(enabled
+    ? "Nav edit: V places nodes; C connects nodes; B shapes route inflections."
+    : "Nav edit off.");
+}
+
+function setNavTool(tool) {
+  state.navTool = ["connect", "inflection"].includes(tool) ? tool : "node";
+  if (!state.navEdit) setNavEdit(true);
+  state.selectedPathPointIndex = null;
+  state.inflectionPreview = null;
+  if (state.navTool !== "connect") state.pendingConnectionNodeId = null;
+  state.draggingNav = null;
+  updateNavToolControls();
+  renderNavigationOverlay();
+  setStatus(navToolStatus());
+}
+
+function updateNavToolControls() {
+  if (navNodeToolEl) navNodeToolEl.setAttribute("aria-pressed", state.navTool === "node" ? "true" : "false");
+  if (navConnectToolEl) navConnectToolEl.setAttribute("aria-pressed", state.navTool === "connect" ? "true" : "false");
+  if (navInflectionToolEl) navInflectionToolEl.setAttribute("aria-pressed", state.navTool === "inflection" ? "true" : "false");
+}
+
+function navToolStatus() {
+  if (state.navTool === "connect") return "Connect tool. Click a source node, then a destination node.";
+  if (state.navTool === "inflection") return "Inflection tool. Hover a route to preview a bend; click to commit it.";
+  return "Node tool. Click blank map to place nodes; drag nodes to move them.";
+}
+
+function updateNavigationAreaMetadata() {
+  const name = areaNameInputEl?.value?.trim() || navigationData.area.name || "Area";
+  const kind = mapKindSelectEl?.value || navigationData.area.kind || "exploration";
+  const background = backgroundSelectEl?.value || navigationData.area.background || BACKGROUND_IMAGES[AREA_KEYS.RITUAL_ROAD];
+  const previousKind = navigationData.area.kind;
+  navigationData.area.name = name;
+  navigationData.area.id = toSafeId(name);
+  navigationData.area.kind = kind;
+  navigationData.area.background = background;
+  if (previousKind !== kind || !Number.isFinite(Number(navigationData.area.defaults?.playerScale))) {
+    navigationData.area.defaults = {
+      ...(navigationData.area.defaults ?? {}),
+      playerScale: MAP_KIND_DEFAULT_SCALE[kind] ?? 1,
+    };
+  }
+  areas[AREA_KEYS.RITUAL_ROAD].name = name;
+  areas[AREA_KEYS.RITUAL_ROAD].playerScale = Number(navigationData.area.defaults.playerScale) || 1;
+  if (backgroundTextureByPath[background]) {
+    areas[AREA_KEYS.RITUAL_ROAD].texture = backgroundTextureByPath[background];
+    if (currentAreaKey === AREA_KEYS.RITUAL_ROAD) drawBackground(areas[AREA_KEYS.RITUAL_ROAD].texture);
+  }
+  updateDataExport();
+}
+
+function syncNavigationControls() {
+  if (areaNameInputEl) areaNameInputEl.value = navigationData.area.name;
+  if (mapKindSelectEl) mapKindSelectEl.value = navigationData.area.kind;
+  if (backgroundSelectEl) backgroundSelectEl.value = navigationData.area.background;
+}
+
+function setCollisionEdit(enabled, options = {}) {
   state.collisionEdit = enabled;
-  if (enabled) setWaterEdit(false, { silent: true });
+  if (enabled) {
+    setWaterEdit(false, { silent: true });
+    setNavEdit(false);
+  }
   if (collisionEditToggleEl) collisionEditToggleEl.checked = enabled;
   syncGridOverlayVisibility();
   renderGridOverlay();
   app.canvas.style.cursor = enabled ? "crosshair" : "";
-  setStatus(enabled
-    ? `${isCollisionInverted() ? "Walkable" : "Collision"} edit: click polygon points. Enter closes; Backspace undoes; Escape clears.`
-    : "Collision edit off.");
+  if (!options.silent) {
+    setStatus(enabled
+      ? `${isCollisionInverted() ? "Walkable" : "Collision"} edit: click polygon points. Enter closes; Backspace undoes; Escape clears.`
+      : "Collision edit off.");
+  }
 }
 
 function setCollisionInverted(enabled) {
@@ -969,7 +2012,10 @@ function setCollisionInverted(enabled) {
 
 function setWaterEdit(enabled, options = {}) {
   state.waterEdit = enabled;
-  if (enabled) setCollisionEdit(false);
+  if (enabled) {
+    setCollisionEdit(false, { silent: true });
+    setNavEdit(false);
+  }
   if (waterEditToggleEl) waterEditToggleEl.checked = enabled;
   syncGridOverlayVisibility();
   renderGridOverlay();
@@ -981,13 +2027,24 @@ function setWaterEdit(enabled, options = {}) {
   }
 }
 
-function updateCollisionExport() {
-  if (!collisionExportEl) return;
-  collisionExportEl.value = JSON.stringify({
+function updateDataExport() {
+  if (!dataExportEl) return;
+  updateNavigationAreaMetadataFromControlsOnly();
+  dataExportEl.value = JSON.stringify({
+    navigation: navigationData,
     collisionMode: isCollisionInverted() ? "walkable" : "blocked",
     collision: vectorColliders,
     water: waterAreas,
   }, null, 0);
+}
+
+function updateNavigationAreaMetadataFromControlsOnly() {
+  if (areaNameInputEl?.value?.trim()) {
+    navigationData.area.name = areaNameInputEl.value.trim();
+    navigationData.area.id = toSafeId(navigationData.area.name);
+  }
+  if (mapKindSelectEl?.value) navigationData.area.kind = mapKindSelectEl.value;
+  if (backgroundSelectEl?.value) navigationData.area.background = backgroundSelectEl.value;
 }
 
 function syncCurrentAreaData() {
@@ -1208,7 +2265,7 @@ function createHostileGlowTexture() {
 
 function updateLanternaGlow(actor) {
   if (!actor?.parts?.lanterna) return;
-  actor.parts.lanterna.alpha = 0.78;
+  actor.parts.lanterna.alpha = currentAreaKey === AREA_KEYS.RITUAL_ROAD ? 0 : 0.78;
 }
 
 function createLanternaGlowTexture({ size, seed, color, alpha, stretchX, stretchY, coreBias }) {
@@ -1347,7 +2404,98 @@ function setActorFrame(actor, frameIndex, options = {}) {
   actor.parts.rimSprite.scale.set(actor.parts.baseHeight / frames[next].height);
 }
 
+function travelToNearestReachableNode(x, y) {
+  const current = navigationNodeById[state.currentNodeId];
+  if (!current || state.moving || state.acting || state.downed) return;
+  const nearest = current.links
+    .map((id) => navigationNodeById[id])
+    .filter(Boolean)
+    .map((node) => ({ node, distance: Math.hypot(node.x - x, node.y - y) }))
+    .sort((a, b) => a.distance - b.distance)[0];
+  if (!nearest || nearest.distance > 84) return;
+  travelToNode(nearest.node.id);
+}
+
+function travelToDirectionalNode(dx, dy) {
+  const current = navigationNodeById[state.currentNodeId];
+  if (!current || state.moving || state.acting || state.downed) return;
+  const length = Math.hypot(dx, dy) || 1;
+  const dirX = dx / length;
+  const dirY = dy / length;
+  const best = current.links
+    .map((id) => navigationNodeById[id])
+    .filter(Boolean)
+    .map((node) => {
+      const nodeDx = node.x - current.x;
+      const nodeDy = node.y - current.y;
+      const nodeLength = Math.hypot(nodeDx, nodeDy) || 1;
+      return {
+        node,
+        score: dirX * (nodeDx / nodeLength) + dirY * (nodeDy / nodeLength),
+      };
+    })
+    .sort((a, b) => b.score - a.score)[0];
+  if (!best || best.score < 0.15) return;
+  travelToNode(best.node.id);
+}
+
+function travelToNode(nodeId) {
+  const from = navigationNodeById[state.currentNodeId];
+  const to = navigationNodeById[nodeId];
+  if (!from || !to || !from.links.includes(nodeId) || !playerActor) return;
+  clearMovementInput();
+  state.moving = true;
+  const path = sampledCurvePoints(pathForEdge(from.id, to.id));
+  const distance = pathLength(path);
+  const fromScale = from.scale ?? areas[currentAreaKey]?.playerScale ?? 1;
+  const toScale = to.scale ?? fromScale;
+  const duration = Math.max(520, Math.min(1800, distance * 5.4));
+  setStatus(`Travelling to ${to.label}.`);
+  tweens.add(duration, (t) => {
+    const k = easeInOutSine(t);
+    const point = samplePath(path, k);
+    const x = point.x;
+    const y = point.y;
+    const scale = fromScale + (toScale - fromScale) * k;
+    state.player.x = x;
+    state.player.y = y;
+    playerActor.x = x;
+    playerActor.y = y;
+    playerActor.scale.set(scale);
+    updateActorDepth(playerActor);
+  }, () => {
+    state.currentNodeId = to.id;
+    revealNode(to.id);
+    state.player.x = to.x;
+    state.player.y = to.y;
+    playerActor.x = to.x;
+    playerActor.y = to.y;
+    playerActor.scale.set(toScale);
+    state.moving = false;
+    updateActorDepth(playerActor);
+    renderNavigationOverlay();
+    setStatus(`${to.label}. Click a connected node, or use arrows/WASD to travel.`);
+  });
+}
+
+function previewSelectedEdge() {
+  const edge = state.selectedEdgeKey ? navigationEdgeByKey[state.selectedEdgeKey] : null;
+  if (!edge) {
+    setStatus("Select an edge first, then press P to preview it.");
+    return;
+  }
+  const current = navigationNodeById[state.currentNodeId];
+  const nextId = current?.id === edge.to ? edge.from : edge.to;
+  if (!current || (current.id !== edge.from && current.id !== edge.to)) {
+    state.currentNodeId = edge.from;
+    const from = navigationNodeById[edge.from];
+    if (from) placePlayerAt({ x: from.x, y: from.y });
+  }
+  travelToNode(nextId);
+}
+
 function moveHeldPlayer(deltaMS) {
+  if (currentAreaKey === AREA_KEYS.RITUAL_ROAD) return;
   if (!playerActor || state.acting || state.downed || state.conversing || state.collisionEdit || state.waterEdit) return;
   let dx = 0;
   let dy = 0;
@@ -1388,7 +2536,7 @@ function moveHeldPlayer(deltaMS) {
   if (currentAreaKey !== AREA_KEYS.RITUAL_ROAD) updateFreeMoveAnimation(dx, dy);
   if (elapsedMS - state.lastMoveStatusMS > 350) {
     state.lastMoveStatusMS = elapsedMS;
-    setStatus(`${areas[currentAreaKey].name}; position ${Math.round(state.player.x)},${Math.round(state.player.y)}`);
+    setStatus(`${areas[currentAreaKey].name}.`);
   }
 }
 
@@ -1428,7 +2576,7 @@ function transitionToArea(transition) {
     }, () => {
       world.alpha = 1;
       state.moving = false;
-      setStatus(`${areas[currentAreaKey].name}; position ${state.player.x},${state.player.y}`);
+      setStatus(`${areas[currentAreaKey].name}.`);
     });
   });
 }
@@ -1451,8 +2599,15 @@ function applyArea(areaKey) {
   createWaterReflections();
   createStaticLighting();
   createLanternaWaterReflection();
+  updatePlayerVisibility();
+  renderNavigationOverlay();
   renderGridOverlay();
-  updateCollisionExport();
+  updateDataExport();
+}
+
+function updatePlayerVisibility() {
+  if (!playerActor) return;
+  playerActor.visible = !(currentAreaKey === AREA_KEYS.RITUAL_ROAD && (state.navEdit || navigationNodes.length === 0));
 }
 
 function revealHostile() {
@@ -1465,12 +2620,34 @@ function revealHostile() {
 function placePlayerAt(position) {
   state.player.x = position.x;
   state.player.y = position.y;
+  if (currentAreaKey === AREA_KEYS.RITUAL_ROAD) {
+    const nearestNode = navigationNodes
+      .map((node) => ({ node, distance: Math.hypot(node.x - position.x, node.y - position.y) }))
+      .sort((a, b) => a.distance - b.distance)[0]?.node;
+    state.currentNodeId = nearestNode?.id ?? navigationData.entryNodeId;
+    revealNode(state.currentNodeId);
+  }
   state.currentFrame = 1;
   Object.assign(playerActor, position);
   applyPlayerAreaScale();
+  if (currentAreaKey === AREA_KEYS.RITUAL_ROAD) {
+    const node = navigationNodeById[state.currentNodeId];
+    playerActor.scale.set(node?.scale ?? areas[currentAreaKey]?.playerScale ?? 1);
+  }
   resetActorPose(playerActor);
   setActorFrame(playerActor, 1);
   updateActorDepth(playerActor);
+  renderNavigationOverlay();
+}
+
+function revealNode(nodeId) {
+  if (!nodeId || !navigationNodeById[nodeId]) return;
+  discoveredNodeIds.add(nodeId);
+}
+
+function entryNodePosition() {
+  const entry = navigationNodeById[navigationData.entryNodeId] ?? navigationNodes[0];
+  return entry ? { x: entry.x, y: entry.y } : AREA_SPAWNS[AREA_KEYS.RITUAL_ROAD];
 }
 
 function applyPlayerAreaScale() {
@@ -1732,7 +2909,8 @@ function animateStaticJourneyStep(actor, from, to, duration) {
 
 function onKeyDown(event) {
   const key = event.key.toLowerCase();
-  if (["arrowup", "arrowdown", "arrowleft", "arrowright", "w", "a", "s", "d", "g", "e", "r", "c", "1", "2", "3", "4", " ", "enter", "backspace", "escape"].includes(key)) {
+  if (isTypingTarget(event.target)) return;
+  if (["arrowup", "arrowdown", "arrowleft", "arrowright", "w", "a", "s", "d", "g", "e", "n", "p", "t", "v", "b", "[", "]", "r", "c", "1", "2", "3", "4", " ", "enter", "backspace", "escape"].includes(key)) {
     event.preventDefault();
   }
 
@@ -1740,6 +2918,21 @@ function onKeyDown(event) {
     if (/^[1-4]$/.test(key)) selectConversationReply(Number(key) - 1);
     else if (key === "enter" || key === " " || key === "c") selectConversationReply(0);
     else if (key === "escape") endConversation();
+    return;
+  }
+
+  if (key === "v") {
+    setNavTool("node");
+    return;
+  }
+
+  if (key === "b") {
+    setNavTool("inflection");
+    return;
+  }
+
+  if (key === "c" && currentAreaKey === AREA_KEYS.RITUAL_ROAD) {
+    setNavTool("connect");
     return;
   }
 
@@ -1754,7 +2947,25 @@ function onKeyDown(event) {
     return;
   }
 
+  if (state.navEdit) {
+    if (key === "escape") setNavEdit(false);
+    else if (key === "backspace") deleteSelectedNavigationItem();
+    else if (key === "[") setSelectedNodeScale(-0.02);
+    else if (key === "]") setSelectedNodeScale(0.02);
+    else if (key === "t") cycleSelectedNodeRole();
+    else if (key === "e") markSelectedNodeEntry();
+    else if (key === "p" && state.selectedEdgeKey) previewSelectedEdge();
+    else if (key === "enter" && state.selectedNodeId) setStatus("Now click another node to link it to the selected node.");
+    return;
+  }
+
   if (MOVEMENT_KEYS.has(key)) {
+    if (currentAreaKey === AREA_KEYS.RITUAL_ROAD) {
+      const dx = key === "arrowleft" || key === "a" ? -1 : key === "arrowright" || key === "d" ? 1 : 0;
+      const dy = key === "arrowup" || key === "w" ? -1 : key === "arrowdown" || key === "s" ? 1 : 0;
+      travelToDirectionalNode(dx, dy);
+      return;
+    }
     state.input.add(key);
     return;
   }
@@ -1768,6 +2979,10 @@ function onKeyDown(event) {
   }
   else if (key === "g") {
     setGridVisible(!state.showGrid);
+  } else if (key === "n") {
+    setNavEdit(!state.navEdit);
+  } else if (key === "p" && currentAreaKey === AREA_KEYS.RITUAL_ROAD) {
+    previewSelectedEdge();
   } else if (key === "c") {
     tryStartConversation();
   } else if (key === "e") {
@@ -1777,6 +2992,11 @@ function onKeyDown(event) {
   } else if (key === "r") {
     resetToGuard();
   }
+}
+
+function isTypingTarget(target) {
+  const tag = target?.tagName?.toLowerCase();
+  return tag === "input" || tag === "textarea" || tag === "select" || target?.isContentEditable;
 }
 
 function onKeyUp(event) {
@@ -1799,9 +3019,9 @@ function jumpToArea(areaKey, spawn) {
   if (!areas[areaKey] || state.acting || state.downed) return;
   clearMovementInput();
   applyArea(areaKey);
-  placePlayerAt(spawn);
+  placePlayerAt(areaKey === AREA_KEYS.RITUAL_ROAD ? entryNodePosition() : spawn);
   resize();
-  setStatus(`${areas[currentAreaKey].name}; position ${Math.round(state.player.x)},${Math.round(state.player.y)}`);
+  setStatus(`${areas[currentAreaKey].name}.`);
 }
 
 function setGridVisible(visible) {

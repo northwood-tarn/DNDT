@@ -38,15 +38,7 @@
   Emitted by: scenes/systems (Exploration, Dialogue)  
   Listeners: `flow/ExitRouter` → performs routing
 
-- **`game:postCombatOutcome`**  
-  Payload: `{ outcome: "victory" | "defeat" | "retreat", encounterId?: string, returnAreaId?: string }`  
-  Emitted by: `flow/PostCombatResolver` (after results calculated)  
-  Listeners: `flow/ExitRouter` → returns to exploration on victory; defeat handled by modal
-
-- **`game:encounterWon`**  
-  Payload: `{ encounterId: string }`  
-  Emitted by: `flow/PostCombatResolver` on victory  
-  Listeners: reward/XP systems
+- Combat outcome events are pending the new combat snapshot/resolver.
 
 ---
 
@@ -82,25 +74,7 @@
 ---
 
 ## Combat
-- **`combat:started`**  
-  Payload: `{ encounterId: string }`  
-  Emitted by: `flow/ExitRouter` after scene swap to Combat  
-  Listeners: music controller, UI
-
-- **`combat:turnBegan`**  
-  Payload: `{ actorId: string, round: number }`  
-  Emitted by: `systems/combatSystem`  
-  Listeners: UI turn highlight, AI
-
-- **`combat:turnEnded`**  
-  Payload: `{ actorId: string, round: number }`  
-  Emitted by: `systems/combatSystem`  
-  Listeners: log, triggers
-
-- **`combat:ended`**  
-  Payload: `{ outcome: "victory"|"defeat"|"retreat", encounterId?: string, returnAreaId?: string }`  
-  Emitted by: `systems/combatSystem`/resolver after detection  
-  Listeners: `flow/PostCombatResolver` (which emits `game:postCombatOutcome`)
+- Legacy combat events have been removed. New combat events should be defined with the snapshot/resolver design.
 
 ---
 

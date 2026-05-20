@@ -211,16 +211,14 @@ export default class DialogueScene {
     this.returnTo = returnTo;
     this._pendingExit = false;
 
-    // Prefer resolving script path via generated registry when we have an areaId.
+    // Prefer resolving script path via registry when we have an areaId.
     // This prevents stale hardcoded paths like "./areas/00_pier/..." from breaking.
     let resolvedScript = script;
     if (this.areaId) {
       const reg = getArea(this.areaId);
-      if (reg && typeof reg.script === "string") {
-        // If caller didn't provide a script, or provided an old "./areas/..." path, prefer registry.
-        if (reg && typeof reg.script === "string") {
-  resolvedScript = reg.script;
-        }
+      const registryScript = reg?.assets?.ink || reg?.script;
+      if (typeof registryScript === "string") {
+        resolvedScript = registryScript;
       }
     }
 

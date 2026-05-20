@@ -11,6 +11,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import url from 'node:url';
 import { fileURLToPath } from 'node:url';
+import { validateConsumables } from './validate-consumables.js';
+import { validateSpells } from './validate-spells.js';
+import { validateWeapons } from './validate-weapons.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -164,7 +167,9 @@ async function getAjv() {
         console.warn('[validate] Could not locate draft 2020-12 meta schema file');
       }
     } catch (e) {
-      console.warn('[validate] Could not register draft 2020-12 meta schema:', e.message);
+      if (!String(e?.message || '').includes('already exists')) {
+        console.warn('[validate] Could not register draft 2020-12 meta schema:', e.message);
+      }
     }
 
     if (addFormats) addFormats(ajv);
@@ -197,13 +202,35 @@ async function checkRegistry() {
       errors++;
       continue;
     }
-    if (!entry.name || typeof entry.name !== 'string') {
-      printErr(`[registry] Entry for key "${key}" missing required "name" property`);
+    if (!entry.id || typeof entry.id !== 'string') {
+      printErr(`[registry] Entry for key "${key}" missing required "id" property`);
       errors++;
     }
-    if (!entry.entry && !entry.path) {
-      printWarn(`[registry] Entry for key "${key}" missing both "entry" and "path" properties`);
+    if (entry.id && entry.id !== key) {
+      printWarn(`[registry] Entry for key "${key}" has mismatched id "${entry.id}"`);
       warnings++;
+    }
+    if (!entry.title || typeof entry.title !== 'string') {
+      printErr(`[registry] Entry for key "${key}" missing required "title" property`);
+      errors++;
+    }
+    const validKinds = new Set(['dialogue', 'exploration_map', 'combat', 'system_cutscene']);
+    if (!validKinds.has(entry.kind)) {
+      printErr(`[registry] Entry for key "${key}" has invalid or missing "kind" property`);
+      errors++;
+    }
+    if (!entry.assets || typeof entry.assets !== 'object') {
+      printErr(`[registry] Entry for key "${key}" missing required "assets" object`);
+      errors++;
+      continue;
+    }
+    if (entry.kind === 'dialogue' && typeof entry.assets.ink !== 'string') {
+      printErr(`[registry] Dialogue area "${key}" missing required "assets.ink" property`);
+      errors++;
+    }
+    if (entry.kind === 'exploration_map' && typeof entry.assets.tmj !== 'string') {
+      printErr(`[registry] Exploration area "${key}" missing required "assets.tmj" property`);
+      errors++;
     }
   }
   if (errors > 0) {
@@ -264,6 +291,33 @@ async function main() {
     */
     const registryErrors = await checkRegistry();
     jsonErrors += registryErrors;
+  }
+
+  const spellErrors = await validateSpells();
+  if (spellErrors.length) {
+    jsonErrors += spellErrors.length;
+    printErr(`[spells] Validation failed with ${spellErrors.length} error(s):`);
+    for (const err of spellErrors) console.error('  -', err);
+  } else {
+    printOk('[spells] Validation OK');
+  }
+
+  const consumableErrors = await validateConsumables();
+  if (consumableErrors.length) {
+    jsonErrors += consumableErrors.length;
+    printErr(`[consumables] Validation failed with ${consumableErrors.length} error(s):`);
+    for (const err of consumableErrors) console.error('  -', err);
+  } else {
+    printOk('[consumables] Validation OK');
+  }
+
+  const weaponErrors = await validateWeapons();
+  if (weaponErrors.length) {
+    jsonErrors += weaponErrors.length;
+    printErr(`[weapons] Validation failed with ${weaponErrors.length} error(s):`);
+    for (const err of weaponErrors) console.error('  -', err);
+  } else {
+    printOk('[weapons] Validation OK');
   }
 
   if (!NO_CROSS) {

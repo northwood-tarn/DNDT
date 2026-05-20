@@ -31,13 +31,13 @@ const ASSUME_UTILS = getOpt("--assume-utils", null); // e.g., "../utils/Assets.j
 // Mirror the default aliases we established in app/utils/Assets.js
 const REGISTRY = {
   images: {
-    "ui.logo":        "assets/images/ui/dndlogo.png",
-    "ui.mainscreen":  "assets/images/ui/mainscreen.png",
-    "ui.murky":       "assets/images/backgrounds/murky-background.png",
-    "fx.sunburst":    "assets/images/sprites/fx/sunburst.png",
-    "fx.flame":       "assets/images/sprites/fx/flame.png",
-    "fx.fogTexture":  "assets/images/sprites/fx/fog-texture.png",
-    "pc.placeholder": "assets/images/sprites/pc/pc_nobody.png",
+    "ui.logo":        "assets/ui/dndlogo.png",
+    "ui.mainscreen":  "assets/images/mainscreen.png",
+    "ui.murky":       "assets/backgrounds/murky-background.png",
+    "fx.sunburst":    "assets/fx/sunburst.png",
+    "fx.flame":       "assets/fx/flame.png",
+    "fx.fogTexture":  "assets/fx/fog-texture.png",
+    "pc.placeholder": "assets/sprites/pc_nobody.png",
     "death.screen":   "assets/images/ui/death.png"
   },
   audio: {

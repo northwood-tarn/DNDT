@@ -6,7 +6,6 @@ import { getState } from "./stateStore.js";
 import { getAbilityMod, getProficiencyBonus, computeAC, computeInitiativeMod } from "../systems/derivedStats.js";
 import { getConsumableById } from "../data/consumables.js";
 import { rollWithDetail } from "../utils/dice.js";
-import { ensureTurnEconomy, spendAction, spendBonus } from "../systems/turnEconomy.js";
 
 // ---------- Selectors ----------
 export function getPlayer() {
@@ -80,11 +79,7 @@ export function useConsumable(id){
   const p=getPlayer();
   const def = getConsumableById(id);
   if (!def) return { ok:false, reason:"Unknown item" };
-  // action economy
-  const econ = ensureTurnEconomy(p);
-  if (def.useTime === "bonus"){ spendBonus(p); }
-  else if (def.useTime === "action"){ spendAction(p); }
-  else if (def.useTime === "exploration"){ return { ok:false, reason:"Not usable in combat" }; }
+  if (def.useTime === "exploration"){ return { ok:false, reason:"Not usable in combat" }; }
 
   // effects (prototype: healing potion 2d4+2)
   if (id === "healing_potion"){

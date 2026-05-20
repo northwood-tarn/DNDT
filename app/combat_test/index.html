@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Combat Test</title>
+    <link rel="stylesheet" href="./combatTest.css">
+  </head>
+  <body>
+    <main class="combat-shell">
+      <section class="board-panel">
+        <div class="topbar">
+          <div>
+            <div class="eyebrow">Combat test</div>
+            <h1 id="turnTitle">Loading</h1>
+          </div>
+          <div class="controls">
+            <select id="scenarioSelect" aria-label="Combat scenario"></select>
+            <button id="diceToggle" type="button">Deterministic Dice</button>
+            <button id="resetButton" type="button">Reset</button>
+          </div>
+        </div>
+        <div id="grid" class="grid" aria-label="Combat grid"></div>
+        <div class="command-row">
+          <div id="economyStrip" class="economy-strip" aria-label="Action economy"></div>
+          <div class="button-group">
+            <div class="group-label">Action</div>
+            <div id="actionButtons" class="option-buttons"></div>
+          </div>
+          <div id="targetTestPanel" class="target-test-panel" hidden>
+            <select id="targetShapeSelect" class="option-select" aria-label="Target test shape">
+              <option value="radius">Radius</option>
+              <option value="line">Line</option>
+              <option value="cone">Cone</option>
+              <option value="cube">Cube</option>
+            </select>
+            <div id="targetTestStatus" class="target-test-status">Click grid to lock target</div>
+            <button id="confirmTargetButton" type="button" disabled>Confirm Target</button>
+          </div>
+          <button id="endTurnButton" type="button">End Turn</button>
+        </div>
+      </section>
+      <aside class="log-panel">
+        <div class="log-head">
+          <div>
+            <div class="eyebrow">Structured log</div>
+            <h2>All Details</h2>
+          </div>
+        </div>
+        <ol id="combatLog" class="combat-log"></ol>
+      </aside>
+    </main>
+    <dialog id="summaryDialog">
+      <form method="dialog">
+        <h2>Combat Summary</h2>
+        <div id="summaryBody"></div>
+        <menu>
+          <button value="close">Close</button>
+          <button id="summaryReset" value="reset">Reset</button>
+        </menu>
+      </form>
+    </dialog>
+    <script type="module" src="./combatTest.js"></script>
+  </body>
+</html>

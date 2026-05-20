@@ -1,8 +1,6 @@
 // app/systems/enemyAwareness.js
 // Centralised enemy awareness + combat initiation logic
 
-import { startCombat } from "../systems/combatRunner.js";
-
 // --- Awareness checks ---
 export function checkEnemyAwareness(playerState, enemies, lights, collisions){
   const awareEnemies = [];
@@ -53,8 +51,12 @@ export function maybeStartCombat(awareEnemies, areaId){
   // Pick encounter ID based on areaId (stub for now)
   const encounterId = areaId + "_ambush";
 
-  startCombat(encounterId, { returnAreaId: areaId });
-  return true;
+  console.warn("[combat] Legacy combat framework has been removed; new combat snapshot/resolver is pending.", {
+    encounterId,
+    returnAreaId: areaId,
+    awareEnemies,
+  });
+  return false;
 }
 
 // --- Factory (used by explorationSystem) ---

@@ -191,7 +191,9 @@ function buildRegistryEntry({ id, title, scriptPath, defaultEntry, nextAreas }) 
     id,
     title: title || id,
     kind: "dialogue",
-    script: scriptPath,
+    assets: {
+      ink: scriptPath,
+    },
   };
   if (defaultEntry) entry.defaultEntry = defaultEntry;
   if (Array.isArray(nextAreas) && nextAreas.length) entry.nextAreas = nextAreas;

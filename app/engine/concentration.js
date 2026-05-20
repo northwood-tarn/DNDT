@@ -17,7 +17,7 @@ export function isConcentrating(actor) {
 
 // Begin concentrating on a new effect. If already concentrating, end the old one first.
 export function beginConcentration(state, actor, payload, log = ()=>{}) {
-  // Require an existing combat container; state.combat is owned by combatRunner.
+  // Require an existing combat container owned by the active combat session.
   if (!state || !state.combat) {
     log("beginConcentration called without an active combat state; ignoring.");
     return;

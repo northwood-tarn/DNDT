@@ -1,0 +1,364 @@
+{
+  "schemaVersion": 1,
+  "area": {
+    "id": "ritual_road",
+    "name": "Ritual road",
+    "kind": "grand_exploration",
+    "background": "./assets/ritual_road_ink_negative_space_1920x1080.png",
+    "image": {
+      "width": 1920,
+      "height": 1080
+    },
+    "defaults": {
+      "playerScale": 0.66
+    },
+    "extensions": {}
+  },
+  "entryNodeId": "node_1",
+  "nodes": [
+    {
+      "id": "node_1",
+      "label": "Entry",
+      "description": "",
+      "discovery": {
+        "state": "undiscovered",
+        "showLabelWhenDiscovered": true
+      },
+      "x": 413,
+      "y": 1014,
+      "scale": 0.66,
+      "trigger": {
+        "type": "none",
+        "payload": {}
+      },
+      "extensions": {}
+    },
+    {
+      "id": "node_2",
+      "label": "Road 1",
+      "description": "",
+      "discovery": {
+        "state": "undiscovered",
+        "showLabelWhenDiscovered": true
+      },
+      "x": 794,
+      "y": 764,
+      "scale": 0.66,
+      "trigger": {
+        "type": "none",
+        "payload": {}
+      },
+      "extensions": {}
+    },
+    {
+      "id": "node_3",
+      "label": "Small tomb",
+      "description": "",
+      "discovery": {
+        "state": "undiscovered",
+        "showLabelWhenDiscovered": true
+      },
+      "x": 556,
+      "y": 589,
+      "scale": 0.66,
+      "trigger": {
+        "type": "none",
+        "payload": {}
+      },
+      "extensions": {}
+    },
+    {
+      "id": "node_4",
+      "label": "Node 4",
+      "description": "",
+      "discovery": {
+        "state": "undiscovered",
+        "showLabelWhenDiscovered": true
+      },
+      "x": 1167,
+      "y": 536,
+      "scale": 0.66,
+      "trigger": {
+        "type": "none",
+        "payload": {}
+      },
+      "extensions": {}
+    },
+    {
+      "id": "node_5",
+      "label": "Large tomb",
+      "description": "",
+      "discovery": {
+        "state": "undiscovered",
+        "showLabelWhenDiscovered": true
+      },
+      "x": 964,
+      "y": 451,
+      "scale": 0.66,
+      "trigger": {
+        "type": "none",
+        "payload": {}
+      },
+      "extensions": {}
+    },
+    {
+      "id": "node_6",
+      "label": "Node 6",
+      "description": "",
+      "discovery": {
+        "state": "undiscovered",
+        "showLabelWhenDiscovered": true
+      },
+      "x": 1278,
+      "y": 467,
+      "scale": 0.5,
+      "trigger": {
+        "type": "none",
+        "payload": {}
+      },
+      "extensions": {}
+    },
+    {
+      "id": "node_7",
+      "label": "Node 7",
+      "description": "",
+      "discovery": {
+        "state": "undiscovered",
+        "showLabelWhenDiscovered": true
+      },
+      "x": 1406,
+      "y": 429,
+      "scale": 0.5,
+      "trigger": {
+        "type": "none",
+        "payload": {}
+      },
+      "extensions": {}
+    },
+    {
+      "id": "node_8",
+      "label": "Node 8",
+      "description": "",
+      "discovery": {
+        "state": "undiscovered",
+        "showLabelWhenDiscovered": true
+      },
+      "x": 1107,
+      "y": 347,
+      "scale": 0.3,
+      "trigger": {
+        "type": "none",
+        "payload": {}
+      },
+      "extensions": {}
+    },
+    {
+      "id": "node_9",
+      "label": "Temple",
+      "description": "",
+      "discovery": {
+        "state": "undiscovered",
+        "showLabelWhenDiscovered": true
+      },
+      "x": 1351,
+      "y": 183,
+      "scale": 0.25,
+      "trigger": {
+        "type": "none",
+        "payload": {}
+      },
+      "extensions": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "node_1_node_2",
+      "from": "node_1",
+      "to": "node_2",
+      "points": [
+        [
+          413,
+          1014
+        ],
+        [
+          655,
+          893
+        ],
+        [
+          794,
+          764
+        ]
+      ],
+      "extensions": {}
+    },
+    {
+      "id": "node_3_node_2",
+      "from": "node_3",
+      "to": "node_2",
+      "points": [
+        [
+          556,
+          589
+        ],
+        [
+          637,
+          675
+        ],
+        [
+          735,
+          695
+        ],
+        [
+          794,
+          764
+        ]
+      ],
+      "extensions": {}
+    },
+    {
+      "id": "node_4_node_2",
+      "from": "node_4",
+      "to": "node_2",
+      "points": [
+        [
+          1167,
+          536
+        ],
+        [
+          938,
+          615
+        ],
+        [
+          962,
+          699
+        ],
+        [
+          794,
+          764
+        ]
+      ],
+      "extensions": {}
+    },
+    {
+      "id": "node_4_node_5",
+      "from": "node_4",
+      "to": "node_5",
+      "points": [
+        [
+          1167,
+          536
+        ],
+        [
+          1064,
+          501
+        ],
+        [
+          964,
+          451
+        ]
+      ],
+      "extensions": {}
+    },
+    {
+      "id": "node_4_node_6",
+      "from": "node_4",
+      "to": "node_6",
+      "points": [
+        [
+          1167,
+          536
+        ],
+        [
+          1236,
+          506
+        ],
+        [
+          1278,
+          467
+        ]
+      ],
+      "extensions": {}
+    },
+    {
+      "id": "node_7_node_6",
+      "from": "node_7",
+      "to": "node_6",
+      "points": [
+        [
+          1406,
+          429
+        ],
+        [
+          1343,
+          457
+        ],
+        [
+          1278,
+          467
+        ]
+      ],
+      "extensions": {}
+    },
+    {
+      "id": "node_6_node_8",
+      "from": "node_6",
+      "to": "node_8",
+      "points": [
+        [
+          1278,
+          467
+        ],
+        [
+          1239,
+          428
+        ],
+        [
+          1146,
+          384
+        ],
+        [
+          1107,
+          347
+        ]
+      ],
+      "extensions": {}
+    },
+    {
+      "id": "node_8_node_9",
+      "from": "node_8",
+      "to": "node_9",
+      "points": [
+        [
+          1107,
+          347
+        ],
+        [
+          1132,
+          328
+        ],
+        [
+          1278,
+          285
+        ],
+        [
+          1260,
+          249
+        ],
+        [
+          1305,
+          231
+        ],
+        [
+          1351,
+          183
+        ]
+      ],
+      "extensions": {}
+    }
+  ],
+  "combatSpawns": [],
+  "debug": {
+    "showOverlayByDefault": true
+  },
+  "extensions": {}
+}

@@ -6,10 +6,14 @@
   "main": "electron/main.js",
   "scripts": {
     "validate": "node tools/validate.js",
+    "validate:spells": "node tools/validate-spells.js",
+    "audit:spell-actions": "node tools/audit-spell-actions.js",
+    "test:combat": "node tools/test-combat.js",
     "dev": "npm run validate || true && electron .",
     "play": "electron .",
     "start": "electron .",
     "spike:author": "node app/visual_spike/authoringServer.mjs",
+    "area:author": "node app/area_author_tool/server.mjs",
     "verify:events": "node tools/verify-events.js --root . --registry app/docs/EVENTS_REGISTRY.md"
   },
   "dependencies": {

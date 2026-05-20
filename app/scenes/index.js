@@ -5,7 +5,6 @@ import CharacterSelectScene from "./CharacterSelectScene.js";
 import LoadGameScene from "./LoadGameScene.js";
 import DialogueScene from "./DialogueScene.js";
 import ExplorationScene from "./ExplorationScene.js";
-import CombatScene from "./CombatScene.js";
 import GameOverScene from "./GameOverScene.js";
 import SettingsScene from "./SettingsScene.js";
 import IntroScene from "./IntroScene.js";
@@ -38,7 +37,6 @@ registerScene("preload", PreloadScene);
 // Core gameplay loops
 registerScene("dialogue", DialogueScene);
 registerScene("exploration", ExplorationScene);
-registerScene("combat", CombatScene);
 
 // Edge scenes
 registerScene("gameOver", GameOverScene);

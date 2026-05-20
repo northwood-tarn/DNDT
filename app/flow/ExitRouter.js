@@ -2,10 +2,13 @@
 // Registry-aware routing for exits: exploration_map, dialogue_area, combat_map.
 
 import { sceneManager } from "../engine/sceneManager.js";
-import { startCombat } from "./CombatTransition.js";
 import { getArea } from "../areas/registry.js";
 
 let _bound = false;
+
+function legacyCombatDisabled(encounter) {
+  console.warn("[combat] Legacy combat framework has been removed; new combat snapshot/resolver is pending.", encounter);
+}
 
 export function initExitRouter() {
   if (_bound) return;
@@ -35,7 +38,7 @@ export async function routeExit(exit) {
 
   // Explicit scene overrides
   if (exit.toScene === "combat") {
-    startCombat({
+    legacyCombatDisabled({
       id: exit.encounter || "unknown_encounter",
       name: exit.name || "Encounter",
       flavor: exit.flavor || "",
@@ -81,14 +84,14 @@ export async function routeExit(exit) {
         case "dialogue_area": {
           const modDlg = await import("../scenes/DialogueScene.js");
           const ExplorationDialogue = modDlg.default || modDlg.ExplorationDialogue || modDlg.DialogueEngine || modDlg;
-          const script = area.script?.json || area.script;
+          const script = area.assets?.ink || area.script?.json || area.script;
           sceneManager.replace(ExplorationDialogue, { script, areaId: exit.toArea });
           return;
         }
         case "combat_map": {
           const encounterId = area.encounter?.id || exit.encounter;
           if (!encounterId) { console.warn("ExitRouter: combat_map requires encounter id:", area); return; }
-          startCombat({ id: encounterId, name: area.title || "Encounter", returnAreaId: exit.returnAreaId || null });
+          legacyCombatDisabled({ id: encounterId, name: area.title || "Encounter", returnAreaId: exit.returnAreaId || null });
           return;
         }
         default: {

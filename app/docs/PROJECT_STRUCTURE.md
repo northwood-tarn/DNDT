@@ -57,9 +57,9 @@ ui       → renderer, systems (for events), state
 
 ## Naming Conventions
 
-- Modules export a single default if they represent a Scene: `export default class CombatScene {}`
+- Modules export a single default if they represent a Scene: `export default class ExplorationScene {}`
 - Systems export functions/objects: `export function buildEncounter(...)`
-- Events use `namespace:eventName` (e.g., `game:exit`, `game:postCombatOutcome`, `ui:loadGame`).
+- Events use `namespace:eventName` (e.g., `game:exit`, `ui:loadGame`).
 
 ## Module Contract Header (paste this at the top of each new file)
 
@@ -96,12 +96,12 @@ ui       → renderer, systems (for events), state
 2) Remove `pixi/` UMD folder; keep `lib/pixi.mjs` only.
 3) Ensure `index.html` uses `<div id="game-root"></div>` and `main.js` binds to it.
 4) Centralize FX under `renderer/fxLayer.js`; delete scene-specific fog rollers after migration.
-5) Ensure `encounterRunner` never changes scenes (it doesn’t); `PostCombatResolver` emits `game:postCombatOutcome` (done).
+5) New combat routing should be owned by `flow/`, with resolver/session state owned by the combat layer.
 
 ## Event Routing Canon
 
 - `game:exit` → handled by `flow/ExitRouter.routeExit(...)`.
-- `game:postCombatOutcome` → handled by `flow/ExitRouter` (victory returns to area). Defeat is a modal; flow may later decide additional routes.
+- Combat outcome routing is pending the new combat snapshot/resolver.
 
 ---
 

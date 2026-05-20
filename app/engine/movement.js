@@ -1,5 +1,11 @@
 // text-mode engine/movement.js
-import { clearHiddenStatus } from "./actionEconomy.js";
+
+function clearHiddenStatus(actor, logFn = console.log) {
+  if (actor?.isHidden) {
+    actor.isHidden = false;
+    logFn(`${actor.name} is no longer hidden.`);
+  }
+}
 
 // Move the player in text-mode. Accepts an explicit `state` object to avoid UI coupling.
 export function movePlayer(dx, dy, state, logFn = console.log) {

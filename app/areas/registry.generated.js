@@ -10,7 +10,9 @@ export const GENERATED_AREAS = {
     "id": "boathouse",
     "title": "The Boathouse",
     "kind": "dialogue",
-    "script": "./app/areas/00_docks/boathouse.ink.json",
+    "assets": {
+      "ink": "./app/areas/00_docks/boathouse.ink.json"
+    },
     "defaultEntry": "start",
     "nextAreas": [
       "dockside"
@@ -20,7 +22,9 @@ export const GENERATED_AREAS = {
     "id": "dockside",
     "title": "The Docks",
     "kind": "dialogue",
-    "script": "./app/areas/00_docks/dockside.ink.json",
+    "assets": {
+      "ink": "./app/areas/00_docks/dockside.ink.json"
+    },
     "defaultEntry": "start",
     "nextAreas": [
       "boathouse",
@@ -41,7 +45,9 @@ export const GENERATED_AREAS = {
     "id": "longhouse",
     "title": "The Longhouse",
     "kind": "dialogue",
-    "script": "./app/areas/00_docks/longhouse.ink.json",
+    "assets": {
+      "ink": "./app/areas/00_docks/longhouse.ink.json"
+    },
     "defaultEntry": "start",
     "nextAreas": [
       "dockside"

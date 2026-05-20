@@ -35,7 +35,7 @@
  * @property {Object} hooks
  * @property {Object|null} hooks.damage // { dice: "3d6", type: "fire", addMod: false, perDart: false }
  * @property {boolean} hooks.autoHit
- * @property {Object|null} hooks.save   // { ability: "DEX", dcFrom: "casterSpellDC", onSave: "half" }
+ * @property {Object|null} hooks.save   // { ability: "DEX", dcFrom: "spellSaveDC", onSave: "half" }
  */
 
 /**

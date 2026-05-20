@@ -17,32 +17,83 @@
       </div>
     </div>
     <div id="hud" aria-live="polite">
-      <div>
-        <strong>DNDT visual spike</strong>
-        <span>Hold WASD or arrows to move freely. 1 shrine, 2 dock, 3 ritual road. G toggles collision overlay. E edits collision.</span>
+      <div class="hud-group hud-metadata">
+        <input id="area-name-input" class="hud-field" type="text" aria-label="Area name" />
+        <select id="map-kind-select" class="hud-field" aria-label="Map type">
+          <option value="combat">combat</option>
+          <option value="exploration">exploration</option>
+          <option value="grand_exploration">grand_exploration</option>
+        </select>
+        <select id="background-select" class="hud-field" aria-label="Background">
+          <option value="./assets/ritual_road_ink_negative_space_1920x1080.png">ritual road</option>
+          <option value="./assets/dockside_stage_uncluttered_v2_1920x1080.png">shrine shore</option>
+          <option value="./assets/dock_transition_dock_1920x1080.png">black sea dock</option>
+        </select>
       </div>
-      <label class="grid-control">
-        <input id="grid-toggle" type="checkbox" />
-        <span>Collision</span>
-      </label>
-      <label class="grid-control">
-        <input id="collision-edit-toggle" type="checkbox" />
-        <span>Edit collision</span>
-      </label>
-      <label class="grid-control">
-        <input id="collision-invert-toggle" type="checkbox" />
-        <span>Invert collision</span>
-      </label>
-      <label class="grid-control">
-        <input id="water-edit-toggle" type="checkbox" />
-        <span>Edit water</span>
-      </label>
-      <button id="collision-reset" type="button">Reset collision</button>
-      <button id="water-reset" type="button">Reset water</button>
-      <button id="collision-save-button" type="button">Save collision</button>
-      <button id="water-save-button" type="button">Save water</button>
-      <div id="status">Animation harness mounted.</div>
-      <textarea id="collision-export" readonly spellcheck="false" aria-label="Collision polygon export"></textarea>
+      <div class="hud-group hud-checks">
+        <label class="grid-control">
+          <input id="nav-edit-toggle" type="checkbox" />
+          <span>Edit nav</span>
+        </label>
+        <label class="grid-control">
+          <input id="grid-toggle" type="checkbox" />
+          <span>Collision</span>
+        </label>
+        <label class="grid-control">
+          <input id="collision-edit-toggle" type="checkbox" />
+          <span>Edit collision</span>
+        </label>
+        <label class="grid-control">
+          <input id="collision-invert-toggle" type="checkbox" />
+          <span>Invert collision</span>
+        </label>
+        <label class="grid-control">
+          <input id="water-edit-toggle" type="checkbox" />
+          <span>Edit water</span>
+        </label>
+      </div>
+      <div class="hud-group hud-palette" aria-label="Navigation tool palette">
+        <button id="nav-node-tool" class="palette-button" type="button" aria-pressed="true">
+          <span class="tool-icon node-icon" aria-hidden="true"></span>
+          <span>Node V</span>
+        </button>
+        <button id="nav-connect-tool" class="palette-button" type="button" aria-pressed="false">
+          <span class="tool-icon connect-icon" aria-hidden="true"></span>
+          <span>Connect C</span>
+        </button>
+        <button id="nav-inflection-tool" class="palette-button" type="button" aria-pressed="false">
+          <span class="tool-icon inflection-icon" aria-hidden="true"></span>
+          <span>Inflect B</span>
+        </button>
+      </div>
+      <div id="node-details" class="hud-group node-details" hidden>
+        <input id="node-label-input" class="hud-field" type="text" aria-label="Node name" placeholder="Node name" />
+        <select id="node-trigger-select" class="hud-field" aria-label="Node trigger">
+          <option value="none">no trigger</option>
+          <option value="conversation">conversation</option>
+          <option value="area_transition">area transition</option>
+          <option value="combat">combat</option>
+        </select>
+        <input id="node-scale-input" class="hud-field" type="number" min="0.25" max="1.5" step="0.01" aria-label="Node scale" />
+        <select id="node-discovery-state-select" class="hud-field" aria-label="Discovery state">
+          <option value="undiscovered">undiscovered</option>
+          <option value="discovered">discovered</option>
+        </select>
+        <label class="grid-control discovery-control">
+          <input id="node-show-label-toggle" type="checkbox" />
+          <span>Show label when discovered</span>
+        </label>
+        <textarea id="node-description-input" class="hud-field node-description" aria-label="Node details" placeholder="Node details"></textarea>
+      </div>
+      <div class="hud-group hud-actions">
+        <button id="nav-reset" type="button">Reset nav</button>
+        <button id="collision-reset" type="button">Reset collision</button>
+        <button id="water-reset" type="button">Reset water</button>
+        <button id="nav-export-button" type="button">Export nav</button>
+        <button id="nav-save-button" type="button">Save nav</button>
+        <button id="collision-save-button" type="button">Save collision</button>
+        <button id="water-save-button" type="button">Save water</button>
+      </div>
     </div>
   </main>
   <script type="module">
