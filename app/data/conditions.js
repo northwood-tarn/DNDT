@@ -460,6 +460,16 @@ export const conditions = [
     ],
   },
   {
+    id: "surprised",
+    name: "Surprised",
+    category: "combat_transient",
+    summary: "Used by surprise-aware features during the opening exchange of combat.",
+    mechanics: {},
+    effects: [
+      "Feature hooks may treat hits against this creature as surprise hits.",
+    ],
+  },
+  {
     id: "next_attack_disadvantage",
     name: "Next attack disadvantage",
     category: "combat_transient",

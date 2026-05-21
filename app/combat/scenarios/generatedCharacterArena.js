@@ -26,16 +26,17 @@ export function createGeneratedCharacterArenaScenario(options = {}) {
         name: sheet.identity.characterName,
         position: { x: 1, y: 1 },
       }),
-      createArenaSwordsman(),
+      createArenaSwordsman(options),
     ],
     metadata: {
       generatedHeroVariantId: variantId,
       generatedHeroSheet: sheet,
+      diceSeed: options.diceSeed || null,
     },
   };
 }
 
-function createArenaSwordsman() {
+function createArenaSwordsman(options = {}) {
   return {
     id: "generated_enemy",
     name: "Enemy Swordsman",
@@ -48,13 +49,13 @@ function createArenaSwordsman() {
     ac: 14,
     initiativeBonus: 1,
     speed: 6,
-    position: { x: 8, y: 8 },
+    position: options.enemyPosition || { x: 8, y: 8 },
     saves: { str: 3, dex: 1, con: 2, int: 0, wis: 0, cha: 0 },
     actions: [
       createWeaponAction(WEAPONS.longsword, {
         id: "blade",
         name: "Sword",
-        attackBonus: 4,
+        attackBonus: options.enemyAttackBonus ?? 4,
         damageBonus: 2,
       }),
     ],

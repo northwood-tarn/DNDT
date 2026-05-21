@@ -1,6 +1,7 @@
 import { combatAuraEffectsAffectingActor } from "./auras.js";
 import { combatObjectsAffectingActor } from "./combatObjects.js";
 import { getConditionRules } from "./effects.js";
+import { getActorFeatureHooks } from "./featureHooks.js";
 import { targetHasRequiredMark } from "./marks.js";
 
 export function normalizeActiveEffects(effects = []) {
@@ -61,6 +62,7 @@ export function collectModifierDetails(snapshot, actor, stat, context = {}) {
   if (!actor) return [];
   const effects = [
     ...(actor.activeEffects || []),
+    ...featureHookModifierEffects(actor, stat),
     ...combatAuraEffectsAffectingActor(snapshot, actor),
     ...(snapshot ? combatObjectsAffectingActor(snapshot, actor) : []).flatMap((object) =>
       (object.effects || []).map((effect) => ({
@@ -79,6 +81,7 @@ export function collectModifierDetails(snapshot, actor, stat, context = {}) {
     .filter((effect) => effect.stat === stat)
     .filter((effect) => matchesAbility(effect, context.ability))
     .filter((effect) => matchesDamageType(effect, context.damageType))
+    .filter((effect) => matchesEquipmentCondition(effect, actor))
     .filter((effect) => matchesTags(effect, context.action))
     .filter((effect) => matchesSourceActor(effect, context.source))
     .filter((effect) => matchesTargetSourceActor(effect, context.target))
@@ -94,6 +97,27 @@ export function collectModifierDetails(snapshot, actor, stat, context = {}) {
       mode: effect.mode || null,
       stat: effect.stat,
     }));
+}
+
+function featureHookModifierEffects(actor, stat) {
+  if (stat !== "damage_reduction") return [];
+  return getActorFeatureHooks(actor, "damage_reduction").map((hook) => ({
+    id: hook.id,
+    label: hook.label || hook.name || hook.id,
+    type: "modifier",
+    trigger: "passive",
+    target: "self",
+    stat: "damage_reduction",
+    amount: resolveHookAmount(actor, hook.amount),
+    damageType: Array.isArray(hook.damageTypes) ? null : hook.damageType,
+    damageTypes: hook.damageTypes || null,
+    condition: hook.condition || null,
+  }));
+}
+
+function resolveHookAmount(actor, value) {
+  if (value === "proficiency_bonus") return actor?.proficiencyBonus || 0;
+  return Number.isFinite(value) ? value : Number(value) || 0;
 }
 
 function matchesTargetSourceActor(effect, target) {
@@ -176,8 +200,16 @@ function matchesAbility(effect, ability) {
 }
 
 function matchesDamageType(effect, damageType) {
+  if (Array.isArray(effect.damageTypes) && effect.damageTypes.length) return effect.damageTypes.includes(damageType);
   if (!effect.damageType || effect.damageType === "all") return true;
   return effect.damageType === damageType;
+}
+
+function matchesEquipmentCondition(effect, actor) {
+  const condition = effect.condition;
+  if (!condition || typeof condition !== "object") return true;
+  if (condition.equippedArmorType && actor?.equipment?.armorType !== condition.equippedArmorType) return false;
+  return true;
 }
 
 function formatSigned(value) {

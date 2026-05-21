@@ -10,5 +10,7 @@ export { resolveCharacterSheet } from "./resolveCharacterSheet.js";
 export { resolvedSheetToCombatActor, validateResolvedSheetCombatActor } from "./combatActorAdapter.js";
 export { createCharacterValidityReport } from "./characterValidityReport.js";
 export { createClassFeatureImplementationReport } from "./classFeatureImplementationReport.js";
+export { createCharacterFeatureImplementationReport } from "./featureImplementationReport.js";
+export { createCharacterPipelineExport } from "./characterPipelineExport.js";
 export { createResolvedSheetPreview } from "./resolvedSheetPreview.js";
 export { createStarterCharacterDraft, createStarterFighterDraft, STARTER_CHARACTER_VARIANTS } from "./starterCharacterFixtures.js";

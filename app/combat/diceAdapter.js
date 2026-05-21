@@ -12,13 +12,16 @@ function hashSeed(seed) {
 
 function mulberry32(seed) {
   let a = seed >>> 0;
-  return function random() {
+  function random() {
     a += 0x6d2b79f5;
     let t = a;
     t = Math.imul(t ^ (t >>> 15), t | 1);
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
+  }
+  random.getState = () => a >>> 0;
+  random.setState = (next) => { a = next >>> 0; };
+  return random;
 }
 
 export function createDiceRoller({ deterministic = true, seed = "combat-test-001" } = {}) {
@@ -48,6 +51,15 @@ export function createDiceRoller({ deterministic = true, seed = "combat-test-001
       seeded = !!next;
       seedText = nextSeed || seedText;
       rng = mulberry32(hashSeed(seedText));
+    },
+    getState() {
+      return { deterministic: seeded, seed: seedText, rngState: rng.getState?.() ?? null };
+    },
+    setState(state = {}) {
+      seeded = state.deterministic ?? seeded;
+      seedText = state.seed || seedText;
+      rng = mulberry32(hashSeed(seedText));
+      if (Number.isFinite(state.rngState)) rng.setState(state.rngState);
     },
     rollD20(context = {}) {
       return withRandom(() => rollD20({ context, allowLucky: false }));

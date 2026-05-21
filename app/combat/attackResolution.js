@@ -6,7 +6,14 @@ import { applyDamage, applyDamageAmount, applyHitEffects, isCriticalHitFromCondi
 import { distance } from "./grid.js";
 import { applyLuckyToRoll } from "./luck.js";
 import { collectAttackRollModeDetails, getEffectiveAc, rollAttackModifier } from "./modifiers.js";
-import { resolveReactionTriggers } from "./reactions.js";
+import {
+  resolveCriticalReactionAdjustment,
+  resolveIncomingHitReactionAdjustment,
+  resolveReactionTriggers,
+  resolveSourceMissReactionAdjustment,
+} from "./reactions.js";
+import { hasCriticalHitTrigger } from "./featureTriggers.js";
+import { prepareDamageRollHooksForAttack } from "./featureHooks.js";
 
 export function resolveOpportunityAttacks(snapshot, movingActor, from, to, dice, log) {
   if (!dice) return;
@@ -43,6 +50,7 @@ export function resolveOpportunityAttacks(snapshot, movingActor, from, to, dice,
 }
 
 export function resolveAttack(snapshot, actor, target, action, dice, log) {
+  prepareDamageRollHooksForAttack(actor, action);
   const rollModifier = rollAttackModifier(snapshot, actor, target, action, dice);
   const attackBonus = (action.attackBonus || 0) + rollModifier.total;
   const cover = classifyCover(snapshot, actor, target, action);
@@ -61,9 +69,38 @@ export function resolveAttack(snapshot, actor, target, action, dice, log) {
       bonus: attackBonus,
     },
   });
-  const total = attackRoll.roll + attackBonus;
-  const hit = attackRoll.roll === 20 || (attackRoll.roll !== 1 && total >= effectiveAc);
-  const critical = hit && isCriticalHitFromConditions(actor, target, action, attackRoll);
+  let total = attackRoll.roll + attackBonus;
+  let hit = attackRoll.roll === 20 || (attackRoll.roll !== 1 && total >= effectiveAc);
+  if (!hit) {
+    const adjusted = resolveSourceMissReactionAdjustment(snapshot, {
+      source: actor,
+      target,
+      action,
+      roll: attackRoll.roll,
+      total,
+      effectiveAc,
+      hit,
+    }, log);
+    total = adjusted.total;
+    hit = adjusted.hit;
+  }
+  if (hit) {
+    const adjusted = resolveIncomingHitReactionAdjustment(snapshot, {
+      source: actor,
+      target,
+      action,
+      roll: attackRoll.roll,
+      total,
+      effectiveAc,
+      hit,
+    }, log);
+    hit = adjusted.hit;
+  }
+  let critical = hit && (
+    isCriticalHitFromConditions(actor, target, action, attackRoll) ||
+    hasCriticalHitTrigger(actor, target, "source_hits_surprised_target")
+  );
+  critical = resolveCriticalReactionAdjustment(snapshot, { source: actor, target, action, critical }, log);
 
   log.add("attack.roll", {
     round: snapshot.round,

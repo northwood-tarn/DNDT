@@ -4,6 +4,7 @@ import { runCombatActorAdapterTests } from "./character_tests/combat_actor_adapt
 import { runCreationStepTests } from "./character_tests/creation_steps.test.js";
 import { runGeneratedVariantTests } from "./character_tests/generated_variants.test.js";
 import { runNarrativeAccessTests } from "./character_tests/narrative_access.test.js";
+import { runRepresentativeBuildTests } from "./character_tests/representative_builds.test.js";
 import { runReportsAndPreviewTests } from "./character_tests/reports_and_preview.test.js";
 import { runSubclassReadinessTests } from "./character_tests/subclass_readiness.test.js";
 import { runSpellcastingFrameTests } from "./character_tests/spellcasting_frame.test.js";
@@ -15,6 +16,7 @@ async function main() {
   runCreationStepTests();
   runGeneratedVariantTests();
   runNarrativeAccessTests();
+  runRepresentativeBuildTests();
   runSubclassReadinessTests();
   runReportsAndPreviewTests();
   runSpellcastingFrameTests();

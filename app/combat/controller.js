@@ -6,6 +6,7 @@ import { currentActor, endTurnEffects, getActor, moveActor, startTurn } from "./
 import { runAiTurn } from "./ai.js";
 import { checkOutcome } from "./combatState.js";
 import { rollInitiativeOrder } from "./initiative.js";
+import { isPendingReactionPrompt } from "./reactions.js";
 
 export function createCombatController({ scenarioId = DEFAULT_COMBAT_SCENARIO_ID } = {}) {
   const log = createCombatLog();
@@ -13,12 +14,14 @@ export function createCombatController({ scenarioId = DEFAULT_COMBAT_SCENARIO_ID
   let currentScenarioId = scenarioId;
   let initialSnapshot = null;
   let snapshot = null;
+  let pendingReaction = null;
 
   function reset() {
     const scenario = createCombatScenario(currentScenarioId);
     log.clear();
-    dice.setDeterministic(dice.deterministic, dice.seed);
+    dice.setDeterministic(dice.deterministic, scenario.metadata?.diceSeed || dice.seed);
     snapshot = createSnapshotFromScenario(scenario);
+    pendingReaction = null;
     rollInitiative();
     initialSnapshot = cloneSnapshot(snapshot);
     log.add("reset");
@@ -58,7 +61,49 @@ export function createCombatController({ scenarioId = DEFAULT_COMBAT_SCENARIO_ID
 
   function actionResult(actorId, actionId, targetId) {
     const actor = getActor(snapshot, actorId);
-    const resolved = resolveActionResult(snapshot, actor, actionId, targetId, dice, log);
+    const baseSnapshot = cloneSnapshot(snapshot);
+    const diceState = dice.getState?.();
+    let resolved;
+    try {
+      resolved = resolveActionResult(snapshot, actor, actionId, targetId, dice, log);
+    } catch (error) {
+      if (!isPendingReactionPrompt(error)) throw error;
+      snapshot = cloneSnapshot(baseSnapshot);
+      pendingReaction = {
+        prompt: error.prompt,
+        actorId,
+        actionId,
+        targetId,
+        baseSnapshot,
+        diceState,
+      };
+      snapshot.pendingReaction = error.prompt;
+      return {
+        ok: false,
+        code: "reaction_pending",
+        reason: "reaction decision pending",
+        pendingReaction: error.prompt,
+      };
+    }
+    advanceIfCurrentActorDefeated(actor);
+    return resolved;
+  }
+
+  function answerReaction(useReaction) {
+    if (!pendingReaction) return { ok: false, code: "no_pending_reaction", reason: "no reaction is pending" };
+    const pending = pendingReaction;
+    pendingReaction = null;
+    snapshot = cloneSnapshot(pending.baseSnapshot);
+    snapshot.reactionDecisions = {
+      [`${pending.prompt.actorId}:${pending.prompt.id}`]: useReaction === true,
+    };
+    snapshot.suppressReactionPromptLog = true;
+    dice.setState?.(pending.diceState);
+    const actor = getActor(snapshot, pending.actorId);
+    const resolved = resolveActionResult(snapshot, actor, pending.actionId, pending.targetId, dice, log);
+    delete snapshot.reactionDecisions;
+    delete snapshot.suppressReactionPromptLog;
+    delete snapshot.pendingReaction;
     advanceIfCurrentActorDefeated(actor);
     return resolved;
   }
@@ -105,8 +150,9 @@ export function createCombatController({ scenarioId = DEFAULT_COMBAT_SCENARIO_ID
 
   async function runEnemyTurnIfNeeded(options = {}) {
     const actor = currentActor(snapshot);
-    if (!actor || actor.team !== "enemies" || snapshot.outcome) return false;
+    if (!actor || actor.team !== "enemies" || snapshot.outcome || pendingReaction) return false;
     await runAiTurn(snapshot, actor, { ...api, afterStep: options.afterStep });
+    if (pendingReaction) return true;
     endTurn();
     if (typeof options.afterStep === "function") await options.afterStep({ kind: "turn.end", actorId: actor.id });
     return true;
@@ -148,12 +194,16 @@ export function createCombatController({ scenarioId = DEFAULT_COMBAT_SCENARIO_ID
     get scenarioId() {
       return currentScenarioId;
     },
+    get pendingReaction() {
+      return pendingReaction?.prompt || snapshot?.pendingReaction || null;
+    },
     reset,
     setScenario,
     toggleDeterministic,
     move,
     action,
     actionResult,
+    answerReaction,
     endTurn,
     runEnemyTurnIfNeeded,
     summary,

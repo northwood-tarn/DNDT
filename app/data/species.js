@@ -69,7 +69,17 @@ export const SPECIES = {
         }
       }),
       feature({ id: "light_bearer", name: "Light Bearer", description: "You know the Light cantrip.", grantsSpellId: "light" }),
-      feature({ id: "celestial_revelation", name: "Celestial Revelation", minLevel: 3, description: "As a Bonus Action, transform for 1 minute." })
+      feature({
+        id: "celestial_revelation",
+        name: "Celestial Revelation",
+        minLevel: 3,
+        description: "As a Bonus Action, transform for 1 minute.",
+        effects: {
+          resources: [{ id: "celestial_revelation", name: "Celestial Revelation", max: 1, recovery: "long_rest" }],
+          actionOptions: [{ id: "celestial_revelation", actionType: "bonus_action", duration: { kind: "rounds", rounds: 10 } }],
+          narrativeTags: ["celestial_revelation"]
+        }
+      })
     ]
   }),
 
@@ -86,7 +96,17 @@ export const SPECIES = {
           actionOptions: [{ id: "breath_weapon", actionType: "attack_replacement", save: { ability: "dexterity" } }]
         }
       }),
-      feature({ id: "draconic_flight", name: "Draconic Flight", minLevel: 5, description: "Bonus Action: gain a flying speed for 10 minutes." })
+      feature({
+        id: "draconic_flight",
+        name: "Draconic Flight",
+        minLevel: 5,
+        description: "Bonus Action: gain a flying speed for 10 minutes.",
+        effects: {
+          resources: [{ id: "draconic_flight", name: "Draconic Flight", max: 1, recovery: "long_rest" }],
+          actionOptions: [{ id: "draconic_flight", actionType: "bonus_action", duration: { kind: "minutes", minutes: 10 } }],
+          narrativeTags: ["flight"]
+        }
+      })
     ],
     lineages: {
       black: lineage({ id: "black", name: "Black", resistances: ["acid"] }),
@@ -186,7 +206,17 @@ export const SPECIES = {
         description: "Count as one size larger for carrying capacity.",
         effects: { narrativeOnly: true }
       }),
-      feature({ id: "large_form", name: "Large Form", minLevel: 5, description: "Bonus Action: gain Large benefits for 10 minutes." })
+      feature({
+        id: "large_form",
+        name: "Large Form",
+        minLevel: 5,
+        description: "Bonus Action: gain Large benefits for 10 minutes.",
+        effects: {
+          resources: [{ id: "large_form", name: "Large Form", max: "proficiency_bonus", recovery: "long_rest" }],
+          actionOptions: [{ id: "large_form", actionType: "bonus_action", duration: { kind: "minutes", minutes: 10 } }],
+          narrativeTags: ["large_form"]
+        }
+      })
     ],
     lineages: {
       cloud: lineage({ id: "cloud", name: "Cloud", features: [feature({
@@ -231,7 +261,7 @@ export const SPECIES = {
         description: "Reaction when you take damage: reduce it by 1d12 + Constitution modifier. If massive damage would kill you outright, you fall unconscious instead.",
         effects: {
           resources: [{ id: "stones_endurance", name: "Stone's Endurance", max: "proficiency_bonus", recovery: "long_rest" }],
-          triggeredEffects: [{ id: "stones_endurance", trigger: "takes_damage", reaction: true, damageReduction: "1d12 + constitution_modifier", preventMassiveDamageDeath: true, massiveDamageOutcome: "unconscious" }]
+          triggeredEffects: [{ id: "stones_endurance", trigger: "takes_damage", reaction: true, reactionMode: "automatic", priority: 60, damageReduction: "1d12 + constitution_modifier", preventMassiveDamageDeath: true, massiveDamageOutcome: "unconscious" }]
         }
       })] }),
       storm: lineage({ id: "storm", name: "Storm", features: [feature({
@@ -240,7 +270,7 @@ export const SPECIES = {
         description: "Reaction when you take damage from a creature within 60 feet: deal 1d8 thunder damage to that creature.",
         effects: {
           resources: [{ id: "storms_thunder", name: "Storm's Thunder", max: "proficiency_bonus", recovery: "long_rest" }],
-          triggeredEffects: [{ id: "storms_thunder", trigger: "takes_damage_from_creature", reaction: true, rangeFt: 60, damage: "1d8", damageType: "thunder", target: "damage_source" }]
+          triggeredEffects: [{ id: "storms_thunder", trigger: "takes_damage_from_creature", reaction: true, reactionMode: "automatic", priority: 41, rangeFt: 60, damage: "1d8", damageType: "thunder", target: "damage_source" }]
         }
       })] })
     }

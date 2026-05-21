@@ -20,6 +20,8 @@ import {
 import { getCondition } from "../data/conditions.js";
 import { renderCombatGrid } from "./gridUi.js";
 import { renderCombatLog } from "./logUi.js";
+import { createReactionPromptUi } from "./reactionPromptUi.js";
+import { createSummaryUi } from "./summaryUi.js";
 import { createTargetingUi, isAreaTargetingAction } from "./targetingUi.js";
 
 console.info("[combat-test] loaded no-cache area resolver build 2026-05-19a");
@@ -42,6 +44,11 @@ const scenarioSelectEl = document.querySelector("#scenarioSelect");
 const summaryDialogEl = document.querySelector("#summaryDialog");
 const summaryBodyEl = document.querySelector("#summaryBody");
 const summaryResetEl = document.querySelector("#summaryReset");
+const reactionDialogEl = document.querySelector("#reactionDialog");
+const reactionTitleEl = document.querySelector("#reactionTitle");
+const reactionBodyEl = document.querySelector("#reactionBody");
+const reactionAcceptEl = document.querySelector("#reactionAccept");
+const reactionDeclineEl = document.querySelector("#reactionDecline");
 
 let selectedActionId = null;
 let selectedTargetId = null;
@@ -64,6 +71,22 @@ const targetingUi = createTargetingUi({
   render,
   renderLog,
 });
+const summaryUi = createSummaryUi({
+  controller,
+  dialogEl: summaryDialogEl,
+  bodyEl: summaryBodyEl,
+  resetButtonEl: summaryResetEl,
+  reset,
+});
+const reactionPromptUi = createReactionPromptUi({
+  controller,
+  dialogEl: reactionDialogEl,
+  titleEl: reactionTitleEl,
+  bodyEl: reactionBodyEl,
+  acceptEl: reactionAcceptEl,
+  declineEl: reactionDeclineEl,
+  render,
+});
 
 initializeScenarioSelect();
 
@@ -72,6 +95,7 @@ function render({ skipAi = false } = {}) {
   renderHeader();
   renderGrid();
   renderControls();
+  reactionPromptUi.renderPrompt();
   renderLog();
   if (!skipAi) maybeRunAi();
 }
@@ -136,17 +160,18 @@ function renderGrid() {
 function renderControls() {
   const actor = getCurrentActor(controller.snapshot);
   const playerTurn = canPlayerAct(controller.snapshot, actor?.id, aiRunning);
-  endTurnButtonEl.disabled = !playerTurn;
-  endTurnButtonEl.classList.toggle("glow", playerTurn && !hasAnyUsefulOption(controller.snapshot, actor.id));
-  diceToggleEl.disabled = aiRunning;
+  const reactionPending = Boolean(controller.pendingReaction);
+  endTurnButtonEl.disabled = !playerTurn || reactionPending;
+  endTurnButtonEl.classList.toggle("glow", playerTurn && actor && !hasAnyUsefulOption(controller.snapshot, actor.id));
+  diceToggleEl.disabled = aiRunning || reactionPending;
   resetButtonEl.disabled = aiRunning;
-  scenarioSelectEl.disabled = aiRunning;
+  scenarioSelectEl.disabled = aiRunning || reactionPending;
 
-  renderEconomy(actor, playerTurn);
-  targetingUi.renderPanel(actor, playerTurn);
+  renderEconomy(actor, playerTurn && !reactionPending);
+  targetingUi.renderPanel(actor, playerTurn && !reactionPending);
   actionButtonsEl.innerHTML = "";
 
-  if (!actor) return;
+  if (!actor || reactionPending) return;
 
   renderActionGroup(actor, playerTurn, "action", "Action");
   renderActionGroup(actor, playerTurn, "bonus", "Bonus Action");
@@ -154,7 +179,7 @@ function renderControls() {
 }
 
 function renderActionGroup(actor, playerTurn, cost, label) {
-  const actions = actor.actions.filter((action) => (action.cost || "action") === cost);
+  const actions = actor.actions.filter((action) => (action.cost || "action") === cost && !action.reactionPolicy);
   if (!actions.length) return;
 
   const group = document.createElement("div");
@@ -268,8 +293,8 @@ function renderLog() {
 
 async function maybeRunAi() {
   const actor = getCurrentActor(controller.snapshot);
-  if (!actor || actor.team !== "enemies" || controller.snapshot.outcome || aiRunning) {
-    if (controller.snapshot.outcome) showSummary();
+  if (!actor || actor.team !== "enemies" || controller.snapshot.outcome || aiRunning || controller.pendingReaction) {
+    if (controller.snapshot.outcome) summaryUi.show();
     return;
   }
 
@@ -290,7 +315,7 @@ async function maybeRunAi() {
 }
 
 function setControlsBusy(busy) {
-  endTurnButtonEl.disabled = busy;
+  endTurnButtonEl.disabled = busy || Boolean(controller.pendingReaction);
   resetButtonEl.disabled = busy;
   diceToggleEl.disabled = busy;
 }
@@ -340,6 +365,7 @@ function reset() {
   targetPulseUntil = 0;
   targetingUi.reset();
   if (summaryDialogEl.open) summaryDialogEl.close();
+  if (reactionDialogEl.open) reactionDialogEl.close();
   render();
 }
 
@@ -352,6 +378,7 @@ function switchScenario() {
   targetPulseUntil = 0;
   targetingUi.reset();
   if (summaryDialogEl.open) summaryDialogEl.close();
+  if (reactionDialogEl.open) reactionDialogEl.close();
   render();
 }
 
@@ -365,31 +392,17 @@ function initializeScenarioSelect() {
   scenarioSelectEl.value = controller.scenarioId;
 }
 
-function showSummary() {
-  if (summaryDialogEl.open) return;
-  const rows = controller.summary();
-  summaryBodyEl.innerHTML = `
-    <div class="summary-grid">
-      <div><strong>Actor</strong></div>
-      <div><strong>Dealt</strong></div>
-      <div><strong>Taken</strong></div>
-      <div><strong>Hits</strong></div>
-      <div><strong>Saves</strong></div>
-      <div><strong>KOs</strong></div>
-      ${rows.map((row) => `
-        <div>${row.name}</div>
-        <div>${row.damageDealt}</div>
-        <div>${row.damageTaken}</div>
-        <div>${row.hits}/${row.attacks}</div>
-        <div>${row.failedSavesForced}/${row.savesForced}</div>
-        <div>${row.kills}</div>
-      `).join("")}
-    </div>
-  `;
-  summaryDialogEl.showModal();
-}
-
 function handleKey(event) {
+  if (controller.pendingReaction) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      reactionPromptUi.answer(true);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      reactionPromptUi.answer(false);
+    }
+    return;
+  }
   const actor = getCurrentActor(controller.snapshot);
   if (!canPlayerAct(controller.snapshot, actor?.id, aiRunning)) return;
   const key = event.key.toLowerCase();
@@ -489,10 +502,6 @@ diceToggleEl.addEventListener("click", () => {
   render();
 });
 scenarioSelectEl.addEventListener("change", switchScenario);
-summaryResetEl.addEventListener("click", (event) => {
-  event.preventDefault();
-  reset();
-});
 window.addEventListener("keydown", handleKey);
 
 render();

@@ -106,7 +106,7 @@ function testPublicCombatApiBoundary() {
   const game = createCombatGame();
   const actor = game.query.currentActor();
   assert.ok(actor, "public API should expose the current actor query");
-  assert.deepEqual(getCombatScenarioOptions().map((scenario) => scenario.id), ["generated-character-arena"], "public API should expose the canonical scenario option");
+  assert.deepEqual(getCombatScenarioOptions().map((scenario) => scenario.id), ["generated-character-arena", "generated-wizard-shield-arena"], "public API should expose canonical generated scenario options");
   assert.ok(Array.isArray(game.query.reachableCells(actor.id)), "public API should expose reachable-cell queries");
   assert.equal(game.resolveAction(actor.id, "missing_action", null).ok, false, "public API resolveAction should return structured results");
   assert.equal(typeof game.action(actor.id, "missing_action", null), "boolean", "legacy boolean action command should remain available");

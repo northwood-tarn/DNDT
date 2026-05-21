@@ -25,10 +25,24 @@ function collectNarrativeTags(sheet) {
 }
 
 function normalizeResources(sheet) {
-  sheet.resources = (sheet.resources || []).map((resource) => ({
-    ...resource,
-    current: Number.isFinite(resource.current) ? resource.current : resource.max,
-  }));
+  const merged = new Map();
+  for (const resource of sheet.resources || []) {
+    const normalized = {
+      ...resource,
+      current: Number.isFinite(resource.current) ? resource.current : resource.max,
+      sources: resource.sources || [resource.source].filter(Boolean),
+    };
+    if (!merged.has(resource.id)) {
+      merged.set(resource.id, normalized);
+      continue;
+    }
+    const existing = merged.get(resource.id);
+    existing.max = Math.max(existing.max || 0, normalized.max || 0);
+    existing.current = Math.max(existing.current || 0, normalized.current || 0);
+    existing.sources = [...new Set([...(existing.sources || []), ...(normalized.sources || [])])];
+    existing.source = existing.sources[0] || existing.source;
+  }
+  sheet.resources = [...merged.values()];
 }
 
 function collectFeatureHooks(sheet) {
@@ -73,18 +87,86 @@ function finalizeSpellcasting(sheet) {
   const abilityMod = sheet.abilities[ability]?.modifier || 0;
   sheet.spellcasting.spellSaveDc = 8 + sheet.proficiencyBonus + abilityMod;
   sheet.spellcasting.spellAttackBonus = sheet.proficiencyBonus + abilityMod;
+  sheet.spellcasting.slots = spellSlotsFor(sheet);
+}
+
+function spellSlotsFor(sheet) {
+  if (!sheet.spellcasting.canCast) return {};
+  const level = sheet.identity.level || 1;
+  if (sheet.spellcasting.pactMagic) {
+    if (level < 1) return {};
+    return { [warlockSlotLevel(level)]: { max: warlockSlotCount(level), current: warlockSlotCount(level), recovery: "short_rest" } };
+  }
+  const classId = sheet.identity.classId;
+  if (classId === "paladin") return standardSlots(halfCasterSlotRow(level));
+  return standardSlots(fullCasterSlotRow(level));
+}
+
+function standardSlots(row = []) {
+  return Object.fromEntries(row.map((max, index) => [index + 1, { max, current: max, recovery: "long_rest" }]).filter(([, slot]) => slot.max > 0));
+}
+
+function fullCasterSlotRow(level) {
+  const table = [
+    [2], [3], [4, 2], [4, 3], [4, 3, 2], [4, 3, 3], [4, 3, 3, 1],
+    [4, 3, 3, 2], [4, 3, 3, 3, 1], [4, 3, 3, 3, 2],
+    [4, 3, 3, 3, 2, 1], [4, 3, 3, 3, 2, 1],
+    [4, 3, 3, 3, 2, 1, 1],
+  ];
+  return table[Math.max(1, Math.min(level, table.length)) - 1];
+}
+
+function halfCasterSlotRow(level) {
+  const table = [
+    [2], [2], [3], [3], [4, 2], [4, 2], [4, 3], [4, 3],
+    [4, 3, 2], [4, 3, 2], [4, 3, 3], [4, 3, 3], [4, 3, 3, 1],
+  ];
+  return table[Math.max(1, Math.min(level, table.length)) - 1];
+}
+
+function warlockSlotCount(level) {
+  if (level >= 11) return 3;
+  if (level >= 2) return 2;
+  return 1;
+}
+
+function warlockSlotLevel(level) {
+  if (level >= 9) return 5;
+  if (level >= 7) return 4;
+  if (level >= 5) return 3;
+  if (level >= 3) return 2;
+  return 1;
 }
 
 function finalizeArmorClass(sheet) {
   const dexMod = sheet.abilities.dexterity?.modifier || 0;
   const armor = getArmorById(sheet.equipment.armorId);
   const shield = getArmorById(sheet.equipment.shieldId);
-  const armorAc = armor ? armor.ac + cappedDexMod(dexMod, armor.dexCap) : 10 + dexMod;
+  const armorDexCap = resolveArmorDexCap(sheet, armor);
+  const armorAc = armor ? armor.ac + cappedDexMod(dexMod, armorDexCap) : 10 + dexMod;
   const shieldBonus = shield?.type === "shield" ? (shield.modifiers?.acBonus || 0) : 0;
-  sheet.combatBasics.armorClass = armorAc + shieldBonus;
+  sheet.combatBasics.armorClass = armorAc + shieldBonus + armorClassFeatureBonus(sheet, armor);
 }
 
 function cappedDexMod(dexMod, cap) {
   if (cap === null || cap === undefined) return dexMod;
   return Math.min(dexMod, cap);
+}
+
+function resolveArmorDexCap(sheet, armor) {
+  if (!armor) return null;
+  return (sheet.featureHooks || [])
+    .filter((hook) => hook.timing === "armor_class")
+    .filter((hook) => !hook.armorType || hook.armorType === armor.type)
+    .reduce((cap, hook) => (
+      Number.isFinite(hook.dexCapOverride) ? Math.max(cap ?? hook.dexCapOverride, hook.dexCapOverride) : cap
+    ), armor.dexCap);
+}
+
+function armorClassFeatureBonus(sheet, armor) {
+  return (sheet.featureHooks || [])
+    .filter((hook) => hook.timing === "armor_class")
+    .filter((hook) => hook.condition !== "wearing_armor" || Boolean(armor))
+    .filter((hook) => !hook.armorType || hook.armorType === armor?.type)
+    .reduce((total, hook) => total + (Number(hook.amount) || 0), 0);
 }

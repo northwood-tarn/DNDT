@@ -283,6 +283,16 @@ function modifierFromEffect(payload, spellRecord) {
       duration: durationFromEffect(payload, spellRecord),
     };
   }
+  if (kind === "shield_reaction") {
+    return {
+      type: "modifier",
+      trigger: "action_resolved",
+      stat: "ac",
+      amount: payload.acBonus || 5,
+      target: "self",
+      duration: durationFromEffect({ until: "start_of_caster_next_turn" }, spellRecord),
+    };
+  }
   if (kind === "incoming_attack_roll_penalty") {
     return {
       type: "modifier",

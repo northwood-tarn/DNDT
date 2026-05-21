@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import {
+  createCharacterFeatureImplementationReport,
+  createCharacterPipelineExport,
   createClassFeatureImplementationReport,
   createResolvedSheetPreview,
   createStarterCharacterDraft,
@@ -8,7 +10,9 @@ import {
 
 export function runReportsAndPreviewTests() {
   reportsUnimplementedClassFeaturesByClassAndLevel();
+  reportsAllCharacterFeaturesBySource();
   createsResolvedSheetPreviewContract();
+  createsPipelineExportContract();
   surfacesPreviewWarnings();
 }
 
@@ -24,6 +28,15 @@ function reportsUnimplementedClassFeaturesByClassAndLevel() {
       .features.find((feature) => feature.name === "Cursed Weapon" && feature.implemented === true),
     "report should include implemented pact features"
   );
+}
+
+function reportsAllCharacterFeaturesBySource() {
+  const report = createCharacterFeatureImplementationReport();
+
+  assert.equal(report.totals.total > 0, true, "global feature report should count character features");
+  assert.equal(report.totals.unimplemented, 0, "global feature report should show class/species/lineage/origin feat backlog is clear");
+  assert.equal(report.entries.some((entry) => entry.source === "species" && entry.name === "Celestial Revelation"), true);
+  assert.equal(report.entries.some((entry) => entry.source === "origin" && entry.name === "Lucky"), true);
 }
 
 function createsResolvedSheetPreviewContract() {
@@ -43,6 +56,21 @@ function createsResolvedSheetPreviewContract() {
   assert.equal(preview.combatActions.some((action) => action.id === "longsword"), true);
   assert.equal(preview.combatActions.some((action) => action.id === "healing_potion"), true);
   assert.deepEqual(preview.warnings.unresolved, []);
+}
+
+function createsPipelineExportContract() {
+  const draft = createStarterCharacterDraft("wizard");
+  const pipelineExport = createCharacterPipelineExport(draft, {
+    actorOptions: { id: "export_wizard" },
+  });
+
+  assert.equal(pipelineExport.version, 1);
+  assert.equal(pipelineExport.characterDraft.identity.characterName, "Generated Wizard");
+  assert.equal(pipelineExport.resolvedCharacterSheet.identity.classId, "wizard");
+  assert.equal(pipelineExport.combatActor.id, "export_wizard");
+  assert.equal(pipelineExport.preview.valid, true);
+  assert.equal(pipelineExport.validityReport.valid, true);
+  assert.equal(pipelineExport.preview.combatActions.some((action) => action.id === "fire_bolt"), true);
 }
 
 function surfacesPreviewWarnings() {

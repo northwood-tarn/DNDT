@@ -19,7 +19,7 @@ const STARTER_CHARACTER_VARIANT_SPECS = {
       { type: "identity", value: { characterName: "Generated Wizard", level: 1, backgroundId: "sage", speciesId: "tiefling", lineageId: "chthonic", classId: "wizard" } },
       { type: "abilities", value: { strength: 8, dexterity: 14, constitution: 12, intelligence: 16, wisdom: 10, charisma: 10 } },
       { type: "gear", value: { weaponIds: ["quarterstaff"], armorId: null, shieldId: null, inventory: [{ id: "healing_potion", qty: 1 }], attunedItemIds: [] } },
-      { type: "spells", value: { knownSpellIds: ["fire_bolt"], preparedSpellIds: ["magic_missile"] } },
+      { type: "spells", value: { knownSpellIds: ["fire_bolt"], preparedSpellIds: ["magic_missile", "shield"] } },
     ],
   },
   cleric: {

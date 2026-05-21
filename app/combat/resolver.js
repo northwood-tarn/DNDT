@@ -44,8 +44,12 @@ import { resolveTeleport } from "./teleportAction.js";
 export { checkOutcome, currentActor, getActor, livingActors } from "./combatState.js";
 
 export function startTurn(snapshot, actor, log, dice = null) {
+  const droppedEnemyOnPreviousTurn = actor?.combatFlags?.droppedEnemyOnLastTurn === true;
   processOngoingEffects(snapshot, actor, "turn_start", dice, log);
   resetTurnEconomy(actor, snapshot);
+  actor.turnFlags.droppedEnemyOnPreviousTurn = droppedEnemyOnPreviousTurn;
+  actor.combatFlags ??= {};
+  actor.combatFlags.droppedEnemyOnLastTurn = false;
   dispatchActorTrigger(snapshot, "turn_start", actor, dice, log);
   syncContextualActions(actor);
   log.add("turn.start", {

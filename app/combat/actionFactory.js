@@ -4,6 +4,7 @@ import {
   getSpellDamage,
 } from "./spellActionMappers.js";
 import { createActionFromConsumable } from "./consumableActionMappers.js";
+import { createHitPreventionAcPolicy } from "./reactionPolicy.js";
 
 const DEFAULT_SPELL_SAVE_DC = 10;
 const DEFAULT_ATTACK_BONUS = 0;
@@ -34,6 +35,7 @@ export function createWeaponAction(weaponRecord, options = {}) {
       attackRoll: true,
       harmful: true,
       requiresHands: true,
+      ...weaponPropertyTags(weaponRecord),
     },
   });
 }
@@ -59,6 +61,9 @@ export function createSpellAction(spellRecord, options = {}) {
     range: getSpellRangeSquares(spellRecord),
     description: describeSpell(spellRecord),
     concentration: spellRecord.concentration === true,
+    sourceSpellId: spellRecord.id,
+    spellLevel: spellRecord.level,
+    reactionPolicy: createReactionPolicyFromSpell(spellRecord),
     requiresSight: spellRecord.target?.requiresSight === true,
     requiresSpeech: spellRecord.components?.v === true,
     requiresHands: spellRecord.components?.s === true,
@@ -177,6 +182,17 @@ export function createSpellAction(spellRecord, options = {}) {
   return null;
 }
 
+function createReactionPolicyFromSpell(spellRecord) {
+  const effect = spellRecord?.hooks?.applyEffect;
+  if (spellRecord?.id !== "shield" || effect?.kind !== "shield_reaction") return null;
+  return createHitPreventionAcPolicy({
+    id: spellRecord.id,
+    minimumSlotLevel: spellRecord.level || 1,
+    acBonus: effect.acBonus || 5,
+    priority: 80,
+  });
+}
+
 export function createConsumableAction(consumableRecord, options = {}) {
   return compactAction(createActionFromConsumable(consumableRecord, options));
 }
@@ -262,6 +278,16 @@ function inferWeaponDamageType(weaponRecord) {
   if (id.includes("hammer") || id.includes("staff")) return "bludgeoning";
   if (id.includes("axe") || id.includes("sword") || id.includes("scimitar")) return "slashing";
   return "bludgeoning";
+}
+
+function weaponPropertyTags(weaponRecord) {
+  const tags = Object.fromEntries((weaponRecord.properties || []).map((property) => [propertyTag(property), true]));
+  if (tags.two_handed || tags.versatile) tags.two_handed_or_versatile = true;
+  return tags;
+}
+
+function propertyTag(property) {
+  return String(property || "").replace(/-/g, "_");
 }
 
 function getFlatUntypedWeaponDamageBonus(weaponRecord) {

@@ -1,4 +1,5 @@
 import { validateActionEffects, validateEffectDuration } from "./effects.js";
+import { validateReactionPolicy } from "./reactionPolicy.js";
 
 const ACTION_TYPES = new Set([
   "weapon_attack",
@@ -29,6 +30,7 @@ export function validateCombatAction(action) {
   if (!ACTION_TYPES.has(action.type)) errors.push(`${action.id || "action"}.type ${action.type || "(missing)"} is not registered`);
   errors.push(...validateActionEffects(action.effects, action.id || "action"));
   errors.push(...validateDamageRiders(action.damageRiders, action.id || "action"));
+  errors.push(...validateReactionPolicy(action.reactionPolicy, `${action.id || "action"}.reactionPolicy`));
 
   if (["weapon_attack", "melee_attack", "spell_attack"].includes(action.type)) {
     requireNumber(action, "range", errors);

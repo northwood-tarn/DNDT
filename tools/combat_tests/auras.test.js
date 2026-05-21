@@ -1,6 +1,6 @@
 import { rollSaveModifier } from "../../app/combat/modifiers.js";
 import { getEffectiveSpeed } from "../../app/combat/modifiers.js";
-import { hasAuraConditionPrevention } from "../../app/combat/auras.js";
+import { combatAuraEffectsAffectingActor, hasAuraConditionPrevention } from "../../app/combat/auras.js";
 import {
   assert,
   createEmptyCharacterDraft,
@@ -17,10 +17,58 @@ import {
 
 export function runAuraCombatTests() {
   testAuraOfProtectionAppliesToSelfAndNearbyAllies();
+  testDuplicateAuraModifiersUseStrongestOnly();
+  testDuplicateAuraPreventionsCollapse();
   testAuraOfCouragePreventsFrightened();
   testAuraOfAlacrityAdjustsSpeed();
   testAuraOfTheGraveTriggersAtTurnStart();
   testHaloOfDaybreakCreatesPersistentAura();
+}
+
+function testDuplicateAuraModifiersUseStrongestOnly() {
+  const strongSheet = resolveCharacterSheet(createEmptyCharacterDraft({
+    identity: { characterName: "Strong Aura Paladin", level: 6, classId: "paladin", subclassId: "oath_of_vengeance" },
+    abilities: { strength: 14, dexterity: 10, constitution: 14, intelligence: 8, wisdom: 10, charisma: 16 },
+  }), {}, { allowNonCreationLevel: true });
+  const weakSheet = resolveCharacterSheet(createEmptyCharacterDraft({
+    identity: { characterName: "Weak Aura Paladin", level: 6, classId: "paladin", subclassId: "oath_of_vengeance" },
+    abilities: { strength: 14, dexterity: 10, constitution: 14, intelligence: 8, wisdom: 10, charisma: 14 },
+  }), {}, { allowNonCreationLevel: true });
+  const strong = resolvedSheetToCombatActor(strongSheet, { id: "strong_paladin", position: { x: 1, y: 1 } });
+  const weak = resolvedSheetToCombatActor(weakSheet, { id: "weak_paladin", position: { x: 2, y: 1 } });
+  const target = ally("ally_target", { x: 3, y: 1 });
+  const snapshot = createSnapshotFromScenario({
+    id: "duplicate-aura-modifier-test",
+    grid: { width: 6, height: 4, blocked: [], cover: [] },
+    actors: [strong, weak, target],
+  });
+
+  assertSaveBonus(snapshot, snapshot.actors.find((item) => item.id === "ally_target"), 3, "overlapping Aura of Protection bonuses should use the strongest only");
+}
+
+function testDuplicateAuraPreventionsCollapse() {
+  const firstSheet = resolveCharacterSheet(createEmptyCharacterDraft({
+    identity: { characterName: "First Courage Paladin", level: 10, classId: "paladin", subclassId: "oath_of_vengeance" },
+    abilities: { strength: 14, dexterity: 10, constitution: 14, intelligence: 8, wisdom: 10, charisma: 16 },
+  }), {}, { allowNonCreationLevel: true });
+  const secondSheet = resolveCharacterSheet(createEmptyCharacterDraft({
+    identity: { characterName: "Second Courage Paladin", level: 10, classId: "paladin", subclassId: "oath_of_vengeance" },
+    abilities: { strength: 14, dexterity: 10, constitution: 14, intelligence: 8, wisdom: 10, charisma: 14 },
+  }), {}, { allowNonCreationLevel: true });
+  const first = resolvedSheetToCombatActor(firstSheet, { id: "first_paladin", position: { x: 1, y: 1 } });
+  const second = resolvedSheetToCombatActor(secondSheet, { id: "second_paladin", position: { x: 2, y: 1 } });
+  const target = ally("ally_target", { x: 3, y: 1 });
+  const snapshot = createSnapshotFromScenario({
+    id: "duplicate-aura-prevention-test",
+    grid: { width: 6, height: 4, blocked: [], cover: [] },
+    actors: [first, second, target],
+  });
+  const affected = snapshot.actors.find((item) => item.id === "ally_target");
+  const preventionEffects = combatAuraEffectsAffectingActor(snapshot, affected)
+    .filter((effect) => effect.type === "condition_prevention" && effect.conditions.includes("frightened"));
+
+  assert.equal(preventionEffects.length, 1, "duplicate Aura of Courage prevention should collapse to one effect");
+  assert.ok(hasAuraConditionPrevention(snapshot, affected, "frightened"), "collapsed prevention should still protect the ally");
 }
 
 function testAuraOfProtectionAppliesToSelfAndNearbyAllies() {

@@ -96,8 +96,8 @@ function testGeneratedCharacterArenaContract() {
 function testScenarioRegistryIsCanonical() {
   assert.deepEqual(
     getCombatScenarioOptions().map((scenario) => scenario.id),
-    ["generated-character-arena"],
-    "only the generated-character arena should be exposed through the combat scenario registry"
+    ["generated-character-arena", "generated-wizard-shield-arena"],
+    "only generated-character arenas should be exposed through the combat scenario registry"
   );
   assert.throws(
     () => createCombatScenario("trial-arena"),

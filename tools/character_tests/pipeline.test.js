@@ -21,11 +21,109 @@ export function runCharacterPipelineTests() {
   resolvesDeclarativeClassFeatureEffects();
   resolvesWideImpactClassFeatureEffects();
   resolvesOriginFeatEffects();
+  resolvesGeneralFeatEffects();
   resolvesClassSpecificMagicInitiates();
   reportsMissingOriginFeatChoices();
   rejectsInvalidOriginFeatToolChoices();
   resolvesSkillOrToolOriginFeatChoices();
   preservesDraftGearAndSpellsWithoutResolvingMechanics();
+}
+
+function resolvesGeneralFeatEffects() {
+  const testBackgrounds = {
+    resilient_training: {
+      id: "resilient_training",
+      name: "Resilient Training",
+      skillProficiencies: [],
+      toolProficiencies: [],
+      originFeat: "resilient",
+    },
+    light_guard: {
+      id: "light_guard",
+      name: "Light Guard",
+      skillProficiencies: [],
+      toolProficiencies: [],
+      originFeat: "lightly_armored",
+    },
+    fey_touched: {
+      id: "fey_touched",
+      name: "Fey Touched",
+      skillProficiencies: [],
+      toolProficiencies: [],
+      originFeat: "fey_touched",
+    },
+    medium_master: {
+      id: "medium_master",
+      name: "Medium Master",
+      skillProficiencies: [],
+      toolProficiencies: [],
+      originFeat: "medium_armor_master",
+    },
+    great_weapon_master: {
+      id: "great_weapon_master",
+      name: "Great Weapon Master",
+      skillProficiencies: [],
+      toolProficiencies: [],
+      originFeat: "great_weapon_master",
+    },
+  };
+  const resilientDraft = createEmptyCharacterDraft({
+    identity: { characterName: "Test Resilient", level: 4, backgroundId: "resilient_training" },
+    choices: { featChoices: { resilient: { ability: ["constitution"] } } },
+  });
+  const armorDraft = createEmptyCharacterDraft({
+    identity: { characterName: "Test Armored", level: 4, backgroundId: "light_guard" },
+    choices: { featChoices: { lightly_armored: { ability: ["dexterity"] } } },
+  });
+  const feyDraft = createEmptyCharacterDraft({
+    identity: { characterName: "Test Fey", level: 4, backgroundId: "fey_touched" },
+    choices: { featChoices: { fey_touched: { ability: ["charisma"], step: ["misty_step"], spell: ["bless"] } } },
+  });
+  const mediumDraft = createEmptyCharacterDraft({
+    identity: { characterName: "Test Medium", level: 4, backgroundId: "medium_master" },
+    abilities: {
+      strength: 10,
+      dexterity: 16,
+      constitution: 12,
+      intelligence: 8,
+      wisdom: 13,
+      charisma: 14,
+    },
+    choices: { featChoices: { medium_armor_master: { ability: ["dexterity"] } } },
+    gear: { weaponIds: ["dagger"], armorId: "half_plate", shieldId: null, inventory: [], attunedItemIds: [] },
+  });
+  const greatWeaponDraft = createEmptyCharacterDraft({
+    identity: { characterName: "Test Heavy", level: 4, backgroundId: "great_weapon_master" },
+  });
+
+  const resilientSheet = resolveCharacterSheet(resilientDraft, { backgrounds: testBackgrounds }, { allowNonCreationLevel: true });
+  assert.equal(resilientSheet.abilities.constitution.score, 11);
+  assert.equal(resilientSheet.proficiencies.savingThrows.includes("constitution"), true);
+  assert.equal(resilientSheet.combatBasics.saves.constitution, 2);
+  assert.deepEqual(resilientSheet.metadata.unresolved, []);
+
+  const armorSheet = resolveCharacterSheet(armorDraft, { backgrounds: testBackgrounds }, { allowNonCreationLevel: true });
+  assert.equal(armorSheet.abilities.dexterity.score, 11);
+  assert.equal(armorSheet.proficiencies.armor.includes("light"), true);
+  assert.equal(armorSheet.proficiencies.armor.includes("shield"), true);
+  assert.deepEqual(armorSheet.metadata.unresolved, []);
+
+  const feySheet = resolveCharacterSheet(feyDraft, { backgrounds: testBackgrounds }, { allowNonCreationLevel: true });
+  assert.equal(feySheet.abilities.charisma.score, 11);
+  assert.equal(feySheet.spellcasting.knownSpellIds.includes("misty_step"), true);
+  assert.equal(feySheet.spellcasting.knownSpellIds.includes("bless"), true);
+  assert.equal(feySheet.resources.some((item) => item.id === "fey_touched_misty_step"), true);
+  assert.equal(feySheet.resources.some((item) => item.id === "fey_touched_bless"), true);
+  assert.deepEqual(feySheet.metadata.unresolved, []);
+
+  const mediumSheet = resolveCharacterSheet(mediumDraft, { backgrounds: testBackgrounds }, { allowNonCreationLevel: true });
+  assert.equal(mediumSheet.combatBasics.armorClass, 18);
+  assert.deepEqual(mediumSheet.metadata.unresolved, []);
+
+  const greatWeaponSheet = resolveCharacterSheet(greatWeaponDraft, { backgrounds: testBackgrounds }, { allowNonCreationLevel: true });
+  assert.equal(greatWeaponSheet.abilities.strength.score, 11);
+  assert.equal(greatWeaponSheet.featureHooks.some((hook) => hook.id === "great_weapon_master_heavy_damage"), true);
+  assert.deepEqual(greatWeaponSheet.metadata.unresolved, []);
 }
 
 function resolvesBackgroundIntoSheet() {

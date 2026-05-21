@@ -9,11 +9,13 @@ export const DEFAULT_COMBAT_SCENARIO_ID = "generated-character-arena";
 export function getCombatScenarioOptions() {
   return [
     { id: "generated-character-arena", name: "Generated Character Arena" },
+    { id: "generated-wizard-shield-arena", name: "Generated Wizard Shield Arena" },
   ];
 }
 
 export function createCombatScenario(id = DEFAULT_COMBAT_SCENARIO_ID, options = {}) {
   if (id === "generated-character-arena") return createGeneratedCharacterArenaScenario(options);
+  if (id === "generated-wizard-shield-arena") return createGeneratedCharacterArenaScenario({ ...options, variantId: "wizard", enemyAttackBonus: 4, enemyPosition: { x: 3, y: 1 }, diceSeed: "shield-2" });
   throw new Error(`Unknown combat scenario: ${id}`);
 }
 

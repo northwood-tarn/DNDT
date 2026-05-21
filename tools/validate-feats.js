@@ -2,9 +2,9 @@
 
 const DEFAULT_FEATS_PATH = "app/data/feats.js";
 
-const VALID_TYPES = new Set(["origin", "campaign"]);
+const VALID_TYPES = new Set(["origin", "general", "fighting_style", "campaign"]);
 const VALID_SOURCES = new Set(["2024_phb_reference", "dndt_homebrew"]);
-const VALID_CHOICE_KINDS = new Set(["skill", "tool", "skill_or_tool", "spell", "spell_list"]);
+const VALID_CHOICE_KINDS = new Set(["ability_score", "damage_type", "saving_throw_ability", "skill", "skill_expertise", "tool", "skill_or_tool", "spell", "spell_list"]);
 const VALID_RECOVERY = new Set(["short_rest", "long_rest", "special"]);
 
 function validateString(errors, id, pathName, value) {
@@ -30,7 +30,9 @@ function validateChoice(errors, featId, choice, index) {
   if (!VALID_CHOICE_KINDS.has(choice.kind)) errors.push(`${id}: unknown kind "${choice.kind}"`);
   validateNumber(errors, id, "count", choice.count);
   if (choice.count < 1) errors.push(`${id}: count must be positive`);
-  if (!("pool" in choice) && !("pools" in choice) && !choice.listFromChoice) errors.push(`${id}: pool, pools, or listFromChoice is required`);
+  if (!("pool" in choice) && !("pools" in choice) && !choice.options && !choice.listFromChoice && !choice.filter) {
+    errors.push(`${id}: pool, pools, options, listFromChoice, or filter is required`);
+  }
 }
 
 function validateResource(errors, featId, resource, index) {
@@ -69,7 +71,7 @@ export async function validateFeats(featsPath = DEFAULT_FEATS_PATH) {
   const mod = await import(new URL(`../${featsPath}`, import.meta.url));
   const toolsMod = await import(new URL("../app/data/tools.js", import.meta.url));
   const spellsMod = await import(new URL("../app/data/spells.js", import.meta.url));
-  const feats = mod.ORIGIN_FEATS_BY_ID;
+  const feats = mod.FEATS_BY_ID || mod.ORIGIN_FEATS_BY_ID;
   if (!feats || typeof feats !== "object" || Array.isArray(feats)) return ["ORIGIN_FEATS_BY_ID export must be an object registry"];
   for (const [key, feat] of Object.entries(feats)) validateFeatRecord(errors, feat, key);
   validateFeatToolPools(errors, feats, toolsMod.TOOL_POOLS);

@@ -39,7 +39,9 @@ export default {
             minimumHitsTakenSinceLastTurn: 3,
             target: "damage_source",
             damage: "3d6",
-            damageType: "force"
+            damageType: "force",
+            reactionMode: "automatic",
+            priority: 40
           }]
         }
       },
@@ -319,7 +321,9 @@ export default {
                 target: "damage_source",
                 damage: "2d10",
                 damageType: "fire",
-                save: { ability: "dexterity", dcFrom: "spellSaveDC", onSave: "half" }
+                save: { ability: "dexterity", dcFrom: "spellSaveDC", onSave: "half" },
+                reactionMode: "automatic",
+                priority: 42
               }]
             } }
         ],

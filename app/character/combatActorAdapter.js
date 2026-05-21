@@ -1,4 +1,5 @@
 import { getConsumableById } from "../data/consumables.js";
+import { getArmorById } from "../data/armor.js";
 import { getSpellRecordById } from "../data/spells.js";
 import { getWeaponById } from "../data/weapons.js";
 import { createConsumableAction, createSpellAction, createWeaponAction } from "../combat/actionFactory.js";
@@ -28,6 +29,7 @@ export function resolvedSheetToCombatActor(sheet, options = {}) {
     level: sheet.identity.level,
     proficiencyBonus: sheet.proficiencyBonus,
     spellSaveDC: sheet.spellcasting.spellSaveDc || null,
+    spellSlots: normalizeSpellSlots(sheet.spellcasting.slots || {}),
     initiativeBonus: sheet.combatBasics.initiativeBonus || 0,
     attackActionAttacks: sheet.combatBasics.attackActionAttacks || 1,
     speed: feetToSquares(sheet.combatBasics.speed || 30),
@@ -43,6 +45,12 @@ export function resolvedSheetToCombatActor(sheet, options = {}) {
     resources: structuredClone(sheet.resources || []),
     features: structuredClone(sheet.features || []),
     featureHooks: structuredClone(sheet.featureHooks || []),
+    equipment: {
+      armorId: sheet.equipment.armorId || null,
+      armorType: getArmorById(sheet.equipment.armorId)?.type || null,
+      shieldId: sheet.equipment.shieldId || null,
+      weaponIds: [...(sheet.equipment.weaponIds || [])],
+    },
     inventory: structuredClone(sheet.equipment.inventory || []),
     actions: createCombatActionsFromSheet(sheet),
   });
@@ -60,6 +68,19 @@ function createCombatActionsFromSheet(sheet) {
     ...createConsumableActions(sheet),
     ...createFeatureActions(sheet),
   ].filter(Boolean);
+}
+
+function normalizeSpellSlots(slots) {
+  return Object.fromEntries(Object.entries(slots || {}).map(([level, slot]) => [
+    level,
+    typeof slot === "number"
+      ? { max: slot, current: slot }
+      : {
+          max: slot.max || slot.current || 0,
+          current: slot.current ?? Math.max(0, (slot.max || 0) - (slot.used || 0)),
+          used: slot.used || 0,
+        },
+  ]));
 }
 
 function createPassiveFeatureEffects(sheet) {
