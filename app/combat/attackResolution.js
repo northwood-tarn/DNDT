@@ -1,0 +1,208 @@
+import { getActionUses, hasCondition, hasReaction, removeCondition, spendReaction } from "./actor.js";
+import { checkOutcome, livingActors } from "./combatState.js";
+import { classifyCover } from "./cover.js";
+import { conditionName, getConditionRules } from "./effects.js";
+import { applyDamage, applyDamageAmount, applyHitEffects, isCriticalHitFromConditions } from "./combatEffectsResolution.js";
+import { distance } from "./grid.js";
+import { applyLuckyToRoll } from "./luck.js";
+import { collectAttackRollModeDetails, getEffectiveAc, rollAttackModifier } from "./modifiers.js";
+import { resolveReactionTriggers } from "./reactions.js";
+
+export function resolveOpportunityAttacks(snapshot, movingActor, from, to, dice, log) {
+  if (!dice) return;
+  const attackers = livingActors(snapshot)
+    .filter((actor) => actor.team !== movingActor.team)
+    .filter((actor) => hasReaction(actor))
+    .filter((actor) => !(actor.conditions || []).some((condition) => getConditionRules(condition.id).blocksOpportunityAttacks))
+    .map((actor) => ({ actor, action: getOpportunityAction(actor) }))
+    .filter(({ action }) => action)
+    .filter(({ actor, action }) => distance(actor.position, from) <= action.range)
+    .filter(({ actor, action }) => distance(actor.position, to) > action.range);
+
+  for (const { actor, action } of attackers) {
+    if (movingActor.hp <= 0) break;
+    spendReaction(actor);
+    log.add("opportunity.attack", {
+      round: snapshot.round,
+      actorId: actor.id,
+      actorName: actor.name,
+      targetId: movingActor.id,
+      targetName: movingActor.name,
+      actionName: action.name,
+    });
+    log.add("reaction.spend", {
+      round: snapshot.round,
+      actorId: actor.id,
+      actorName: actor.name,
+      reactionAvailable: false,
+      reason: "opportunity attack",
+    });
+    resolveAttack(snapshot, actor, movingActor, action, dice, log);
+  }
+  checkOutcome(snapshot, log);
+}
+
+export function resolveAttack(snapshot, actor, target, action, dice, log) {
+  const rollModifier = rollAttackModifier(snapshot, actor, target, action, dice);
+  const attackBonus = (action.attackBonus || 0) + rollModifier.total;
+  const cover = classifyCover(snapshot, actor, target, action);
+  const ac = getEffectiveAc(snapshot, target, { source: actor, action });
+  const effectiveAc = ac + cover.bonus;
+  const attackRoll = applyLuckyToRoll({
+    actor,
+    roll: rollAttackD20(snapshot, actor, target, action, dice),
+    dice,
+    log,
+    context: {
+      round: snapshot.round,
+      type: "attack",
+      label: action.name,
+      targetNumber: effectiveAc,
+      bonus: attackBonus,
+    },
+  });
+  const total = attackRoll.roll + attackBonus;
+  const hit = attackRoll.roll === 20 || (attackRoll.roll !== 1 && total >= effectiveAc);
+  const critical = hit && isCriticalHitFromConditions(actor, target, action, attackRoll);
+
+  log.add("attack.roll", {
+    round: snapshot.round,
+    actorId: actor.id,
+    actorName: actor.name,
+    targetId: target.id,
+    targetName: target.name,
+    actionId: action.id,
+    actionName: action.name,
+    roll: attackRoll.roll,
+    rolls: attackRoll.rolls,
+    mode: attackRoll.mode,
+    reasons: attackRoll.reasons,
+    lucky: attackRoll.lucky,
+    bonus: attackBonus,
+    baseBonus: action.attackBonus || 0,
+    modifierReasons: rollModifier.reasons,
+    total,
+    ac,
+    cover,
+    effectiveAc,
+  });
+  log.add("attack.result", {
+    round: snapshot.round,
+    actorId: actor.id,
+    actorName: actor.name,
+    targetId: target.id,
+    targetName: target.name,
+    hit,
+    critical,
+  });
+  consumeAttackRollConditions(snapshot, actor, target, attackRoll, log);
+
+  if (hit) {
+    applyDamage(snapshot, actor, target, action, dice, log, { critical });
+    applyHitEffects(snapshot, actor, target, action, log, dice);
+  } else {
+    resolveReactionTriggers(snapshot, "missed_by_melee_attack", { source: actor, target, action }, dice, log, { resolveAttack, applyDamageAmount });
+  }
+}
+
+function getOpportunityAction(actor) {
+  return actor.actions.find((action) =>
+    getActionUses(action) > 0 &&
+    action.range === 1 &&
+    (action.type === "weapon_attack" || action.type === "melee_attack")
+  ) || null;
+}
+
+function rollAttackD20(snapshot, actor, target, action, dice) {
+  const reasons = [];
+  const consumed = [];
+  let advantage = 0;
+
+  for (const modifier of collectAttackRollModeDetails(snapshot, actor, target, action)) {
+    if (modifier.mode === "advantage") {
+      advantage += 1;
+      reasons.push(`ADV: ${modifier.label}`);
+    }
+    if (modifier.mode === "disadvantage") {
+      advantage -= 1;
+      reasons.push(`DIS: ${modifier.label}`);
+    }
+  }
+
+  for (const condition of actor.conditions || []) {
+    const id = conditionId(condition);
+    const rules = getConditionRules(id);
+    if (rules.outgoingAttackAdvantage) {
+      advantage += 1;
+      reasons.push(`ADV: ${conditionName(id)}`);
+      if (rules.consumeOn === "outgoing_attack") consumed.push({ actor, condition: id });
+    }
+    if (rules.outgoingAttackDisadvantage) {
+      advantage -= 1;
+      reasons.push(`DIS: ${conditionName(id)}`);
+      if (rules.consumeOn === "outgoing_attack") consumed.push({ actor, condition: id });
+    }
+  }
+
+  for (const condition of target.conditions || []) {
+    const id = conditionId(condition);
+    const rules = getConditionRules(id);
+    if (rules.incomingAttackAdvantage) {
+      advantage += 1;
+      reasons.push(`ADV: ${conditionName(id)}`);
+      if (rules.consumeOn === "incoming_attack") consumed.push({ actor: target, condition: id });
+    }
+    if (rules.incomingAttackDisadvantage) {
+      advantage -= 1;
+      reasons.push(`DIS: ${conditionName(id)}`);
+      if (rules.consumeOn === "incoming_attack") consumed.push({ actor: target, condition: id });
+    }
+  }
+
+  if (hasCondition(target, "prone")) {
+    if (distance(actor.position, target.position) <= 1) {
+      advantage += 1;
+      reasons.push(`ADV: ${target.name} is prone and attacker is adjacent`);
+    } else {
+      advantage -= 1;
+      reasons.push(`DIS: ${target.name} is prone and attacker is not adjacent`);
+    }
+  }
+
+  if (advantage === 0) {
+    const d20 = dice.rollD20({ type: "attack", label: action.name });
+    return { roll: d20.roll, rolls: [d20.roll], mode: "normal", reasons, consumed };
+  }
+
+  const first = dice.rollD20({ type: "attack", label: action.name });
+  const second = dice.rollD20({ type: "attack", label: action.name });
+  const rolls = [first.roll, second.roll];
+  return {
+    roll: advantage > 0 ? Math.max(...rolls) : Math.min(...rolls),
+    rolls,
+    mode: advantage > 0 ? "advantage" : "disadvantage",
+    reasons,
+    consumed,
+  };
+}
+
+function consumeAttackRollConditions(snapshot, actor, target, attackRoll, log) {
+  for (const item of attackRoll.consumed || []) {
+    if (!removeCondition(item.actor, item.condition)) continue;
+    log.add("condition.removed", {
+      round: snapshot.round,
+      actorId: item.actor.id,
+      actorName: item.actor.name,
+      condition: item.condition,
+      reason: item.actor.id === actor.id
+        ? "used on attack roll"
+        : `used by ${actor.name}'s attack`,
+      targetId: target.id,
+      targetName: target.name,
+    });
+  }
+}
+
+function conditionId(condition) {
+  return typeof condition === "string" ? condition : condition?.id;
+}

@@ -9,6 +9,10 @@ import { endTurnEffects, moveActor, resolveAction, startTurn } from "../../app/c
 import { runAiTurn } from "../../app/combat/ai.js";
 import { actorsInFootprint, coneFootprint, cubeFootprint, lineDirection, lineFootprint, radiusFootprint } from "../../app/combat/footprints.js";
 import { getCondition } from "../../app/data/conditions.js";
+import { getConsumableById } from "../../app/data/consumables.js";
+import { createConsumableAction } from "../../app/combat/actionFactory.js";
+import { createEnemyCombatActor } from "../../app/combat/enemyFactory.js";
+import { createEmptyCharacterDraft, resolveCharacterSheet, resolvedSheetToCombatActor } from "../../app/character/index.js";
 
 export {
   assert,
@@ -16,6 +20,8 @@ export {
   coneFootprint,
   createCombatController,
   createCombatLog,
+  createEmptyCharacterDraft,
+  createEnemyCombatActor,
   createSnapshotFromScenario,
   cubeFootprint,
   endTurnEffects,
@@ -34,7 +40,9 @@ export {
   moveActor,
   nextStepToward,
   radiusFootprint,
+  resolveCharacterSheet,
   resolveAction,
+  resolvedSheetToCombatActor,
   runAiTurn,
   startTurn,
   validateCombatActor,
@@ -49,12 +57,32 @@ export function fixedDice({ d20 = 10, damage = 4 } = {}) {
 
 export function scriptedDice({ d20 = [], damage = 1 } = {}) {
   const rolls = [...d20];
+  const damageRolls = Array.isArray(damage) ? [...damage] : null;
+  function nextD20() {
+    return rolls.length ? rolls.shift() : 10;
+  }
   return {
     rollD20: () => {
-      const roll = rolls.length ? rolls.shift() : 10;
+      const roll = nextD20();
       return { roll, total: roll, usedLucky: false, secondRoll: null };
     },
-    rollDamage: (dice) => ({ total: damage, rolls: [damage], modifier: 0, dice }),
+    applyLuckyD20: ({ actor, currentRoll, context }) => {
+      const targetNumber = Number(context?.targetNumber);
+      const bonus = Number(context?.bonus || 0);
+      const missedBy = targetNumber - (currentRoll + bonus);
+      if (!actor?.luck || actor.luck.points <= 0 || actor.luck.usedThisCombat || missedBy <= 0 || missedBy >= 5) {
+        return { roll: currentRoll, total: currentRoll, usedLucky: false, originalRoll: currentRoll, secondRoll: null };
+      }
+      const secondRoll = nextD20();
+      const roll = Math.max(currentRoll, secondRoll);
+      actor.luck.points -= 1;
+      actor.luck.usedThisCombat = true;
+      return { roll, total: roll, usedLucky: true, originalRoll: currentRoll, secondRoll, missedBy, pointsRemaining: actor.luck.points };
+    },
+    rollDamage: (dice) => {
+      const total = damageRolls ? (damageRolls.length ? damageRolls.shift() : 1) : damage;
+      return { total, rolls: [total], modifier: 0, dice };
+    },
   };
 }
 
@@ -88,7 +116,9 @@ export function makeHarnessSnapshot() {
         speed: 6,
         position: { x: 0, y: 2 },
         saves: { wis: 1 },
+        inventory: [{ id: "healing_potion", qty: 2 }],
         actions: [
+          createConsumableAction(getConsumableById("healing_potion")),
           {
             id: "bow",
             name: "Bow",
@@ -148,4 +178,3 @@ export function makeHarnessSnapshot() {
     ],
   });
 }
-

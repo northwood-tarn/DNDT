@@ -1,224 +1,235 @@
 // app/data/feats.js
-// Origin Feats (CC SRD aligned). Kept concise for our prototype.
-// We use simple, readable effects that integrate with our text-mode shell.
+//
+// DNDT-native feat records. ORIGIN_FEATS_BY_ID is the normalized character
+// pipeline contract; ORIGIN_FEATS remains an array for the legacy character
+// select scene.
 
-export const ORIGIN_FEATS = [
-  {
-    id: "alert",
-    name: "Alert (Origin)",
-    description: "Ever watchful; gain +5 to initiative.",
-    apply(p) {
-      p.initiativeBonus = (p.initiativeBonus || 0) + 5;
-      p.notes = [...(p.notes||[]), "+5 initiative (Alert)"];
-    }
-  },
-  {
-    id: "savage_attacker",
-    name: "Savage Attacker (Origin)",
-    description: "On your turn, you may reroll one weapon damage die (keep the new result).",
-    apply(p) {
-      p.notes = [...(p.notes||[]), "Savage Attacker: reroll 1 damage die once/turn"];
-    }
-  },
-  {
-    id: "skilled",
-    name: "Skilled (Origin)",
-    description: "Gain proficiency in three skills of your choice.",
-    apply(p) {
-      if (!p.proficiencies) p.proficiencies = { skills: [] };
-      const picks = p.__featPicks?.skilled ?? ["Perception","Insight","Stealth"];
-      picks.forEach(skill => {
-        if (!p.proficiencies.skills.includes(skill)) {
-          p.proficiencies.skills.push(skill);
-        }
-      });
-      p.notes = [...(p.notes||[]), "Skilled: +3 skill proficiencies"];
-    }
-  },
-  // --- Three new, first-level-appropriate origin feats for this campaign shell ---
-  {
-    id: "pathfinder",
-    name: "Pathfinder (Origin)",
-    description: "You read the land by scent and echo; gain Survival proficiency and a small overland navigation edge.",
-    apply(p) {
-      if (!p.proficiencies) p.proficiencies = { skills: [] };
-      if (!p.proficiencies.skills.includes("Survival")) p.proficiencies.skills.push("Survival");
-      p.travelBonus = (p.travelBonus || 0) + 1; // used by exploration phase (ASCII map pacing)
-      p.notes = [...(p.notes||[]), "Pathfinder: Survival proficiency; +1 travel pacing"];
-    }
-  },
-  {
-    id: "torchbearer",
-    name: "Torchbearer (Origin)",
-    description: "You keep the flame; start with extra torches and see better by emberlight.",
-    apply(p) {
-      p.inventory = p.inventory || [];
-      p.inventory.push({ id:"torch", name:"Torch", type:"light" });
-      p.inventory.push({ id:"torch", name:"Torch", type:"light" });
-      p.inventory.push({ id:"torch", name:"Torch", type:"light" });
-      p.lightRadiusBonus = (p.lightRadiusBonus || 0) + 1; // used by visibility calc
-      p.notes = [...(p.notes||[]), "Torchbearer: +3 Torches; +1 light radius"];
-    }
-  },
-  {
-    id: "silver_tongue",
-    name: "Silver Tongue (Origin)",
-    description: "Your words carry weight; gain Persuasion proficiency and a small bonus to parley.",
-    apply(p) {
-      if (!p.proficiencies) p.proficiencies = { skills: [] };
-      if (!p.proficiencies.skills.includes("Persuasion")) p.proficiencies.skills.push("Persuasion");
-      p.parleyBonus = (p.parleyBonus || 0) + 2;
-      p.notes = [...(p.notes||[]), "Silver Tongue: Persuasion proficiency; +2 parley"];
-    }
-  },
+export const FEAT_SOURCES = {
+  PHB_2024_REFERENCE: "2024_phb_reference",
+  DNDT_HOMEBREW: "dndt_homebrew"
+};
 
-  // --- NEW: Background/Origin feats now available ---
-  {
-    id: "tavern_brawler",
-    name: "Tavern Brawler",
-    description: "You’ve trained to fight with whatever is at hand. Unarmed strikes deal 1d4; you’re proficient with improvised weapons; you gain a small edge to initiate a grapple after a hit.",
-    apply(p) {
-      p.combat = p.combat || {};
-      p.combat.unarmedDie = "1d4";
-      p.combat.improvisedWeaponProficient = true;
-      p.combat.grappleEdge = Math.max(1, p.combat.grappleEdge || 1);
-      p.notes = [...(p.notes||[]), "Tavern Brawler: unarmed 1d4, improvised proficient, +edge to grapple after a hit"];
-    }
-  },
-  {
-    id: "skulker",
-    name: "Skulker",
-    description: "You are hard to pin down in the shadows. Dim light doesn’t impose disadvantage on your Stealth checks, and missing with a ranged attack doesn’t reveal you.",
-    apply(p) {
-      p.stealthPerks = p.stealthPerks || {};
-      p.stealthPerks.dimLightNoDisadvantage = true;
-      p.stealthPerks.remainHiddenOnMiss = true;
-      p.notes = [...(p.notes||[]), "Skulker: no disadvantage in dim light; stay hidden on a missed ranged attack"];
-    }
-  },
-  {
-    id: "magic_initiate_cleric",
-    name: "Magic Initiate (Cleric)",
-    description: "You learn the clerical arts. You know the cantrips Guidance and Sacred Flame, and you can cast Cure Wounds once per long rest (without a slot).",
-    apply(p) {
-      p.spells = p.spells || { known: [], perDay: {} };
-      const addKnown = (id) => { if (!p.spells.known.includes(id)) p.spells.known.push(id); };
-      addKnown("guidance");
-      addKnown("sacred_flame");
-      p.spells.perDay["cure_wounds"] = p.spells.perDay["cure_wounds"] || { perDay: 1, used: 0, refresh: "long_rest" };
-      p.notes = [...(p.notes||[]), "Magic Initiate (Cleric): Guidance, Sacred Flame; Cure Wounds 1/day"];
-    }
-  },
-  {
-    id: "magic_initiate_wizard",
-    name: "Magic Initiate (Wizard)",
-    description: "You dabble in arcana. You know the cantrips Mage Hand and Fire Bolt, and you can cast Magic Missile once per long rest (without a slot).",
-    apply(p) {
-      p.spells = p.spells || { known: [], perDay: {} };
-      const addKnown = (id) => { if (!p.spells.known.includes(id)) p.spells.known.push(id); };
-      addKnown("mage_hand");
-      addKnown("fire_bolt");
-      p.spells.perDay["magic_missile"] = p.spells.perDay["magic_missile"] || { perDay: 1, used: 0, refresh: "long_rest" };
-      p.notes = [...(p.notes||[]), "Magic Initiate (Wizard): Mage Hand, Fire Bolt; Magic Missile 1/day"];
-    }
-  },
+export const FEAT_TYPES = {
+  ORIGIN: "origin",
+  CAMPAIGN: "campaign"
+};
 
-  
-{
-    id: "metamagic_extend",
-    name: "Metamagic: Extend",
-    description: "You have studied the logic of spell duration. Starts at 2 uses per long rest. Each additional Metamagic feat you take increases the uses of ALL your Metamagic feats by +1 (including this one).",
-    apply(p) {
-      // Ensure metamagic scaffolding
-      p.metamagic = p.metamagic || { total: 0, has: {}, uses: {} };
-      const BASE = { extend: 2, enlarge: 2, quicken: 1, twin: 1 };
-      // Mark acquisition of this feat if not already
-      if (!p.metamagic.has.extend) {
-        p.metamagic.has.extend = true;
-        p.metamagic.total = (p.metamagic.total || 0) + 1;
-      }
-      // Recompute uses for all owned metamagic feats: base + (total - 1)
-      const total = p.metamagic.total || 0;
-      const owned = p.metamagic.has || {};
-      p.metamagic.uses = p.metamagic.uses || {};
-      Object.keys(owned).forEach(key => {
-        if (owned[key]) {
-          p.metamagic.uses[key] = BASE[key] + Math.max(0, total - 1);
-        }
-      });
-      p.notes = [...(p.notes||[]), "Metamagic Extend: double spell duration (uses auto-scale with total metamagic feats)"];
-    }
-  },
-  {
-    id: "metamagic_enlarge",
-    name: "Metamagic: Enlarge",
-    description: "You can manipulate a spell’s area/shape. Starts at 2 uses per long rest. Each additional Metamagic feat you take increases the uses of ALL your Metamagic feats by +1 (including this one).",
-    apply(p) {
-      p.metamagic = p.metamagic || { total: 0, has: {}, uses: {} };
-      const BASE = { extend: 2, enlarge: 2, quicken: 1, twin: 1 };
-      if (!p.metamagic.has.enlarge) {
-        p.metamagic.has.enlarge = true;
-        p.metamagic.total = (p.metamagic.total || 0) + 1;
-      }
-      const total = p.metamagic.total || 0;
-      const owned = p.metamagic.has || {};
-      p.metamagic.uses = p.metamagic.uses || {};
-      Object.keys(owned).forEach(key => {
-        if (owned[key]) {
-          p.metamagic.uses[key] = BASE[key] + Math.max(0, total - 1);
-        }
-      });
-      p.notes = [...(p.notes||[]), "Metamagic Enlarge: expand/shape AoE (uses auto-scale with total metamagic feats)"];
-    }
-  },
-  {
-    id: "metamagic_quicken",
-    name: "Metamagic: Quicken",
-    description: "You can accelerate spellcasting. Starts at 1 use per long rest. Each additional Metamagic feat you take increases the uses of ALL your Metamagic feats by +1 (including this one).",
-    apply(p) {
-      p.metamagic = p.metamagic || { total: 0, has: {}, uses: {} };
-      const BASE = { extend: 2, enlarge: 2, quicken: 1, twin: 1 };
-      if (!p.metamagic.has.quicken) {
-        p.metamagic.has.quicken = true;
-        p.metamagic.total = (p.metamagic.total || 0) + 1;
-      }
-      const total = p.metamagic.total || 0;
-      const owned = p.metamagic.has || {};
-      p.metamagic.uses = p.metamagic.uses || {};
-      Object.keys(owned).forEach(key => {
-        if (owned[key]) {
-          p.metamagic.uses[key] = BASE[key] + Math.max(0, total - 1);
-        }
-      });
-      p.notes = [...(p.notes||[]), "Metamagic Quicken: cast 1-action spell as bonus action (uses auto-scale with total metamagic feats)"];
-    }
-  },
-  {
-    id: "metamagic_twin",
-    name: "Metamagic: Twin",
-    description: "You can duplicate a single-target spell. Starts at 1 use per long rest. Each additional Metamagic feat you take increases the uses of ALL your Metamagic feats by +1 (including this one).",
-    apply(p) {
-      p.metamagic = p.metamagic || { total: 0, has: {}, uses: {} };
-      const BASE = { extend: 2, enlarge: 2, quicken: 1, twin: 1 };
-      if (!p.metamagic.has.twin) {
-        p.metamagic.has.twin = true;
-        p.metamagic.total = (p.metamagic.total || 0) + 1;
-      }
-      const total = p.metamagic.total || 0;
-      const owned = p.metamagic.has || {};
-      p.metamagic.uses = p.metamagic.uses || {};
-      Object.keys(owned).forEach(key => {
-        if (owned[key]) {
-          p.metamagic.uses[key] = BASE[key] + Math.max(0, total - 1);
-        }
-      });
-      p.notes = [...(p.notes||[]), "Metamagic Twin: duplicate single-target spell (uses auto-scale with total metamagic feats)"];
-    }
-  },
-];  
-
-export function getFeatById(id) {
-  return ORIGIN_FEATS.find(f => f.id === id) || null;
+function originFeat({
+  id,
+  name,
+  source = FEAT_SOURCES.PHB_2024_REFERENCE,
+  description,
+  effects = {},
+  choices = [],
+  tags = []
+}) {
+  return {
+    id,
+    name,
+    type: FEAT_TYPES.ORIGIN,
+    source,
+    minLevel: 1,
+    description,
+    effects,
+    choices,
+    tags
+  };
 }
 
+export const ORIGIN_FEATS_BY_ID = {
+  alert: originFeat({
+    id: "alert",
+    name: "Alert",
+    description: "You have Advantage on Initiative rolls, and friendly combatants gain +1 to Initiative while you are in the fight.",
+    effects: {
+      featureHooks: [{
+        id: "alert_initiative_advantage",
+        timing: "initiative_roll",
+        roll: { mode: "advantage" }
+      }, {
+        id: "alert_friendly_initiative_bonus",
+        timing: "initiative_roll",
+        target: "friendly_combatants",
+        bonus: 1
+      }]
+    },
+    tags: ["initiative"]
+  }),
 
+  healer: originFeat({
+    id: "healer",
+    name: "Healer",
+    description: "Help a creature spend a Hit Die to recover extra HP, and reroll 1s when you restore HP.",
+    effects: {
+      featureHooks: [
+        { id: "battle_medic", timing: "action" },
+        { id: "healing_reroll_ones", timing: "healing_roll" }
+      ]
+    },
+    tags: ["healing"]
+  }),
+
+  lucky: originFeat({
+    id: "lucky",
+    name: "Lucky",
+    description: "After each Long Rest, gain Luck Points equal to your Proficiency Bonus. Once per combat, when you fail your own attack roll or saving throw by less than 5, spend 1 Luck Point to roll one extra d20 and use the higher result. Luck can also appear as a conversation option when relevant.",
+    effects: {
+      resources: [{ id: "luck_points", name: "Luck Points", max: "proficiency_bonus", recovery: "long_rest" }],
+      featureHooks: [{
+        id: "lucky_combat_near_miss_reroll",
+        timing: "after_attack_or_save_roll",
+        trigger: { rollTypes: ["attack", "save"], failedByLessThan: 5, frequency: "once_per_combat", actorOnly: true },
+        cost: { resourceId: "luck_points", amount: 1 },
+        roll: { extraD20: 1, keep: "highest" }
+      }, {
+        id: "lucky_dialogue_option",
+        timing: "conversation_option",
+        cost: { resourceId: "luck_points", amount: 1 }
+      }]
+    },
+    tags: ["d20", "resource", "conversation"]
+  }),
+
+  magic_initiate_cleric: originFeat({
+    id: "magic_initiate_cleric",
+    name: "Magic Initiate (Cleric)",
+    source: FEAT_SOURCES.DNDT_HOMEBREW,
+    description: "You know Guidance and Sacred Flame, and you can cast Cure Wounds once per Long Rest without a slot.",
+    effects: {
+      spellGrants: [
+        { spellId: "guidance", level: 0 },
+        { spellId: "sacred_flame", level: 0 },
+        { spellId: "cure_wounds", level: 1, freeCastResourceId: "magic_initiate_cleric_cure_wounds" }
+      ],
+      resources: [{ id: "magic_initiate_cleric_cure_wounds", name: "Cure Wounds Free Cast", max: 1, recovery: "long_rest" }]
+    },
+    tags: ["spellcasting", "legacy_variant"]
+  }),
+
+  magic_initiate_wizard: originFeat({
+    id: "magic_initiate_wizard",
+    name: "Magic Initiate (Wizard)",
+    source: FEAT_SOURCES.DNDT_HOMEBREW,
+    description: "You know Mage Hand and Fire Bolt, and you can cast Magic Missile once per Long Rest without a slot.",
+    effects: {
+      spellGrants: [
+        { spellId: "mage_hand", level: 0 },
+        { spellId: "fire_bolt", level: 0 },
+        { spellId: "magic_missile", level: 1, freeCastResourceId: "magic_initiate_wizard_magic_missile" }
+      ],
+      resources: [{ id: "magic_initiate_wizard_magic_missile", name: "Magic Missile Free Cast", max: 1, recovery: "long_rest" }]
+    },
+    tags: ["spellcasting", "legacy_variant"]
+  }),
+
+  magic_initiate_warlock: originFeat({
+    id: "magic_initiate_warlock",
+    name: "Magic Initiate (Warlock)",
+    source: FEAT_SOURCES.DNDT_HOMEBREW,
+    description: "You know Eldritch Grasp and Dread Whisper, and you can cast Hex once per Long Rest without a slot.",
+    effects: {
+      spellGrants: [
+        { spellId: "eldritch_grasp", level: 0 },
+        { spellId: "dread_whisper", level: 0 },
+        { spellId: "hex", level: 1, freeCastResourceId: "magic_initiate_warlock_hex" }
+      ],
+      resources: [{ id: "magic_initiate_warlock_hex", name: "Hex Free Cast", max: 1, recovery: "long_rest" }]
+    },
+    tags: ["spellcasting", "legacy_variant"]
+  }),
+
+  magic_initiate_paladin: originFeat({
+    id: "magic_initiate_paladin",
+    name: "Magic Initiate (Paladin)",
+    source: FEAT_SOURCES.DNDT_HOMEBREW,
+    description: "You know Light and Guidance, and you can cast Shield of Faith once per Long Rest without a slot.",
+    effects: {
+      spellGrants: [
+        { spellId: "light", level: 0 },
+        { spellId: "guidance", level: 0 },
+        { spellId: "shield_of_faith", level: 1, freeCastResourceId: "magic_initiate_paladin_shield_of_faith" }
+      ],
+      resources: [{ id: "magic_initiate_paladin_shield_of_faith", name: "Shield of Faith Free Cast", max: 1, recovery: "long_rest" }]
+    },
+    tags: ["spellcasting", "legacy_variant"]
+  }),
+
+  savage_attacker: originFeat({
+    id: "savage_attacker",
+    name: "Savage Attacker",
+    description: "Once per turn when you hit with a weapon, roll the weapon's damage twice and use the higher result.",
+    effects: {
+      featureHooks: [{
+        id: "savage_attacker_weapon_damage",
+        timing: "weapon_damage_roll",
+        trigger: { actionTags: ["weapon"], frequency: "once_per_turn" },
+        roll: { repetitions: 2, keep: "highest" }
+      }]
+    },
+    tags: ["weapon", "damage"]
+  }),
+
+  skilled: originFeat({
+    id: "skilled",
+    name: "Skilled",
+    description: "Gain proficiency in any combination of three skills or tools of your choice.",
+    choices: [{ id: "proficiencies", kind: "skill_or_tool", count: 3, pools: ["skills", "tools"] }],
+    tags: ["skill", "tool", "choice"]
+  }),
+
+  tough: originFeat({
+    id: "tough",
+    name: "Tough",
+    description: "Your Hit Point maximum increases by 2 per character level.",
+    effects: {
+      hitPointBonusPerLevel: 2
+    },
+    tags: ["hp"]
+  }),
+
+  silver_tongue: originFeat({
+    id: "silver_tongue",
+    name: "Silver Tongue",
+    source: FEAT_SOURCES.DNDT_HOMEBREW,
+    description: "Your words carry weight; gain Persuasion proficiency and a small bonus to parley.",
+    effects: {
+      proficiencies: { skills: ["persuasion"] },
+      modifiers: [{ id: "parley", amount: 2 }]
+    },
+    tags: ["skill", "social"]
+  })
+};
+
+export const ORIGIN_FEATS = Object.values(ORIGIN_FEATS_BY_ID).map(toLegacyFeat);
+
+export function getFeatById(id) {
+  return ORIGIN_FEATS_BY_ID[id] || null;
+}
+
+export function listOriginFeats() {
+  return Object.values(ORIGIN_FEATS_BY_ID);
+}
+
+function toLegacyFeat(feat) {
+  return {
+    id: feat.id,
+    name: `${feat.name}${feat.source === FEAT_SOURCES.PHB_2024_REFERENCE ? " (Origin)" : ""}`,
+    description: feat.description,
+    normalized: feat,
+    apply(player) {
+      applyLegacyFeat(player, feat);
+    }
+  };
+}
+
+function applyLegacyFeat(player, feat) {
+  player.notes = [...(player.notes || []), `${feat.name}: ${feat.description}`];
+  const skills = feat.effects?.proficiencies?.skills || [];
+  if (skills.length) {
+    player.proficiencies = player.proficiencies || { skills: [] };
+    for (const skill of skills) {
+      const titleCase = skill.split("_").map((part) => part[0].toUpperCase() + part.slice(1)).join(" ");
+      if (!player.proficiencies.skills.includes(titleCase)) player.proficiencies.skills.push(titleCase);
+    }
+  }
+}

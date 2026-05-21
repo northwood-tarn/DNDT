@@ -19,10 +19,16 @@ export function normalizeCombatObjects(objects = []) {
     visual: object.visual || null,
     followsSource: object.followsSource === true,
     sourceActorId: object.sourceActorId || null,
+    sourceTeam: object.sourceTeam || sourceTeamFromObject(object),
     sourceActionId: object.sourceActionId || null,
     spellSaveDC: object.spellSaveDC ?? null,
     duration: object.duration ? structuredClone(object.duration) : null,
     effects: Array.isArray(object.effects) ? structuredClone(object.effects) : [],
+    intensity: object.intensity ? structuredClone(object.intensity) : null,
+    stableThroughDice: object.stableThroughDice ?? null,
+    stableEffects: object.stableEffects ? structuredClone(object.stableEffects) : null,
+    unstableEffects: object.unstableEffects ? structuredClone(object.unstableEffects) : null,
+    collapse: object.collapse ? structuredClone(object.collapse) : null,
   }));
 }
 
@@ -37,9 +43,37 @@ export function createCombatObjectFromAction(action, anchor, source) {
     cells: Array.isArray(anchor?.cells) ? anchor.cells : object.cells,
     origin: source?.position ? { ...source.position } : null,
     sourceActorId: source?.id || null,
+    sourceTeam: source?.team || null,
     sourceActionId: action.id,
     spellSaveDC: action.spellSaveDC ?? null,
+    effects: resolveObjectEffects(object.effects || [], source, action),
   }])[0];
+}
+
+function resolveObjectEffects(effects, source, action) {
+  return (effects || []).map((effect) => ({
+    ...effect,
+    damage: resolveFormula(effect.damage, source),
+    amount: Number.isFinite(effect.amount) ? effect.amount : Number(resolveFormula(effect.amountFormula, source)) || effect.amount,
+    spellSaveDC: effect.save?.dcFrom === "spellSaveDC" ? action.spellSaveDC : effect.spellSaveDC,
+  }));
+}
+
+function resolveFormula(value, source) {
+  if (typeof value !== "string") return value;
+  const resolved = value
+    .replace(/\bstrength_modifier\b/g, String(source?.abilityMods?.str || 0))
+    .replace(/\bdexterity_modifier\b/g, String(source?.abilityMods?.dex || 0))
+    .replace(/\bconstitution_modifier\b/g, String(source?.abilityMods?.con || 0))
+    .replace(/\bintelligence_modifier\b/g, String(source?.abilityMods?.int || 0))
+    .replace(/\bwisdom_modifier\b/g, String(source?.abilityMods?.wis || 0))
+    .replace(/\bcharisma_modifier\b/g, String(source?.abilityMods?.cha || 0))
+    .replace(/\bproficiency_bonus\b/g, String(source?.proficiencyBonus || 0));
+  return /^[+-]?\d+$/.test(resolved) ? Number(resolved) : resolved;
+}
+
+function sourceTeamFromObject(object) {
+  return object.sourceTeam || null;
 }
 
 export function combatObjectsAt(snapshot, position) {

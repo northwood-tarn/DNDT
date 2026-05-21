@@ -3,6 +3,8 @@ import {
   actorsInFootprint,
   coneFootprint,
   createCombatController,
+  createEmptyCharacterDraft,
+  createEnemyCombatActor,
   createCombatLog,
   createSnapshotFromScenario,
   cubeFootprint,
@@ -24,7 +26,9 @@ import {
   moveActor,
   nextStepToward,
   radiusFootprint,
+  resolveCharacterSheet,
   resolveAction,
+  resolvedSheetToCombatActor,
   runAiTurn,
   scriptedDice,
   startTurn,
@@ -39,6 +43,11 @@ function testMovementAndPathing() {
   assert.equal(moveActor(snapshot, hero, { x: 1, y: 2 }, log), true, "orthogonal walkable movement should succeed");
   assert.equal(hero.movementRemaining, 5, "movement should decrement");
   assert.equal(moveActor(snapshot, hero, { x: 2, y: 2 }, log), false, "pillar movement should fail");
+
+  hero.position = { x: 0, y: 2 };
+  snapshot.grid.cover.set("0,1", "half");
+  assert.equal(moveActor(snapshot, hero, { x: 0, y: 1 }, log), false, "half-cover terrain should block movement");
+  snapshot.grid.cover.delete("0,1");
 
   hero.position = { x: 0, y: 2 };
   const step = nextStepToward(snapshot, hero, { x: 4, y: 2 });
@@ -176,7 +185,7 @@ function testDashAndPotionActions() {
   assert.ok(log.events.some((event) => event.type === "dash"), "dash should be logged");
 
   hero.hp = 10;
-  assert.equal(resolveAction(snapshot, hero, "health_potion", null, fixedDice({ damage: 6 }), log), true, "potion should resolve without a target");
+  assert.equal(resolveAction(snapshot, hero, "healing_potion", null, fixedDice({ damage: 6 }), log), true, "potion should resolve without a target");
   assert.equal(hero.hp, 16, "potion should heal");
   assert.equal(hero.economy.bonusActionAvailable, false, "potion should spend bonus action");
   assert.equal(getItemQuantity(hero, "healing_potion"), 1, "potion stock should decrement");
@@ -184,12 +193,12 @@ function testDashAndPotionActions() {
 
   hero.economy.bonusActionAvailable = true;
   hero.hp = 10;
-  assert.equal(resolveAction(snapshot, hero, "health_potion", null, fixedDice({ damage: 6 }), log), true, "second potion should resolve");
+  assert.equal(resolveAction(snapshot, hero, "healing_potion", null, fixedDice({ damage: 6 }), log), true, "second potion should resolve");
   assert.equal(getItemQuantity(hero, "healing_potion"), 0, "second potion should exhaust stock");
 
   hero.economy.bonusActionAvailable = true;
   hero.hp = 10;
-  assert.equal(resolveAction(snapshot, hero, "health_potion", null, fixedDice({ damage: 6 }), log), false, "no-stock potion use should fail");
+  assert.equal(resolveAction(snapshot, hero, "healing_potion", null, fixedDice({ damage: 6 }), log), false, "no-stock potion use should fail");
 }
 
 function testBonusActionSelfHeal() {
@@ -216,6 +225,145 @@ function testBonusActionSelfHeal() {
 
 }
 
+function testClericFeatureActionsAgainstUndead() {
+  const clericSheet = resolveCharacterSheet(createEmptyCharacterDraft({
+    identity: {
+      characterName: "Test Cleric",
+      level: 5,
+      classId: "cleric",
+    },
+    abilities: {
+      strength: 10,
+      dexterity: 10,
+      constitution: 12,
+      intelligence: 10,
+      wisdom: 16,
+      charisma: 10,
+    },
+  }), {}, { allowNonCreationLevel: true });
+  const cleric = resolvedSheetToCombatActor(clericSheet, { id: "cleric", position: { x: 1, y: 1 } });
+  const skeleton = createEnemyCombatActor("skeleton", { id: "skeleton", position: { x: 3, y: 1 } });
+  const goblin = createEnemyCombatActor("goblin", { id: "goblin", position: { x: 4, y: 1 } });
+  const snapshot = createSnapshotFromScenario({
+    id: "cleric-feature-test",
+    grid: { width: 8, height: 5, blocked: [], cover: [] },
+    actors: [cleric, skeleton, goblin],
+  });
+  const log = createCombatLog();
+  const actor = snapshot.actors.find((item) => item.id === "cleric");
+  const undead = snapshot.actors.find((item) => item.id === "skeleton");
+  const living = snapshot.actors.find((item) => item.id === "goblin");
+
+  assert.equal(resolveAction(snapshot, actor, "turn_undead", null, fixedDice({ d20: 1 }), log), true, "Turn Undead should resolve without selecting a target");
+  assert.equal(hasCondition(undead, "turned"), true, "undead that fails save should be turned");
+  assert.equal(hasCondition(living, "turned"), false, "non-undead should not be affected");
+  assert.equal(actor.resources.find((item) => item.id === "channel_divinity").current, 1, "Channel Divinity should be spent");
+
+  actor.economy.actionAvailable = true;
+  undead.hp = undead.maxHp;
+  assert.equal(resolveAction(snapshot, actor, "sear_undead", null, fixedDice({ d20: 20, damage: 8 }), log), true, "Sear Undead should resolve without selecting a target");
+  assert.equal(undead.hp, undead.maxHp - 4, "Sear Undead should deal half damage on a successful save");
+  assert.equal(living.hp, living.maxHp, "Sear Undead should not damage non-undead");
+}
+
+function testFeatureActionEconomyGrant() {
+  const snapshot = makeHarnessSnapshot();
+  const hero = snapshot.actors[0];
+  const log = createCombatLog();
+  hero.resources = [{ id: "action_surge", name: "Action Surge", max: 1, current: 1, recovery: "short_rest" }];
+  hero.actions.push({
+    id: "action_surge",
+    name: "Action Surge",
+    type: "feature_action",
+    cost: "free",
+    requiresTarget: false,
+    resourceId: "action_surge",
+    economyGrant: { actions: 1 },
+  });
+  hero.economy.actionAvailable = false;
+
+  assert.equal(resolveAction(snapshot, hero, "action_surge", null, fixedDice(), log), true, "Action Surge should resolve without a target");
+  assert.equal(hero.economy.actionAvailable, true, "Action Surge should restore action availability");
+  assert.equal(hero.resources[0].current, 0, "Action Surge should spend its resource");
+}
+
+function testSubclassChannelDivinityActions() {
+  const graveSheet = resolveCharacterSheet(createEmptyCharacterDraft({
+    identity: {
+      characterName: "Grave Cleric",
+      level: 3,
+      classId: "cleric",
+      subclassId: "grave_domain",
+    },
+    abilities: {
+      strength: 10,
+      dexterity: 10,
+      constitution: 12,
+      intelligence: 10,
+      wisdom: 16,
+      charisma: 10,
+    },
+  }), {}, { allowNonCreationLevel: true });
+  const graveCleric = resolvedSheetToCombatActor(graveSheet, { id: "grave_cleric", position: { x: 1, y: 1 } });
+  graveCleric.actions.push({
+    id: "test_mace",
+    name: "Test Mace",
+    type: "weapon_attack",
+    range: 1,
+    attackBonus: 20,
+    damage: "1d6",
+    damageType: "bludgeoning",
+    tags: { harmful: true, attackRoll: true, weapon: true, melee: true },
+  });
+  const graveTarget = createEnemyCombatActor("goblin", { id: "grave_target", hp: 20, maxHp: 20, position: { x: 2, y: 1 }, saves: { con: 0 } });
+  const graveSnapshot = createSnapshotFromScenario({
+    id: "grave-channel-test",
+    grid: { width: 8, height: 5, blocked: [], cover: [] },
+    actors: [graveCleric, graveTarget],
+  });
+  const graveLog = createCombatLog();
+  const graveActor = graveSnapshot.actors.find((item) => item.id === "grave_cleric");
+  const target = graveSnapshot.actors.find((item) => item.id === "grave_target");
+
+  assert.equal(resolveAction(graveSnapshot, graveActor, "graves_rebuke", "grave_target", fixedDice({ d20: 1, damage: 8 }), graveLog), true, "Grave's Rebuke should resolve against one target");
+  assert.equal(hasCondition(target, "grave_rebuked"), true, "Grave's Rebuke should apply its failed-save rider");
+  graveActor.economy.actionAvailable = true;
+  assert.equal(resolveAction(graveSnapshot, graveActor, "test_mace", "grave_target", fixedDice({ d20: 20, damage: 4 }), graveLog), true, "critical-suppressed target should still be hittable");
+  assert.ok(graveLog.events.some((event) => event.type === "attack.result" && event.detail.targetId === "grave_target" && event.detail.hit === true && event.detail.critical === false), "Grave Rebuked should suppress critical hits");
+
+  const lanternSheet = resolveCharacterSheet(createEmptyCharacterDraft({
+    identity: {
+      characterName: "Lantern Cleric",
+      level: 3,
+      classId: "cleric",
+      subclassId: "lantern_domain",
+    },
+    abilities: {
+      strength: 10,
+      dexterity: 10,
+      constitution: 12,
+      intelligence: 10,
+      wisdom: 16,
+      charisma: 10,
+    },
+  }), {}, { allowNonCreationLevel: true });
+  const lanternCleric = resolvedSheetToCombatActor(lanternSheet, { id: "lantern_cleric", position: { x: 1, y: 1 } });
+  const goblin = createEnemyCombatActor("goblin", { id: "radiance_goblin", position: { x: 3, y: 1 }, saves: { con: 0 } });
+  const skeleton = createEnemyCombatActor("skeleton", { id: "radiance_skeleton", position: { x: 4, y: 1 }, saves: { con: 0 } });
+  const lanternSnapshot = createSnapshotFromScenario({
+    id: "lantern-channel-test",
+    grid: { width: 8, height: 5, blocked: [], cover: [] },
+    actors: [lanternCleric, goblin, skeleton],
+  });
+  const lanternLog = createCombatLog();
+  const lanternActor = lanternSnapshot.actors.find((item) => item.id === "lantern_cleric");
+  const radianceGoblin = lanternSnapshot.actors.find((item) => item.id === "radiance_goblin");
+  const radianceSkeleton = lanternSnapshot.actors.find((item) => item.id === "radiance_skeleton");
+
+  assert.equal(resolveAction(lanternSnapshot, lanternActor, "radiance_of_the_dawn", null, fixedDice({ d20: 1, damage: 9 }), lanternLog), true, "Radiance of the Dawn should resolve against nearby enemies");
+  assert.equal(radianceGoblin.hp, Math.max(0, radianceGoblin.maxHp - 9), "Radiance should damage non-undead enemies");
+  assert.equal(radianceSkeleton.hp, radianceSkeleton.maxHp - 9, "Radiance should damage undead enemies too");
+}
 
 export async function runCoreCombatTests() {
   testMovementAndPathing();
@@ -228,4 +376,7 @@ export async function runCoreCombatTests() {
   testActionEconomy();
   testDashAndPotionActions();
   testBonusActionSelfHeal();
+  testClericFeatureActionsAgainstUndead();
+  testFeatureActionEconomyGrant();
+  testSubclassChannelDivinityActions();
 }

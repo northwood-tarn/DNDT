@@ -16,6 +16,7 @@ const ACTION_TYPES = new Set([
   "push",
   "target_test",
   "contextual_end_effect",
+  "feature_action",
   "dash",
   "dodge",
 ]);
@@ -88,6 +89,9 @@ export function validateCombatAction(action) {
   if (action.type === "contextual_end_effect") {
     if (action.requiresTarget !== false) errors.push(`${action.id}.requiresTarget must be false`);
     if (!action.conditionId && !action.effectId) errors.push(`${action.id}.conditionId or effectId is required`);
+  }
+  if (action.type === "feature_action") {
+    if (action.requiresTarget !== false && action.requiresTarget !== true) errors.push(`${action.id}.requiresTarget must be boolean`);
   }
   if (action.type === "dash" || action.type === "dodge") {
     if (action.requiresTarget !== false) errors.push(`${action.id}.requiresTarget must be false`);

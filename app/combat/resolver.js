@@ -25,6 +25,7 @@ import {
   resolveDodge,
   resolveSelfHeal,
 } from "./basicActionResolvers.js";
+import { resolveFeatureAction } from "./featureActionResolver.js";
 import {
   applyActionResolvedEffects,
   applyCollisionDamage,
@@ -159,6 +160,11 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
   }
   if (action.type === "dodge") {
     const resolved = resolveDodge(snapshot, actor, action, log);
+    cleanupInvalidSourceConditions(snapshot, log);
+    return resolved;
+  }
+  if (action.type === "feature_action") {
+    const resolved = resolveFeatureAction(snapshot, actor, action, targetId, dice, log);
     cleanupInvalidSourceConditions(snapshot, log);
     return resolved;
   }

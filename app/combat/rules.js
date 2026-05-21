@@ -10,6 +10,7 @@ export function canUseAction(actor, action) {
   if (!actor || actor.hp <= 0) return blocked("actor is not able to act");
   if (!action) return blocked("action is missing");
   if (getActionUses(action) <= 0) return blocked("no uses remaining");
+  if (action.resourceId && getResourceUses(actor, action.resourceId) <= 0) return blocked("no resource uses remaining");
   if (!canPayActionCost(actor, action.cost) && !canUseBonusDash(actor, action)) {
     return blocked(`${action.cost || "action"} already used`);
   }
@@ -17,6 +18,11 @@ export function canUseAction(actor, action) {
   if (tags.requiresSpeech && hasConditionMechanic(actor, "cannotSpeak")) return blocked("cannot speak");
   if (tags.requiresHands && hasConditionMechanic(actor, "cannotUseHands")) return blocked("cannot use hands");
   return allowed();
+}
+
+function getResourceUses(actor, resourceId) {
+  const resource = (actor.resources || []).find((item) => item.id === resourceId);
+  return resource?.current ?? resource?.max ?? 0;
 }
 
 export function canMoveTo(snapshot, actor, to) {

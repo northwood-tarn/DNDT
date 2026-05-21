@@ -170,6 +170,9 @@ export async function validateSpells({ spellsPath = DEFAULT_SPELLS_PATH } = {}) 
     validateString(errors, id, "source", spell.source);
     validateString(errors, id, "text", spell.text);
     validateBoolean(errors, id, "dialogueRelated", spell.dialogueRelated);
+    if ("active" in spell) validateBoolean(errors, id, "active", spell.active);
+    if ("inactiveReason" in spell) validateString(errors, id, "inactiveReason", spell.inactiveReason);
+    if (spell.active === false && !spell.inactiveReason) fail(errors, id, "inactive spells must include inactiveReason");
 
     if (Array.isArray(spell.classes)) {
       for (const cls of spell.classes) validateString(errors, id, "classes[]", cls);

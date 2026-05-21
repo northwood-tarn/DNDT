@@ -10,10 +10,13 @@ import {
 import { removeActiveEffect, rollSaveModifier } from "./modifiers.js";
 import { clearConcentrationIfNoLinkedEffects, rollConditionSave } from "./combatResolution.js";
 import { applyDamageAmount, rollSaveD20 } from "./combatEffectsResolution.js";
+import { applyLuckyToRoll } from "./luck.js";
+import { cleanupInvalidMarks, removeMark } from "./marks.js";
 
 export function processOngoingEffects(snapshot, actor, timing, dice, log) {
   if (!actor || actor.hp <= 0) return;
   cleanupInvalidSourceConditions(snapshot, log);
+  processMarkDurations(snapshot, actor, timing, log);
   processActiveEffectDurations(snapshot, actor, timing, log);
   const conditions = [...(actor.conditions || [])];
   for (const condition of conditions) {
@@ -69,7 +72,7 @@ function resolveOngoingEffectSave(snapshot, actor, condition, effect, dice, log)
   const ability = String(effect.save.ability || "").toLowerCase();
   const dc = effect.save.dc ?? condition.spellSaveDC ?? 10;
   const source = sourceActorForCondition(snapshot, condition);
-  const roll = rollSaveD20(actor, { name: effect.label || conditionName(condition.id), saveAbility: ability }, dice);
+  const roll = rollSaveD20(actor, { name: effect.label || conditionName(condition.id), saveAbility: ability }, dice, snapshot, source);
   const saveModifier = rollSaveModifier(snapshot, actor, ability, { name: effect.label || conditionName(condition.id), saveAbility: ability }, dice);
   const baseBonus = actor.saves?.[ability] || 0;
   const bonus = baseBonus + saveModifier.total;
@@ -166,7 +169,24 @@ function processActiveEffectDurations(snapshot, actor, timing, log) {
   }
 }
 
+function processMarkDurations(snapshot, actor, timing, log) {
+  for (const mark of [...(actor.marks || [])]) {
+    const duration = advanceConditionDuration(mark, timing);
+    if (!duration.expired) continue;
+    removeMark(actor, mark.id, mark.sourceActorId);
+    log.add("mark.removed", {
+      round: snapshot.round,
+      actorId: actor.id,
+      actorName: actor.name,
+      markId: mark.id,
+      markLabel: mark.label || mark.id,
+      reason: duration.reason,
+    });
+  }
+}
+
 export function cleanupInvalidSourceConditions(snapshot, log) {
+  cleanupInvalidMarks(snapshot, log);
   for (const actor of snapshot.actors) {
     for (const condition of [...(actor.conditions || [])]) {
       const cleanup = sourceCleanupReason(snapshot, actor, condition);
@@ -189,10 +209,22 @@ export function cleanupInvalidSourceConditions(snapshot, log) {
 function resolveConditionRepeatSave(snapshot, actor, condition, dice, log) {
   const repeatSave = condition.repeatSave;
   if (!repeatSave || !dice) return false;
-  const roll = rollConditionSave(actor, condition, repeatSave, dice);
   const saveModifier = rollSaveModifier(snapshot, actor, repeatSave.ability, { name: condition.id, saveAbility: repeatSave.ability }, dice);
   const baseBonus = actor.saves?.[repeatSave.ability] || 0;
   const bonus = baseBonus + saveModifier.total;
+  const roll = applyLuckyToRoll({
+    actor,
+    roll: rollConditionSave(actor, condition, repeatSave, dice),
+    dice,
+    log,
+    context: {
+      round: snapshot.round,
+      type: "save",
+      label: condition.id,
+      targetNumber: repeatSave.dc,
+      bonus,
+    },
+  });
   const total = roll.roll + bonus;
   const success = !roll.autoFail && total >= repeatSave.dc;
   log.add("condition.save.roll", {
@@ -205,6 +237,7 @@ function resolveConditionRepeatSave(snapshot, actor, condition, dice, log) {
     rolls: roll.rolls,
     mode: roll.mode,
     reasons: roll.reasons,
+    lucky: roll.lucky,
     bonus,
     baseBonus,
     modifierReasons: saveModifier.reasons,

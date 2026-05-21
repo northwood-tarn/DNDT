@@ -1,12 +1,13 @@
 import { createCombatLog, summarizeCombat } from "./combatLog.js";
 import { resolveActionResult } from "./actionResult.js";
 import { createDiceRoller } from "./diceAdapter.js";
-import { createCombatScenario, createSnapshotFromScenario } from "./scenario.js";
+import { createCombatScenario, createSnapshotFromScenario, DEFAULT_COMBAT_SCENARIO_ID } from "./scenario.js";
 import { currentActor, endTurnEffects, getActor, moveActor, startTurn } from "./resolver.js";
 import { runAiTurn } from "./ai.js";
 import { checkOutcome } from "./combatState.js";
+import { rollInitiativeOrder } from "./initiative.js";
 
-export function createCombatController({ scenarioId = "trial-arena" } = {}) {
+export function createCombatController({ scenarioId = DEFAULT_COMBAT_SCENARIO_ID } = {}) {
   const log = createCombatLog();
   const dice = createDiceRoller({ deterministic: true, seed: "combat-test-001" });
   let currentScenarioId = scenarioId;
@@ -28,28 +29,12 @@ export function createCombatController({ scenarioId = "trial-arena" } = {}) {
   }
 
   function setScenario(nextScenarioId) {
-    currentScenarioId = nextScenarioId || "trial-arena";
+    currentScenarioId = nextScenarioId || DEFAULT_COMBAT_SCENARIO_ID;
     return reset();
   }
 
   function rollInitiative() {
-    const rolls = snapshot.actors.map((actor) => {
-      const roll = dice.rollD20({ type: "initiative", label: actor.name });
-      return {
-        actorId: actor.id,
-        actorName: actor.name,
-        total: roll.roll + actor.initiativeBonus,
-        roll: roll.roll,
-        bonus: actor.initiativeBonus,
-      };
-    });
-    rolls.sort((a, b) => b.total - a.total);
-    snapshot.initiative = rolls.map((item) => item.actorId);
-    log.add("initiative.roll", {
-      round: snapshot.round,
-      rolls,
-      order: rolls.map((item) => item.actorName),
-    });
+    rollInitiativeOrder(snapshot, dice, log);
   }
 
   function toggleDeterministic() {

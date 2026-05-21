@@ -28,7 +28,7 @@ const modStr = (m)=> (m>=0?`+${m}`:`${m}`);
 
 function luckyFallbackHTML() {
   return `<p class="muted">This background’s feat is <b>in development</b>; for now you gain <b>Lucky</b>.</p>
-<p><b>Lucky</b>: You have 3 luck points per long rest. When you roll a d20 for an attack, ability check, or saving throw, spend 1 point to reroll and choose the result.</p>`;
+<p><b>Lucky</b>: After each Long Rest, gain Luck Points equal to your Proficiency Bonus. Once per combat, when your attack roll or saving throw fails by less than 5, spend 1 point to roll one extra d20 and use the higher result. Luck can also appear as a conversation option.</p>`;
 }
 
 function classHeadingHTML(k) {

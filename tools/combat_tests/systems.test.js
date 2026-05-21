@@ -103,10 +103,10 @@ function testStructuredActionFailureResult() {
 }
 
 function testPublicCombatApiBoundary() {
-  const game = createCombatGame({ scenarioId: "trial-arena" });
+  const game = createCombatGame();
   const actor = game.query.currentActor();
   assert.ok(actor, "public API should expose the current actor query");
-  assert.ok(getCombatScenarioOptions().some((scenario) => scenario.id === "trial-arena"), "public API should expose scenario options");
+  assert.deepEqual(getCombatScenarioOptions().map((scenario) => scenario.id), ["generated-character-arena"], "public API should expose the canonical scenario option");
   assert.ok(Array.isArray(game.query.reachableCells(actor.id)), "public API should expose reachable-cell queries");
   assert.equal(game.resolveAction(actor.id, "missing_action", null).ok, false, "public API resolveAction should return structured results");
   assert.equal(typeof game.action(actor.id, "missing_action", null), "boolean", "legacy boolean action command should remain available");
@@ -186,8 +186,8 @@ function testActionFactorySpellEffects() {
 
 function testActionFactoryConsumableOutput() {
   const action = createConsumableAction(CONSUMABLES.healing_potion, {
-    id: "health_potion",
-    name: "Health Potion",
+    id: "healing_potion",
+    name: "Healing Potion",
   });
   const greaterPotion = createConsumableAction(CONSUMABLES.greater_healing_potion);
 
@@ -432,6 +432,39 @@ function testBaneAppliesGenericAttackAndSavePenalties() {
   );
 }
 
+function testLuckyUsesNearMissOncePerCombat() {
+  const snapshot = makeHarnessSnapshot();
+  const hero = snapshot.actors[0];
+  const enemy = snapshot.actors[1];
+  const log = createCombatLog();
+  hero.position = { x: 0, y: 0 };
+  enemy.position = { x: 1, y: 0 };
+  hero.luck = { points: 2, max: 2, usedThisCombat: false };
+
+  assert.equal(resolveAction(snapshot, hero, "bow", "enemy", scriptedDice({ d20: [4, 15], damage: 2 }), log), true);
+  assert.ok(
+    log.events.some((event) =>
+      event.type === "lucky.roll" &&
+      event.detail.actorId === "hero" &&
+      event.detail.originalRoll === 4 &&
+      event.detail.secondRoll === 15
+    ),
+    "Lucky should trigger on attack rolls that miss by less than 5"
+  );
+  assert.equal(hero.luck.points, 1, "Lucky should spend one Luck Point");
+  assert.equal(hero.luck.usedThisCombat, true, "Lucky should mark its once-per-combat use");
+  assert.ok(enemy.hp < enemy.maxHp, "Lucky's replacement roll should be used for hit resolution");
+
+  const luckyEventsBefore = log.events.filter((event) => event.type === "lucky.roll").length;
+  hero.economy.actionAvailable = true;
+  assert.equal(resolveAction(snapshot, hero, "bow", "enemy", scriptedDice({ d20: [4, 18], damage: 2 }), log), true);
+  assert.equal(
+    log.events.filter((event) => event.type === "lucky.roll").length,
+    luckyEventsBefore,
+    "Lucky should not trigger twice in the same combat"
+  );
+}
+
 function pickTags(tags) {
   return {
     attackRoll: tags.attackRoll,
@@ -462,4 +495,5 @@ export async function runSystemCombatTests() {
   testTriggeredZoneSaveCanNegateDamage();
   testRollModifierSpellsResolveThroughGenericEffects();
   testBaneAppliesGenericAttackAndSavePenalties();
+  testLuckyUsesNearMissOncePerCombat();
 }

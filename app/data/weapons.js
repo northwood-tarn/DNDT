@@ -53,8 +53,7 @@ export const weapons = [
     "damage": "1d4",
     "properties": [
       "finesse",
-      "light",
-      "thrown (20/60)"
+      "light"
     ],
     "value": 2,
     "id": "dagger"
@@ -139,8 +138,7 @@ export const weapons = [
     "type": "melee",
     "damage": "1d6",
     "properties": [
-      "light",
-      "thrown (20/60)"
+      "light"
     ],
     "value": 5,
     "id": "handaxe"
@@ -276,7 +274,7 @@ export const weapons = [
   },
   {
     "name": "Exploding Handaxe",
-    "description": "A handaxe that detonates in sparks and heat when thrown.",
+    "description": "A handaxe that detonates in sparks and heat on impact.",
     "uses": "infinite",
     "consumeOnUse": false,
     "useTime": "action",
@@ -285,8 +283,7 @@ export const weapons = [
     "effect": "+1d6 fire damage",
     "modifiers": { "damageBonuses": [ { "amount": "1d6", "type": "fire" } ] },
     "properties": [
-      "light",
-      "thrown (20/60)"
+      "light"
     ],
     "value": 420,
     "id": "exploding_handaxe"
@@ -375,54 +372,6 @@ export const weapons = [
     "magical": true,
     "value": 460,
     "id": "silent_bow"
-  },
-  {
-    "name": "Buckler",
-    "description": "A small shield meant to deflect rather than endure.",
-    "uses": "infinite",
-    "consumeOnUse": false,
-    "useTime": "exploration",
-    "type": "shield",
-    "effect": "+1 AC",
-    "modifiers": { "acBonus": 1 },
-    "properties": [
-      "light"
-    ],
-    "value": 8,
-    "id": "buckler"
-  },
-  {
-    "name": "Tower Shield",
-    "description": "A slab of protection that turns you into a moving wall.",
-    "uses": "infinite",
-    "consumeOnUse": false,
-    "useTime": "exploration",
-    "type": "shield",
-    "effect": "+2 AC",
-    "modifiers": { "acBonus": 2 },
-    "properties": [
-      "heavy",
-      "two-handed"
-    ],
-    "value": 18,
-    "id": "tower_shield"
-  },
-  {
-    "name": "Aegis of Light",
-    "description": "A radiant shield that makes darkness tremble.",
-    "uses": "infinite",
-    "consumeOnUse": false,
-    "useTime": "exploration",
-    "type": "shield",
-    "effect": "+3 AC",
-    "modifiers": { "acBonus": 3 },
-    "properties": [
-      "light",
-      "magical"
-    ],
-    "magical": true,
-    "value": 500,
-    "id": "aegis_of_light"
   }
 ];
 

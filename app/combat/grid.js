@@ -11,7 +11,7 @@ export function isBlocked(grid, pos) {
 }
 
 export function isMovementBlocked(grid, pos) {
-  return isBlocked(grid, pos) || grid.cover?.get(keyOf(pos)) === "three_quarters";
+  return isBlocked(grid, pos) || Boolean(grid.cover?.get(keyOf(pos)));
 }
 
 export function actorAt(snapshot, pos, exceptId = null) {

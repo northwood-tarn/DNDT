@@ -80,7 +80,7 @@ export function formatEvent(event) {
     case "combat.start":
       return `${prefix}Combat begins. ${d.seeded ? "Deterministic dice are ON." : "Live dice are ON."}`;
     case "initiative.roll":
-      return `${prefix}Initiative: ${d.rolls.map((item) => `${item.actorName} ${item.roll} + ${item.bonus} = ${item.total}`).join("; ")}. Order: ${d.order.join(" -> ")}.`;
+      return `${prefix}Initiative: ${d.rolls.map((item) => `${item.actorName} ${initiativeRollText(item)} + ${item.bonus} = ${item.total}`).join("; ")}. Order: ${d.order.join(" -> ")}.`;
     case "dice.mode":
       return d.seeded
         ? `Deterministic dice ON: rolls now come from seed "${d.seed}". Resetting the same seed repeats the same rolls for debugging.`
@@ -109,6 +109,8 @@ export function formatEvent(event) {
       return `${prefix}${d.actorName} dashes, adding ${d.addedMovement} squares of movement (${d.movementBefore} -> ${d.movementAfter} remaining).`;
     case "dodge":
       return `${prefix}${d.actorName} takes the Dodge action. Attacks against them have disadvantage until the ${d.expires}.`;
+    case "feature.action":
+      return `${prefix}${d.actorName} uses ${d.actionName}${d.cost === "free" ? "" : ` as a ${d.cost}`}.`;
     case "target.invalid":
       return `${prefix}${d.actorName} cannot target ${d.targetName}: ${d.reason}.`;
     case "target.test":
@@ -123,6 +125,8 @@ export function formatEvent(event) {
       return `${prefix}${d.sourceName} triggers on ${d.actorName}: ${d.trigger}.`;
     case "attack.roll":
       return `${prefix}${d.actorName} attacks ${d.targetName}: ${attackRollText(d)} + ${d.bonus} = ${d.total} vs AC ${d.ac}${coverText(d.cover)} = ${d.effectiveAc}.`;
+    case "lucky.roll":
+      return `${prefix}${d.actorName} uses Lucky on ${d.rollType} ${d.label}: missed by ${d.missedBy}, rolled ${d.originalRoll} then ${d.secondRoll}, kept ${d.roll}. ${d.pointsRemaining} Luck Point(s) remain.`;
     case "attack.result":
       return `${prefix}${d.hit ? "Hit" : "Miss"}: ${d.actorName} ${d.hit ? "hits" : "misses"} ${d.targetName}${d.critical ? " critically" : ""}.`;
     case "save.roll":
@@ -130,7 +134,7 @@ export function formatEvent(event) {
     case "save.result":
       return `${prefix}${d.success ? "Save succeeds" : "Save fails"} against ${d.spellName}.`;
     case "damage.roll":
-      return `${prefix}${d.label}${d.critical ? " critical" : ""}: ${d.dice} rolled [${d.rolls.join(", ")}] ${d.modifierText} = ${d.total}.`;
+      return `${prefix}${d.label}${d.critical ? " critical" : ""}: ${d.dice} rolled [${d.rolls.join(", ")}] ${d.modifierText} = ${d.total}${savageAttackerText(d)}.`;
     case "damage.applied":
       return `${prefix}${d.targetName} takes ${d.amount} ${d.damageType} damage${damageModifierText(d)} (${d.hpBefore} -> ${d.hpAfter}).`;
     case "healing.roll":
@@ -175,6 +179,11 @@ function coverText(cover) {
   return ` + ${cover.label} ${cover.bonus}`;
 }
 
+function initiativeRollText(item) {
+  if (Array.isArray(item.rolls) && item.rolls.length > 1) return `ADV [${item.rolls.join(", ")}] -> ${item.roll}`;
+  return `${item.roll}`;
+}
+
 function damageModifierText(detail) {
   const modifiers = detail.damageModifiers;
   if (!modifiers) return "";
@@ -185,6 +194,12 @@ function damageModifierText(detail) {
   if (modifiers.reduced?.length) parts.push(`reduced: ${modifiers.reduced.join(", ")}`);
   if (!parts.length) return "";
   return ` (${parts.join(", ")} from ${detail.originalAmount})`;
+}
+
+function savageAttackerText(detail) {
+  const savage = detail.savageAttacker;
+  if (!savage) return "";
+  return `; Savage Attacker kept ${savage.kept} roll (${savage.first.total}/${savage.second.total})`;
 }
 
 function targetTestShapeText(detail) {
@@ -203,10 +218,11 @@ function targetTestShapeText(detail) {
 }
 
 function attackRollText(detail) {
+  const lucky = luckyText(detail);
   if (!Array.isArray(detail.rolls) || detail.rolls.length < 2) return `d20 ${detail.roll}`;
   const reason = detail.reasons?.length ? ` (${detail.reasons.join("; ")})` : "";
   const mode = detail.mode === "advantage" ? "ADV" : "DIS";
-  return `${mode} [${detail.rolls.join(", ")}] -> ${detail.roll}${reason}`;
+  return `${mode} [${detail.rolls.join(", ")}] -> ${detail.roll}${reason}${lucky}`;
 }
 
 function rollText(detail) {
@@ -214,8 +230,14 @@ function rollText(detail) {
     const reason = detail.reasons?.length ? ` (${detail.reasons.join("; ")})` : "";
     return `AUTO FAIL${reason}`;
   }
+  const lucky = luckyText(detail);
   if (!Array.isArray(detail.rolls) || detail.rolls.length < 2) return `d20 ${detail.roll}`;
   const reason = detail.reasons?.length ? ` (${detail.reasons.join("; ")})` : "";
   const mode = detail.mode === "advantage" ? "ADV" : "DIS";
-  return `${mode} [${detail.rolls.join(", ")}] -> ${detail.roll}${reason}`;
+  return `${mode} [${detail.rolls.join(", ")}] -> ${detail.roll}${reason}${lucky}`;
+}
+
+function luckyText(detail) {
+  if (!detail?.lucky?.usedLucky) return "";
+  return `; Lucky ${detail.lucky.originalRoll} -> ${detail.lucky.secondRoll} kept ${detail.lucky.roll}`;
 }

@@ -14,7 +14,9 @@ export async function runScenarioCombatTests() {
   for (const option of getCombatScenarioOptions()) {
     validateScenarioBaseline(createCombatScenario(option.id), option.id);
   }
-  testTrialArenaScenarioContract();
+  testDefaultScenarioContract();
+  testGeneratedCharacterArenaContract();
+  testScenarioRegistryIsCanonical();
 }
 
 export function validateScenarioBaseline(scenario, label = scenario?.id || "scenario") {
@@ -42,7 +44,7 @@ function validateTerrain(snapshot, label) {
   for (const [key, kind] of snapshot.grid.cover) {
     const pos = posFromKey(key);
     assert.ok(inBounds(snapshot.grid, pos), `${label}: cover cell ${key} must be in bounds`);
-    assert.ok(["half", "three_quarters"].includes(kind), `${label}: cover kind ${kind} must be supported`);
+    assert.ok(["half", "three_quarters", "full"].includes(kind), `${label}: cover kind ${kind} must be supported`);
   }
 }
 
@@ -68,21 +70,40 @@ function validateCombatObjects(snapshot, label) {
   }
 }
 
-function testTrialArenaScenarioContract() {
-  const scenario = createCombatScenario("trial-arena");
-  validateScenarioBaseline(scenario, "trial-arena contract");
-  const snapshot = createSnapshotFromScenario(scenario);
-  const hero = snapshot.actors.find((actor) => actor.id === "trial_pc");
-  const enemy = snapshot.actors.find((actor) => actor.id === "trial_enemy");
+function testDefaultScenarioContract() {
+  const scenario = createCombatScenario();
+  assert.equal(scenario.id, "generated-character-arena", "generated character arena should be the default combat scenario");
+  validateScenarioBaseline(scenario, "default scenario contract");
+}
 
-  assert.equal(snapshot.grid.width, 10, "trial arena should stay a compact 10-column fixture");
-  assert.equal(snapshot.grid.height, 10, "trial arena should stay a compact 10-row fixture");
-  assert.equal(snapshot.grid.cover.get("6,5"), "three_quarters", "trial arena should include one broken-pillar cover square");
-  assert.equal(snapshot.grid.cover.get("2,6"), "half", "trial arena should include one bush cover square");
-  assert.ok(hero.actions.some((action) => action.id === "push"), "trial PC should expose Push for forced-movement testing");
-  assert.ok(hero.actions.some((action) => action.id === "thunderwave"), "trial PC should expose an area forced-movement spell");
-  assert.equal(enemy.ai?.profile, "melee", "trial enemy should use the melee AI profile");
-  assert.ok(enemy.actions.some((action) => action.id === "strong_first_hit"), "trial enemy should expose the prone-on-hit fixture");
+function testGeneratedCharacterArenaContract() {
+  const scenario = createCombatScenario("generated-character-arena");
+  validateScenarioBaseline(scenario, "generated-character-arena contract");
+  const snapshot = createSnapshotFromScenario(scenario);
+  const hero = snapshot.actors.find((actor) => actor.id === "generated_pc");
+
+  assert.ok(scenario.metadata?.generatedHeroSheet, "generated arena should retain the source resolved sheet for inspection");
+  assert.equal(hero.name, "Generated Fighter");
+  assert.equal(hero.ac, 18, "generated actor should carry resolved armor and shield AC");
+  assert.equal(hero.hp, 12, "generated actor should carry resolved level-1 HP");
+  assert.equal(hero.actions.some((action) => action.id === "longsword"), true, "generated actor should expose equipped weapon action");
+  assert.equal(hero.actions.some((action) => action.id === "second_wind"), true, "generated actor should expose class feature action");
+  assert.equal(hero.actions.some((action) => action.id === "healing_potion"), true, "generated actor should expose inventory consumable action");
+  assert.equal(hero.featureHooks.some((hook) => hook.id === "savage_attacker_weapon_damage"), true, "generated actor should carry origin feat combat hooks");
+  assert.equal(hero.resistances.includes("fire"), true, "generated actor should carry species and lineage resistance data");
+}
+
+function testScenarioRegistryIsCanonical() {
+  assert.deepEqual(
+    getCombatScenarioOptions().map((scenario) => scenario.id),
+    ["generated-character-arena"],
+    "only the generated-character arena should be exposed through the combat scenario registry"
+  );
+  assert.throws(
+    () => createCombatScenario("trial-arena"),
+    /Unknown combat scenario/,
+    "old hardwired arenas should not remain addressable through the scenario factory"
+  );
 }
 
 function posFromKey(key) {

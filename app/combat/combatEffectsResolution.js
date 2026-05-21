@@ -10,7 +10,22 @@ import {
   getConditionRules,
 } from "./effects.js";
 import { removeActiveEffect, rollSaveModifier } from "./modifiers.js";
+import { collectSaveRollModeDetails } from "./modifiers.js";
+import { hasAuraConditionPrevention } from "./auras.js";
 import { resolveDamageAmount } from "./damage.js";
+import {
+  collectFeatureDamageRiders,
+  markFeatureDamageRiderUsed,
+  resolveRiderDamageFormula,
+  resolveRiderDamageType,
+} from "./damageRiders.js";
+import {
+  applyFeatureEffectRiders,
+} from "./featureEffectRiders.js";
+import {
+  resolveDamageReactionAdjustment,
+  resolveReactionTriggers,
+} from "./reactions.js";
 import { getActor } from "./combatState.js";
 import { combatObjectsAt } from "./combatObjects.js";
 import {
@@ -18,6 +33,8 @@ import {
   applyModifierEffect,
   applyTempHpEffect,
 } from "./combatActionEffectHandlers.js";
+import { applyLuckyToRoll } from "./luck.js";
+import { getSavageAttackerHook } from "./featureHooks.js";
 
 export function applyCollisionDamage(snapshot, source, target, action, collisionSquares, dice, log) {
   const rolls = [];
@@ -55,22 +72,25 @@ export function applyCollisionDamage(snapshot, source, target, action, collision
 }
 
 export function applyDamage(snapshot, source, target, action, dice, log, { critical = false } = {}) {
-  const rolled = rollActionDamage(action, dice, { critical });
+  const rolled = rollActionDamage(source, action, dice, { critical });
   applyDamageAmount(snapshot, source, target, action, rolled, Math.max(0, rolled.total), dice, log);
   applyDamageRiders(snapshot, source, target, action, dice, log, { critical });
   applyDamageRetaliation(snapshot, source, target, action, dice, log);
 }
 
-export function applyHitEffects(snapshot, actor, target, action, log) {
+export function applyHitEffects(snapshot, actor, target, action, log, dice = null) {
   applyActionEffects(snapshot, actor, target, action, log, "hit");
+  applyFeatureRiders(snapshot, actor, target, action, "source_hits_with_attack_roll", dice, log);
 }
 
-export function applySaveFailureEffects(snapshot, actor, target, action, log) {
+export function applySaveFailureEffects(snapshot, actor, target, action, log, dice = null) {
   applyActionEffects(snapshot, actor, target, action, log, "failed_save");
+  applyFeatureRiders(snapshot, actor, target, action, "source_forces_failed_save", dice, log);
 }
 
-export function applyActionResolvedEffects(snapshot, actor, target, action, log) {
+export function applyActionResolvedEffects(snapshot, actor, target, action, log, dice = null) {
   applyActionEffects(snapshot, actor, target || actor, action, log, "action_resolved");
+  applyFeatureRiders(snapshot, actor, target || actor, action, "source_resolves_action", dice, log);
 }
 
 export function beginConcentration(snapshot, actor, action, log) {
@@ -84,7 +104,7 @@ export function rollConditionSave(actor, condition, repeatSave, dice) {
   }, dice);
 }
 
-export function rollSaveD20(target, action, dice) {
+export function rollSaveD20(target, action, dice, snapshot = null, source = null) {
   const reasons = [];
   const autoFail = getAutoFailSaveCondition(target, action.saveAbility);
   if (autoFail) {
@@ -92,6 +112,16 @@ export function rollSaveD20(target, action, dice) {
     return { roll: 0, rolls: [], mode: "auto_fail", reasons, autoFail: true };
   }
   let advantage = 0;
+  for (const modifier of collectSaveRollModeDetails(snapshot, target, action.saveAbility, action, source)) {
+    if (modifier.mode === "advantage") {
+      advantage += 1;
+      reasons.push(`ADV: ${modifier.label}`);
+    }
+    if (modifier.mode === "disadvantage") {
+      advantage -= 1;
+      reasons.push(`DIS: ${modifier.label}`);
+    }
+  }
   if (action.saveAbility === "dex") {
     for (const condition of target.conditions || []) {
       const id = conditionId(condition);
@@ -118,6 +148,7 @@ export function rollSaveD20(target, action, dice) {
 }
 
 export function isCriticalHitFromConditions(actor, target, action, attackRoll) {
+  if ((target.conditions || []).some((condition) => getConditionRules(conditionId(condition)).suppressIncomingCriticalHits)) return false;
   if (attackRoll.roll === 20) return true;
   if (!isMeleeAttackHit(actor, target, action)) return false;
   return (target.conditions || []).some((condition) => {
@@ -165,6 +196,21 @@ function applyActionEffects(snapshot, actor, target, action, log, trigger) {
       continue;
     }
     if (effect.type !== "condition" || !effect.condition) continue;
+    const preventedBy = hasAuraConditionPrevention(snapshot, target, effect.condition, { source: actor, action });
+    if (preventedBy) {
+      log.add("condition.prevented", {
+        round: snapshot.round,
+        sourceId: actor.id,
+        sourceName: actor.name,
+        targetId: target.id,
+        targetName: target.name,
+        condition: effect.condition,
+        label: conditionName(effect.condition),
+        reason: preventedBy.label || preventedBy.id,
+        actionName: action.name,
+      });
+      continue;
+    }
     const added = addCondition(target, createConditionInstance(effect, actor, action));
     if (effect.consumeUseOnApply) spendActionUse(action);
     log.add("condition.applied", {
@@ -243,14 +289,29 @@ function applyConditionSideEffects(snapshot, actor, target, action, conditionIdV
   });
 }
 
+function applyFeatureRiders(snapshot, actor, target, action, trigger, dice, log) {
+  applyFeatureEffectRiders({
+    snapshot,
+    actor,
+    target,
+    action,
+    trigger,
+    dice,
+    log,
+    resolveSave: (rider) => resolveInlineSave(snapshot, actor, target, rider, dice, log),
+  });
+}
+
 export function applyDamageAmount(snapshot, source, target, action, rolled, amount, dice, log) {
   const adjustment = resolveDamageAmount(source, target, action, rolled, amount, snapshot, dice);
-  const appliedAmount = adjustment.amount;
+  let appliedAmount = adjustment.amount;
+  appliedAmount = resolveDamageReactionAdjustment(snapshot, { source, target, action, rolled, amount: appliedAmount }, dice, log);
   const modifierText = rolled.modifier
     ? rolled.modifier > 0 ? `+ ${rolled.modifier}` : `- ${Math.abs(rolled.modifier)}`
     : "+ 0";
   const hpBefore = target.hp;
   const tempHpBefore = target.tempHp || 0;
+  target._hpBeforeLastDamage = hpBefore;
   target._tempHpBeforeLastDamage = tempHpBefore;
   const tempAbsorbed = Math.min(tempHpBefore, appliedAmount);
   target.tempHp = tempHpBefore - tempAbsorbed;
@@ -271,6 +332,7 @@ export function applyDamageAmount(snapshot, source, target, action, rolled, amou
     damageModifiers: adjustment.modifiers,
     critical: rolled.critical === true,
     criticalRolls: rolled.criticalRolls || [],
+    savageAttacker: rolled.savageAttacker || null,
   });
   log.add("damage.applied", {
     round: snapshot.round,
@@ -289,6 +351,12 @@ export function applyDamageAmount(snapshot, source, target, action, rolled, amou
   });
 
   if (appliedAmount > 0) resolveConcentrationCheck(snapshot, target, appliedAmount, dice, log);
+  if (appliedAmount > 0 && !action.reactionFeature) {
+    resolveReactionTriggers(snapshot, "takes_damage_from_creature", { source, target, action, amount: appliedAmount }, dice, log, { applyDamageAmount });
+  }
+  if (appliedAmount > 0 && !action.featureDamageRider) {
+    applyPostDamageRiders(snapshot, source, target, action, dice, log);
+  }
   markDefeated(snapshot, source, target, hpBefore, log);
 }
 
@@ -316,34 +384,63 @@ function applyDamageRiders(snapshot, source, target, action, dice, log, { critic
       ...rider,
     }, dice, log, { critical });
   }
+  for (const rider of collectFeatureDamageRiders(source, target, action, { trigger: "source_hits_with_attack_roll", critical, snapshot })) {
+    if (applyDamageRider(snapshot, source, target, rider, dice, log, { critical, sourceAction: action })) {
+      markFeatureDamageRiderUsed(source, rider);
+    }
+  }
 }
 
-function applyDamageRider(snapshot, source, target, rider, dice, log, { critical = false } = {}) {
+function applyPostDamageRiders(snapshot, source, target, action, dice, log) {
+  if (!dice || target.hp <= 0) return;
+  for (const rider of collectFeatureDamageRiders(source, target, action, { trigger: "source_deals_damage", snapshot })) {
+    if (applyDamageRider(snapshot, source, target, rider, dice, log, { sourceAction: action })) {
+      markFeatureDamageRiderUsed(source, rider);
+    }
+  }
+}
+
+function applyDamageRider(snapshot, source, target, rider, dice, log, { critical = false, sourceAction = null } = {}) {
   if (rider.save) {
     const save = resolveInlineSave(snapshot, source, target, rider, dice, log);
-    if (save.success && ["negates", "negates_effect"].includes(save.onSave)) return;
+    if (save.success && ["negates", "negates_effect"].includes(save.onSave)) return false;
   }
-  const rolled = rollRiderDamage(rider.damage, dice, { critical: rider.critical === false ? false : critical });
+  const damage = resolveRiderDamageFormula(source, rider.damage);
+  const rolled = rollRiderDamage(damage, dice, { critical: rider.critical === false ? false : critical });
   applyDamageAmount(snapshot, source, target, {
     id: rider.id,
     name: rider.name,
-    damage: rider.damage,
-    damageType: rider.damageType || "untyped",
+    damage,
+    damageType: resolveRiderDamageType(sourceAction, rider),
+    featureDamageRider: rider.featureDamageRider === true,
   }, rolled, Math.max(0, rolled.total), dice, log);
+  return true;
 }
 
 function rollRiderDamage(damage, dice, { critical = false } = {}) {
   if (typeof damage === "number") return { total: damage, rolls: [], modifier: damage, dice: String(damage), critical: false, criticalRolls: [] };
-  return rollActionDamage({ damage }, dice, { critical });
+  return rollActionDamageOnce({ damage }, dice, { critical });
 }
 
 function resolveInlineSave(snapshot, source, target, effect, dice, log) {
   const ability = String(effect.save.ability || "").toLowerCase();
   const dc = effect.save.dc || 10;
-  const roll = rollSaveD20(target, { name: effect.name, saveAbility: ability }, dice);
   const saveModifier = rollSaveModifier(snapshot, target, ability, { name: effect.name, saveAbility: ability }, dice);
   const baseBonus = target.saves?.[ability] || 0;
   const bonus = baseBonus + saveModifier.total;
+  const roll = applyLuckyToRoll({
+    actor: target,
+    roll: rollSaveD20(target, { name: effect.name, saveAbility: ability }, dice, snapshot, source),
+    dice,
+    log,
+    context: {
+      round: snapshot.round,
+      type: "save",
+      label: effect.name,
+      targetNumber: dc,
+      bonus,
+    },
+  });
   const total = roll.roll + bonus;
   const success = !roll.autoFail && total >= dc;
   log.add("save.roll", {
@@ -358,6 +455,7 @@ function resolveInlineSave(snapshot, source, target, effect, dice, log) {
     rolls: roll.rolls,
     mode: roll.mode,
     reasons: roll.reasons,
+    lucky: roll.lucky,
     bonus,
     baseBonus,
     modifierReasons: saveModifier.reasons,
@@ -477,10 +575,22 @@ function endConcentration(snapshot, actor, log, reason) {
 function resolveConcentrationCheck(snapshot, actor, damageAmount, dice, log) {
   if (!actor?.concentration) return;
   const dc = Math.max(10, Math.floor(damageAmount / 2));
-  const roll = rollSaveD20(actor, { name: "Concentration", saveAbility: "con" }, dice);
   const saveModifier = rollSaveModifier(snapshot, actor, "con", { name: "Concentration", saveAbility: "con" }, dice);
   const baseBonus = actor.saves?.con || 0;
   const bonus = baseBonus + saveModifier.total;
+  const roll = applyLuckyToRoll({
+    actor,
+    roll: rollSaveD20(actor, { name: "Concentration", saveAbility: "con" }, dice, snapshot, null),
+    dice,
+    log,
+    context: {
+      round: snapshot.round,
+      type: "save",
+      label: "Concentration",
+      targetNumber: dc,
+      bonus,
+    },
+  });
   const total = roll.roll + bonus;
   const success = !roll.autoFail && total >= dc;
   log.add("concentration.save.roll", {
@@ -494,6 +604,7 @@ function resolveConcentrationCheck(snapshot, actor, damageAmount, dice, log) {
     rolls: roll.rolls,
     mode: roll.mode,
     reasons: roll.reasons,
+    lucky: roll.lucky,
     bonus,
     baseBonus,
     modifierReasons: saveModifier.reasons,
@@ -542,7 +653,25 @@ function isMeleeAttackHit(actor, target, action) {
   return action.melee === true || action.type === "melee_attack" || action.range <= 1;
 }
 
-function rollActionDamage(action, dice, { critical = false } = {}) {
+function rollActionDamage(source, action, dice, { critical = false } = {}) {
+  const base = rollActionDamageOnce(action, dice, { critical });
+  const savage = getSavageAttackerHook(source, action);
+  if (!savage) return base;
+
+  const second = rollActionDamageOnce(action, dice, { critical });
+  const chosen = second.total > base.total ? second : base;
+  source.turnFlags = { ...(source.turnFlags || {}), savageAttackerUsed: true };
+  return {
+    ...chosen,
+    savageAttacker: {
+      first: summarizeDamageRoll(base),
+      second: summarizeDamageRoll(second),
+      kept: chosen === second ? "second" : "first",
+    },
+  };
+}
+
+function rollActionDamageOnce(action, dice, { critical = false } = {}) {
   const base = dice.rollDamage(action.damage);
   if (!critical) return { ...base, critical: false, criticalRolls: [] };
 
@@ -556,6 +685,14 @@ function rollActionDamage(action, dice, { critical = false } = {}) {
     rolls: [...(base.rolls || []), ...(extra.rolls || [])],
     critical: true,
     criticalRolls: extra.rolls || [],
+  };
+}
+
+function summarizeDamageRoll(rolled) {
+  return {
+    total: rolled.total,
+    rolls: rolled.rolls || [],
+    modifier: rolled.modifier || 0,
   };
 }
 

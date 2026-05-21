@@ -1,4 +1,7 @@
+import { combatAuraEffectsAffectingActor } from "./auras.js";
 import { combatObjectsAffectingActor } from "./combatObjects.js";
+import { getConditionRules } from "./effects.js";
+import { targetHasRequiredMark } from "./marks.js";
 
 export function normalizeActiveEffects(effects = []) {
   return (Array.isArray(effects) ? effects : []).map((effect, index) => ({
@@ -13,7 +16,10 @@ export function normalizeActiveEffects(effects = []) {
 export function getEffectiveSpeed(snapshot, actor) {
   const base = actor?.speed ?? 0;
   const modifier = sumStaticModifiers(collectModifierDetails(snapshot, actor, "speed"));
-  return Math.max(0, base + modifier);
+  const multiplier = (actor?.conditions || []).reduce((value, condition) => (
+    value * (Number.isFinite(getConditionRules(condition.id).speedMultiplier) ? getConditionRules(condition.id).speedMultiplier : 1)
+  ), 1);
+  return Math.max(0, Math.floor((base + modifier) * multiplier));
 }
 
 export function getEffectiveAc(snapshot, actor, context = {}) {
@@ -30,6 +36,17 @@ export function rollAttackModifier(snapshot, actor, target, action, dice) {
   return rollModifierDetails([...outgoing, ...incoming], dice, action?.name || "attack");
 }
 
+export function collectAttackRollModeDetails(snapshot, actor, target, action) {
+  const outgoing = collectModifierDetails(snapshot, actor, "attack_roll", { action, target, source: actor });
+  const incoming = collectModifierDetails(snapshot, target, "incoming_attack_roll", { action, source: actor, target });
+  return [...outgoing, ...incoming].filter((detail) => ["advantage", "disadvantage"].includes(detail.mode));
+}
+
+export function collectSaveRollModeDetails(snapshot, actor, ability, action, source = null) {
+  return collectModifierDetails(snapshot, actor, "save", { ability, action, source })
+    .filter((detail) => ["advantage", "disadvantage"].includes(detail.mode));
+}
+
 export function rollSaveModifier(snapshot, actor, ability, action, dice) {
   const details = collectModifierDetails(snapshot, actor, "save", { ability, action });
   return rollModifierDetails(details, dice, `${String(ability || "").toUpperCase()} save`);
@@ -44,10 +61,13 @@ export function collectModifierDetails(snapshot, actor, stat, context = {}) {
   if (!actor) return [];
   const effects = [
     ...(actor.activeEffects || []),
-    ...combatObjectsAffectingActor(snapshot, actor).flatMap((object) =>
+    ...combatAuraEffectsAffectingActor(snapshot, actor),
+    ...(snapshot ? combatObjectsAffectingActor(snapshot, actor) : []).flatMap((object) =>
       (object.effects || []).map((effect) => ({
         ...effect,
         sourceId: effect.sourceId || object.id,
+        sourceActorId: effect.sourceActorId || object.sourceActorId,
+        sourceTeam: effect.sourceTeam || object.sourceTeam,
         label: effect.label || object.name,
       }))
     ),
@@ -55,9 +75,14 @@ export function collectModifierDetails(snapshot, actor, stat, context = {}) {
   return effects
     .filter((effect) => effect?.type === "modifier")
     .filter((effect) => (effect.trigger || "passive") === "passive")
+    .filter((effect) => effectAffectsActor(effect, actor))
     .filter((effect) => effect.stat === stat)
     .filter((effect) => matchesAbility(effect, context.ability))
     .filter((effect) => matchesDamageType(effect, context.damageType))
+    .filter((effect) => matchesTags(effect, context.action))
+    .filter((effect) => matchesSourceActor(effect, context.source))
+    .filter((effect) => matchesTargetSourceActor(effect, context.target))
+    .filter((effect) => targetHasRequiredMark(context.source || actor, context.target, effect.requiresMark))
     .map((effect) => ({
       id: effect.id || effect.sourceId || effect.stat,
       label: effect.label || effect.id || effect.stat,
@@ -66,8 +91,36 @@ export function collectModifierDetails(snapshot, actor, stat, context = {}) {
       base: Number.isFinite(effect.base) ? effect.base : null,
       addDex: effect.addDex === true,
       die: effect.die || null,
+      mode: effect.mode || null,
       stat: effect.stat,
     }));
+}
+
+function matchesTargetSourceActor(effect, target) {
+  if (!effect.targetSourceActorOnly) return true;
+  return Boolean(target?.id && effect.sourceActorId === target.id);
+}
+
+function matchesTags(effect, action = {}) {
+  if (!Array.isArray(effect.tags) || !effect.tags.length) return true;
+  const actionTags = new Set([
+    ...(Array.isArray(action.tags) ? action.tags : []),
+    ...(Array.isArray(action.effectTags) ? action.effectTags : []),
+    ...Object.entries(action.tags || {}).filter(([, value]) => value === true).map(([key]) => key),
+  ]);
+  return effect.tags.some((tag) => actionTags.has(tag));
+}
+
+function matchesSourceActor(effect, source) {
+  if (!effect.sourceActorOnly) return true;
+  return Boolean(source?.id && effect.sourceActorId === source.id);
+}
+
+function effectAffectsActor(effect, actor) {
+  if (!effect.affects || effect.affects === "all") return true;
+  if (effect.affects === "allies") return actor.team === effect.sourceTeam;
+  if (effect.affects === "enemies") return actor.team !== effect.sourceTeam;
+  return true;
 }
 
 export function addActiveEffect(actor, effect) {

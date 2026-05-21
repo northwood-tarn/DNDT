@@ -56,8 +56,8 @@ function resolveItemById(id) {
   return (
     getConsumableById(id) ||
     getUniqueById(id) ||
-    getWeaponById(id) ||
     getArmorById(id) ||
+    getWeaponById(id) ||
     null
   );
 }

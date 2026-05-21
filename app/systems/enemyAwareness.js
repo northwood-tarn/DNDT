@@ -7,7 +7,8 @@ export function checkEnemyAwareness(playerState, enemies, lights, collisions){
   const swarmCounters = {};
 
   for (const enemy of enemies){
-    const { vision = "light_bound", visionRange = 10, hostility = "onsight", swarmGroup } = enemy;
+    const awareness = enemy.awareness || enemy;
+    const { vision = "light_bound", visionRange = 10, hostility = "onsight", swarmGroup } = awareness;
 
     // TODO: implement LOS properly with collisions; for now assume distance only
     const dx = enemy.x - playerState.x;

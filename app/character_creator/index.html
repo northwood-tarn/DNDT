@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Character Creator Harness</title>
+    <link rel="stylesheet" href="./creatorHarness.css">
+  </head>
+  <body>
+    <main class="creator-shell">
+      <section class="creator-panel">
+        <header class="topbar">
+          <div>
+            <div class="eyebrow">Character creator harness</div>
+            <h1>Level 1 Draft</h1>
+          </div>
+          <button id="resetButton" type="button">Reset</button>
+        </header>
+
+        <section class="band">
+          <h2>Core Choices</h2>
+          <div class="form-grid">
+            <label>
+              Name
+              <input id="characterName" type="text" autocomplete="off">
+            </label>
+            <label>
+              Species
+              <select id="speciesSelect"></select>
+            </label>
+            <label id="lineageField">
+              Lineage
+              <select id="lineageSelect"></select>
+            </label>
+            <label>
+              Background
+              <select id="backgroundSelect"></select>
+            </label>
+            <label>
+              Class
+              <select id="classSelect"></select>
+            </label>
+          </div>
+        </section>
+
+        <section class="band">
+          <h2>Ability Scores</h2>
+          <div id="abilityInputs" class="ability-grid"></div>
+          <div id="backgroundAbilityBonuses" class="pool-grid"></div>
+        </section>
+
+        <section class="band">
+          <h2>Other Choices</h2>
+          <div id="resolverChoices" class="pool-grid"></div>
+        </section>
+
+        <section class="band">
+          <h2>Spells</h2>
+          <div id="spellPools" class="pool-grid"></div>
+        </section>
+
+        <section class="band">
+          <h2>Gear</h2>
+          <div id="gearPools" class="pool-grid"></div>
+        </section>
+      </section>
+
+      <aside class="preview-panel">
+        <section>
+          <div class="eyebrow">Requirements</div>
+          <div id="completionState" class="status-pill"></div>
+          <ul id="requirementsList" class="requirements-list"></ul>
+        </section>
+
+        <section>
+          <div class="eyebrow">Resolved Sheet Preview</div>
+          <div id="previewSummary" class="preview-summary"></div>
+        </section>
+
+        <section>
+          <div class="eyebrow">Combat Actions</div>
+          <ul id="combatActions" class="compact-list"></ul>
+        </section>
+
+        <section>
+          <div class="eyebrow">Pipeline Export</div>
+          <div class="export-tabs" role="group" aria-label="Pipeline export views">
+            <button class="export-tab is-active" data-export-view="draft" type="button">Draft</button>
+            <button class="export-tab" data-export-view="sheet" type="button">Resolved Sheet</button>
+            <button class="export-tab" data-export-view="actor" type="button">Combat Actor</button>
+          </div>
+          <pre id="exportOutput" class="export-output"></pre>
+        </section>
+      </aside>
+    </main>
+    <script type="module" src="./creatorHarness.js"></script>
+  </body>
+</html>

@@ -1,4 +1,4 @@
-import { rollWithDetail, rollD20 } from "../utils/dice.js";
+import { applyLuckyNearMissD20, rollWithDetail, rollD20 } from "../utils/dice.js";
 
 function hashSeed(seed) {
   let h = 2166136261;
@@ -51,6 +51,9 @@ export function createDiceRoller({ deterministic = true, seed = "combat-test-001
     },
     rollD20(context = {}) {
       return withRandom(() => rollD20({ context, allowLucky: false }));
+    },
+    applyLuckyD20(options = {}) {
+      return withRandom(() => applyLuckyNearMissD20(options));
     },
     rollDamage(dice) {
       return withRandom(() => rollWithDetail(dice));

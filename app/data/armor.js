@@ -8,6 +8,9 @@ export const armor = [
     "dexCap": null,
     "stealthDisadvantage": false,
     "type": "light",
+    "properties": [
+      "light"
+    ],
     "ac": 11,
     "magical": false,
     "value": 10,
@@ -22,6 +25,9 @@ export const armor = [
     "dexCap": null,
     "stealthDisadvantage": false,
     "type": "light",
+    "properties": [
+      "light"
+    ],
     "ac": 12,
     "magical": false,
     "value": 45,
@@ -36,6 +42,9 @@ export const armor = [
     "dexCap": 2,
     "stealthDisadvantage": false,
     "type": "medium",
+    "properties": [
+      "medium"
+    ],
     "ac": 12,
     "magical": false,
     "value": 10,
@@ -50,6 +59,9 @@ export const armor = [
     "dexCap": 2,
     "stealthDisadvantage": true,
     "type": "medium",
+    "properties": [
+      "medium"
+    ],
     "ac": 15,
     "magical": false,
     "value": 750,
@@ -64,6 +76,9 @@ export const armor = [
     "dexCap": 0,
     "stealthDisadvantage": true,
     "type": "heavy",
+    "properties": [
+      "heavy"
+    ],
     "ac": 16,
     "magical": false,
     "value": 75,
@@ -78,6 +93,9 @@ export const armor = [
     "dexCap": 0,
     "stealthDisadvantage": true,
     "type": "heavy",
+    "properties": [
+      "heavy"
+    ],
     "ac": 18,
     "magical": false,
     "value": 1500,
@@ -92,6 +110,10 @@ export const armor = [
     "dexCap": null,
     "stealthDisadvantage": false,
     "type": "light",
+    "properties": [
+      "light",
+      "magical"
+    ],
     "ac": 12,
     "effect": "+1 stealth",
     "modifiers": { skillBonuses: { stealth: 1 } },
@@ -108,6 +130,10 @@ export const armor = [
     "dexCap": null,
     "stealthDisadvantage": false,
     "type": "light",
+    "properties": [
+      "light",
+      "magical"
+    ],
     "ac": 13,
     "effect": "+1 AC",
     "modifiers": { acBonus: 1 },
@@ -124,6 +150,10 @@ export const armor = [
     "dexCap": 2,
     "stealthDisadvantage": false,
     "type": "medium",
+    "properties": [
+      "medium",
+      "magical"
+    ],
     "ac": 13,
     "effect": "resist lightning",
     "modifiers": { resistances: ["lightning"] },
@@ -140,6 +170,10 @@ export const armor = [
     "dexCap": 2,
     "stealthDisadvantage": true,
     "type": "medium",
+    "properties": [
+      "medium",
+      "magical"
+    ],
     "ac": 16,
     "effect": "+1 AC",
     "modifiers": { acBonus: 1 },
@@ -156,6 +190,10 @@ export const armor = [
     "dexCap": 0,
     "stealthDisadvantage": true,
     "type": "heavy",
+    "properties": [
+      "heavy",
+      "magical"
+    ],
     "ac": 17,
     "effect": "resist fire",
     "modifiers": { resistances: ["fire"] },
@@ -172,12 +210,85 @@ export const armor = [
     "dexCap": 0,
     "stealthDisadvantage": true,
     "type": "heavy",
+    "properties": [
+      "heavy",
+      "magical"
+    ],
     "ac": 19,
     "effect": "+1 AC",
     "modifiers": { acBonus: 1 },
     "magical": true,
     "value": 1600,
     "id": "celestial_plate_armor"
+  },
+  {
+    "name": "Shield",
+    "description": "A standard shield carried in one hand for reliable protection.",
+    "uses": "infinite",
+    "useTime": "exploration",
+    "consumeOnUse": false,
+    "type": "shield",
+    "effect": "+2 AC",
+    "modifiers": { "acBonus": 2 },
+    "properties": [
+      "shield"
+    ],
+    "magical": false,
+    "value": 10,
+    "id": "shield"
+  },
+  {
+    "name": "Buckler",
+    "description": "A small shield meant to deflect rather than endure.",
+    "uses": "infinite",
+    "useTime": "exploration",
+    "consumeOnUse": false,
+    "type": "shield",
+    "effect": "+1 AC",
+    "modifiers": { "acBonus": 1 },
+    "properties": [
+      "light",
+      "shield"
+    ],
+    "magical": false,
+    "value": 8,
+    "id": "buckler"
+  },
+  {
+    "name": "Tower Shield",
+    "description": "A slab of protection that turns you into a moving wall.",
+    "uses": "infinite",
+    "useTime": "exploration",
+    "consumeOnUse": false,
+    "type": "shield",
+    "effect": "+2 AC",
+    "modifiers": { "acBonus": 2 },
+    "properties": [
+      "heavy",
+      "two-handed",
+      "shield"
+    ],
+    "magical": false,
+    "value": 18,
+    "id": "tower_shield"
+  },
+  {
+    "name": "Aegis of Light",
+    "description": "A radiant shield that makes darkness tremble.",
+    "uses": "infinite",
+    "useTime": "exploration",
+    "consumeOnUse": false,
+    "type": "shield",
+    "effect": "+3 AC",
+    "modifiers": { "acBonus": 3 },
+    "properties": [
+      "light",
+      "magical",
+      "shield"
+    ],
+    "magical": true,
+    "value": 500,
+    "id": "aegis_of_light"
   }
 ];
 

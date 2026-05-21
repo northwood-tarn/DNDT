@@ -1,8 +1,8 @@
 import { validateCombatAction } from "./actionSchema.js";
-import { createConsumableAction } from "./actionFactory.js";
+import { normalizeAuras } from "./auras.js";
 import { getConditionRules, normalizeActionEffects } from "./effects.js";
+import { normalizeMarks } from "./marks.js";
 import { getEffectiveSpeed, normalizeActiveEffects } from "./modifiers.js";
-import { getConsumableById } from "../data/consumables.js";
 
 export const COMBAT_ACTOR_TEAMS = new Set(["heroes", "enemies"]);
 const CONTEXTUAL_ACTION_PREFIX = "context_end_";
@@ -34,14 +34,50 @@ export function normalizeCombatActor(actor) {
     actions,
     inventory,
     conditions: Array.isArray(actor.conditions) ? structuredClone(actor.conditions) : [],
+    marks: normalizeMarks(actor.marks),
+    auras: normalizeAuras(actor.auras),
     activeEffects,
+    tags: normalizeActorTags(actor),
+    resources: Array.isArray(actor.resources) ? structuredClone(actor.resources) : [],
+    features: Array.isArray(actor.features) ? structuredClone(actor.features) : [],
+    featureHooks: Array.isArray(actor.featureHooks) ? structuredClone(actor.featureHooks) : [],
+    luck: normalizeLuck(actor),
     speed,
     economy,
+    turnFlags: { ...(actor.turnFlags || {}) },
+    combatFlags: { ...(actor.combatFlags || {}) },
     defeated: actor.defeated || actor.hp <= 0,
   };
   syncContextualActions(normalized);
   syncLegacyEconomyFields(normalized);
   return normalized;
+}
+
+function normalizeActorTags(actor) {
+  const tags = new Set(Array.isArray(actor.tags) ? actor.tags.filter(Boolean) : []);
+  if (actor.creatureType) tags.add(actor.creatureType);
+  if (actor.undeadRank) tags.add(`undead:${actor.undeadRank}`);
+  return [...tags];
+}
+
+function normalizeLuck(actor) {
+  if (actor.luck && Number.isFinite(actor.luck.points)) {
+    return {
+      points: actor.luck.points,
+      max: actor.luck.max ?? actor.luck.points,
+      usedThisCombat: actor.luck.usedThisCombat === true,
+    };
+  }
+  const luckResource = Array.isArray(actor.resources)
+    ? actor.resources.find((item) => item.id === "luck_points")
+    : null;
+  if (!luckResource || !Number.isFinite(luckResource.current)) return null;
+  return {
+    points: luckResource.current,
+    max: luckResource.max ?? luckResource.current,
+    usedThisCombat: false,
+    resourceId: "luck_points",
+  };
 }
 
 export function validateCombatActor(actor) {
@@ -68,6 +104,7 @@ export function validateCombatActor(actor) {
 
 export function resetTurnEconomy(actor, snapshot = null) {
   actor.economy = createTurnEconomy(getEffectiveSpeed(snapshot, actor));
+  actor.turnFlags = {};
   syncLegacyEconomyFields(actor);
 }
 
@@ -105,6 +142,7 @@ export function spendBonusAction(actor) {
 }
 
 export function canPayActionCost(actor, cost = "action") {
+  if (cost === "free") return true;
   if (cost === "movement") return true;
   if (cost === "bonus") return hasBonusAction(actor);
   if (cost === "reaction") return hasReaction(actor);
@@ -112,6 +150,7 @@ export function canPayActionCost(actor, cost = "action") {
 }
 
 export function spendActionCost(actor, cost = "action") {
+  if (cost === "free") return;
   if (cost === "movement") return;
   if (cost === "bonus") return spendBonusAction(actor);
   if (cost === "reaction") return spendReaction(actor);
@@ -196,6 +235,14 @@ export function getActionUses(action) {
 export function spendActionUse(action) {
   if (!action?.uses) return;
   action.uses.remaining = Math.max(0, (action.uses.remaining ?? action.uses.max ?? 0) - 1);
+}
+
+export function spendResourceUse(actor, resourceId) {
+  if (!resourceId || !Array.isArray(actor?.resources)) return false;
+  const resource = actor.resources.find((item) => item.id === resourceId);
+  if (!resource || !Number.isFinite(resource.current) || resource.current <= 0) return false;
+  resource.current -= 1;
+  return true;
 }
 
 export function syncContextualActions(actor) {
@@ -301,13 +348,6 @@ function withUniversalActions(actor) {
       requiresTarget: false,
     });
   }
-  if (actor.team === "heroes" && !actions.some((action) => action.id === "health_potion")) {
-    const potionAction = createConsumableAction(getConsumableById("healing_potion"), {
-      id: "health_potion",
-      name: "Health Potion",
-    });
-    if (potionAction) actions.push(potionAction);
-  }
   return actions.map((action) => ({
     cost: "action",
     requiresTarget: action.type !== "dash" &&
@@ -324,8 +364,6 @@ function normalizeInventory(inventory) {
   const healingPotion = entries.find((entry) => entry.id === "healing_potion");
   if (healingPotion) {
     healingPotion.qty = healingPotion.qty ?? healingPotion.quantity ?? 0;
-  } else {
-    entries.push({ id: "healing_potion", qty: 2 });
   }
   return entries.map((entry) => ({
     id: entry.id,

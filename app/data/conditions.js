@@ -237,6 +237,66 @@ export const conditions = [
     ],
   },
   {
+    id: "turned",
+    name: "Turned",
+    category: "standard",
+    summary: "Must flee the source, cannot move closer, and cannot take reactions.",
+    mechanics: {
+      cannotMoveCloserToSource: true,
+      blocksReactions: true,
+      mustDashAwayFromSource: true,
+      dodgeIfCannotMoveAway: true,
+    },
+    effects: [
+      "Must spend its turns moving away from the source by the safest available route.",
+      "Cannot willingly move closer to the source.",
+      "Cannot take reactions.",
+      "Can take only Dash or try to escape an effect that prevents movement; if it cannot move, it Dodges.",
+    ],
+  },
+  {
+    id: "grave_rebuked",
+    name: "Grave Rebuked",
+    category: "feature",
+    summary: "Critical hits are suppressed and necrotic damage is resisted briefly.",
+    mechanics: {
+      suppressIncomingCriticalHits: true,
+      resistance: ["necrotic"],
+    },
+    effects: [
+      "Critical hits against the creature become normal hits.",
+      "The creature has resistance to necrotic damage while the condition lasts.",
+    ],
+  },
+  {
+    id: "healing_blocked",
+    name: "Healing Blocked",
+    category: "combat_special",
+    summary: "Cannot regain hit points while the effect lasts.",
+    mechanics: {
+      blocksHealing: true,
+    },
+    effects: [
+      "Cannot regain hit points while the effect lasts.",
+    ],
+  },
+  {
+    id: "mortmain",
+    name: "Mortmain",
+    category: "combat_special",
+    summary: "Cannot take reactions, moves sluggishly, and cannot regain hit points.",
+    mechanics: {
+      blocksReactions: true,
+      speedMultiplier: 0.5,
+      blocksHealing: true,
+    },
+    effects: [
+      "Cannot take reactions.",
+      "Speed is halved while the effect lasts.",
+      "Cannot regain hit points while the effect lasts.",
+    ],
+  },
+  {
     id: "unconscious",
     name: "Unconscious",
     category: "standard",

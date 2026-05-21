@@ -322,7 +322,7 @@ async function testArcherPrioritizesBestCoverInRange() {
       height: 4,
       blocked: [],
       cover: [
-        { x: 4, y: 1, kind: "half" },
+        { x: 4, y: 0, kind: "half" },
         { x: 3, y: 1, kind: "three_quarters" },
       ],
     },

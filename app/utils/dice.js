@@ -52,7 +52,6 @@ export function rollD(sides = 20) {
  */
 export function rollD20({ actor=null, allowLucky=true, logFn=null, askUseLucky=null, chooseResult=null, context={} } = {}) {
   const roll1 = rollD(20);
-  console.log("[dice] rollD20 initial roll:", roll1);
   let usedLucky = false;
   let roll2 = null;
 
@@ -90,8 +89,85 @@ export function rollD20({ actor=null, allowLucky=true, logFn=null, askUseLucky=n
   return { total: finalRoll, roll: finalRoll, usedLucky, secondRoll: roll2 };
 }
 
+export function applyLuckyNearMissD20({
+  actor = null,
+  currentRoll = null,
+  context = {},
+  logFn = null,
+  chooseResult = null,
+} = {}) {
+  const type = context?.type;
+  if (!["attack", "save"].includes(type)) return noLucky(currentRoll);
+
+  const targetNumber = Number(context.targetNumber);
+  const bonus = Number(context.bonus || 0);
+  if (!Number.isFinite(targetNumber) || !Number.isFinite(currentRoll)) return noLucky(currentRoll);
+
+  const luck = getLuckPool(actor);
+  if (!luck || luck.points <= 0 || luck.usedThisCombat) return noLucky(currentRoll);
+
+  const total = currentRoll + bonus;
+  const missedBy = targetNumber - total;
+  if (missedBy <= 0 || missedBy >= 5) return noLucky(currentRoll);
+
+  const secondRoll = rollD(20);
+  const finalRoll = typeof chooseResult === "function"
+    ? chooseResult(currentRoll, secondRoll)
+    : Math.max(currentRoll, secondRoll);
+  spendLuck(actor, luck);
+
+  const result = {
+    roll: finalRoll,
+    total: finalRoll,
+    usedLucky: true,
+    originalRoll: currentRoll,
+    secondRoll,
+    missedBy,
+    pointsRemaining: luck.points,
+  };
+  if (typeof logFn === "function") {
+    logFn(luckyLogLine(context, currentRoll, secondRoll, finalRoll, actor?.name));
+  }
+  return result;
+}
+
+function noLucky(currentRoll) {
+  return {
+    roll: currentRoll,
+    total: currentRoll,
+    usedLucky: false,
+    originalRoll: currentRoll,
+    secondRoll: null,
+  };
+}
+
+function getLuckPool(actor) {
+  if (!actor) return null;
+  if (actor.luck && Number.isFinite(actor.luck.points)) return actor.luck;
+  const resource = Array.isArray(actor.resources)
+    ? actor.resources.find((item) => item.id === "luck_points")
+    : null;
+  if (!resource || !Number.isFinite(resource.current)) return null;
+  actor.luck = {
+    points: resource.current,
+    max: resource.max ?? resource.current,
+    usedThisCombat: false,
+    resourceId: "luck_points",
+  };
+  return actor.luck;
+}
+
+function spendLuck(actor, luck) {
+  luck.points = Math.max(0, (luck.points || 0) - 1);
+  luck.usedThisCombat = true;
+  if (!actor || !Array.isArray(actor.resources)) return;
+  const resource = actor.resources.find((item) => item.id === "luck_points");
+  if (resource) resource.current = luck.points;
+}
+
 function luckyLogLine(context, r1, r2, chosen, name='You') {
   const kind = context?.type || 'roll';
   const label = context?.label ? ` (${context.label})` : '';
-  return `${name} used Lucky on a d20${label}: rolled ${r1}, then ${r2}; kept ${chosen}.`;
+  const missedBy = Number.isFinite(context?.missedBy) ? ` after missing by ${context.missedBy}` : "";
+  return `${name} used Lucky on a ${kind}${label}${missedBy}: rolled ${r1}, then ${r2}; kept ${chosen}.`;
 }

@@ -7,7 +7,7 @@ import url from "node:url";
 const DEFAULT_WEAPONS_PATH = "app/data/weapons.js";
 
 const VALID_USE_TIMES = new Set(["action", "bonus", "bonus_action", "reaction", "exploration"]);
-const VALID_TYPES = new Set(["melee", "ranged", "shield"]);
+const VALID_TYPES = new Set(["melee", "ranged"]);
 const VALID_DAMAGE_TYPES = new Set([
   "acid",
   "bludgeoning",
@@ -89,8 +89,7 @@ function validateWeaponRecord(errors, item) {
   if (typeof item.consumeOnUse !== "boolean") fail(errors, id, "consumeOnUse must be boolean");
   if (!VALID_USE_TIMES.has(item.useTime)) fail(errors, id, `useTime must be one of: ${Array.from(VALID_USE_TIMES).join(", ")}`);
   if (!VALID_TYPES.has(item.type)) fail(errors, id, `type must be one of: ${Array.from(VALID_TYPES).join(", ")}`);
-  if (item.type !== "shield" && !isDiceExpression(item.damage)) fail(errors, id, "damage must be a dice expression");
-  if (item.type === "shield" && item.damage !== undefined) fail(errors, id, "shield records must not define damage");
+  if (!isDiceExpression(item.damage)) fail(errors, id, "damage must be a dice expression");
   if (!Array.isArray(item.properties)) fail(errors, id, "properties must be an array");
   if (item.value !== undefined) validatePositiveNumber(errors, id, "value", item.value);
   if (item.effect !== undefined) validateString(errors, id, "effect", item.effect);

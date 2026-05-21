@@ -1,0 +1,28 @@
+import { runAbilityScoreTests } from "./character_tests/ability_scores.test.js";
+import { runCharacterPipelineTests } from "./character_tests/pipeline.test.js";
+import { runCombatActorAdapterTests } from "./character_tests/combat_actor_adapter.test.js";
+import { runCreationStepTests } from "./character_tests/creation_steps.test.js";
+import { runGeneratedVariantTests } from "./character_tests/generated_variants.test.js";
+import { runNarrativeAccessTests } from "./character_tests/narrative_access.test.js";
+import { runReportsAndPreviewTests } from "./character_tests/reports_and_preview.test.js";
+import { runSubclassReadinessTests } from "./character_tests/subclass_readiness.test.js";
+import { runSpellcastingFrameTests } from "./character_tests/spellcasting_frame.test.js";
+
+async function main() {
+  runAbilityScoreTests();
+  runCharacterPipelineTests();
+  runCombatActorAdapterTests();
+  runCreationStepTests();
+  runGeneratedVariantTests();
+  runNarrativeAccessTests();
+  runSubclassReadinessTests();
+  runReportsAndPreviewTests();
+  runSpellcastingFrameTests();
+  console.log("[character:test] OK");
+}
+
+main().catch((error) => {
+  console.error("[character:test] FAILED");
+  console.error(error);
+  process.exitCode = 1;
+});

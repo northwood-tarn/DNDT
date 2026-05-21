@@ -1,4 +1,5 @@
 import { addCondition } from "./actor.js";
+import { combatAuraEffectsAffectingActor, hasAuraConditionPrevention } from "./auras.js";
 import { combatObjectsAffectingActor } from "./combatObjects.js";
 import { applyDamageAmount, rollSaveD20 } from "./combatEffectsResolution.js";
 import { conditionName, createConditionInstance } from "./effects.js";
@@ -10,9 +11,29 @@ export function dispatchActorTrigger(snapshot, trigger, actor, dice, log, contex
   for (const object of objects) {
     for (const effect of object.effects || []) {
       if ((effect.trigger || "passive") !== trigger) continue;
+      if (!effectAffectsActor(effect, object, actor)) continue;
+      if (!effectRequirementsMet(effect, actor)) continue;
       applyTriggeredEffect(snapshot, object, actor, effect, dice, log, context);
     }
   }
+  for (const effect of combatAuraEffectsAffectingActor(snapshot, actor)) {
+    if ((effect.trigger || "passive") !== trigger) continue;
+    if (!effectRequirementsMet(effect, actor)) continue;
+    applyTriggeredEffect(snapshot, auraSourceFromEffect(effect), actor, effect, dice, log, context);
+  }
+}
+
+function effectRequirementsMet(effect, actor) {
+  if (!effect.requiresCondition) return true;
+  return (actor.conditions || []).some((condition) => condition.id === effect.requiresCondition);
+}
+
+function effectAffectsActor(effect, source, actor) {
+  const sourceTeam = effect.sourceTeam || source.sourceTeam;
+  if (!effect.affects || effect.affects === "all") return true;
+  if (effect.affects === "allies") return actor.team === sourceTeam;
+  if (effect.affects === "enemies") return actor.team !== sourceTeam;
+  return true;
 }
 
 function applyTriggeredEffect(snapshot, source, actor, effect, dice, log, context) {
@@ -56,6 +77,21 @@ function applyTriggeredEffect(snapshot, source, actor, effect, dice, log, contex
       log.add("trigger.fired", triggerDetail(snapshot, source, actor, effect, context));
       return;
     }
+    const preventedBy = hasAuraConditionPrevention(snapshot, actor, effect.condition, { source: sourceActor(source) });
+    if (preventedBy) {
+      log.add("condition.prevented", {
+        round: snapshot.round,
+        sourceId: source.id,
+        sourceName: source.name,
+        targetId: actor.id,
+        targetName: actor.name,
+        condition: effect.condition,
+        label: conditionName(effect.condition),
+        reason: preventedBy.label || preventedBy.id,
+        actionName: source.name,
+      });
+      return;
+    }
     const condition = createConditionInstance(effect, sourceActor(source), { id: source.sourceActionId || source.id, name: source.name, range: null });
     condition.sourceObjectId = source.id;
     condition.sourceActorId = source.sourceActorId || null;
@@ -78,8 +114,8 @@ function applyTriggeredEffect(snapshot, source, actor, effect, dice, log, contex
 function resolveTriggerSave(snapshot, source, actor, effect, dice, log) {
   if (!dice?.rollD20) return { success: false, onSave: effect.save.onSave };
   const ability = String(effect.save.ability || "").toLowerCase();
-  const dc = effect.save.dc ?? source.spellSaveDC;
-  const roll = rollSaveD20(actor, { name: source.name, saveAbility: ability }, dice);
+  const dc = effect.save.dc ?? effect.spellSaveDC ?? source.spellSaveDC;
+  const roll = rollSaveD20(actor, { name: source.name, saveAbility: ability }, dice, snapshot, sourceActor(source));
   const modifier = rollSaveModifier(snapshot, actor, ability, { name: source.name, saveAbility: ability }, dice);
   const baseBonus = actor.saves?.[ability] || 0;
   const bonus = baseBonus + modifier.total;
@@ -132,7 +168,23 @@ function triggerDetail(snapshot, source, actor, effect, context) {
 
 function sourceActor(source) {
   return {
-    id: source.id,
+    id: source.sourceActorId || source.id,
     name: source.name,
+    team: source.team || null,
+    tags: source.tags || [],
+    creatureType: source.creatureType || null,
+  };
+}
+
+function auraSourceFromEffect(effect) {
+  return {
+    id: effect.sourceId || effect.id,
+    name: effect.label || effect.sourceId || "Aura",
+    sourceActorId: effect.sourceActorId || null,
+    sourceActionId: effect.sourceFeatureId || null,
+    spellSaveDC: effect.spellSaveDC ?? null,
+    team: effect.sourceTeam || null,
+    tags: effect.sourceTags || [],
+    creatureType: effect.sourceCreatureType || null,
   };
 }

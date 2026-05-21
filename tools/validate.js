@@ -11,8 +11,17 @@ import fs from 'node:fs';
 import path from 'node:path';
 import url from 'node:url';
 import { fileURLToPath } from 'node:url';
+import { validateArmor } from './validate-armor.js';
+import { validateBackgrounds } from './validate-backgrounds.js';
+import { validateClasses } from './validate-classes.js';
 import { validateConsumables } from './validate-consumables.js';
+import { validateEnemies } from './validate-enemies.js';
+import { validateEncounters } from './validate-encounters.js';
+import { validateFeats } from './validate-feats.js';
 import { validateSpells } from './validate-spells.js';
+import { validateSpecies } from './validate-species.js';
+import { validateTools } from './validate-tools.js';
+import { validateUniques } from './validate-uniques.js';
 import { validateWeapons } from './validate-weapons.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -320,6 +329,87 @@ async function main() {
     printOk('[weapons] Validation OK');
   }
 
+  const armorErrors = await validateArmor();
+  if (armorErrors.length) {
+    jsonErrors += armorErrors.length;
+    printErr(`[armor] Validation failed with ${armorErrors.length} error(s):`);
+    for (const err of armorErrors) console.error('  -', err);
+  } else {
+    printOk('[armor] Validation OK');
+  }
+
+  const backgroundErrors = await validateBackgrounds();
+  if (backgroundErrors.length) {
+    jsonErrors += backgroundErrors.length;
+    printErr(`[backgrounds] Validation failed with ${backgroundErrors.length} error(s):`);
+    for (const err of backgroundErrors) console.error('  -', err);
+  } else {
+    printOk('[backgrounds] Validation OK');
+  }
+
+  const classErrors = await validateClasses();
+  if (classErrors.length) {
+    jsonErrors += classErrors.length;
+    printErr(`[classes] Validation failed with ${classErrors.length} error(s):`);
+    for (const err of classErrors) console.error('  -', err);
+  } else {
+    printOk('[classes] Validation OK');
+  }
+
+  const toolErrors = await validateTools();
+  if (toolErrors.length) {
+    jsonErrors += toolErrors.length;
+    printErr(`[tools] Validation failed with ${toolErrors.length} error(s):`);
+    for (const err of toolErrors) console.error('  -', err);
+  } else {
+    printOk('[tools] Validation OK');
+  }
+
+  const speciesErrors = await validateSpecies();
+  if (speciesErrors.length) {
+    jsonErrors += speciesErrors.length;
+    printErr(`[species] Validation failed with ${speciesErrors.length} error(s):`);
+    for (const err of speciesErrors) console.error('  -', err);
+  } else {
+    printOk('[species] Validation OK');
+  }
+
+  const featErrors = await validateFeats();
+  if (featErrors.length) {
+    jsonErrors += featErrors.length;
+    printErr(`[feats] Validation failed with ${featErrors.length} error(s):`);
+    for (const err of featErrors) console.error('  -', err);
+  } else {
+    printOk('[feats] Validation OK');
+  }
+
+  const uniqueErrors = await validateUniques();
+  if (uniqueErrors.length) {
+    jsonErrors += uniqueErrors.length;
+    printErr(`[uniques] Validation failed with ${uniqueErrors.length} error(s):`);
+    for (const err of uniqueErrors) console.error('  -', err);
+  } else {
+    printOk('[uniques] Validation OK');
+  }
+
+  const enemyErrors = await validateEnemies();
+  if (enemyErrors.length) {
+    jsonErrors += enemyErrors.length;
+    printErr(`[enemies] Validation failed with ${enemyErrors.length} error(s):`);
+    for (const err of enemyErrors) console.error('  -', err);
+  } else {
+    printOk('[enemies] Validation OK');
+  }
+
+  const encounterErrors = await validateEncounters();
+  if (encounterErrors.length) {
+    jsonErrors += encounterErrors.length;
+    printErr(`[encounters] Validation failed with ${encounterErrors.length} error(s):`);
+    for (const err of encounterErrors) console.error('  -', err);
+  } else {
+    printOk('[encounters] Validation OK');
+  }
+
   if (!NO_CROSS) {
     await crossChecks();
   }
@@ -345,7 +435,10 @@ async function crossChecks() {
       const list = Array.isArray(encounters) ? encounters : Object.values(encounters || {});
       for (const enc of list) {
         const refs = enc?.enemies || enc?.enemyIds || [];
-        for (const r of refs) if (!ids.has(r)) miss.add(r);
+        for (const r of refs) {
+          const enemyId = typeof r === 'string' ? r : r?.enemyId;
+          if (enemyId && !ids.has(enemyId)) miss.add(enemyId);
+        }
       }
       if (miss.size) {
         printWarn('[cross] Unknown enemy ids referenced in encounters:');

@@ -1,25 +1,20 @@
 import { normalizeCombatActor, validateCombatActor } from "./actor.js";
 import { normalizeCombatObjects } from "./combatObjects.js";
-import { createTestScenario } from "./scenarios/tightCombatTest.js";
-import { createTrialArenaScenario } from "./scenarios/trialArena.js";
-import { createSpellMechanicsArenaScenario } from "./scenarios/spellMechanicsArena.js";
+import { createGeneratedCharacterArenaScenario } from "./scenarios/generatedCharacterArena.js";
 
-export { createTestScenario } from "./scenarios/tightCombatTest.js";
-export { createTrialArenaScenario } from "./scenarios/trialArena.js";
-export { createSpellMechanicsArenaScenario } from "./scenarios/spellMechanicsArena.js";
+export { createGeneratedCharacterArenaScenario } from "./scenarios/generatedCharacterArena.js";
+
+export const DEFAULT_COMBAT_SCENARIO_ID = "generated-character-arena";
 
 export function getCombatScenarioOptions() {
   return [
-    { id: "trial-arena", name: "Trial Arena" },
-    { id: "spell-mechanics-arena", name: "Spell Mechanics Arena" },
-    { id: "tight-combat-test", name: "Tight Combat Test" },
+    { id: "generated-character-arena", name: "Generated Character Arena" },
   ];
 }
 
-export function createCombatScenario(id = "trial-arena") {
-  if (id === "trial-arena") return createTrialArenaScenario();
-  if (id === "spell-mechanics-arena") return createSpellMechanicsArenaScenario();
-  return createTestScenario();
+export function createCombatScenario(id = DEFAULT_COMBAT_SCENARIO_ID, options = {}) {
+  if (id === "generated-character-arena") return createGeneratedCharacterArenaScenario(options);
+  throw new Error(`Unknown combat scenario: ${id}`);
 }
 
 export function createSnapshotFromScenario(scenario) {

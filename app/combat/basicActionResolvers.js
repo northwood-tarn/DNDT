@@ -7,6 +7,8 @@ import {
   increaseMovementMax,
   removeCondition,
   spendActionCost,
+  spendActionUse,
+  spendResourceUse,
   spendBonusAction,
   spendItem,
   syncContextualActions,
@@ -133,6 +135,16 @@ export function resolveConsumable(snapshot, actor, action, dice, log) {
     });
     return false;
   }
+  if (hasConditionRule(actor, "blocksHealing")) {
+    log.add("target.invalid", {
+      round: snapshot.round,
+      actorId: actor.id,
+      actorName: actor.name,
+      targetName: actor.name,
+      reason: "healing is blocked",
+    });
+    return false;
+  }
   const healingDice = action.healing || item.combat?.healing || parseHealingDice(item.effect);
   if (!healingDice) {
     log.add("target.invalid", {
@@ -149,6 +161,7 @@ export function resolveConsumable(snapshot, actor, action, dice, log) {
   actor.hp = Math.min(actor.maxHp, actor.hp + Math.max(0, rolled.total));
   if (item.consumeOnUse !== false) spendItem(actor, itemId, 1);
   spendActionCost(actor, action.cost);
+  spendActionUse(action);
   log.add("healing.roll", {
     round: snapshot.round,
     actorId: actor.id,
@@ -183,11 +196,23 @@ export function resolveSelfHeal(snapshot, actor, action, dice, log) {
     });
     return false;
   }
+  if (hasConditionRule(actor, "blocksHealing")) {
+    log.add("target.invalid", {
+      round: snapshot.round,
+      actorId: actor.id,
+      actorName: actor.name,
+      targetName: actor.name,
+      reason: "healing is blocked",
+    });
+    return false;
+  }
   const healingDice = action.healing || "1d6";
   const rolled = dice.rollDamage(healingDice);
   const hpBefore = actor.hp;
   actor.hp = Math.min(actor.maxHp, actor.hp + Math.max(0, rolled.total));
   spendActionCost(actor, action.cost);
+  spendActionUse(action);
+  spendResourceUse(actor, action.resourceId);
   log.add("healing.roll", {
     round: snapshot.round,
     actorId: actor.id,
