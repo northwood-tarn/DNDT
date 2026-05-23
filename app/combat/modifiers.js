@@ -96,6 +96,7 @@ export function collectModifierDetails(snapshot, actor, stat, context = {}) {
       die: effect.die || null,
       mode: effect.mode || null,
       stat: effect.stat,
+      consumeOn: effect.consumeOn || null,
     }));
 }
 
@@ -189,9 +190,14 @@ function rollModifierDetails(details, dice, label) {
   return {
     total,
     details: parts,
-    reasons: parts.map((part) => `${part.label} ${formatSigned(part.amount)}`),
+    reasons: parts.map(formatModifierReason),
     label,
   };
+}
+
+function formatModifierReason(part) {
+  const roll = part.roll?.rolls?.length ? ` (${part.die} rolled [${part.roll.rolls.join(", ")}])` : "";
+  return `${part.label} ${formatSigned(part.amount)}${roll}`;
 }
 
 function matchesAbility(effect, ability) {

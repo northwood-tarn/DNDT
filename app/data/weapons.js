@@ -11,6 +11,7 @@ export const weapons = [
       "finesse",
       "light"
     ],
+    "mastery": "vex",
     "value": 10,
     "id": "shortsword"
   },
@@ -25,6 +26,7 @@ export const weapons = [
     "properties": [
       "versatile"
     ],
+    "mastery": "sap",
     "value": 15,
     "id": "longsword"
   },
@@ -40,6 +42,7 @@ export const weapons = [
       "heavy",
       "two-handed"
     ],
+    "mastery": "graze",
     "value": 50,
     "id": "greatsword"
   },
@@ -55,6 +58,7 @@ export const weapons = [
       "finesse",
       "light"
     ],
+    "mastery": "nick",
     "value": 2,
     "id": "dagger"
   },
@@ -69,6 +73,7 @@ export const weapons = [
     "properties": [
       "versatile"
     ],
+    "mastery": "topple",
     "value": 10,
     "id": "battleaxe"
   },
@@ -83,6 +88,7 @@ export const weapons = [
     "properties": [
       "versatile"
     ],
+    "mastery": "push",
     "value": 15,
     "id": "warhammer"
   },
@@ -97,6 +103,7 @@ export const weapons = [
     "properties": [
       "versatile"
     ],
+    "mastery": "topple",
     "value": 2,
     "id": "quarterstaff"
   },
@@ -111,6 +118,7 @@ export const weapons = [
     "properties": [
       "finesse"
     ],
+    "mastery": "vex",
     "value": 25,
     "id": "rapier"
   },
@@ -126,6 +134,7 @@ export const weapons = [
       "finesse",
       "light"
     ],
+    "mastery": "nick",
     "value": 25,
     "id": "scimitar"
   },
@@ -140,6 +149,7 @@ export const weapons = [
     "properties": [
       "light"
     ],
+    "mastery": "vex",
     "value": 5,
     "id": "handaxe"
   },
@@ -155,6 +165,7 @@ export const weapons = [
       "range (150/600)",
       "two-handed"
     ],
+    "mastery": "slow",
     "value": 50,
     "id": "longbow"
   },
@@ -170,6 +181,7 @@ export const weapons = [
       "range (80/320)",
       "two-handed"
     ],
+    "mastery": "vex",
     "value": 25,
     "id": "shortbow"
   },
@@ -186,6 +198,7 @@ export const weapons = [
     "properties": [
       "versatile"
     ],
+    "mastery": "sap",
     "value": 500,
     "id": "flaming_longsword"
   },
@@ -203,6 +216,7 @@ export const weapons = [
       "finesse",
       "light"
     ],
+    "mastery": "nick",
     "value": 450,
     "id": "venomous_dagger"
   },
@@ -220,6 +234,7 @@ export const weapons = [
       "heavy",
       "two-handed"
     ],
+    "mastery": "graze",
     "value": 600,
     "id": "greatsword_of_wounding"
   },
@@ -236,6 +251,7 @@ export const weapons = [
     "properties": [
       "versatile"
     ],
+    "mastery": "push",
     "value": 550,
     "id": "thunder_hammer"
   },
@@ -252,6 +268,7 @@ export const weapons = [
     "properties": [
       "finesse"
     ],
+    "mastery": "vex",
     "value": 500,
     "id": "frost_brand_rapier"
   },
@@ -269,6 +286,7 @@ export const weapons = [
       "range (150/600)",
       "two-handed"
     ],
+    "mastery": "slow",
     "value": 475,
     "id": "bow_of_accuracy"
   },
@@ -285,6 +303,7 @@ export const weapons = [
     "properties": [
       "light"
     ],
+    "mastery": "vex",
     "value": 420,
     "id": "exploding_handaxe"
   },
@@ -302,6 +321,7 @@ export const weapons = [
       "finesse",
       "light"
     ],
+    "mastery": "nick",
     "value": 430,
     "id": "shocking_scimitar"
   },
@@ -318,6 +338,7 @@ export const weapons = [
     "properties": [
       "versatile"
     ],
+    "mastery": "topple",
     "value": 400,
     "id": "blessed_quarterstaff"
   },
@@ -335,6 +356,7 @@ export const weapons = [
       "finesse",
       "light"
     ],
+    "mastery": "vex",
     "value": 410,
     "id": "piercing_shortsword"
   },
@@ -351,6 +373,7 @@ export const weapons = [
     "properties": [
       "versatile"
     ],
+    "mastery": "topple",
     "magical": true,
     "value": 480,
     "id": "battleaxe_of_fury"
@@ -369,6 +392,7 @@ export const weapons = [
       "range (80/320)",
       "two-handed"
     ],
+    "mastery": "vex",
     "magical": true,
     "value": 460,
     "id": "silent_bow"

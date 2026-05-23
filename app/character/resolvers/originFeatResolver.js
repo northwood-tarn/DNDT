@@ -23,10 +23,12 @@ export function resolveOriginFeat(sheet, draft, featId, source = {}) {
   applyInventory(sheet, feat.effects?.inventory || []);
   applyInitiativeBonus(sheet, feat.effects?.initiativeBonus);
   applyHitPointBonus(sheet, feat.effects?.hitPointBonusPerLevel);
-  applyFeatChoices(sheet, draft, feat);
+  applyFeatChoices(sheet, draft, feat, source);
 
   if (feat.effects?.modifiers) grants.modifiers = structuredClone(feat.effects.modifiers);
   if (feat.effects?.featureHooks) grants.featureHooks = structuredClone(feat.effects.featureHooks);
+  if (feat.effects?.actionOptions) grants.actionOptions = structuredClone(feat.effects.actionOptions);
+  if (feat.effects?.damageRiders) grants.damageRiders = structuredClone(feat.effects.damageRiders);
   if (feat.effects?.narrativeTags) grants.narrativeTags = structuredClone(feat.effects.narrativeTags);
   if (feat.effects?.unarmedStrike) grants.unarmedStrike = structuredClone(feat.effects.unarmedStrike);
   if (feat.effects?.discounts) grants.discounts = structuredClone(feat.effects.discounts);
@@ -120,23 +122,23 @@ function applyHitPointBonus(sheet, hitPointBonusPerLevel) {
   });
 }
 
-function applyFeatChoices(sheet, draft, feat) {
+function applyFeatChoices(sheet, draft, feat, source = {}) {
   for (const choice of feat.choices || []) {
     const selection = draft.choices.featChoices?.[feat.id]?.[choice.id];
     if (!selection) {
-      const unresolved = { type: "missing_origin_feat_choice", featId: feat.id, choiceId: choice.id, kind: choice.kind, count: choice.count };
-      const options = choiceOptions(choice);
-      if (options) unresolved.options = options;
-      sheet.metadata.unresolved.push(unresolved);
+      sheet.metadata.unresolved.push(originFeatChoiceIssue("missing_origin_feat_choice", feat, choice, source));
       continue;
     }
     const values = Array.isArray(selection) ? selection : [selection];
     if (values.length !== choice.count) {
-      sheet.metadata.unresolved.push({ type: "invalid_origin_feat_choice_count", featId: feat.id, choiceId: choice.id, expected: choice.count, actual: values.length });
+      sheet.metadata.unresolved.push(originFeatChoiceIssue("invalid_origin_feat_choice_count", feat, choice, source, {
+        expected: choice.count,
+        actual: values.length,
+      }));
       continue;
     }
     if (!valuesAllowedForChoice(choice, values)) {
-      sheet.metadata.unresolved.push({ type: "invalid_origin_feat_choice_value", featId: feat.id, choiceId: choice.id, values });
+      sheet.metadata.unresolved.push(originFeatChoiceIssue("invalid_origin_feat_choice_value", feat, choice, source, { values }));
       continue;
     }
     if (choice.kind === "ability_score") applyAbilityChoice(sheet, choice, values, feat.id);
@@ -152,6 +154,21 @@ function applyFeatChoices(sheet, draft, feat) {
       sheet.metadata.unresolved.push({ type: "unsupported_origin_feat_choice_kind", featId: feat.id, choiceId: choice.id, kind: choice.kind });
     }
   }
+}
+
+function originFeatChoiceIssue(type, feat, choice, source = {}, extra = {}) {
+  const unresolved = {
+    type,
+    featId: feat.id,
+    choiceId: choice.id,
+    kind: choice.kind,
+    count: choice.count,
+    ...extra,
+  };
+  if (source.advancementId) unresolved.advancementId = source.advancementId;
+  const options = choiceOptions(choice);
+  if (options) unresolved.options = options;
+  return unresolved;
 }
 
 function valuesAllowedForChoice(choice, values) {

@@ -1,6 +1,6 @@
 import { SPELLS } from "../data/spells.js";
 import { createSpellAction } from "./actionFactory.js";
-import { validateReactionPolicy } from "./reactionPolicy.js";
+import { normalizeReactionPolicy, validateReactionPolicy } from "./reactionPolicy.js";
 
 export function createReactionPolicyReport(spellRegistry = SPELLS) {
   const policies = [];
@@ -10,18 +10,20 @@ export function createReactionPolicyReport(spellRegistry = SPELLS) {
     const action = createSpellAction(spell, { spellSaveDC: 13, attackBonus: 5 });
     const policy = action?.reactionPolicy;
     if (!policy) continue;
-    const validationErrors = validateReactionPolicy(policy, `${action.id}.reactionPolicy`);
+    const normalized = normalizeReactionPolicy(policy);
+    const validationErrors = validateReactionPolicy(normalized, `${action.id}.reactionPolicy`);
     if (validationErrors.length) errors.push(...validationErrors);
     policies.push({
-      id: policy.id,
+      id: normalized.id,
       actionId: action.id,
       actionName: action.name,
-      trigger: policy.trigger,
-      reactionMode: policy.reactionMode,
-      promptMode: policy.promptMode,
-      cost: structuredClone(policy.cost),
-      effect: structuredClone(policy.effect),
-      priority: policy.priority,
+      trigger: normalized.trigger,
+      reactionMode: normalized.reactionMode,
+      promptMode: normalized.promptMode,
+      relevance: normalized.relevance,
+      cost: structuredClone(normalized.cost),
+      effect: structuredClone(normalized.effect),
+      priority: normalized.priority,
       validationErrors,
     });
   }

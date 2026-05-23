@@ -32,7 +32,7 @@ export function preflightAction(snapshot, actor, actionId, targetPayload) {
   }
 
   if (action.requiresTarget === false) return actionResult(true, "ready", "action can resolve", actionContext(actor, action, targetPayload));
-  const target = getActor(snapshot, targetPayload);
+  const target = getActor(snapshot, targetActorId(targetPayload));
   const targetLegality = canTargetAction(snapshot, actor, action, target);
   if (!targetLegality.ok) {
     return actionResult(false, "target_invalid", targetLegality.reason, actionContext(actor, action, targetPayload, target));
@@ -70,9 +70,14 @@ function actionContext(actor, action, targetPayload, target = null) {
     actorName: actor?.name || null,
     actionId: action?.id || null,
     actionName: action?.name || null,
-    targetId: target?.id || (typeof targetPayload === "string" ? targetPayload : null),
+    targetId: target?.id || targetActorId(targetPayload),
     targetName: target?.name || (typeof targetPayload === "string" ? targetPayload : "target area"),
   };
+}
+
+function targetActorId(targetPayload) {
+  if (typeof targetPayload === "string") return targetPayload;
+  return targetPayload?.targetId || null;
 }
 
 function isAreaAction(action) {

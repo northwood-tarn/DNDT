@@ -77,7 +77,16 @@ function previewProficiencies(sheet) {
 
 function previewEquipment(sheet) {
   return {
-    weapons: (sheet.equipment.weaponIds || []).map((id) => ({ id, name: getWeaponById(id)?.name || id })),
+    weapons: (sheet.equipment.weaponIds || []).map((id) => {
+      const weapon = getWeaponById(id);
+      return {
+        id,
+        name: weapon?.name || id,
+        mastery: weapon?.mastery || null,
+        mastered: (sheet.equipment.masteredWeaponIds || []).includes(id),
+      };
+    }),
+    masteredWeaponIds: [...(sheet.equipment.masteredWeaponIds || [])],
     armor: itemPreview(sheet.equipment.armorId, getArmorById),
     shield: itemPreview(sheet.equipment.shieldId, getArmorById),
     inventory: (sheet.equipment.inventory || []).map((entry) => ({
@@ -131,7 +140,40 @@ function previewFeatures(sheet) {
     uses: feature.uses,
     implemented: feature.implemented === true,
     description: feature.description,
+    mechanics: previewFeatureMechanics(feature),
   }));
+}
+
+function previewFeatureMechanics(feature) {
+  const effects = feature.effects || {};
+  const grants = feature.grants || {};
+  return {
+    actionOptions: [
+      ...(effects.actionOptions || []),
+      ...(grants.actionOptions || []),
+    ].map((action) => ({
+      id: action.id,
+      name: action.name || action.id,
+      actionType: action.actionType || "action",
+      actionKind: action.actionKind || null,
+    })),
+    damageRiders: [
+      ...(effects.damageRiders || []),
+      ...(grants.damageRiders || []),
+    ].map((rider) => ({
+      id: rider.id,
+      trigger: rider.trigger,
+      damage: rider.damage,
+      damageType: rider.damageType,
+    })),
+    featureHooks: [
+      ...(effects.featureHooks || []),
+      ...(grants.featureHooks || []),
+    ].map((hook) => ({
+      id: hook.id,
+      timing: hook.timing,
+    })),
+  };
 }
 
 function previewCombatActions(actor) {
@@ -142,6 +184,8 @@ function previewCombatActions(actor) {
     type: action.type,
     cost: action.cost || "action",
     requiresTarget: action.requiresTarget !== false,
+    weaponMastery: action.weaponMastery || null,
+    weaponMasteryActive: action.weaponMasteryActive === true,
   }));
 }
 

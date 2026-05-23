@@ -190,19 +190,26 @@ function ongoingDamageEffects(combat) {
 function weaponRiderEffect(item) {
   const combat = item.combat || {};
   const damage = combat.bonusDamage || combat.damage;
+  const remainingHits = Number.isFinite(combat.maxHits) ? combat.maxHits : null;
   return {
+    id: `${item.id}_weapon_rider`,
     type: "modifier",
     trigger: "action_resolved",
     target: "self",
     stat: "attack_roll",
     amount: 0,
     label: item.name,
+    remainingHits,
+    removeWhenSpent: remainingHits !== null,
     damageRider: damage
       ? {
+          id: `${item.id}_damage_rider`,
+          name: item.name,
           trigger: "source_hits_with_attack_roll",
           damage,
           damageType: combat.damageType || "untyped",
           save: combat.save ? { ...combat.save, onSave: "negates" } : null,
+          consumeOnTrigger: combat.kind === "weapon_coating",
         }
       : null,
     duration: combat.durationRounds

@@ -6,9 +6,8 @@
 // 2) A RouteDescriptor-aware router that can respond to `game:exit`
 //    events and move between scenes in a predictable way.
 
-import SaveManager from "../scenes/SaveManager.js";
 import { getArea } from "../areas/index.js";
-import { getState, setState } from "../state/stateStore.js";
+import { setState } from "../state/stateStore.js";
 import { emit } from "./events.js";
 import { attachExplorationMovement } from "./inputManager.js";
 
@@ -251,21 +250,14 @@ export function routeTo(routeDescriptor) {
 
   const route = normalizeRoute(routeDescriptor);
 
-  // Hydrate runtime state from save if a saveId is provided
-  if (route.saveId) {
+  // Hydrate runtime state from a canonical SaveGameState if one is provided.
+  if (route.saveGame) {
     try {
-      const save = SaveManager.getSave(route.saveId);
-      if (save && save.payload) {
-        if (save.payload.player) setState({ player: save.payload.player });
-        if (save.payload.flags) setState({ flags: save.payload.flags });
-        if (save.payload.location) {
-          route.areaId = save.payload.location.areaId || route.areaId;
-          route.entryKnot = save.payload.location.entryKnot || route.entryKnot;
-        }
-        console.info("[sceneRouter] Hydrated state from save:", route.saveId);
-      } else {
-        console.warn("[sceneRouter] saveId provided but no payload found:", route.saveId);
-      }
+      const location = route.saveGame.world?.location || {};
+      setState({ saveGame: route.saveGame });
+      route.areaId = location.areaId || route.areaId;
+      route.entryKnot = location.entryKnot || route.entryKnot;
+      console.info("[sceneRouter] Hydrated state from SaveGameState:", route.saveSlot || route.saveId || route.saveGame.runId);
     } catch (e) {
       console.warn("[sceneRouter] Failed to hydrate state from save:", e);
     }

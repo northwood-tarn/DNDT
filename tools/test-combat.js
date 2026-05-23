@@ -1,4 +1,5 @@
 import { runActionCombatTests } from "./combat_tests/actions.test.js";
+import { runActionFactoryCombatTests } from "./combat_tests/action_factory.test.js";
 import { runAiCombatTests } from "./combat_tests/ai.test.js";
 import { runAreaCombatTests } from "./combat_tests/areas.test.js";
 import { runAuraCombatTests } from "./combat_tests/auras.test.js";
@@ -23,6 +24,7 @@ import { runWeaponCombatTests } from "./combat_tests/weapons.test.js";
 
 async function main() {
   await runSystemCombatTests();
+  await runActionFactoryCombatTests();
   await runScenarioCombatTests();
   await runCoreCombatTests();
   await runConsumableCombatTests();

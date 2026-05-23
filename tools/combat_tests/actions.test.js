@@ -239,6 +239,40 @@ function testPushCollisionDamage() {
   assert.ok(log.events.some((event) => event.type === "collision.damage" && event.detail.collisionSquares === 2), "collision damage should log prevented 5ft increments");
 }
 
+function testPushIntoActorDoesNotDealCollisionDamage() {
+  const snapshot = createSnapshotFromScenario({
+    id: "push-actor-collision",
+    grid: { width: 5, height: 3, blocked: [], cover: [] },
+    actors: [
+      {
+        id: "fighter",
+        name: "Fighter",
+        team: "heroes",
+        role: "fighter",
+        token: "F",
+        hp: 20,
+        maxHp: 20,
+        ac: 12,
+        initiativeBonus: 0,
+        speed: 6,
+        position: { x: 0, y: 1 },
+        saves: {},
+        actions: [{ id: "push", name: "Push", type: "push", range: 1, distanceSquares: 2, collisionDamage: "1d4", collisionDamageType: "bludgeoning" }],
+      },
+      { id: "enemy", name: "Enemy", team: "enemies", role: "swordsman", token: "E", hp: 12, maxHp: 12, ac: 12, initiativeBonus: 0, speed: 6, position: { x: 1, y: 1 }, saves: {}, actions: [] },
+      { id: "blocker", name: "Blocker", team: "enemies", role: "swordsman", token: "B", hp: 12, maxHp: 12, ac: 12, initiativeBonus: 0, speed: 6, position: { x: 2, y: 1 }, saves: {}, actions: [] },
+    ],
+  });
+  const log = createCombatLog();
+  const fighter = snapshot.actors[0];
+  const enemy = snapshot.actors[1];
+
+  assert.equal(resolveAction(snapshot, fighter, "push", "enemy", fixedDice({ damage: 3 }), log), true);
+  assert.deepEqual(enemy.position, { x: 1, y: 1 }, "actor-blocked push should leave target in place");
+  assert.equal(enemy.hp, 12, "actor-blocked push should not use environmental collision damage");
+  assert.equal(log.events.some((event) => event.type === "collision.damage"), false, "actor collision should not log environmental collision damage");
+}
+
 
 export async function runActionCombatTests() {
   testInitiativeIsLogged();
@@ -246,4 +280,5 @@ export async function runActionCombatTests() {
   testDefeatedCurrentActorAdvancesTurn();
   testPushMovesTargetWithoutOpportunityAttack();
   testPushCollisionDamage();
+  testPushIntoActorDoesNotDealCollisionDamage();
 }

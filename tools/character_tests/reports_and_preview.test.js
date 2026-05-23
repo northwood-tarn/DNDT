@@ -2,9 +2,13 @@ import assert from "node:assert/strict";
 import {
   createCharacterFeatureImplementationReport,
   createCharacterPipelineExport,
+  createCombatActorBridgeReport,
   createClassFeatureImplementationReport,
+  createCharacterValidityReport,
   createResolvedSheetPreview,
+  createEmptyCharacterDraft,
   createStarterCharacterDraft,
+  resolvedSheetToCombatActor,
   resolveCharacterSheet,
 } from "../../app/character/index.js";
 
@@ -12,8 +16,32 @@ export function runReportsAndPreviewTests() {
   reportsUnimplementedClassFeaturesByClassAndLevel();
   reportsAllCharacterFeaturesBySource();
   createsResolvedSheetPreviewContract();
+  previewsFeatGrantedActionsAndRiders();
   createsPipelineExportContract();
+  createsCombatActorBridgeReport();
   surfacesPreviewWarnings();
+  describesValidationIssuesInHumanTerms();
+}
+
+function previewsFeatGrantedActionsAndRiders() {
+  const draft = createEmptyCharacterDraft({
+    identity: { characterName: "Feat Preview", level: 4, speciesId: "human", backgroundId: "soldier", classId: "fighter" },
+    gear: { weaponIds: ["longsword"], armorId: "chain_mail", shieldId: "shield", inventory: [], attunedItemIds: [] },
+    choices: {
+      backgroundAbilityScores: [{ ability: "strength", bonus: 2 }, { ability: "constitution", bonus: 1 }],
+      advancementChoices: {
+        "class:fighter:level_4:ability_score_improvement": { kind: "feat", featId: "shield_master" },
+      },
+    },
+  });
+  const sheet = resolveCharacterSheet(draft, {}, { allowNonCreationLevel: true });
+  const preview = createResolvedSheetPreview(sheet);
+  const advancement = preview.features.find((feature) => feature.source === "advancement");
+  const actor = resolvedSheetToCombatActor(sheet);
+
+  assert.equal(advancement.mechanics.actionOptions.some((action) => action.id === "shield_master_shove"), true, "preview should expose feat-granted action options");
+  assert.equal(preview.combatActions.some((action) => action.id === "shield_master_shove" && action.type === "push"), true, "preview should expose bridged feat actions");
+  assert.equal(actor.actions.some((action) => action.id === "shield_master_shove" && action.type === "push"), true, "combat actor should expose bridged feat actions");
 }
 
 function reportsUnimplementedClassFeaturesByClassAndLevel() {
@@ -69,8 +97,22 @@ function createsPipelineExportContract() {
   assert.equal(pipelineExport.resolvedCharacterSheet.identity.classId, "wizard");
   assert.equal(pipelineExport.combatActor.id, "export_wizard");
   assert.equal(pipelineExport.preview.valid, true);
+  assert.equal(pipelineExport.bridgeReport.valid, true);
   assert.equal(pipelineExport.validityReport.valid, true);
   assert.equal(pipelineExport.preview.combatActions.some((action) => action.id === "fire_bolt"), true);
+}
+
+function createsCombatActorBridgeReport() {
+  const sheet = resolveCharacterSheet(createStarterCharacterDraft("wizard"));
+  const report = createCombatActorBridgeReport(sheet, {
+    actorOptions: { id: "bridge_wizard" },
+  });
+  const actions = report.sections.find((section) => section.label === "Actions");
+  const defense = report.sections.find((section) => section.label === "Defense");
+
+  assert.equal(report.valid, true);
+  assert.equal(defense.lines.some((line) => line.label === "AC" && line.source), true, "bridge report should explain AC sources");
+  assert.equal(actions.lines.some((line) => line.label === "Names" && line.value.includes("Fire Bolt")), true, "bridge report should list generated combat actions");
 }
 
 function surfacesPreviewWarnings() {
@@ -90,4 +132,17 @@ function surfacesPreviewWarnings() {
   assert.equal(preview.valid, false, "preview should fail when unresolved warnings remain");
   assert.equal(preview.warnings.unimplementedFeatures.some((feature) => feature.id === "test:future_feature"), true);
   assert.equal(preview.warnings.unresolved.some((item) => item.type === "test_warning"), true);
+}
+
+function describesValidationIssuesInHumanTerms() {
+  const draft = createEmptyCharacterDraft({
+    identity: { characterName: "Report", level: 1, speciesId: "human", backgroundId: "artisan", classId: "fighter" },
+    gear: { weaponIds: ["longsword"], armorId: null, shieldId: null, inventory: [], attunedItemIds: [] },
+    choices: { backgroundAbilityScores: [{ ability: "strength", bonus: 2 }, { ability: "constitution", bonus: 1 }] },
+  });
+  const report = createCharacterValidityReport(draft);
+  const unresolved = report.checks.find((check) => check.id === "unresolved_choices");
+
+  assert.equal(unresolved.messages.some((message) => message === "Choose 3 skill or tool proficiencies for Skilled."), true);
+  assert.equal(unresolved.messages.some((message) => message.includes("missing_origin_feat_choice")), false, "validity report should not expose raw unresolved IDs as the main message");
 }

@@ -17,16 +17,22 @@ import {
   actionRequiresTarget,
   getCombatScenarioOptions,
 } from "../combat/api.js";
+import { collectModifierDetails, getEffectiveAc } from "../combat/modifiers.js";
 import { getCondition } from "../data/conditions.js";
+import { createCombatLifecycleUi } from "./combatLifecycleUi.js";
 import { renderCombatGrid } from "./gridUi.js";
 import { renderCombatLog } from "./logUi.js";
 import { createReactionPromptUi } from "./reactionPromptUi.js";
+import { populateScenarioSelect } from "./scenarioSelectUi.js";
 import { createSummaryUi } from "./summaryUi.js";
 import { createTargetingUi, isAreaTargetingAction } from "./targetingUi.js";
 
-console.info("[combat-test] loaded no-cache area resolver build 2026-05-19a");
-
-const controller = createCombatGame();
+const lifecycleUi = createCombatLifecycleUi();
+await lifecycleUi.hydrate();
+const controller = createCombatGame({
+  scenarioOptions: lifecycleUi.scenarioOptions,
+});
+lifecycleUi.setController(controller);
 
 const gridEl = document.querySelector("#grid");
 const logEl = document.querySelector("#combatLog");
@@ -52,6 +58,7 @@ const reactionDeclineEl = document.querySelector("#reactionDecline");
 
 let selectedActionId = null;
 let selectedTargetId = null;
+let selectedDamageType = null;
 let aiRunning = false;
 let animation = null;
 let targetPulseUntil = 0;
@@ -106,6 +113,7 @@ function syncSelection() {
 
   if (selectedActionId && !getActionById(actor, selectedActionId)) {
     selectedActionId = null;
+    selectedDamageType = null;
     targetingUi.reset();
   }
 
@@ -152,6 +160,7 @@ function renderGrid() {
     getCoverAtSquare,
     getOccupantForDisplay,
     getConditionLabels,
+    getActorHoverLines,
     classIconClass,
     onCellClick,
   });
@@ -201,6 +210,10 @@ function renderActionGroup(actor, playerTurn, cost, label) {
   }
   if (spellActions.length) {
     row.appendChild(createSpellSelect(actor, spellActions, playerTurn, `${label} Spells`));
+    const selectedSpellAction = spellActions.find((action) => action.id === selectedActionId);
+    if (selectedSpellAction?.damageTypeChoices?.length) {
+      row.appendChild(createDamageTypeSelect(selectedSpellAction, playerTurn));
+    }
   }
 
   group.appendChild(row);
@@ -258,13 +271,28 @@ function createSpellSelect(actor, spellActions, playerTurn, label) {
   return select;
 }
 
+function createDamageTypeSelect(action, playerTurn) {
+  const select = document.createElement("select");
+  select.className = "option-select";
+  select.disabled = !playerTurn;
+  select.replaceChildren(...action.damageTypeChoices.map((type) => new Option(titleCase(type), type)));
+  select.value = selectedDamageType || action.damageTypeChoices[0];
+  select.title = "Choose the damage type for this action.";
+  select.addEventListener("change", () => {
+    selectedDamageType = select.value;
+  });
+  return select;
+}
+
 function chooseAction(actor, action) {
   selectedActionId = action.id;
   selectedTargetId = null;
+  selectedDamageType = action.damageTypeChoices?.[0] || null;
   targetingUi.start(action);
   if (!actionRequiresTarget(controller.snapshot, actor.id, action.id)) {
-    controller.action(actor.id, action.id, null);
+    controller.action(actor.id, action.id, actionPayload(null));
     selectedActionId = null;
+    selectedDamageType = null;
     targetingUi.reset();
     render();
     return;
@@ -294,7 +322,10 @@ function renderLog() {
 async function maybeRunAi() {
   const actor = getCurrentActor(controller.snapshot);
   if (!actor || actor.team !== "enemies" || controller.snapshot.outcome || aiRunning || controller.pendingReaction) {
-    if (controller.snapshot.outcome) summaryUi.show();
+    if (controller.snapshot.outcome) {
+      lifecycleUi.syncOutcome();
+      summaryUi.show();
+    }
     return;
   }
 
@@ -328,24 +359,36 @@ function onCellClick(pos) {
     targetingUi.lock(pos);
     return;
   }
-  const occupant = getLivingOccupant(controller.snapshot, pos);
-  if (occupant && selectedActionId) {
-    if (!isValidTarget(controller.snapshot, actor.id, selectedActionId, occupant.id)) return;
+  if (selectedActionId) {
+    const occupant = getLivingOccupant(controller.snapshot, pos);
+    if (!occupant || !isValidTarget(controller.snapshot, actor.id, selectedActionId, occupant.id)) return;
     selectedTargetId = occupant.id;
     confirmAction();
     return;
   }
+  if (samePosition(actor.position, pos)) return;
   controller.move(actor.id, pos);
   render();
+}
+
+function samePosition(a, b) {
+  return a?.x === b?.x && a?.y === b?.y;
 }
 
 function confirmAction() {
   const actor = getCurrentActor(controller.snapshot);
   if (!canPlayerAct(controller.snapshot, actor?.id, aiRunning) || !selectedActionId || !selectedTargetId) return;
-  controller.action(actor.id, selectedActionId, selectedTargetId);
+  controller.action(actor.id, selectedActionId, actionPayload(selectedTargetId));
   clearSelections();
   targetingUi.reset();
   render();
+}
+
+function actionPayload(targetId) {
+  const choices = {};
+  if (selectedDamageType) choices.damageType = selectedDamageType;
+  if (!Object.keys(choices).length) return targetId;
+  return { targetId, choices };
 }
 
 function endTurn() {
@@ -358,38 +401,42 @@ function endTurn() {
 
 function reset() {
   if (aiRunning) return;
+  resetFromLatestSave();
+}
+
+async function resetFromLatestSave() {
+  await lifecycleUi.hydrate();
   controller.reset();
-  selectedActionId = null;
-  selectedTargetId = null;
-  animation = null;
-  targetPulseUntil = 0;
-  targetingUi.reset();
-  if (summaryDialogEl.open) summaryDialogEl.close();
-  if (reactionDialogEl.open) reactionDialogEl.close();
+  clearTransientUi();
   render();
 }
 
 function switchScenario() {
   if (aiRunning) return;
+  switchScenarioFromLatestSave();
+}
+
+async function switchScenarioFromLatestSave() {
+  await lifecycleUi.hydrate();
   controller.setScenario(scenarioSelectEl.value);
+  clearTransientUi();
+  render();
+}
+
+function clearTransientUi() {
   selectedActionId = null;
   selectedTargetId = null;
+  selectedDamageType = null;
   animation = null;
+  lifecycleUi.reset();
   targetPulseUntil = 0;
   targetingUi.reset();
   if (summaryDialogEl.open) summaryDialogEl.close();
   if (reactionDialogEl.open) reactionDialogEl.close();
-  render();
 }
 
 function initializeScenarioSelect() {
-  for (const scenario of getCombatScenarioOptions()) {
-    const option = document.createElement("option");
-    option.value = scenario.id;
-    option.textContent = scenario.name;
-    scenarioSelectEl.appendChild(option);
-  }
-  scenarioSelectEl.value = controller.scenarioId;
+  populateScenarioSelect(scenarioSelectEl, getCombatScenarioOptions(), controller.scenarioId);
 }
 
 function handleKey(event) {
@@ -459,10 +506,56 @@ function sleep(ms) {
 function clearSelections() {
   selectedActionId = null;
   selectedTargetId = null;
+  selectedDamageType = null;
+}
+
+function titleCase(value) {
+  return String(value || "").split("_").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
 }
 
 function getConditionLabels(actor) {
   return (actor.conditions || []).map((condition) => conditionLabel(controller.snapshot, condition));
+}
+
+function getActorHoverLines(actor, zoneObjects = []) {
+  const snapshot = controller.snapshot;
+  const effectiveAc = getEffectiveAc(snapshot, actor);
+  const acSources = actor.armorClassSources?.length
+    ? actor.armorClassSources.map((source) => `${source.label} ${formatSigned(source.amount)}${source.detail ? ` (${source.detail})` : ""}`)
+    : [`Base AC ${actor.ac}`];
+  const acModifiers = collectModifierDetails(snapshot, actor, "ac").map(formatModifierDetail);
+  const incomingAttackModifiers = collectModifierDetails(snapshot, actor, "incoming_attack_roll").map(formatModifierDetail);
+  const speedModifiers = collectModifierDetails(snapshot, actor, "speed").map(formatModifierDetail);
+  const conditions = getConditionLabels(actor);
+  const lines = [
+    `${actor.name} (${actor.role || actor.team})`,
+    `HP ${actor.hp}/${actor.maxHp}${actor.tempHp ? ` +${actor.tempHp} temp` : ""}`,
+    `AC ${effectiveAc}${effectiveAc !== actor.ac ? ` (base ${actor.ac})` : ""}`,
+    `AC sources: ${acSources.join(", ")}`,
+  ];
+  if (acModifiers.length) lines.push(`AC modifiers: ${acModifiers.join(", ")}`);
+  if (incomingAttackModifiers.length) lines.push(`Incoming attacks: ${incomingAttackModifiers.join(", ")}`);
+  if (speedModifiers.length) lines.push(`Speed modifiers: ${speedModifiers.join(", ")}`);
+  if (conditions.length) lines.push(...conditions);
+  if (zoneObjects.length) lines.push(`Zone: ${zoneObjects.map((object) => object.name).join(", ")}`);
+  return lines;
+}
+
+function formatModifierDetail(detail) {
+  const parts = [detail.label || detail.id || detail.stat];
+  if (detail.die) parts.push(formatDieModifier(detail));
+  if (detail.amount) parts.push(formatSigned(detail.amount));
+  if (detail.mode) parts.push(detail.mode);
+  return parts.join(" ");
+}
+
+function formatDieModifier(detail) {
+  const sign = detail.multiplier === -1 ? "-" : "+";
+  return `${sign}${detail.die}`;
+}
+
+function formatSigned(value) {
+  return value >= 0 ? `+${value}` : String(value);
 }
 
 function classIconClass(actor) {

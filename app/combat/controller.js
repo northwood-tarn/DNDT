@@ -8,7 +8,7 @@ import { checkOutcome } from "./combatState.js";
 import { rollInitiativeOrder } from "./initiative.js";
 import { isPendingReactionPrompt } from "./reactions.js";
 
-export function createCombatController({ scenarioId = DEFAULT_COMBAT_SCENARIO_ID } = {}) {
+export function createCombatController({ scenarioId = DEFAULT_COMBAT_SCENARIO_ID, scenarioOptions = {} } = {}) {
   const log = createCombatLog();
   const dice = createDiceRoller({ deterministic: true, seed: "combat-test-001" });
   let currentScenarioId = scenarioId;
@@ -17,7 +17,7 @@ export function createCombatController({ scenarioId = DEFAULT_COMBAT_SCENARIO_ID
   let pendingReaction = null;
 
   function reset() {
-    const scenario = createCombatScenario(currentScenarioId);
+    const scenario = createCombatScenario(currentScenarioId, getScenarioOptions(currentScenarioId));
     log.clear();
     dice.setDeterministic(dice.deterministic, scenario.metadata?.diceSeed || dice.seed);
     snapshot = createSnapshotFromScenario(scenario);
@@ -26,6 +26,7 @@ export function createCombatController({ scenarioId = DEFAULT_COMBAT_SCENARIO_ID
     initialSnapshot = cloneSnapshot(snapshot);
     log.add("reset");
     log.add("combat.start", { round: snapshot.round, seeded: dice.deterministic });
+    logScenarioSource();
     const actor = currentActor(snapshot);
     if (actor) startTurn(snapshot, actor, log, dice);
     return snapshot;
@@ -38,6 +39,24 @@ export function createCombatController({ scenarioId = DEFAULT_COMBAT_SCENARIO_ID
 
   function rollInitiative() {
     rollInitiativeOrder(snapshot, dice, log);
+  }
+
+  function logScenarioSource() {
+    if (!snapshot?.metadata?.generatedHeroSource) return;
+    const hero = snapshot.actors.find((actor) => actor.team === "heroes");
+    const spellActions = (hero?.actions || []).filter((action) => String(action.type || "").startsWith("spell_"));
+    log.add("scenario.loaded", {
+      round: snapshot.round,
+      actorId: hero?.id || null,
+      actorName: hero?.name || "Hero",
+      source: snapshot.metadata.generatedHeroSource,
+      recordId: snapshot.metadata.generatedHeroRecordId || null,
+      spells: spellActions.map((action) => action.name),
+    });
+  }
+
+  function getScenarioOptions(id) {
+    return typeof scenarioOptions === "function" ? scenarioOptions(id) : scenarioOptions;
   }
 
   function toggleDeterministic() {

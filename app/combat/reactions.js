@@ -7,6 +7,7 @@ import { livingActors } from "./combatState.js";
 import { distance } from "./grid.js";
 import { resolveRiderDamageFormula } from "./damageRiders.js";
 import { addActiveEffect } from "./modifiers.js";
+import { isReactionPolicyRelevant, normalizeReactionPolicy } from "./reactionPolicy.js";
 
 const REACTION_PRIORITY = {
   survival: 100,
@@ -305,12 +306,11 @@ function choosePromptedHitReaction(snapshot, actor, context) {
 }
 
 function promptedHitReactionCandidate(actor, action, context) {
-  const policy = action?.reactionPolicy;
+  const policy = normalizeReactionPolicy(action?.reactionPolicy);
   if (!policy || policy.trigger !== "would_be_hit_by_attack" || policy.reactionMode !== "prompt") return null;
   if (policy.effect?.preventsTriggeringHit !== true) return null;
   if (policy.effect?.kind !== "ac_bonus") return null;
-  const acBonus = policy.effect.amount || 0;
-  if (policy.offerOnlyIfEffective && context.total >= context.effectiveAc + acBonus) return null;
+  if (!isReactionPolicyRelevant(policy, context)) return null;
   const cost = resolvePromptReactionCost(actor, policy);
   if (!cost) return null;
   const name = action.name || policy.id;

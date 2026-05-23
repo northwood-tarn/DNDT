@@ -4,7 +4,7 @@ const DEFAULT_CLASSES_PATH = "app/data/classes.js";
 const VALID_FEATURE_TYPES = new Set(["Action", "Bonus Action", "Reaction", "Passive", "Special"]);
 const VALID_ABILITIES = new Set(["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]);
 const VALID_RESOURCE_USES = new Set(["channelDivinity"]);
-const VALID_EFFECT_KEYS = new Set(["resources", "expertise", "actionOptions", "choiceRequirements", "modifiers", "auras", "triggeredEffects", "reactions", "damageRiders", "conditionRiders", "modifierRiders", "healingRiders", "resistances", "narrativeTags", "narrativeOnly", "advancement", "attackAction"]);
+const VALID_EFFECT_KEYS = new Set(["resources", "expertise", "actionOptions", "choiceRequirements", "modifiers", "auras", "triggeredEffects", "reactions", "damageRiders", "conditionRiders", "modifierRiders", "healingRiders", "resistances", "narrativeTags", "narrativeOnly", "advancement", "attackAction", "weaponMastery"]);
 const VALID_EFFECT_RECOVERY = new Set(["short_rest", "long_rest", "combat", "special"]);
 const VALID_CHOICE_KINDS = new Set(["subclass", "pact", "skill", "tool", "spell", "weapon", "device_recipe"]);
 

@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url';
 import { validateArmor } from './validate-armor.js';
 import { validateBackgrounds } from './validate-backgrounds.js';
 import { validateClasses } from './validate-classes.js';
+import { validateCombatLegacy } from './validate-combat-legacy.js';
 import { validateConsumables } from './validate-consumables.js';
 import { validateEnemies } from './validate-enemies.js';
 import { validateEncounters } from './validate-encounters.js';
@@ -408,6 +409,15 @@ async function main() {
     for (const err of encounterErrors) console.error('  -', err);
   } else {
     printOk('[encounters] Validation OK');
+  }
+
+  const combatLegacyErrors = validateCombatLegacy();
+  if (combatLegacyErrors.length) {
+    jsonErrors += combatLegacyErrors.length;
+    printErr(`[combat-legacy] Validation failed with ${combatLegacyErrors.length} error(s):`);
+    for (const err of combatLegacyErrors) console.error('  -', err);
+  } else {
+    printOk('[combat-legacy] Validation OK');
   }
 
   if (!NO_CROSS) {

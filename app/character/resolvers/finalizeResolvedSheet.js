@@ -143,9 +143,33 @@ function finalizeArmorClass(sheet) {
   const armor = getArmorById(sheet.equipment.armorId);
   const shield = getArmorById(sheet.equipment.shieldId);
   const armorDexCap = resolveArmorDexCap(sheet, armor);
-  const armorAc = armor ? armor.ac + cappedDexMod(dexMod, armorDexCap) : 10 + dexMod;
+  const effectiveDex = cappedDexMod(dexMod, armorDexCap);
+  const armorAc = armor ? armor.ac + effectiveDex : 10 + dexMod;
   const shieldBonus = shield?.type === "shield" ? (shield.modifiers?.acBonus || 0) : 0;
-  sheet.combatBasics.armorClass = armorAc + shieldBonus + armorClassFeatureBonus(sheet, armor);
+  const featureBonus = armorClassFeatureBonus(sheet, armor);
+  sheet.combatBasics.armorClass = armorAc + shieldBonus + featureBonus;
+  sheet.combatBasics.armorClassSources = armorClassSources({
+    armor,
+    shield,
+    dexMod,
+    effectiveDex,
+    shieldBonus,
+    featureBonus,
+  });
+}
+
+function armorClassSources({ armor, shield, dexMod, effectiveDex, shieldBonus, featureBonus }) {
+  const sources = [];
+  if (armor) {
+    sources.push({ label: armor.name, amount: armor.ac, detail: "armor base" });
+    sources.push({ label: "Dexterity", amount: effectiveDex, detail: dexMod === effectiveDex ? "modifier" : "capped modifier" });
+  } else {
+    sources.push({ label: "Unarmored base", amount: 10 });
+    sources.push({ label: "Dexterity", amount: dexMod, detail: "modifier" });
+  }
+  if (shieldBonus) sources.push({ label: shield?.name || "Shield", amount: shieldBonus });
+  if (featureBonus) sources.push({ label: "Features", amount: featureBonus });
+  return sources;
 }
 
 function cappedDexMod(dexMod, cap) {

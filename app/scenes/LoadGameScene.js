@@ -1,14 +1,5 @@
-// LoadGameScene.js
-// Scene for listing and selecting saved games.
-// Uses SaveManager to retrieve saves, but does NOT perform the actual restore.
-// Instead, it dispatches `game:loadSaveSelected` with { saveId } so that
-// a higher-level controller (ExitRouter / sceneManager) can handle the load.
-
-import SaveManager, {
-  SAVE_TYPE_AUTOSAVE,
-  SAVE_TYPE_QUICKSAVE,
-  SAVE_TYPE_MANUAL
-} from "./SaveManager.js";
+import { routeTo } from "../engine/sceneRouter.js";
+import { createRendererSaveGameClient } from "../state/saveGameClient.js";
 
 export default class LoadGameScene {
   constructor() {
@@ -17,6 +8,7 @@ export default class LoadGameScene {
     this._rootEl = null;
     this._params = null;
     this._saves = [];
+    this._saveClient = createRendererSaveGameClient();
   }
 
   init(ctx) {
@@ -28,7 +20,16 @@ export default class LoadGameScene {
     this._params = params;
     console.info("[Scene:enter] LoadGameScene", params);
 
-    this._saves = SaveManager.getAllSaves();
+    this._loadSaves();
+  }
+
+  async _loadSaves() {
+    try {
+      this._saves = await this._saveClient.list();
+    } catch (error) {
+      console.warn("[LoadGameScene] Failed to list saves:", error);
+      this._saves = [];
+    }
     this._buildUi();
   }
 
@@ -71,17 +72,16 @@ export default class LoadGameScene {
     list.className = "load-game-list";
 
     for (const save of this._saves) {
-      const { saveId, saveType, timestamp, metadata } = save;
-      const meta = metadata || {};
+      const saveId = save.slot;
       const li = document.createElement("li");
       li.className = "load-game-item";
 
       const title = document.createElement("div");
       title.className = "load-game-title";
 
-      const characterName = meta.characterName || "(Unnamed)";
-      const characterClass = meta.characterClass || "Unknown Class";
-      const level = typeof meta.level === "number" ? meta.level : "?";
+      const characterName = save.activeCharacterName || "(Unnamed)";
+      const characterClass = save.activeClassId || "Unknown Class";
+      const level = typeof save.level === "number" ? save.level : "?";
 
       title.textContent = `${characterName} (${characterClass} ${level})`;
       li.appendChild(title);
@@ -89,20 +89,19 @@ export default class LoadGameScene {
       const details = document.createElement("div");
       details.className = "load-game-details";
 
-      const areaId = meta.currentAreaId || "Unknown Area";
-      const sceneType = meta.currentSceneType || "unknown";
-      const typeLabel = this._labelForSaveType(saveType);
+      const areaId = save.locationAreaId || "Unknown Area";
+      const sceneType = save.locationScene || "unknown";
 
       const timeSpan = document.createElement("span");
       let timeLabel = "Unknown time";
-      if (timestamp) {
-        const d = new Date(timestamp);
+      if (save.savedAt) {
+        const d = new Date(save.savedAt);
         if (!Number.isNaN(d.getTime())) {
           timeLabel = d.toLocaleString();
         }
       }
 
-      details.textContent = `${areaId} – ${typeLabel} – ${timeLabel} – Scene: ${sceneType}`;
+      details.textContent = `${areaId} - ${saveId} - ${timeLabel} - Scene: ${sceneType}`;
       li.appendChild(details);
 
       const buttons = document.createElement("div");
@@ -141,35 +140,31 @@ export default class LoadGameScene {
     this._rootEl = root;
   }
 
-  _labelForSaveType(saveType) {
-    switch (saveType) {
-      case SAVE_TYPE_AUTOSAVE:
-        return "Autosave";
-      case SAVE_TYPE_QUICKSAVE:
-        return "Quicksave";
-      case SAVE_TYPE_MANUAL:
-        return "Manual Save";
-      default:
-        return "Unknown Save";
-    }
-  }
-
-  _handleLoadClicked(saveId) {
+  async _handleLoadClicked(saveId) {
     if (!saveId) return;
     console.info("[LoadGameScene] Load clicked:", saveId);
+    const saveGame = await this._saveClient.load(saveId);
+    const location = saveGame?.world?.location || {};
     window.dispatchEvent(
-      new CustomEvent("game:loadSaveSelected", { detail: { saveId } })
+      new CustomEvent("game:loadSaveSelected", { detail: { saveId, saveGame } })
     );
+    routeTo({
+      toScene: location.scene || "dialogue",
+      reason: "loadGame",
+      saveSlot: saveId,
+      saveGame,
+      areaId: location.areaId,
+      entryKnot: location.entryKnot,
+    });
   }
 
-  _handleDeleteClicked(saveId) {
+  async _handleDeleteClicked(saveId) {
     if (!saveId) return;
     const confirmed = window.confirm("Delete this save permanently?");
     if (!confirmed) return;
 
-    SaveManager.deleteSave(saveId);
-    this._saves = SaveManager.getAllSaves();
-    this._buildUi();
+    await this._saveClient.clear(saveId);
+    await this._loadSaves();
   }
 
   update(dt) {

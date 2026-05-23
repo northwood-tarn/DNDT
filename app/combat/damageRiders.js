@@ -1,5 +1,6 @@
 import { spendResourceUse } from "./actor.js";
 import { getActionTags } from "./actionTags.js";
+import { hasStraightMovementThisTurn } from "./featureHooks.js";
 import { targetHasRequiredMark } from "./marks.js";
 
 const ABILITY_TOKEN_TO_MOD = {
@@ -15,7 +16,7 @@ export function collectFeatureDamageRiders(source, target, action, options = {})
   const trigger = options.trigger || "source_hits_with_attack_roll";
   return (source?.features || [])
     .flatMap((feature) =>
-      (feature.effects?.damageRiders || []).map((rider) => ({
+      featureDamageRiders(feature).map((rider) => ({
         ...rider,
         id: rider.id || `${feature.id}_damage_rider`,
         name: rider.name || feature.name,
@@ -25,6 +26,13 @@ export function collectFeatureDamageRiders(source, target, action, options = {})
       }))
     )
     .filter((rider) => damageRiderMatches(source, target, action, rider, { ...options, trigger }));
+}
+
+function featureDamageRiders(feature) {
+  return [
+    ...(feature.effects?.damageRiders || []),
+    ...(feature.grants?.damageRiders || []),
+  ];
 }
 
 export function markFeatureDamageRiderUsed(source, rider) {
@@ -63,6 +71,7 @@ function damageRiderMatches(source, target, action, rider, options) {
   if (rider.oncePerTurn && source?.turnFlags?.damageRiders?.[rider.id]) return false;
   if (rider.oncePerCombat && source?.combatFlags?.damageRiders?.[rider.id]) return false;
   if (rider.resourceId && getResourceUses(source, rider.resourceId) <= 0) return false;
+  if (Number.isFinite(rider.requiresStraightMovementBeforeActionSquares) && !hasStraightMovementThisTurn(source, rider.requiresStraightMovementBeforeActionSquares)) return false;
   if (rider.targetHpBelowFraction != null && !targetHpBelowFraction(target, rider.targetHpBelowFraction, options.trigger)) return false;
   if (rider.onlyRound != null && options.snapshot?.round !== rider.onlyRound) return false;
   if (rider.requiresConditionOnTarget && !(target?.conditions || []).some((condition) => condition.id === rider.requiresConditionOnTarget)) return false;

@@ -2,8 +2,9 @@ import { getConsumableById } from "../data/consumables.js";
 import { getArmorById } from "../data/armor.js";
 import { getSpellRecordById } from "../data/spells.js";
 import { getWeaponById } from "../data/weapons.js";
-import { createConsumableAction, createSpellAction, createWeaponAction } from "../combat/actionFactory.js";
+import { createConsumableAction, createNickAttackAction, createSpellAction, createWeaponAction } from "../combat/actionFactory.js";
 import { normalizeCombatActor, validateCombatActor } from "../combat/actor.js";
+import { createFeatureActionsFromFeatures } from "../combat/featureActionFactory.js";
 
 const ABILITY_ABBREVIATIONS = {
   strength: "str",
@@ -26,6 +27,7 @@ export function resolvedSheetToCombatActor(sheet, options = {}) {
     hp: options.hp ?? sheet.durability.maxHp,
     maxHp: sheet.durability.maxHp,
     ac: sheet.combatBasics.armorClass,
+    armorClassSources: structuredClone(sheet.combatBasics.armorClassSources || []),
     level: sheet.identity.level,
     proficiencyBonus: sheet.proficiencyBonus,
     spellSaveDC: sheet.spellcasting.spellSaveDc || null,
@@ -50,6 +52,7 @@ export function resolvedSheetToCombatActor(sheet, options = {}) {
       armorType: getArmorById(sheet.equipment.armorId)?.type || null,
       shieldId: sheet.equipment.shieldId || null,
       weaponIds: [...(sheet.equipment.weaponIds || [])],
+      masteredWeaponIds: [...(sheet.equipment.masteredWeaponIds || [])],
     },
     inventory: structuredClone(sheet.equipment.inventory || []),
     actions: createCombatActionsFromSheet(sheet),
@@ -85,7 +88,10 @@ function normalizeSpellSlots(slots) {
 
 function createPassiveFeatureEffects(sheet) {
   return (sheet.features || [])
-    .flatMap((feature) => (feature.effects?.modifiers || []).map((modifier) => ({
+    .flatMap((feature) => [
+      ...(feature.effects?.modifiers || []),
+      ...(feature.grants?.modifiers || []),
+    ].map((modifier) => ({
       id: modifier.id || `${feature.id}_${modifier.stat}`,
       label: feature.name,
       type: "modifier",
@@ -150,16 +156,38 @@ function abbreviateAbilityMods(abilities) {
 }
 
 function createWeaponActions(sheet) {
-  return (sheet.equipment.weaponIds || [])
+  const weaponRecords = (sheet.equipment.weaponIds || [])
     .map((weaponId) => {
       const weapon = getWeaponById(weaponId);
       if (!weapon) return null;
       return createWeaponAction(weapon, {
         attackBonus: weaponAttackBonus(sheet, weapon),
         damageBonus: weaponDamageBonus(sheet, weapon),
+        enableWeaponMastery: isWeaponMastered(sheet, weapon.id),
       });
     })
     .filter(Boolean);
+  return [
+    ...weaponRecords,
+    ...createNickAttackActions(sheet),
+  ];
+}
+
+function createNickAttackActions(sheet) {
+  const weapons = (sheet.equipment.weaponIds || []).map(getWeaponById).filter(Boolean);
+  const nick = weapons.find((weapon) => weapon.mastery === "nick" && (weapon.properties || []).includes("light"));
+  const partner = weapons.find((weapon) => weapon.id !== nick?.id && (weapon.properties || []).includes("light"));
+  if (!nick || !partner || !isWeaponMastered(sheet, nick.id)) return [];
+  const action = createNickAttackAction(nick, partner, {
+    id: "nick_attack",
+    attackBonusByWeapon: Object.fromEntries([nick, partner].map((weapon) => [weapon.id, weaponAttackBonus(sheet, weapon)])),
+    damageBonusByWeapon: Object.fromEntries([nick, partner].map((weapon) => [weapon.id, weaponDamageBonus(sheet, weapon)])),
+  });
+  return action ? [action] : [];
+}
+
+function isWeaponMastered(sheet, weaponId) {
+  return (sheet.equipment.masteredWeaponIds || []).includes(weaponId);
 }
 
 function createSpellActions(sheet) {
@@ -188,52 +216,11 @@ function createConsumableActions(sheet) {
 }
 
 function createFeatureActions(sheet) {
-  return (sheet.features || [])
-    .flatMap((feature) => (feature.effects?.actionOptions || []).map((option) => featureActionFromOption(feature, option, sheet)))
-    .filter(Boolean);
-}
-
-function featureActionFromOption(feature, option, sheet) {
-  const resource = option.resourceId
-    ? (sheet.resources || []).find((item) => item.id === option.resourceId)
-    : null;
-  const base = {
-    id: option.id,
-    name: option.name || feature.name,
-    cost: actionTypeToCost(option.actionType),
-    requiresTarget: option.requiresTarget === true,
-    resourceId: option.resourceId || null,
-    uses: resource ? { max: resource.max, remaining: resource.current ?? resource.max, recovery: resource.recovery } : null,
-    description: option.description || feature.description || "",
-    tags: { feature: true, harmful: option.harmful === true || option.targetFilter?.team === "enemies" || Boolean(option.damage || option.damageByTargetProperty) },
-  };
-  if (option.healingFormula) {
-    return {
-      ...base,
-      type: "self_heal",
-      requiresTarget: false,
-      healing: resolveFormula(option.healingFormula, sheet),
-    };
-  }
-  if (option.actionKind === "dash") return { ...base, type: "dash", requiresTarget: false };
-  if (option.actionKind === "dodge") return { ...base, type: "dodge", requiresTarget: false };
-  return {
-    ...base,
-    type: "feature_action",
-    range: feetToSquares(option.rangeFt ?? option.range ?? 0),
-    saveAbility: normalizeAbility(option.save?.ability || option.saveAbility),
-    spellSaveDC: resolveFeatureSaveDc(option, sheet),
-    damage: resolveFormula(option.damage?.dice || option.damage, sheet),
-    damageType: option.damage?.type || option.damageType || null,
-    damageByTargetProperty: structuredClone(option.damageByTargetProperty || null),
-    targeting: structuredClone(option.targeting || null),
-    targetFilter: structuredClone(option.targetFilter || null),
-    save: structuredClone(option.save || null),
-    economyGrant: structuredClone(option.economyGrant || null),
-    mark: structuredClone(option.mark || null),
-    object: structuredClone(option.createsCombatObject || option.object || null),
-    effects: structuredClone(option.effects || []),
-  };
+  return createFeatureActionsFromFeatures(sheet.features || [], {
+    resources: sheet.resources || [],
+    resolveFormula: (formula) => resolveFormula(formula, sheet),
+    resolveSaveDc: (option) => resolveFeatureSaveDc(option, sheet),
+  });
 }
 
 function weaponAttackBonus(sheet, weapon) {
@@ -257,17 +244,6 @@ function abbreviateSaves(saves) {
     ABILITY_ABBREVIATIONS[ability] || ability,
     value,
   ]));
-}
-
-function actionTypeToCost(actionType) {
-  if (actionType === "free" || actionType === "special") return "free";
-  if (actionType === "bonus_action" || actionType === "bonus") return "bonus";
-  if (actionType === "reaction") return "reaction";
-  return "action";
-}
-
-function normalizeAbility(ability) {
-  return ability ? String(ability).toLowerCase().slice(0, 3) : null;
 }
 
 function resolveFormula(formula, sheet) {

@@ -1,4 +1,5 @@
 import { resolvedSheetToCombatActor, validateResolvedSheetCombatActor } from "./combatActorAdapter.js";
+import { createCombatActorBridgeReport } from "./combatActorBridgeReport.js";
 import { createCharacterValidityReport } from "./characterValidityReport.js";
 import { resolveCharacterSheet } from "./resolveCharacterSheet.js";
 import { createResolvedSheetPreview } from "./resolvedSheetPreview.js";
@@ -22,6 +23,10 @@ export function createCharacterPipelineExport(draft, options = {}) {
     combatActor,
     validityReport: createCharacterValidityReport(draft, {
       sheet: resolvedSheet,
+      actorOptions: options.actorOptions || {},
+      allowNonCreationLevel: options.resolveOptions?.allowNonCreationLevel === true,
+    }),
+    bridgeReport: createCombatActorBridgeReport(resolvedSheet, {
       actorOptions: options.actorOptions || {},
     }),
     preview: createResolvedSheetPreview(resolvedSheet, {

@@ -8,6 +8,7 @@ const STARTER_CHARACTER_VARIANT_SPECS = {
     steps: [
       { type: "identity", value: { characterName: "Generated Fighter", level: 1, backgroundId: "soldier", speciesId: "tiefling", lineageId: "infernal", classId: "fighter" } },
       { type: "abilities", value: { strength: 16, dexterity: 12, constitution: 14, intelligence: 10, wisdom: 10, charisma: 10 } },
+      { type: "choices", value: { weaponMasteryIds: ["longsword", "warhammer", "greatsword"] } },
       { type: "gear", value: { weaponIds: ["longsword"], armorId: "chain_mail", shieldId: "shield", inventory: [{ id: "healing_potion", qty: 2 }], attunedItemIds: [] } },
     ],
   },
@@ -40,6 +41,7 @@ const STARTER_CHARACTER_VARIANT_SPECS = {
     steps: [
       { type: "identity", value: { characterName: "Generated Rogue", level: 1, backgroundId: "criminal", speciesId: "orc", classId: "rogue" } },
       { type: "abilities", value: { strength: 10, dexterity: 16, constitution: 14, intelligence: 12, wisdom: 10, charisma: 10 } },
+      { type: "choices", value: { weaponMasteryIds: ["rapier", "shortsword"] } },
       { type: "gear", value: { weaponIds: ["rapier", "shortsword"], armorId: "studded_leather", shieldId: null, inventory: [{ id: "healing_potion", qty: 1 }], attunedItemIds: [] } },
     ],
   },

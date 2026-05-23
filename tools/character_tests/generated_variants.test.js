@@ -51,6 +51,7 @@ function supportsGeneratedArenaVariantInput() {
   const hero = scenario.actors.find((actor) => actor.id === "generated_pc");
 
   assert.equal(scenario.metadata.generatedHeroVariantId, "wizard");
+  assert.equal(scenario.metadata.generatedHeroSource, "starter_variant");
   assert.equal(hero.name, "Generated Wizard");
   assert.equal(scenario.metadata.generatedHeroSheet.identity.classId, "wizard");
   assert.ok(hero.actions.some((action) => action.id === "magic_missile"), "wizard variant should bridge prepared spells into combat actions");

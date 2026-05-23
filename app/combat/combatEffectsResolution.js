@@ -1,4 +1,3 @@
-import { isWalkable } from "./grid.js";
 import {
   addCondition,
   removeCondition,
@@ -9,7 +8,6 @@ import {
   createConditionInstance,
   getConditionRules,
 } from "./effects.js";
-import { rollSaveModifier } from "./modifiers.js";
 import { hasAuraConditionPrevention } from "./auras.js";
 import { resolveDamageAmount } from "./damage.js";
 import {
@@ -24,13 +22,11 @@ import {
   resolveReactionTriggers,
   resolveZeroHpReactionAdjustment,
 } from "./reactions.js";
-import { combatObjectsAt } from "./combatObjects.js";
 import {
   applyGrantActionEffect,
   applyModifierEffect,
   applyTempHpEffect,
 } from "./combatActionEffectHandlers.js";
-import { applyLuckyToRoll } from "./luck.js";
 import { rollActionDamage, rollRiderDamage } from "./damageRolls.js";
 import {
   beginConcentration,
@@ -46,6 +42,8 @@ import {
   collectMatchedFeatureTriggers,
   grantTriggeredAction,
 } from "./featureTriggers.js";
+import { resolveForcedMovement } from "./forcedMovement.js";
+import { resolveEffectSave, resolveInlineSave } from "./combatSaveResolution.js";
 
 export {
   beginConcentration,
@@ -98,25 +96,34 @@ export function applyDamage(snapshot, source, target, action, dice, log, { criti
 }
 
 export function applyHitEffects(snapshot, actor, target, action, log, dice = null) {
-  applyActionEffects(snapshot, actor, target, action, log, "hit");
+  applyActionEffects(snapshot, actor, target, action, log, "hit", dice);
   applyFeatureRiders(snapshot, actor, target, action, "source_hits_with_attack_roll", dice, log);
 }
 
 export function applySaveFailureEffects(snapshot, actor, target, action, log, dice = null) {
-  applyActionEffects(snapshot, actor, target, action, log, "failed_save");
+  applyActionEffects(snapshot, actor, target, action, log, "failed_save", dice);
   applyFeatureRiders(snapshot, actor, target, action, "source_forces_failed_save", dice, log);
 }
 
 export function applyActionResolvedEffects(snapshot, actor, target, action, log, dice = null) {
-  applyActionEffects(snapshot, actor, target || actor, action, log, "action_resolved");
+  applyActionEffects(snapshot, actor, target || actor, action, log, "action_resolved", dice);
   applyFeatureRiders(snapshot, actor, target || actor, action, "source_resolves_action", dice, log);
 }
 
-function applyActionEffects(snapshot, actor, target, action, log, trigger) {
+function applyActionEffects(snapshot, actor, target, action, log, trigger, dice = null) {
   if (!Array.isArray(action.effects)) return;
   for (const effect of action.effects) {
     if ((effect.trigger || "hit") !== trigger) continue;
     if (target.hp <= 0 && effect.skipDefeated !== false) continue;
+    if (effect.save && dice) {
+      const saveEffect = {
+        ...effect,
+        name: effect.label || action.name,
+        save: resolveEffectSave(effect.save, actor, action),
+      };
+      const saveResult = resolveInlineSave(snapshot, actor, target, saveEffect, dice, log);
+      if (saveResult.success && ["negates", "negates_effect"].includes(saveResult.onSave)) continue;
+    }
     if (effect.type === "modifier") {
       applyModifierEffect(snapshot, actor, target, action, effect, log);
       continue;
@@ -130,7 +137,7 @@ function applyActionEffects(snapshot, actor, target, action, log, trigger) {
       continue;
     }
     if (effect.type === "forced_movement") {
-      applyForcedMovementEffect(snapshot, actor, target, action, effect, log);
+      applyForcedMovementEffect(snapshot, actor, target, action, effect, log, dice);
       continue;
     }
     if (effect.type !== "condition" || !effect.condition) continue;
@@ -167,40 +174,28 @@ function applyActionEffects(snapshot, actor, target, action, log, trigger) {
   }
 }
 
-function applyForcedMovementEffect(snapshot, actor, target, action, effect, log) {
-  const from = { ...target.position };
-  let movedSquares = 0;
-  for (let i = 0; i < effect.distanceSquares; i++) {
-    const next = nextForcedMovementStep(actor.position, target.position, effect.direction);
-    if (!next || !isWalkable(snapshot, next, target.id) || combatObjectsAt(snapshot, next).some((object) => object.blocksMovement)) break;
-    target.position = next;
-    movedSquares += 1;
+function applyForcedMovementEffect(snapshot, actor, target, action, effect, log, dice = null) {
+  const movement = resolveForcedMovement(snapshot, actor.position, target, effect);
+  if (movement.movedSquares) {
+    log.add("forced.move", {
+      round: snapshot.round,
+      actorId: actor.id,
+      actorName: actor.name,
+      targetId: target.id,
+      targetName: target.name,
+      from: movement.from,
+      to: movement.to,
+      reason: action.name,
+      movedSquares: movement.movedSquares,
+    });
   }
-  if (!movedSquares) return;
-  log.add("forced.move", {
-    round: snapshot.round,
-    actorId: actor.id,
-    actorName: actor.name,
-    targetId: target.id,
-    targetName: target.name,
-    from,
-    to: { ...target.position },
-    reason: action.name,
-    movedSquares,
-  });
-}
-
-function nextForcedMovementStep(source, target, direction) {
-  const dx = Math.sign(target.x - source.x);
-  const dy = Math.sign(target.y - source.y);
-  const useX = Math.abs(target.x - source.x) >= Math.abs(target.y - source.y);
-  const step = useX ? { x: dx || 0, y: 0 } : { x: 0, y: dy || 0 };
-  if (direction === "toward_source") {
-    step.x *= -1;
-    step.y *= -1;
+  if (movement.collisionSquares > 0 && dice && effect.collisionDamage) {
+    applyCollisionDamage(snapshot, actor, target, {
+      ...action,
+      collisionDamage: effect.collisionDamage,
+      collisionDamageType: effect.collisionDamageType || "bludgeoning",
+    }, movement.collisionSquares, dice, log);
   }
-  if (!step.x && !step.y) return null;
-  return { x: target.x + step.x, y: target.y + step.y };
 }
 
 function applyConditionSideEffects(snapshot, actor, target, action, conditionIdValue, log) {
@@ -322,20 +317,21 @@ function applyDamageRiders(snapshot, source, target, action, dice, log, { critic
   for (const effect of source.activeEffects || []) {
     const rider = effect.damageRider;
     if (!rider || rider.trigger !== "source_hits_with_attack_roll") continue;
-    applyDamageRider(snapshot, source, target, {
+    const result = applyDamageRider(snapshot, source, target, {
       id: `${effect.id}_rider`,
       name: `${effect.label || effect.id} rider`,
       ...rider,
     }, dice, log, { critical });
+    if (result.triggered) consumeActiveEffectRider(snapshot, source, effect, log);
   }
   for (const rider of collectFeatureDamageRiders(source, target, action, { trigger: "source_hits_with_attack_roll", critical, snapshot })) {
-    if (applyDamageRider(snapshot, source, target, rider, dice, log, { critical, sourceAction: action })) {
+    if (applyDamageRider(snapshot, source, target, rider, dice, log, { critical, sourceAction: action }).triggered) {
       markFeatureDamageRiderUsed(source, rider);
     }
   }
   if ((target.conditions || []).some((condition) => condition.id === "surprised")) {
     for (const rider of collectFeatureDamageRiders(source, target, action, { trigger: "source_hits_surprised_target", critical, snapshot })) {
-      if (applyDamageRider(snapshot, source, target, rider, dice, log, { critical, sourceAction: action })) {
+      if (applyDamageRider(snapshot, source, target, rider, dice, log, { critical, sourceAction: action }).triggered) {
         markFeatureDamageRiderUsed(source, rider);
       }
     }
@@ -345,81 +341,54 @@ function applyDamageRiders(snapshot, source, target, action, dice, log, { critic
 function applyPostDamageRiders(snapshot, source, target, action, dice, log) {
   if (!dice || target.hp <= 0) return;
   for (const rider of collectFeatureDamageRiders(source, target, action, { trigger: "source_deals_damage", snapshot })) {
-    if (applyDamageRider(snapshot, source, target, rider, dice, log, { sourceAction: action })) {
+    if (applyDamageRider(snapshot, source, target, rider, dice, log, { sourceAction: action }).triggered) {
       markFeatureDamageRiderUsed(source, rider);
     }
   }
 }
 
 function applyDamageRider(snapshot, source, target, rider, dice, log, { critical = false, sourceAction = null } = {}) {
+  let saveResult = null;
   if (rider.save) {
-    const save = resolveInlineSave(snapshot, source, target, rider, dice, log);
-    if (save.success && ["negates", "negates_effect"].includes(save.onSave)) return false;
+    saveResult = resolveInlineSave(snapshot, source, target, rider, dice, log);
+    if (saveResult.success && ["negates", "negates_effect"].includes(saveResult.onSave)) return { triggered: true, applied: false };
   }
   const damage = resolveRiderDamageFormula(source, rider.damage);
   const rolled = rollRiderDamage(damage, dice, { critical: rider.critical === false ? false : critical });
+  const amount = saveResult?.success && saveResult.onSave === "half"
+    ? Math.floor(Math.max(0, rolled.total) / 2)
+    : Math.max(0, rolled.total);
   applyDamageAmount(snapshot, source, target, {
     id: rider.id,
     name: rider.name,
     damage,
     damageType: resolveRiderDamageType(sourceAction, rider),
     featureDamageRider: rider.featureDamageRider === true,
-  }, rolled, Math.max(0, rolled.total), dice, log);
-  return true;
+  }, rolled, amount, dice, log);
+  return { triggered: true, applied: amount > 0 };
 }
 
-function resolveInlineSave(snapshot, source, target, effect, dice, log) {
-  const ability = String(effect.save.ability || "").toLowerCase();
-  const dc = effect.save.dc || 10;
-  const saveModifier = rollSaveModifier(snapshot, target, ability, { name: effect.name, saveAbility: ability }, dice);
-  const baseBonus = target.saves?.[ability] || 0;
-  const bonus = baseBonus + saveModifier.total;
-  const roll = applyLuckyToRoll({
-    actor: target,
-    roll: rollSaveD20(target, { name: effect.name, saveAbility: ability }, dice, snapshot, source),
-    dice,
-    log,
-    context: {
-      round: snapshot.round,
-      type: "save",
-      label: effect.name,
-      targetNumber: dc,
-      bonus,
-    },
-  });
-  const total = roll.roll + bonus;
-  const success = !roll.autoFail && total >= dc;
-  log.add("save.roll", {
+function consumeActiveEffectRider(snapshot, source, effect, log) {
+  if (!effect || !Number.isFinite(effect.remainingHits)) return;
+  effect.remainingHits = Math.max(0, effect.remainingHits - 1);
+  log.add("effect.charge_spent", {
     round: snapshot.round,
     actorId: source.id,
     actorName: source.name,
-    targetId: target.id,
-    targetName: target.name,
-    spellName: effect.name,
-    ability,
-    roll: roll.roll,
-    rolls: roll.rolls,
-    mode: roll.mode,
-    reasons: roll.reasons,
-    lucky: roll.lucky,
-    bonus,
-    baseBonus,
-    modifierReasons: saveModifier.reasons,
-    cover: null,
-    effectiveBonus: bonus,
-    total,
-    dc,
+    effectId: effect.id,
+    label: effect.label || effect.id,
+    remainingHits: effect.remainingHits,
   });
-  log.add("save.result", {
+  if (effect.remainingHits > 0 || effect.removeWhenSpent !== true) return;
+  source.activeEffects = (source.activeEffects || []).filter((item) => item !== effect);
+  log.add("effect.removed", {
     round: snapshot.round,
     actorId: source.id,
     actorName: source.name,
-    targetId: target.id,
-    targetName: target.name,
-    spellName: effect.name,
-    success,
+    effectId: effect.id,
+    label: effect.label || effect.id,
+    reason: "spent",
   });
-  return { success, onSave: effect.save.onSave };
 }
 
 function applyDamageRetaliation(snapshot, source, target, action, dice, log) {

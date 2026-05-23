@@ -86,6 +86,7 @@ export function createEmptyResolvedCharacterSheet(overrides = {}) {
     },
     equipment: {
       weaponIds: [],
+      masteredWeaponIds: [],
       armorId: null,
       shieldId: null,
       inventory: [],
@@ -150,6 +151,7 @@ export function validateResolvedCharacterSheet(sheet) {
     "featureHooks",
     "advancement.abilityScoreImprovements",
     "equipment.weaponIds",
+    "equipment.masteredWeaponIds",
     "equipment.inventory",
     "equipment.attunedItemIds",
     "metadata.unresolved",

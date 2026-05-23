@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import {
   assignBackgroundAbilityBonus,
+  assignClassDefaultAbilityScores,
   assignStandardAbilityScore,
+  classDefaultAbilityScores,
   createEmptyCharacterDraft,
   hasStandardAbilityArray,
   resolveCharacterSheet,
@@ -9,9 +11,40 @@ import {
 
 export function runAbilityScoreTests() {
   swapsStandardArrayAssignments();
+  assignsClassDefaultStandardArray();
   detectsStandardArrayAssignments();
   swapsBackgroundAbilityBonuses();
   resolvesBackgroundAbilityBonuses();
+}
+
+function assignsClassDefaultStandardArray() {
+  assert.deepEqual(classDefaultAbilityScores("wizard"), {
+    intelligence: 14,
+    constitution: 13,
+    dexterity: 12,
+    wisdom: 11,
+    charisma: 10,
+    strength: 8,
+  });
+  assert.deepEqual(classDefaultAbilityScores("paladin"), {
+    strength: 14,
+    charisma: 13,
+    constitution: 12,
+    wisdom: 11,
+    dexterity: 10,
+    intelligence: 8,
+  });
+
+  const draft = createEmptyCharacterDraft();
+  assignClassDefaultAbilityScores(draft, "rogue");
+  assert.deepEqual(draft.abilities, {
+    dexterity: 14,
+    constitution: 13,
+    intelligence: 12,
+    charisma: 11,
+    wisdom: 10,
+    strength: 8,
+  });
 }
 
 function swapsStandardArrayAssignments() {

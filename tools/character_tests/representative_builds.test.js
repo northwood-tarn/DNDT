@@ -106,6 +106,8 @@ function buildDraft(name, identity, abilities, gear, spells = {}) {
 
 function choicesForBackground(backgroundId, identity) {
   const choices = { backgroundAbilityScores: ["primary", "secondary"] };
+  const masteryIds = defaultWeaponMasteries(identity.classId);
+  if (masteryIds.length) choices.weaponMasteryIds = masteryIds;
   if (identity.classId === "rogue" && (identity.level || 1) >= 7) {
     choices.classChoices = { rogue_expertise_skills: ["stealth", "deception"] };
   }
@@ -125,6 +127,13 @@ function choicesForBackground(backgroundId, identity) {
   if (identity.speciesId === "elf") choices.speciesChoices = { keen_senses_skill: "perception" };
   if (identity.speciesId === "human") choices.speciesChoices = { skillful_skill: "perception" };
   return choices;
+}
+
+function defaultWeaponMasteries(classId) {
+  if (classId === "fighter") return ["longsword", "warhammer", "greatsword"];
+  if (classId === "rogue") return ["rapier", "dagger"];
+  if (classId === "paladin") return ["longsword", "warhammer"];
+  return [];
 }
 
 function martialAbilities(primary) {

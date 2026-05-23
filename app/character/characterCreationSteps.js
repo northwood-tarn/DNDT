@@ -55,7 +55,7 @@ export const CHARACTER_CREATION_STEPS = [
     id: "gear",
     label: "Gear",
     requiredFields: ["gear.weaponIds"],
-    writes: ["gear.weaponIds", "gear.armorId", "gear.shieldId", "gear.inventory"],
+    writes: ["gear.weaponIds", "gear.armorId", "gear.shieldId", "gear.inventory", "choices.weaponMasteryIds"],
     unlocks: ["review"],
   },
   {

@@ -19,6 +19,7 @@ export function isDeclarativeFeatureImplemented(featureOrEffects = {}) {
     (effects.conditionRiders || []).length ||
     (effects.modifierRiders || []).length ||
     (effects.healingRiders || []).length ||
+    (effects.weaponMastery || []).length ||
     (effects.resistances || []).length ||
     (effects.hitPointBonuses || []).length ||
     Number.isFinite(effects.hitPointBonusPerLevel) ||

@@ -30,6 +30,8 @@ import {
   startTurn,
   validateCombatActor,
 } from "./helpers.js";
+import { AI_PROFILE_IDS, getAiProfile } from "../../app/combat/aiProfiles.js";
+import { enemies } from "../../app/data/enemies.js";
 
 async function testAiStepEvents() {
   const controller = createCombatController();
@@ -458,6 +460,7 @@ async function testAiStopsWhenMovementPathIsBlockedByCombatObject() {
 
 
 export async function runAiCombatTests() {
+  testEnemyDataAiProfilesAreRegistered();
   await testAiStepEvents();
   await testAiUsesDashWhenTooFar();
   await testAiDodgesWhenNoAttackAvailable();
@@ -465,4 +468,11 @@ export async function runAiCombatTests() {
   await testAiProfileCanPreferNearestTarget();
   await testArcherPrioritizesBestCoverInRange();
   await testAiStopsWhenMovementPathIsBlockedByCombatObject();
+}
+
+function testEnemyDataAiProfilesAreRegistered() {
+  for (const enemy of Object.values(enemies)) {
+    assert.equal(AI_PROFILE_IDS.includes(enemy.aiProfile), true, `${enemy.id} should use a registered AI profile`);
+    assert.ok(getAiProfile({ ai: { profile: enemy.aiProfile } }).style, `${enemy.id} AI profile should resolve to behavior`);
+  }
 }

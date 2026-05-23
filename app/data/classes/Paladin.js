@@ -22,6 +22,16 @@ export default {
     { id: "subclass", kind: "subclass", level: 3, required: true }
   ],
   features: {
+    1: [
+      {
+        name: "Weapon Mastery",
+        type: "Passive",
+        description: "Choose two weapons whose mastery properties you can use.",
+        effects: {
+          weaponMastery: [{ count: 2 }]
+        }
+      }
+    ],
     4: [
       {
         name: "Ability Score Improvement",

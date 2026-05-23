@@ -27,7 +27,8 @@ function testConsumableCombatActionsResolveGenerically() {
     { id: "fire_granado", qty: 1 },
     { id: "caltrops", qty: 1 },
     { id: "hunting_trap", qty: 1 },
-    { id: "lightning_paper", qty: 1 }
+    { id: "lightning_paper", qty: 1 },
+    { id: "basic_poison", qty: 1 }
   );
   hero.actions.push(
     createConsumableAction(CONSUMABLES.acid_vial, { attackBonus: 5 }),
@@ -35,7 +36,8 @@ function testConsumableCombatActionsResolveGenerically() {
     createConsumableAction(CONSUMABLES.fire_granado),
     createConsumableAction(CONSUMABLES.caltrops),
     createConsumableAction(CONSUMABLES.hunting_trap),
-    createConsumableAction(CONSUMABLES.lightning_paper)
+    createConsumableAction(CONSUMABLES.lightning_paper),
+    createConsumableAction(CONSUMABLES.basic_poison)
   );
 
   assert.equal(resolveAction(snapshot, hero, "acid_vial", "enemy", scriptedDice({ d20: [12], damage: 1 }), log), true);
@@ -87,8 +89,50 @@ function testConsumableCombatActionsResolveGenerically() {
   assert.equal(resolveAction(snapshot, hero, "lightning_paper", null, scriptedDice({ damage: 1 }), log), true);
   assert.equal(getItemQuantity(hero, "lightning_paper"), 0, "weapon buff consumables should spend stock after use");
   assert.ok(hero.activeEffects.some((effect) => effect.damageRider?.damageType === "lightning"), "weapon buff consumables should attach a generic damage rider");
+  hero.activeEffects = [];
+
+  hero.economy.actionAvailable = true;
+  assert.equal(resolveAction(snapshot, hero, "basic_poison", null, scriptedDice({ damage: 1 }), log), true);
+  assert.equal(getItemQuantity(hero, "basic_poison"), 0, "weapon coating consumables should spend stock when applied");
+  assert.ok(hero.activeEffects.some((effect) => effect.damageRider?.damageType === "poison" && effect.remainingHits === 1), "weapon coatings should attach a limited generic damage rider");
+  enemy.hp = 8;
+  enemy.position = { x: 1, y: 2 };
+  enemy.saves = { ...enemy.saves, con: 0 };
+  hero.economy.actionAvailable = true;
+  assert.equal(resolveAction(snapshot, hero, "bow", "enemy", scriptedDice({ d20: [10, 1], damage: [2, 3] }), log), true);
+  assert.equal(enemy.hp, 3, "failed save against coated weapon should apply base weapon damage plus poison damage");
+  assert.equal(hero.activeEffects.some((effect) => effect.damageRider?.damageType === "poison"), false, "one-hit weapon coatings should expire after triggering");
+  assert.ok(log.events.some((event) => event.type === "effect.charge_spent" && event.detail.label === "Basic Poison"), "limited weapon riders should log spent charges");
+}
+
+function testPoisonerBypassesPoisonResistance() {
+  const snapshot = makeHarnessSnapshot();
+  const hero = snapshot.actors[0];
+  const enemy = snapshot.actors[1];
+  const log = createCombatLog();
+  hero.position = { x: 0, y: 0 };
+  enemy.position = { x: 2, y: 0 };
+  enemy.hp = 8;
+  enemy.resistance = ["poison"];
+  enemy.saves = { ...enemy.saves, con: 0 };
+  hero.featureHooks = [{
+    id: "poisoner_ignore_poison_resistance",
+    timing: "damage_resolution",
+    damageTypes: ["poison"],
+    ignoreResistance: true,
+  }];
+  hero.inventory.push({ id: "basic_poison", qty: 1 });
+  hero.actions.push(createConsumableAction(CONSUMABLES.basic_poison));
+
+  assert.equal(resolveAction(snapshot, hero, "basic_poison", null, scriptedDice({ damage: 1 }), log), true);
+  hero.economy.actionAvailable = true;
+  assert.equal(resolveAction(snapshot, hero, "bow", "enemy", scriptedDice({ d20: [10, 1], damage: [2, 3] }), log), true);
+  const poisonEvent = log.events.find((event) => event.type === "damage.applied" && event.detail.damageType === "poison");
+  assert.equal(poisonEvent.detail.amount, 3, "Poisoner should bypass poison resistance without bypassing the save");
+  assert.deepEqual(poisonEvent.detail.damageModifiers.ignoredResistance, ["actor"]);
 }
 
 export async function runConsumableCombatTests() {
   testConsumableCombatActionsResolveGenerically();
+  testPoisonerBypassesPoisonResistance();
 }

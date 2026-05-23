@@ -18,6 +18,7 @@ import {
 import { livingActors } from "./resolver.js";
 
 export async function runAiTurn(snapshot, actor, controller) {
+  if (!actor || actor.defeated || actor.hp <= 0) return;
   const profile = getAiProfile(actor);
   if (profile.style === "ranged") return runRangedTurn(snapshot, actor, controller, profile);
   return runMeleeTurn(snapshot, actor, controller, profile);

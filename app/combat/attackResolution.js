@@ -5,7 +5,7 @@ import { conditionName, getConditionRules } from "./effects.js";
 import { applyDamage, applyDamageAmount, applyHitEffects, isCriticalHitFromConditions } from "./combatEffectsResolution.js";
 import { distance } from "./grid.js";
 import { applyLuckyToRoll } from "./luck.js";
-import { collectAttackRollModeDetails, getEffectiveAc, rollAttackModifier } from "./modifiers.js";
+import { collectAttackRollModeDetails, getEffectiveAc, removeActiveEffect, rollAttackModifier } from "./modifiers.js";
 import {
   resolveCriticalReactionAdjustment,
   resolveIncomingHitReactionAdjustment,
@@ -14,6 +14,8 @@ import {
 } from "./reactions.js";
 import { hasCriticalHitTrigger } from "./featureTriggers.js";
 import { prepareDamageRollHooksForAttack } from "./featureHooks.js";
+import { weaponAttackAbilityModifier } from "./weaponMasteryResolution.js";
+import { createCleaveSecondaryAttack, findCleaveTarget } from "./weaponMasteryActions.js";
 
 export function resolveOpportunityAttacks(snapshot, movingActor, from, to, dice, log) {
   if (!dice) return;
@@ -110,6 +112,7 @@ export function resolveAttack(snapshot, actor, target, action, dice, log) {
     targetName: target.name,
     actionId: action.id,
     actionName: action.name,
+    actionType: action.type,
     roll: attackRoll.roll,
     rolls: attackRoll.rolls,
     mode: attackRoll.mode,
@@ -129,6 +132,9 @@ export function resolveAttack(snapshot, actor, target, action, dice, log) {
     actorName: actor.name,
     targetId: target.id,
     targetName: target.name,
+    actionId: action.id,
+    actionName: action.name,
+    actionType: action.type,
     hit,
     critical,
   });
@@ -137,9 +143,48 @@ export function resolveAttack(snapshot, actor, target, action, dice, log) {
   if (hit) {
     applyDamage(snapshot, actor, target, action, dice, log, { critical });
     applyHitEffects(snapshot, actor, target, action, log, dice);
+    applyCleaveOnHit(snapshot, actor, target, action, dice, log);
   } else {
+    applyGrazeOnMiss(snapshot, actor, target, action, dice, log);
     resolveReactionTriggers(snapshot, "missed_by_melee_attack", { source: actor, target, action }, dice, log, { resolveAttack, applyDamageAmount });
   }
+}
+
+function applyCleaveOnHit(snapshot, actor, target, action, dice, log) {
+  if (action.weaponMastery !== "cleave" || action.weaponMasteryActive !== true || actor.turnFlags?.cleaveResolvedThisTurn || action.cleaveSecondary === true) return;
+  const cleaveTarget = findCleaveTarget(snapshot, actor, target);
+  if (!cleaveTarget) return;
+  actor.turnFlags ??= {};
+  actor.turnFlags.cleaveResolvedThisTurn = true;
+  log.add("mastery.cleave", {
+    round: snapshot.round,
+    actorId: actor.id,
+    actorName: actor.name,
+    targetId: target.id,
+    targetName: target.name,
+    cleaveTargetId: cleaveTarget.id,
+    cleaveTargetName: cleaveTarget.name,
+    actionName: action.name,
+  });
+  resolveAttack(snapshot, actor, cleaveTarget, createCleaveSecondaryAttack(action), dice, log);
+}
+
+function applyGrazeOnMiss(snapshot, actor, target, action, dice, log) {
+  if (action.weaponMastery !== "graze" || action.weaponMasteryActive !== true || target.hp <= 0) return;
+  const amount = Math.max(0, weaponAttackAbilityModifier(actor, action));
+  if (amount <= 0) return;
+  applyDamageAmount(snapshot, actor, target, {
+    id: `${action.id}_graze`,
+    name: `${action.name} Graze`,
+    damage: String(amount),
+    damageType: action.damageType,
+    weaponMastery: "graze",
+  }, {
+    dice: String(amount),
+    rolls: [],
+    modifier: amount,
+    total: amount,
+  }, amount, dice, log);
 }
 
 function getOpportunityAction(actor) {
@@ -163,6 +208,12 @@ function rollAttackD20(snapshot, actor, target, action, dice) {
     if (modifier.mode === "disadvantage") {
       advantage -= 1;
       reasons.push(`DIS: ${modifier.label}`);
+    }
+    if (modifier.consumeOn === "outgoing_attack" && modifier.stat === "attack_roll") {
+      consumed.push({ actor, effectId: modifier.id });
+    }
+    if (modifier.consumeOn === "incoming_attack" && modifier.stat === "incoming_attack_roll") {
+      consumed.push({ actor: target, effectId: modifier.id });
     }
   }
 
@@ -225,6 +276,21 @@ function rollAttackD20(snapshot, actor, target, action, dice) {
 
 function consumeAttackRollConditions(snapshot, actor, target, attackRoll, log) {
   for (const item of attackRoll.consumed || []) {
+    if (item.effectId) {
+      if (!removeActiveEffect(item.actor, item.effectId)) continue;
+      log.add("effect.removed", {
+        round: snapshot.round,
+        actorId: item.actor.id,
+        actorName: item.actor.name,
+        effectId: item.effectId,
+        reason: item.actor.id === actor.id
+          ? "used on attack roll"
+          : `used by ${actor.name}'s attack`,
+        targetId: target.id,
+        targetName: target.name,
+      });
+      continue;
+    }
     if (!removeCondition(item.actor, item.condition)) continue;
     log.add("condition.removed", {
       round: snapshot.round,

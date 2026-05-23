@@ -32,6 +32,7 @@ export function createEmptyCharacterDraft(overrides = {}) {
       backgroundOriginFeatChoice: null,
       speciesChoices: {},
       classChoices: {},
+      weaponMasteryIds: [],
       featChoices: {},
       proficiencyChoices: {},
       spellChoices: {},
@@ -83,6 +84,7 @@ export function validateCharacterDraft(draft, options = {}) {
   if (!Array.isArray(draft.choices?.backgroundAbilityScores)) {
     errors.push("choices.backgroundAbilityScores must be an array");
   }
+  if (!Array.isArray(draft.choices?.weaponMasteryIds)) errors.push("choices.weaponMasteryIds must be an array");
   if (!Array.isArray(draft.gear?.weaponIds)) errors.push("gear.weaponIds must be an array");
   if (!Array.isArray(draft.gear?.inventory)) errors.push("gear.inventory must be an array");
   if (!Array.isArray(draft.gear?.attunedItemIds)) errors.push("gear.attunedItemIds must be an array");

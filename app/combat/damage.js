@@ -1,10 +1,17 @@
 import { getConditionRules } from "./effects.js";
+import { ignoresDamageResistance } from "./featureHooks.js";
 import { rollDamageReduction } from "./modifiers.js";
 
 export function resolveDamageAmount(source, target, action, rolledDamage, baseAmount = rolledDamage?.total || 0, snapshot = null, dice = null) {
   const damageType = action?.damageType || action?.collisionDamageType || "untyped";
   const modifiers = collectDamageModifiers(target, damageType);
   let amount = Math.max(0, baseAmount);
+
+  const bypassResistance = ignoresDamageResistance(source, action, damageType);
+  if (bypassResistance && modifiers.resistant.length) {
+    modifiers.ignoredResistance = [...modifiers.resistant];
+    modifiers.resistant = [];
+  }
 
   if (modifiers.immune.length) {
     amount = 0;
@@ -45,7 +52,9 @@ function collectDamageModifiers(target, damageType) {
   }
 
   if (matchesDamageType(target?.resistance, damageType)) modifiers.resistant.push("actor");
+  if (matchesDamageType(target?.resistances, damageType)) modifiers.resistant.push("actor");
   if (matchesDamageType(target?.immune, damageType)) modifiers.immune.push("actor");
+  if (matchesDamageType(target?.immunities, damageType)) modifiers.immune.push("actor");
   if (matchesDamageType(target?.vulnerability, damageType)) modifiers.vulnerable.push("actor");
 
   return modifiers;

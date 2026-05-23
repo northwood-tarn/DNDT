@@ -1,10 +1,13 @@
 import { validateCharacterDraft } from "./characterDraft.js";
 import { validateResolvedSheetCombatActor } from "./combatActorAdapter.js";
+import { describeUnresolvedCharacterIssue } from "./choiceRequirementsReport.js";
 import { createEmptyResolvedCharacterSheet, validateResolvedCharacterSheet } from "./resolvedSheet.js";
 import { resolveCharacterSheet } from "./resolveCharacterSheet.js";
 
 export function createCharacterValidityReport(draft, options = {}) {
-  const draftErrors = validateCharacterDraft(draft);
+  const draftErrors = validateCharacterDraft(draft, {
+    allowNonCreationLevel: options.allowNonCreationLevel === true,
+  });
   const sheet = options.sheet || (draftErrors.length ? createEmptyResolvedCharacterSheet() : resolveCharacterSheet(draft));
   const sheetErrors = validateResolvedCharacterSheet(sheet);
   const unresolved = sheet.metadata?.unresolved || [];
@@ -49,10 +52,7 @@ function check(id, label, messages) {
 }
 
 function describeUnresolved(item) {
-  if (!item || typeof item !== "object") return String(item);
-  if (item.message) return item.message;
-  if (item.type) return `${item.type}: ${JSON.stringify(item)}`;
-  return JSON.stringify(item);
+  return describeUnresolvedCharacterIssue(item);
 }
 
 function countCombatActions(sheet) {

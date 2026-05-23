@@ -27,6 +27,33 @@ export function runCharacterPipelineTests() {
   rejectsInvalidOriginFeatToolChoices();
   resolvesSkillOrToolOriginFeatChoices();
   preservesDraftGearAndSpellsWithoutResolvingMechanics();
+  gatesWeaponMasteryAtCombatActorBridge();
+}
+
+function gatesWeaponMasteryAtCombatActorBridge() {
+  const fighterSheet = resolveCharacterSheet(createEmptyCharacterDraft({
+    identity: { characterName: "Mastered Fighter", level: 1, classId: "fighter" },
+    abilities: { strength: 16, dexterity: 12, constitution: 14, intelligence: 10, wisdom: 10, charisma: 8 },
+    choices: { weaponMasteryIds: ["longsword", "warhammer", "greatsword"] },
+    gear: { weaponIds: ["warhammer"], armorId: null, shieldId: null, inventory: [], attunedItemIds: [] },
+  }));
+  const wizardSheet = resolveCharacterSheet(createEmptyCharacterDraft({
+    identity: { characterName: "Unmastered Wizard", level: 1, classId: "wizard" },
+    abilities: { strength: 8, dexterity: 14, constitution: 12, intelligence: 16, wisdom: 10, charisma: 10 },
+    gear: { weaponIds: ["dagger"], armorId: null, shieldId: null, inventory: [], attunedItemIds: [] },
+  }));
+
+  const fighter = resolvedSheetToCombatActor(fighterSheet);
+  const wizard = resolvedSheetToCombatActor(wizardSheet);
+  const hammer = fighter.actions.find((action) => action.id === "warhammer");
+  const dagger = wizard.actions.find((action) => action.id === "dagger");
+
+  assert.equal(hammer.weaponMastery, "push");
+  assert.equal(hammer.weaponMasteryActive, true, "mastered fighter weapon should activate mastery");
+  assert.equal(hammer.effects.some((effect) => effect.type === "forced_movement"), true);
+  assert.equal(dagger.weaponMastery, "nick", "unmastered weapon should still expose metadata");
+  assert.equal(dagger.weaponMasteryActive, undefined, "wizard should not activate weapon mastery by default");
+  assert.deepEqual(dagger.effects, []);
 }
 
 function resolvesGeneralFeatEffects() {
@@ -66,6 +93,27 @@ function resolvesGeneralFeatEffects() {
       toolProficiencies: [],
       originFeat: "great_weapon_master",
     },
+    poisoner: {
+      id: "poisoner",
+      name: "Poisoner",
+      skillProficiencies: [],
+      toolProficiencies: [],
+      originFeat: "poisoner",
+    },
+    charger: {
+      id: "charger",
+      name: "Charger",
+      skillProficiencies: [],
+      toolProficiencies: [],
+      originFeat: "charger",
+    },
+    shield_master: {
+      id: "shield_master",
+      name: "Shield Master",
+      skillProficiencies: [],
+      toolProficiencies: [],
+      originFeat: "shield_master",
+    },
   };
   const resilientDraft = createEmptyCharacterDraft({
     identity: { characterName: "Test Resilient", level: 4, backgroundId: "resilient_training" },
@@ -94,6 +142,18 @@ function resolvesGeneralFeatEffects() {
   });
   const greatWeaponDraft = createEmptyCharacterDraft({
     identity: { characterName: "Test Heavy", level: 4, backgroundId: "great_weapon_master" },
+  });
+  const poisonerDraft = createEmptyCharacterDraft({
+    identity: { characterName: "Test Poisoner", level: 4, backgroundId: "poisoner" },
+    choices: { featChoices: { poisoner: { ability: ["dexterity"] } } },
+  });
+  const chargerDraft = createEmptyCharacterDraft({
+    identity: { characterName: "Test Charger", level: 4, backgroundId: "charger" },
+    choices: { featChoices: { charger: { ability: ["strength"] } } },
+  });
+  const shieldMasterDraft = createEmptyCharacterDraft({
+    identity: { characterName: "Test Shield", level: 4, backgroundId: "shield_master" },
+    gear: { weaponIds: ["longsword"], armorId: "chain_mail", shieldId: "shield", inventory: [], attunedItemIds: [] },
   });
 
   const resilientSheet = resolveCharacterSheet(resilientDraft, { backgrounds: testBackgrounds }, { allowNonCreationLevel: true });
@@ -124,6 +184,24 @@ function resolvesGeneralFeatEffects() {
   assert.equal(greatWeaponSheet.abilities.strength.score, 11);
   assert.equal(greatWeaponSheet.featureHooks.some((hook) => hook.id === "great_weapon_master_heavy_damage"), true);
   assert.deepEqual(greatWeaponSheet.metadata.unresolved, []);
+
+  const poisonerSheet = resolveCharacterSheet(poisonerDraft, { backgrounds: testBackgrounds }, { allowNonCreationLevel: true });
+  assert.equal(poisonerSheet.abilities.dexterity.score, 11);
+  assert.equal(poisonerSheet.proficiencies.tools.includes("poisoners_kit"), true);
+  assert.deepEqual(poisonerSheet.equipment.inventory.find((item) => item.id === "basic_poison"), { id: "basic_poison", qty: 2 });
+  assert.equal(poisonerSheet.featureHooks.some((hook) => hook.id === "poisoner_ignore_poison_resistance"), true);
+  assert.deepEqual(poisonerSheet.metadata.unresolved, []);
+
+  const chargerSheet = resolveCharacterSheet(chargerDraft, { backgrounds: testBackgrounds }, { allowNonCreationLevel: true });
+  assert.equal(chargerSheet.abilities.strength.score, 11);
+  assert.equal(chargerSheet.features.some((feature) => feature.grants?.damageRiders?.some((rider) => rider.id === "charger_drive")), true);
+  assert.deepEqual(chargerSheet.metadata.unresolved, []);
+
+  const shieldMasterSheet = resolveCharacterSheet(shieldMasterDraft, { backgrounds: testBackgrounds }, { allowNonCreationLevel: true });
+  const shieldActor = resolvedSheetToCombatActor(shieldMasterSheet);
+  assert.equal(shieldMasterSheet.abilities.strength.score, 11);
+  assert.equal(shieldActor.actions.some((action) => action.id === "shield_master_shove" && action.type === "push" && action.cost === "bonus"), true);
+  assert.deepEqual(shieldMasterSheet.metadata.unresolved, []);
 }
 
 function resolvesBackgroundIntoSheet() {
@@ -277,6 +355,7 @@ function resolvesClassIntoSheet() {
       wisdom: 10,
       charisma: 8,
     },
+    choices: { weaponMasteryIds: ["longsword", "warhammer", "greatsword"] },
   });
 
   const sheet = resolveCharacterSheet(draft);
@@ -286,6 +365,7 @@ function resolvesClassIntoSheet() {
   assert.deepEqual(sheet.proficiencies.savingThrows, ["strength", "constitution"]);
   assert.equal(sheet.proficiencies.armor.includes("All armor"), true);
   assert.equal(sheet.features.some((item) => item.id === "class:fighter:second_wind"), true);
+  assert.equal(sheet.equipment.masteredWeaponIds.includes("longsword"), true);
   assert.deepEqual(validateResolvedCharacterSheet(sheet), []);
 }
 
@@ -305,6 +385,7 @@ function resolvesCombatReadySheetFields() {
       wisdom: 10,
       charisma: 8,
     },
+    choices: { weaponMasteryIds: ["longsword", "warhammer", "greatsword"] },
     gear: {
       weaponIds: ["longsword"],
       armorId: "chain_mail",
@@ -321,6 +402,7 @@ function resolvesCombatReadySheetFields() {
   assert.equal(sheet.combatBasics.saves.strength, 5);
   assert.equal(sheet.combatBasics.saves.constitution, 4);
   assert.equal(sheet.featureHooks.some((hook) => hook.id === "savage_attacker_weapon_damage"), true);
+  assert.deepEqual(sheet.equipment.masteredWeaponIds, ["longsword", "warhammer", "greatsword"]);
   assert.deepEqual(validateResolvedCharacterSheet(sheet), []);
 }
 
@@ -581,7 +663,14 @@ function rejectsInvalidOriginFeatToolChoices() {
 
   const sheet = resolveCharacterSheet(draft);
   assert.deepEqual(sheet.metadata.unresolved, [
-    { type: "invalid_origin_feat_choice_value", featId: "skilled", choiceId: "proficiencies", values: ["skill:perception", "tool:not_a_tool", "tool:weavers_tools"] },
+    {
+      type: "invalid_origin_feat_choice_value",
+      featId: "skilled",
+      choiceId: "proficiencies",
+      kind: "skill_or_tool",
+      count: 3,
+      values: ["skill:perception", "tool:not_a_tool", "tool:weavers_tools"],
+    },
   ]);
 }
 

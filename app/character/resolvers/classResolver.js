@@ -1,5 +1,7 @@
 import { CLASSES, findClassByIdOrName } from "../../data/classes.js";
+import { getWeaponById } from "../../data/weapons.js";
 import { isDeclarativeFeatureImplemented } from "../featureImplementation.js";
+import { resolveOriginFeat } from "./originFeatResolver.js";
 import { addUniqueAll } from "./resolverUtils.js";
 
 const ABILITY_NAME_TO_ID = {
@@ -217,8 +219,9 @@ function addFeatureSet(sheet, draft, featuresByLevel, source) {
     if (!Number.isInteger(level) || level > sheet.identity.level) continue;
     for (const feature of features || []) {
       if (!featureMatchesCondition(feature, sheet, draft)) continue;
+      const featureId = `${source.prefix}:${slug(feature.name)}`;
       sheet.features.push({
-        id: `${source.prefix}:${slug(feature.name)}`,
+        id: featureId,
         name: feature.name,
         source: source.source,
         sourceId: source.sourceId,
@@ -228,7 +231,7 @@ function addFeatureSet(sheet, draft, featuresByLevel, source) {
         effects: structuredClone(feature.effects || {}),
         implemented: isDeclarativeFeatureImplemented(feature),
       });
-      applyFeatureEffects(sheet, draft, feature, `${source.prefix}:${slug(feature.name)}`);
+      applyFeatureEffects(sheet, draft, feature, featureId, level);
     }
   }
 }
@@ -244,7 +247,7 @@ function featureMatchesCondition(feature, sheet, draft) {
   return true;
 }
 
-function applyFeatureEffects(sheet, draft, feature, featureId) {
+function applyFeatureEffects(sheet, draft, feature, featureId, level) {
   const effects = feature.effects || {};
   for (const resource of effects.resources || []) {
     sheet.resources.push({
@@ -262,16 +265,21 @@ function applyFeatureEffects(sheet, draft, feature, featureId) {
   addUniqueAll(sheet.durability.resistances, effects.resistances || []);
   for (const advancement of effects.advancement || []) {
     if (advancement.type === "ability_score_improvement") {
+      const advancementSource = advancementChoiceId(sourceFeatureId(featureId), level);
       sheet.advancement.abilityScoreImprovements.push({
-        source: featureId,
+        source: advancementSource,
         choices: structuredClone(advancement.choices || ["ability_score", "feat"]),
       });
+      resolveAdvancementFeatChoice(sheet, draft, advancementSource);
     }
   }
   for (const attackAction of effects.attackAction || []) {
     if (Number.isFinite(attackAction.attacks)) {
       sheet.combatBasics.attackActionAttacks = Math.max(sheet.combatBasics.attackActionAttacks || 1, attackAction.attacks);
     }
+  }
+  for (const mastery of effects.weaponMastery || []) {
+    resolveWeaponMasteryChoices(sheet, draft, featureId, mastery);
   }
   for (const requirement of effects.choiceRequirements || []) {
     const chosen = getClassChoice(draft, requirement.id);
@@ -282,15 +290,74 @@ function applyFeatureEffects(sheet, draft, feature, featureId) {
         choiceId: requirement.id,
         kind: requirement.kind,
         count: requirement.count,
-        options: requirement.options || null,
+        options: classFeatureChoiceOptions(requirement, draft),
       });
     } else {
-      applyClassFeatureChoice(sheet, requirement, chosen, featureId);
+      applyClassFeatureChoice(sheet, requirement, chosen, featureId, classFeatureChoiceOptions(requirement, draft));
     }
   }
 }
 
-function applyClassFeatureChoice(sheet, requirement, chosen, featureId) {
+function classFeatureChoiceOptions(requirement, draft) {
+  if (requirement.options?.length) return requirement.options;
+  if (requirement.kind === "weapon") return [...(draft.gear?.weaponIds || [])];
+  return null;
+}
+
+function resolveWeaponMasteryChoices(sheet, draft, featureId, mastery) {
+  const count = mastery.count || 0;
+  const chosen = draft.choices?.weaponMasteryIds || [];
+  if (!count) return;
+  if (chosen.length < count) {
+    sheet.metadata.unresolved.push({
+      type: "missing_class_feature_choice",
+      featureId,
+      choiceId: "weapon_mastery",
+      kind: "weapon_mastery",
+      count,
+      options: null,
+    });
+    return;
+  }
+  const valid = chosen.filter((weaponId) => getWeaponById(weaponId)?.mastery);
+  if (valid.length < count) {
+    sheet.metadata.unresolved.push({
+      type: "invalid_class_feature_choice_value",
+      featureId,
+      choiceId: "weapon_mastery",
+      values: chosen,
+      message: "Weapon mastery choices must refer to weapons with mastery properties.",
+    });
+    return;
+  }
+  addUniqueAll(sheet.equipment.masteredWeaponIds, valid.slice(0, count));
+}
+
+function resolveAdvancementFeatChoice(sheet, draft, advancementSource) {
+  const choice = draft.choices?.advancementChoices?.[advancementSource];
+  const featId = choice?.featId || (choice?.kind === "feat" ? choice.id : null);
+  if (!featId) return;
+  const resolvedFeat = resolveOriginFeat(sheet, draft, featId, { advancementId: advancementSource });
+  sheet.features.push({
+    id: `advancement:${advancementSource}:feat`,
+    name: `Advancement Feat: ${featId}`,
+    source: "advancement",
+    sourceId: advancementSource,
+    kind: "feat",
+    grants: resolvedFeat.grants,
+    implemented: resolvedFeat.implemented,
+  });
+}
+
+function sourceFeatureId(featureId) {
+  return featureId.replace(/:ability_score_improvement$/, "");
+}
+
+function advancementChoiceId(classFeaturePrefix, level) {
+  return `${classFeaturePrefix}:level_${level || "unknown"}:ability_score_improvement`;
+}
+
+function applyClassFeatureChoice(sheet, requirement, chosen, featureId, options = null) {
   const values = Array.isArray(chosen) ? chosen : [chosen];
   if (values.length !== requirement.count) {
     sheet.metadata.unresolved.push({
@@ -303,15 +370,16 @@ function applyClassFeatureChoice(sheet, requirement, chosen, featureId) {
     return;
   }
 
-  if (requirement.options?.length) {
-    const invalid = values.filter((value) => !requirement.options.includes(value));
+  const validOptions = requirement.options?.length ? requirement.options : options;
+  if (validOptions?.length) {
+    const invalid = values.filter((value) => !validOptions.includes(value));
     if (invalid.length) {
       sheet.metadata.unresolved.push({
         type: "invalid_class_feature_choice_value",
         featureId,
         choiceId: requirement.id,
         values,
-        options: requirement.options,
+        options: validOptions,
       });
       return;
     }

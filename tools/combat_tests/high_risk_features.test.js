@@ -14,12 +14,42 @@ import {
 import { createHitPreventionAcPolicy } from "../../app/combat/reactionPolicy.js";
 
 export function runHighRiskFeatureCombatTests() {
+  testWarlockAutomaticReactionConflictUsesOneReaction();
   testGuidedStrikeConvertsNearMiss();
   testUnyieldingStancePreventsZeroHp();
   testSentinelAtDeathsDoorSuppressesAllyCritical();
+  testSentinelAtDeathsDoorIgnoresNormalAllyHit();
   testSurprisedTargetCriticalAndRiders();
   testDefeatTriggerGrantsContextualAttack();
   testPromptedShieldPreventsEffectiveHit();
+}
+
+function testWarlockAutomaticReactionConflictUsesOneReaction() {
+  const sheet = resolveCharacterSheet(createEmptyCharacterDraft({
+    identity: { characterName: "Fiend Warlock", level: 5, classId: "warlock", subclassId: "the_fiend" },
+    abilities: { strength: 8, dexterity: 14, constitution: 12, intelligence: 10, wisdom: 10, charisma: 16 },
+  }), {}, { allowNonCreationLevel: true });
+  const warlock = resolvedSheetToCombatActor(sheet, { id: "fiend_warlock", position: { x: 1, y: 1 } });
+  warlock.turnFlags.hitsTakenSinceLastTurn = 3;
+  const attacker = createEnemyCombatActor("goblin", { id: "attacker", hp: 30, maxHp: 30, position: { x: 2, y: 1 } });
+  attacker.actions = [meleeAttack({ id: "club", attackBonus: 20, damage: "1d6" })];
+  const snapshot = createSnapshotFromScenario(testScenario("warlock-reaction-conflict-test", [warlock, attacker]));
+  const log = createCombatLog();
+
+  assert.equal(resolveAction(snapshot, snapshot.actors.find((item) => item.id === "attacker"), "club", "fiend_warlock", scriptedDice({ d20: [10], damage: [4, 6] }), log), true);
+  const defender = snapshot.actors.find((item) => item.id === "fiend_warlock");
+  const source = snapshot.actors.find((item) => item.id === "attacker");
+  const resolved = log.events.filter((event) => event.type === "reaction.resolve");
+  const suppressed = log.events.filter((event) => event.type === "reaction.suppressed");
+
+  assert.equal(resolved.length, 1, "only one automatic reaction should resolve for the same trigger");
+  assert.equal(resolved[0].detail.reactionId, "hellish_rebuke", "higher-priority Hellish Rebuke should win the conflict");
+  assert.equal(suppressed.length, 1, "the losing automatic reaction should be explicitly logged as suppressed");
+  assert.equal(suppressed[0].detail.reactionId, "spiral_of_retribution");
+  assert.equal(defender.resources.find((item) => item.id === "hellish_rebuke").current, 0);
+  assert.equal(defender.resources.find((item) => item.id === "spiral_of_retribution").current, 1);
+  assert.equal(hasReaction(defender), false);
+  assert.equal(source.hp, 24, "the winning retaliation reaction should damage the attacker once");
 }
 
 function testGuidedStrikeConvertsNearMiss() {
@@ -60,6 +90,12 @@ function testUnyieldingStancePreventsZeroHp() {
   assert.equal(defender.hp, 1, "Unyielding Stance should leave the fighter at 1 HP");
   assert.equal(defender.defeated, false, "zero-HP prevention should not mark the fighter defeated");
   assert.equal(defender.resources.find((item) => item.id === "unyielding_stance").current, 0, "Unyielding Stance should spend its resource");
+
+  actor.economy.actionAvailable = true;
+  defender.economy.reactionAvailable = true;
+  assert.equal(resolveAction(snapshot, actor, "club", "duelist", fixedDice({ d20: 10, damage: 30 }), createCombatLog()), true);
+  assert.equal(defender.hp, 0, "zero-HP prevention should not trigger after its resource is spent");
+  assert.equal(defender.defeated, true, "the fighter should be defeated once the prevention resource is gone");
 }
 
 function testSentinelAtDeathsDoorSuppressesAllyCritical() {
@@ -77,7 +113,27 @@ function testSentinelAtDeathsDoorSuppressesAllyCritical() {
   assert.equal(resolveAction(snapshot, snapshot.actors.find((item) => item.id === "attacker"), "club", "ally", fixedDice({ d20: 20, damage: 4 }), log), true);
   assert.equal(snapshot.actors.find((item) => item.id === "ally").hp, 16, "Sentinel should make the critical a normal hit");
   assert.equal(snapshot.actors.find((item) => item.id === "grave_cleric").resources.find((item) => item.id === "sentinel_at_deaths_door").current, 0, "Sentinel should spend its resource");
+  assert.equal(hasReaction(snapshot.actors.find((item) => item.id === "grave_cleric")), false, "Sentinel should spend the cleric's reaction");
   assert.ok(log.events.some((event) => event.type === "attack.result" && event.detail.critical === false), "suppressed critical should be logged as non-critical");
+}
+
+function testSentinelAtDeathsDoorIgnoresNormalAllyHit() {
+  const sheet = resolveCharacterSheet(createEmptyCharacterDraft({
+    identity: { characterName: "Grave Cleric", level: 7, classId: "cleric", subclassId: "grave_domain" },
+    abilities: { strength: 10, dexterity: 10, constitution: 12, intelligence: 10, wisdom: 16, charisma: 8 },
+  }), {}, { allowNonCreationLevel: true });
+  const cleric = resolvedSheetToCombatActor(sheet, { id: "grave_cleric", position: { x: 1, y: 1 } });
+  const ally = heroActor({ id: "ally", hp: 20, position: { x: 2, y: 1 } });
+  const attacker = createEnemyCombatActor("goblin", { id: "attacker", hp: 12, maxHp: 12, position: { x: 3, y: 1 } });
+  attacker.actions = [meleeAttack({ id: "club", attackBonus: 20, damage: "1d6" })];
+  const snapshot = createSnapshotFromScenario(testScenario("sentinel-normal-hit-test", [cleric, ally, attacker]));
+  const log = createCombatLog();
+
+  assert.equal(resolveAction(snapshot, snapshot.actors.find((item) => item.id === "attacker"), "club", "ally", fixedDice({ d20: 10, damage: 4 }), log), true);
+  assert.equal(snapshot.actors.find((item) => item.id === "ally").hp, 16, "normal hit damage should still apply");
+  assert.equal(snapshot.actors.find((item) => item.id === "grave_cleric").resources.find((item) => item.id === "sentinel_at_deaths_door").current, 1, "Sentinel should not spend resource on a non-critical hit");
+  assert.equal(hasReaction(snapshot.actors.find((item) => item.id === "grave_cleric")), true, "Sentinel should not spend reaction on a non-critical hit");
+  assert.equal(log.events.some((event) => event.type === "reaction.resolve" && event.detail.reactionId === "sentinel_at_deaths_door"), false);
 }
 
 function testSurprisedTargetCriticalAndRiders() {

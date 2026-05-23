@@ -30,6 +30,36 @@ function validateEnemyGroup(errors, encounterId, group, index) {
   validateString(errors, encounterId, `${pathName}.enemyId`, group.enemyId);
   if (group.enemyId && !ENEMY_IDS.has(group.enemyId)) fail(errors, encounterId, `${pathName}.enemyId references unknown enemy: ${group.enemyId}`);
   if (!Number.isInteger(group.count) || group.count <= 0) fail(errors, encounterId, `${pathName}.count must be a positive integer`);
+  validateInstanceOverrides(errors, encounterId, group.defaults, `${pathName}.defaults`);
+  if (group.instances != null) {
+    if (!Array.isArray(group.instances)) {
+      fail(errors, encounterId, `${pathName}.instances must be an array`);
+    } else {
+      if (group.instances.length > group.count) fail(errors, encounterId, `${pathName}.instances must not exceed count`);
+      group.instances.forEach((instance, instanceIndex) => validateInstanceOverrides(errors, encounterId, instance, `${pathName}.instances[${instanceIndex}]`));
+    }
+  }
+}
+
+function validateInstanceOverrides(errors, encounterId, override, pathName) {
+  if (override == null) return;
+  if (!isPlainObject(override)) {
+    fail(errors, encounterId, `${pathName} must be an object`);
+    return;
+  }
+  if (override.id != null) validateString(errors, encounterId, `${pathName}.id`, override.id);
+  if (override.name != null) validateString(errors, encounterId, `${pathName}.name`, override.name);
+  for (const field of ["hp", "maxHp", "ac", "speed", "attackBonus", "initiativeBonus"]) {
+    if (override[field] != null && !Number.isFinite(override[field])) fail(errors, encounterId, `${pathName}.${field} must be numeric`);
+  }
+  if (override.position != null) {
+    if (!isPlainObject(override.position) || !Number.isInteger(override.position.x) || !Number.isInteger(override.position.y)) {
+      fail(errors, encounterId, `${pathName}.position must have integer x and y`);
+    }
+  }
+  if (override.masteredWeaponIds != null && !Array.isArray(override.masteredWeaponIds)) {
+    fail(errors, encounterId, `${pathName}.masteredWeaponIds must be an array`);
+  }
 }
 
 function validateEncounterRecord(errors, encounter, key) {
@@ -47,6 +77,43 @@ function validateEncounterRecord(errors, encounter, key) {
     fail(errors, id, "enemies must be a non-empty array");
   } else {
     encounter.enemies.forEach((group, index) => validateEnemyGroup(errors, id, group, index));
+  }
+  validateBattlefield(errors, id, encounter.battlefield);
+}
+
+function validateBattlefield(errors, encounterId, battlefield) {
+  if (battlefield == null) return;
+  if (!isPlainObject(battlefield)) return fail(errors, encounterId, "battlefield must be an object");
+  if (battlefield.grid != null) validateGrid(errors, encounterId, battlefield.grid, "battlefield.grid");
+  if (battlefield.heroPositions != null) validatePositions(errors, encounterId, battlefield.heroPositions, "battlefield.heroPositions", battlefield.grid);
+  if (battlefield.combatObjects != null && !Array.isArray(battlefield.combatObjects)) {
+    fail(errors, encounterId, "battlefield.combatObjects must be an array");
+  }
+}
+
+function validateGrid(errors, encounterId, grid, pathName) {
+  if (!isPlainObject(grid)) return fail(errors, encounterId, `${pathName} must be an object`);
+  if (!Number.isInteger(grid.width) || grid.width <= 0) fail(errors, encounterId, `${pathName}.width must be a positive integer`);
+  if (!Number.isInteger(grid.height) || grid.height <= 0) fail(errors, encounterId, `${pathName}.height must be a positive integer`);
+  validatePositions(errors, encounterId, grid.blocked || [], `${pathName}.blocked`, grid);
+  validatePositions(errors, encounterId, grid.cover || [], `${pathName}.cover`, grid);
+  for (const [index, cover] of (grid.cover || []).entries()) {
+    if (!["half", "three_quarters", "full"].includes(cover.kind)) {
+      fail(errors, encounterId, `${pathName}.cover[${index}].kind must be half, three_quarters, or full`);
+    }
+  }
+}
+
+function validatePositions(errors, encounterId, positions, pathName, grid = null) {
+  if (!Array.isArray(positions)) return fail(errors, encounterId, `${pathName} must be an array`);
+  for (const [index, position] of positions.entries()) {
+    if (!isPlainObject(position) || !Number.isInteger(position.x) || !Number.isInteger(position.y)) {
+      fail(errors, encounterId, `${pathName}[${index}] must have integer x and y`);
+      continue;
+    }
+    if (grid && (position.x < 0 || position.x >= grid.width || position.y < 0 || position.y >= grid.height)) {
+      fail(errors, encounterId, `${pathName}[${index}] is out of grid bounds`);
+    }
   }
 }
 

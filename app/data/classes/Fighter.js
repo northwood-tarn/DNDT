@@ -39,6 +39,14 @@ export default {
   features: {
     1: [
       {
+        name: "Weapon Mastery",
+        type: "Passive",
+        description: "Choose three weapons whose mastery properties you can use.",
+        effects: {
+          weaponMastery: [{ count: 3 }]
+        }
+      },
+      {
         name: "Second Wind",
         type: "Bonus Action",
         uses: "shortRest",

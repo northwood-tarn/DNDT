@@ -71,6 +71,30 @@ export function alertFriendlyInitiativeBonus(actor, actors) {
   return allies.length ? 1 : 0;
 }
 
+export function ignoresDamageResistance(actor, action, damageType) {
+  return getActorFeatureHooks(actor, "damage_resolution").some((hook) => {
+    if (hook.ignoreResistance !== true) return false;
+    if (!matchesDamageType(hook.damageTypes, damageType)) return false;
+    if (!matchesHookTags(hook, action)) return false;
+    if (!matchesHookCondition(hook, action)) return false;
+    return true;
+  });
+}
+
+export function hasStraightMovementThisTurn(actor, squares) {
+  const required = Math.max(0, Math.floor(Number(squares) || 0));
+  if (required <= 0) return true;
+  const steps = actor?.turnFlags?.movementSteps || [];
+  if (steps.length < required) return false;
+  for (let start = 0; start <= steps.length - required; start++) {
+    const segment = steps.slice(start, start + required);
+    const first = segment[0];
+    if (!first.dx && !first.dy) continue;
+    if (segment.every((step) => step.dx === first.dx && step.dy === first.dy)) return true;
+  }
+  return false;
+}
+
 function isWeaponAction(action) {
   return action?.tags?.weapon === true || action?.type === "weapon_attack";
 }

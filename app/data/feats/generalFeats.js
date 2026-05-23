@@ -35,6 +35,26 @@ export const GENERAL_FEATS_BY_ID = {
     tags: ["ability", "movement"]
   }),
 
+  charger: generalFeat({
+    id: "charger",
+    name: "Charger",
+    requirements: { anyAbility: ["strength", "dexterity"], minimumScore: 13 },
+    description: "Improve Strength or Dexterity. Once per turn, when you move at least 10 feet in a straight line before hitting with a melee attack, deal an extra 1d8 damage.",
+    choices: [{ id: "ability", kind: "ability_score", count: 1, options: ["strength", "dexterity"], amount: 1, scoreCap: 20 }],
+    effects: {
+      damageRiders: [{
+        id: "charger_drive",
+        trigger: "source_hits_with_attack_roll",
+        damage: "1d8",
+        damageType: "same_as_action",
+        actionTags: ["melee"],
+        oncePerTurn: true,
+        requiresStraightMovementBeforeActionSquares: 2
+      }]
+    },
+    tags: ["ability", "movement", "weapon", "damage"]
+  }),
+
   durable: generalFeat({
     id: "durable",
     name: "Durable",
@@ -209,6 +229,25 @@ export const GENERAL_FEATS_BY_ID = {
     tags: ["ability", "skill", "bonus_action"]
   }),
 
+  poisoner: generalFeat({
+    id: "poisoner",
+    name: "Poisoner",
+    requirements: { anyAbility: ["dexterity", "intelligence"], minimumScore: 13 },
+    description: "Improve Dexterity or Intelligence, gain Poisoner's Kit training, start with crafted poison doses, and make your poison damage ignore resistance.",
+    choices: [{ id: "ability", kind: "ability_score", count: 1, options: ["dexterity", "intelligence"], amount: 1, scoreCap: 20 }],
+    effects: {
+      proficiencies: { tools: ["poisoners_kit"] },
+      inventory: [{ id: "basic_poison", qty: 2 }],
+      featureHooks: [{
+        id: "poisoner_ignore_poison_resistance",
+        timing: "damage_resolution",
+        damageTypes: ["poison"],
+        ignoreResistance: true
+      }]
+    },
+    tags: ["ability", "poison", "tool", "consumable"]
+  }),
+
   resilient: generalFeat({
     id: "resilient",
     name: "Resilient",
@@ -252,6 +291,29 @@ export const GENERAL_FEATS_BY_ID = {
       ]
     },
     tags: ["ability", "ranged"]
+  }),
+
+  shield_master: generalFeat({
+    id: "shield_master",
+    name: "Shield Master",
+    requirements: { ability: "strength", minimumScore: 13 },
+    description: "Improve Strength. While using a shield, after taking the Attack action you can shove a nearby enemy 5 feet as a Bonus Action.",
+    effects: {
+      abilityScoreBonuses: [{ ability: "strength", amount: 1, cap: 20 }],
+      actionOptions: [{
+        id: "shield_master_shove",
+        name: "Shield Master Shove",
+        actionType: "bonus_action",
+        actionKind: "push",
+        rangeFt: 5,
+        distanceFt: 5,
+        collisionDamage: "1d4",
+        collisionDamageType: "bludgeoning",
+        requirement: { equippedShield: true, attackActionThisTurn: true },
+        targetFilter: { team: "enemies" }
+      }]
+    },
+    tags: ["ability", "shield", "forced_movement"]
   }),
 
   skill_expert: generalFeat({
@@ -346,10 +408,10 @@ export const GENERAL_FEATS_BY_ID = {
     id: "ritual_caster",
     name: "Ritual Caster",
     requirements: { anyAbility: ["intelligence", "wisdom", "charisma"], minimumScore: 13 },
-    description: "Improve a spellcasting ability and freely learn two ritual spells.",
+    description: "Improve a spellcasting ability and freely learn one ritual spell.",
     choices: [
       { id: "ability", kind: "ability_score", count: 1, options: ["intelligence", "wisdom", "charisma"], amount: 1, scoreCap: 20 },
-      { id: "spells", kind: "spell_list", count: 2, filter: { ritual: true, maxLevel: 1 } }
+      { id: "spells", kind: "spell_list", count: 1, filter: { ritual: true, maxLevel: 1 } }
     ],
     tags: ["ability", "spell", "ritual", "choice"]
   }),

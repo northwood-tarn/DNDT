@@ -1,12 +1,8 @@
-import { createStarterCharacterDraft, resolveCharacterSheet, resolvedSheetToCombatActor } from "../../character/index.js";
-import { weapons } from "../../data/weapons.js";
-import { createWeaponAction, indexRecordsById } from "../actionFactory.js";
-
-const WEAPONS = indexRecordsById(weapons);
+import { createStarterCharacterDraft, loadCombatActorFromCharacter, loadCharacterRecord, resolveCharacterSheet, resolvedSheetToCombatActor } from "../../character/index.js";
+import { createEnemyCombatActor } from "../enemyFactory.js";
 
 export function createGeneratedCharacterArenaScenario(options = {}) {
-  const variantId = options.variantId || "fighter";
-  const sheet = resolveCharacterSheet(createStarterCharacterDraft(variantId));
+  const hero = resolveHeroSource(options);
   return {
     id: "generated-character-arena",
     grid: {
@@ -21,43 +17,93 @@ export function createGeneratedCharacterArenaScenario(options = {}) {
       ],
     },
     actors: [
-      resolvedSheetToCombatActor(sheet, {
-        id: "generated_pc",
-        name: sheet.identity.characterName,
-        position: { x: 1, y: 1 },
-      }),
+      createHeroActor(hero),
       createArenaSwordsman(options),
     ],
     metadata: {
-      generatedHeroVariantId: variantId,
-      generatedHeroSheet: sheet,
+      generatedHeroSource: hero.source,
+      generatedHeroVariantId: hero.variantId,
+      generatedHeroRecordId: hero.recordId,
+      generatedHeroSheet: hero.sheet,
       diceSeed: options.diceSeed || null,
     },
   };
 }
 
-function createArenaSwordsman(options = {}) {
+function resolveHeroSource(options) {
+  if (options.characterRecord) {
+    if (options.characterRecord.status !== "ready" || !options.characterRecord.resolvedCharacterSheet) {
+      throw new Error("CharacterRecord is not combat-ready");
+    }
+    return {
+      source: "character_record",
+      recordId: options.characterRecord.id || null,
+      variantId: null,
+      actor: options.freshCharacterRuntime === true
+        ? resolvedSheetToCombatActor(options.characterRecord.resolvedCharacterSheet)
+        : loadCombatActorFromCharacter({ record: options.characterRecord }),
+      sheet: structuredClone(options.characterRecord.resolvedCharacterSheet),
+    };
+  }
+  if (options.characterDraft) {
+    return {
+      source: "character_draft",
+      recordId: null,
+      variantId: null,
+      sheet: resolveCharacterSheet(options.characterDraft, {}, options.resolveOptions || {}),
+    };
+  }
+  const stored = loadCharacterRecord({ store: options.characterStore, slot: options.characterSlot });
+  if (stored?.status === "ready" && stored.resolvedCharacterSheet) {
+    return {
+      source: "character_store",
+      recordId: stored.id,
+      variantId: null,
+      actor: loadCombatActorFromCharacter({ record: stored }),
+      sheet: stored.resolvedCharacterSheet,
+    };
+  }
+  const variantId = options.variantId || "fighter";
   return {
-    id: "generated_enemy",
+    source: "starter_variant",
+    recordId: null,
+    variantId,
+    sheet: resolveCharacterSheet(createStarterCharacterDraft(variantId)),
+  };
+}
+
+function createHeroActor(hero) {
+  const actor = hero.actor || resolvedSheetToCombatActor(hero.sheet);
+  return {
+    ...structuredClone(actor),
+    id: "generated_pc",
+    name: hero.sheet.identity.characterName,
+    position: { x: 1, y: 1 },
+  };
+}
+
+function createArenaSwordsman(options = {}) {
+  return createEnemyCombatActor({
+    id: "arena_swordsman",
     name: "Enemy Swordsman",
-    team: "enemies",
     role: "swordsman",
-    ai: { profile: "melee", targetPriority: "nearest" },
-    token: "E",
+    creatureType: "humanoid",
+    size: "medium",
     hp: 18,
     maxHp: 18,
     ac: 14,
-    initiativeBonus: 1,
     speed: 6,
-    position: options.enemyPosition || { x: 8, y: 8 },
+    initiativeBonus: 1,
+    attackBonus: options.enemyAttackBonus ?? 4,
+    weaponId: "longsword",
+    damage: "1d8+2",
+    damageType: "slashing",
+    aiProfile: "melee",
     saves: { str: 3, dex: 1, con: 2, int: 0, wis: 0, cha: 0 },
-    actions: [
-      createWeaponAction(WEAPONS.longsword, {
-        id: "blade",
-        name: "Sword",
-        attackBonus: options.enemyAttackBonus ?? 4,
-        damageBonus: 2,
-      }),
-    ],
-  };
+  }, {
+    id: "generated_enemy",
+    position: options.enemyPosition || { x: 8, y: 8 },
+    actionId: "blade",
+    actionName: "Sword",
+  });
 }

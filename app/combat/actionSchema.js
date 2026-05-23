@@ -3,6 +3,7 @@ import { validateReactionPolicy } from "./reactionPolicy.js";
 
 const ACTION_TYPES = new Set([
   "weapon_attack",
+  "compound_weapon_attack",
   "melee_attack",
   "spell_attack",
   "spell_save",
@@ -31,12 +32,23 @@ export function validateCombatAction(action) {
   errors.push(...validateActionEffects(action.effects, action.id || "action"));
   errors.push(...validateDamageRiders(action.damageRiders, action.id || "action"));
   errors.push(...validateReactionPolicy(action.reactionPolicy, `${action.id || "action"}.reactionPolicy`));
+  errors.push(...validateDamageTypeChoices(action));
 
   if (["weapon_attack", "melee_attack", "spell_attack"].includes(action.type)) {
     requireNumber(action, "range", errors);
     requireNumber(action, "attackBonus", errors);
     requireString(action, "damage", errors);
     requireString(action, "damageType", errors);
+  }
+  if (action.type === "compound_weapon_attack") {
+    if (!Array.isArray(action.attacks) || action.attacks.length < 2) {
+      errors.push(`${action.id}.attacks must include at least two weapon attacks`);
+    } else {
+      action.attacks.forEach((attack, index) => {
+        const nested = validateCombatAction(attack).map((error) => `${action.id}.attacks[${index}].${error}`);
+        errors.push(...nested);
+      });
+    }
   }
   if (action.type === "spell_save") {
     requireNumber(action, "range", errors);
@@ -99,6 +111,17 @@ export function validateCombatAction(action) {
     if (action.requiresTarget !== false) errors.push(`${action.id}.requiresTarget must be false`);
   }
   return errors;
+}
+
+function validateDamageTypeChoices(action) {
+  if (action.damageTypeChoices == null) return [];
+  if (!Array.isArray(action.damageTypeChoices) || action.damageTypeChoices.some((item) => typeof item !== "string" || !item)) {
+    return [`${action.id || "action"}.damageTypeChoices must be an array of damage type strings`];
+  }
+  if (action.damageType && !action.damageTypeChoices.includes(action.damageType)) {
+    return [`${action.id || "action"}.damageType must be one of damageTypeChoices`];
+  }
+  return [];
 }
 
 function validateDamageRiders(riders, actionId) {

@@ -1,6 +1,18 @@
 import { ABILITY_IDS } from "./characterDraft.js";
 
 export const STANDARD_ABILITY_ARRAY = [8, 10, 11, 12, 13, 14];
+const STANDARD_ABILITY_ARRAY_DESC = [...STANDARD_ABILITY_ARRAY].sort((a, b) => b - a);
+
+const CLASS_ABILITY_PRIORITIES = {
+  fighter: ["strength", "constitution", "dexterity", "wisdom", "charisma", "intelligence"],
+  rogue: ["dexterity", "constitution", "intelligence", "charisma", "wisdom", "strength"],
+  wizard: ["intelligence", "constitution", "dexterity", "wisdom", "charisma", "strength"],
+  warlock: ["charisma", "constitution", "dexterity", "wisdom", "intelligence", "strength"],
+  cleric: ["wisdom", "constitution", "strength", "charisma", "dexterity", "intelligence"],
+  paladin: ["strength", "charisma", "constitution", "wisdom", "dexterity", "intelligence"],
+};
+
+export const DEFAULT_ABILITY_SCORES = classDefaultAbilityScores(null);
 
 export function assignStandardAbilityScore(draft, abilityId, score) {
   if (!draft?.abilities || !ABILITY_IDS.includes(abilityId)) return draft;
@@ -12,6 +24,37 @@ export function assignStandardAbilityScore(draft, abilityId, score) {
   draft.abilities[abilityId] = nextScore;
   if (swapAbility) draft.abilities[swapAbility] = currentScore;
   return draft;
+}
+
+export function assignClassDefaultAbilityScores(draft, classRecordOrId) {
+  if (!draft?.abilities) return draft;
+  Object.assign(draft.abilities, classDefaultAbilityScores(classRecordOrId));
+  return draft;
+}
+
+export function classDefaultAbilityScores(classRecordOrId) {
+  const priorities = classAbilityPriority(classRecordOrId);
+  return Object.fromEntries(priorities.map((ability, index) => [ability, STANDARD_ABILITY_ARRAY_DESC[index]]));
+}
+
+function classAbilityPriority(classRecordOrId) {
+  const id = typeof classRecordOrId === "string" ? classRecordOrId : classRecordOrId?.id;
+  const primary = normalizeAbilityNames(classRecordOrId && typeof classRecordOrId === "object" ? classRecordOrId.primaryAbility : []);
+  const preferred = CLASS_ABILITY_PRIORITIES[id] || [...primary, "dexterity", "constitution", "intelligence", "wisdom", "charisma", "strength"];
+  return uniqueAbilities([...preferred, ...ABILITY_IDS]);
+}
+
+function normalizeAbilityNames(values = []) {
+  return values.map((value) => String(value || "").toLowerCase()).filter((value) => ABILITY_IDS.includes(value));
+}
+
+function uniqueAbilities(values) {
+  const seen = new Set();
+  return values.filter((value) => {
+    if (!ABILITY_IDS.includes(value) || seen.has(value)) return false;
+    seen.add(value);
+    return true;
+  }).slice(0, ABILITY_IDS.length);
 }
 
 export function hasStandardAbilityArray(abilities = {}) {

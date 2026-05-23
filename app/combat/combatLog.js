@@ -79,6 +79,8 @@ export function formatEvent(event) {
   switch (event.type) {
     case "combat.start":
       return `${prefix}Combat begins. ${d.seeded ? "Deterministic dice are ON." : "Live dice are ON."}`;
+    case "scenario.loaded":
+      return `${prefix}Loaded ${d.actorName} from ${d.source}${d.recordId ? ` (${d.recordId})` : ""}. Spell actions: ${d.spells?.length ? d.spells.join(", ") : "none"}.`;
     case "initiative.roll":
       return `${prefix}Initiative: ${d.rolls.map((item) => `${item.actorName} ${initiativeRollText(item)} + ${item.bonus} = ${item.total}`).join("; ")}. Order: ${d.order.join(" -> ")}.`;
     case "dice.mode":
@@ -123,11 +125,21 @@ export function formatEvent(event) {
       return `${prefix}${d.actionName || d.objectName || d.actionId || "Spell object"} zone ends: ${d.reason}.`;
     case "trigger.fired":
       return `${prefix}${d.sourceName} triggers on ${d.actorName}: ${d.trigger}.`;
+    case "effect.applied":
+      return `${prefix}${d.targetName} gains ${d.actionName}: ${modifierEffectText(d)}.`;
+    case "effect.removed":
+      return `${prefix}${d.actorName || d.targetName || "Actor"} loses ${d.label || d.effectId || "effect"}: ${d.reason}.`;
     case "attack.roll":
-      return `${prefix}${d.actorName} attacks ${d.targetName}: ${attackRollText(d)} + ${d.bonus} = ${d.total} vs AC ${d.ac}${coverText(d.cover)} = ${d.effectiveAc}.`;
+      if (d.actionType === "spell_attack") {
+        return `${prefix}${d.actorName} casts ${d.actionName} on ${d.targetName}: ${attackRollText(d)} + ${attackBonusText(d)} = ${d.total} vs AC ${d.ac}${coverText(d.cover)} = ${d.effectiveAc}.`;
+      }
+      return `${prefix}${d.actorName} attacks ${d.targetName}: ${attackRollText(d)} + ${attackBonusText(d)} = ${d.total} vs AC ${d.ac}${coverText(d.cover)} = ${d.effectiveAc}.`;
     case "lucky.roll":
       return `${prefix}${d.actorName} uses Lucky on ${d.rollType} ${d.label}: missed by ${d.missedBy}, rolled ${d.originalRoll} then ${d.secondRoll}, kept ${d.roll}. ${d.pointsRemaining} Luck Point(s) remain.`;
     case "attack.result":
+      if (d.actionType === "spell_attack") {
+        return `${prefix}${d.hit ? "Spell hit" : "Spell miss"}: ${d.actorName} ${d.hit ? "hits" : "misses"} ${d.targetName} with ${d.actionName}${d.critical ? " critically" : ""}.`;
+      }
       return `${prefix}${d.hit ? "Hit" : "Miss"}: ${d.actorName} ${d.hit ? "hits" : "misses"} ${d.targetName}${d.critical ? " critically" : ""}.`;
     case "save.roll":
       return `${prefix}${d.targetName} makes a ${d.ability.toUpperCase()} save: ${rollText(d)} + ${d.bonus}${coverText(d.cover)} = ${d.total} vs DC ${d.dc}.`;
@@ -177,6 +189,24 @@ export function formatEvent(event) {
 function coverText(cover) {
   if (!cover || !cover.bonus || !Number.isFinite(cover.bonus)) return "";
   return ` + ${cover.label} ${cover.bonus}`;
+}
+
+function modifierEffectText(detail) {
+  const stat = String(detail.stat || "modifier").replace(/_/g, " ");
+  const amount = Number.isFinite(detail.amount) && detail.amount !== 0 ? ` ${formatSigned(detail.amount)}` : "";
+  const die = detail.die ? ` ${detail.die}` : "";
+  return `${stat}${amount}${die}`;
+}
+
+function attackBonusText(detail) {
+  const reasons = Array.isArray(detail.modifierReasons) ? detail.modifierReasons.filter(Boolean) : [];
+  if (!reasons.length) return `${detail.bonus}`;
+  const baseBonus = Number.isFinite(detail.baseBonus) ? detail.baseBonus : detail.bonus;
+  return `${detail.bonus} (base ${formatSigned(baseBonus)}; ${reasons.join("; ")})`;
+}
+
+function formatSigned(value) {
+  return value >= 0 ? `+${value}` : `${value}`;
 }
 
 function initiativeRollText(item) {

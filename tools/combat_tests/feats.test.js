@@ -2,6 +2,7 @@ import {
   assert,
   createCombatLog,
   makeHarnessSnapshot,
+  moveActor,
   resolveAction,
   scriptedDice,
 } from "./helpers.js";
@@ -219,6 +220,66 @@ function testDuelingDoesNotApplyToHeavyTwoHandedWeapons() {
   assert.equal(damageRoll.detail.total, 4, "Dueling must not apply to heavy two-handed weapons");
 }
 
+function testChargerAddsDamageAfterStraightMovement() {
+  const snapshot = makeHarnessSnapshot();
+  const hero = snapshot.actors[0];
+  const enemy = snapshot.actors[1];
+  const log = createCombatLog();
+  hero.position = { x: 0, y: 0 };
+  enemy.position = { x: 3, y: 0 };
+  const attack = hero.actions.find((action) => action.id === "bow");
+  attack.range = 1;
+  attack.tags = { weapon: true, melee: true };
+  hero.features = [{
+    id: "charger",
+    name: "Charger",
+    grants: {
+      damageRiders: [{
+        id: "charger_drive",
+        trigger: "source_hits_with_attack_roll",
+        damage: "1d8",
+        damageType: "same_as_action",
+        actionTags: ["melee"],
+        oncePerTurn: true,
+        requiresStraightMovementBeforeActionSquares: 2,
+      }],
+    },
+  }];
+
+  assert.equal(moveActor(snapshot, hero, { x: 1, y: 0 }, log), true);
+  assert.equal(moveActor(snapshot, hero, { x: 2, y: 0 }, log), true);
+  assert.equal(resolveAction(snapshot, hero, "bow", "enemy", scriptedDice({ d20: [10], damage: [2, 5] }), log), true);
+  const chargerDamage = log.events.find((event) => event.type === "damage.applied" && event.detail.damageType === "piercing" && event.detail.amount === 5);
+  assert.ok(chargerDamage, "Charger should add a same-type 1d8 damage rider after 10 feet of straight movement");
+}
+
+function testShieldMasterRequiresShieldAndPriorAttack() {
+  const snapshot = makeHarnessSnapshot();
+  const hero = snapshot.actors[0];
+  const enemy = snapshot.actors[1];
+  const log = createCombatLog();
+  hero.position = { x: 0, y: 0 };
+  enemy.position = { x: 1, y: 0 };
+  hero.equipment = { shieldId: "shield" };
+  hero.actions.push({
+    id: "shield_master_shove",
+    name: "Shield Master Shove",
+    type: "push",
+    cost: "bonus",
+    requiresTarget: true,
+    range: 1,
+    distanceSquares: 1,
+    collisionDamage: "1d4",
+    collisionDamageType: "bludgeoning",
+    requirement: { equippedShield: true, attackActionThisTurn: true },
+  });
+
+  assert.equal(resolveAction(snapshot, hero, "shield_master_shove", "enemy", scriptedDice({ damage: 3 }), log), false);
+  assert.equal(resolveAction(snapshot, hero, "bow", "enemy", scriptedDice({ d20: [10], damage: [1] }), log), true);
+  assert.equal(resolveAction(snapshot, hero, "shield_master_shove", "enemy", scriptedDice({ damage: 3 }), log), true);
+  assert.deepEqual(enemy.position, { x: 2, y: 0 }, "Shield Master should shove after the actor has attacked this turn");
+}
+
 export async function runFeatCombatTests() {
   testSavageAttackerUsesHigherWeaponDamageOncePerTurn();
   testAlertInitiativeAdvantageAndFriendlyBonus();
@@ -228,4 +289,6 @@ export async function runFeatCombatTests() {
   testGreatWeaponMasterFirstAttackMissConsumesBonus();
   testGreatWeaponMasterDoublesAfterPreviousTurnDrop();
   testDuelingDoesNotApplyToHeavyTwoHandedWeapons();
+  testChargerAddsDamageAfterStraightMovement();
+  testShieldMasterRequiresShieldAndPriorAttack();
 }

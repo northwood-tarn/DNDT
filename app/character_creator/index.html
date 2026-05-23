@@ -13,59 +13,102 @@
           <div>
             <div class="eyebrow">Character creator harness</div>
             <h1>Level 1 Draft</h1>
+            <div id="saveStatus" class="save-status" aria-live="polite"></div>
           </div>
-          <button id="resetButton" type="button">Reset</button>
+          <div class="topbar-actions">
+            <button id="saveCharacterButton" type="button">Save Character</button>
+            <button id="resetButton" type="button">Reset</button>
+          </div>
         </header>
 
-        <section class="band">
+        <nav id="stepNav" class="step-nav" aria-label="Character creation sections"></nav>
+
+        <section class="band creator-step" data-step="identity">
           <h2>Core Choices</h2>
+          <p class="step-note">Choose the broad identity first. Hover or focus any option for a plain-language explanation.</p>
           <div class="form-grid">
-            <label>
+            <label class="name-field">
               Name
               <input id="characterName" type="text" autocomplete="off">
             </label>
-            <label>
+            <label class="species-field">
               Species
               <select id="speciesSelect"></select>
+              <div id="speciesCards" class="choice-card-grid"></div>
             </label>
             <label id="lineageField">
               Lineage
               <select id="lineageSelect"></select>
             </label>
-            <label>
+            <label class="background-field">
               Background
               <select id="backgroundSelect"></select>
             </label>
-            <label>
+            <label class="class-field">
               Class
               <select id="classSelect"></select>
+              <div id="classCards" class="choice-card-grid"></div>
+            </label>
+            <label id="subclassField" hidden>
+              Subclass
+              <select id="subclassSelect"></select>
+              <div id="subclassCards" class="choice-card-grid"></div>
+            </label>
+            <label>
+              Harness Level
+              <select id="levelSelect">
+                <option value="1">1</option>
+                <option value="4">4</option>
+                <option value="8">8</option>
+                <option value="12">12</option>
+              </select>
             </label>
           </div>
         </section>
 
-        <section class="band">
+        <section class="band creator-step" data-step="abilities">
           <h2>Ability Scores</h2>
+          <p class="step-note">The standard array is assigned from class priorities by default. Changing one score swaps it with the ability currently holding that number.</p>
           <div id="abilityInputs" class="ability-grid"></div>
           <div id="backgroundAbilityBonuses" class="pool-grid"></div>
         </section>
 
-        <section class="band">
+        <section class="band creator-step" data-step="choices">
           <h2>Other Choices</h2>
+          <p class="step-note">These are extra choices created by the species, class, subclass, or feat you selected. They stay visible after completion so they can be changed.</p>
           <div id="resolverChoices" class="pool-grid"></div>
         </section>
 
-        <section class="band">
+        <section class="band creator-step" data-step="feats">
+          <h2>Advancement Feats</h2>
+          <p class="step-note">At supported advancement levels, choose either Ability Score Improvement or one available feat. Feat subchoices appear directly beneath the feat.</p>
+          <div id="featPools" class="pool-grid"></div>
+        </section>
+
+        <section class="band creator-step" data-step="spells">
           <h2>Spells</h2>
+          <p class="step-note">Choose class spells here. Spells granted by species or feats are marked as granted and do not count against class spell choices.</p>
           <div id="spellPools" class="pool-grid"></div>
         </section>
 
-        <section class="band">
+        <section class="band creator-step" data-step="gear">
           <h2>Gear</h2>
+          <p class="step-note">Select starting combat gear. Weapon choices can unlock follow-up choices such as weapon mastery or subclass weapon bonds.</p>
           <div id="gearPools" class="pool-grid"></div>
         </section>
+
+        <footer class="step-actions">
+          <button id="previousStepButton" type="button">Previous</button>
+          <button id="nextStepButton" type="button">Next</button>
+        </footer>
       </section>
 
       <aside class="preview-panel">
+        <section>
+          <div class="eyebrow">Option Info</div>
+          <div id="optionInfo" class="option-info"></div>
+        </section>
+
         <section>
           <div class="eyebrow">Requirements</div>
           <div id="completionState" class="status-pill"></div>
@@ -83,11 +126,17 @@
         </section>
 
         <section>
+          <div class="eyebrow">Combat Actor Sources</div>
+          <div id="bridgeReport" class="bridge-report"></div>
+        </section>
+
+        <section>
           <div class="eyebrow">Pipeline Export</div>
           <div class="export-tabs" role="group" aria-label="Pipeline export views">
             <button class="export-tab is-active" data-export-view="draft" type="button">Draft</button>
             <button class="export-tab" data-export-view="sheet" type="button">Resolved Sheet</button>
             <button class="export-tab" data-export-view="actor" type="button">Combat Actor</button>
+            <button class="export-tab" data-export-view="bridge" type="button">Bridge Report</button>
           </div>
           <pre id="exportOutput" class="export-output"></pre>
         </section>

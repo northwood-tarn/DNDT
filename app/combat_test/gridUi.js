@@ -12,6 +12,7 @@ export function renderCombatGrid({
   getCoverAtSquare,
   getOccupantForDisplay,
   getConditionLabels,
+  getActorHoverLines,
   classIconClass,
   onCellClick,
 }) {
@@ -32,6 +33,7 @@ export function renderCombatGrid({
         getCoverAtSquare,
         getOccupantForDisplay,
         getConditionLabels,
+        getActorHoverLines,
         classIconClass,
         onCellClick,
         x,
@@ -53,6 +55,7 @@ function createGridCell(options) {
     getCoverAtSquare,
     getOccupantForDisplay,
     getConditionLabels,
+    getActorHoverLines,
     classIconClass,
     onCellClick,
     x,
@@ -81,6 +84,7 @@ function createGridCell(options) {
     animation,
     zoneObjects,
     getConditionLabels,
+    getActorHoverLines,
     classIconClass,
   });
   cell.addEventListener("click", () => onCellClick({ x, y }));
@@ -109,11 +113,12 @@ function decorateZoneCell(cell, zoneObjects) {
 }
 
 function decorateOccupantCell(cell, options) {
-  const { occupant, actor, selectedTargetId, animation, zoneObjects, getConditionLabels, classIconClass } = options;
+  const { occupant, actor, selectedTargetId, animation, zoneObjects, getConditionLabels, getActorHoverLines, classIconClass } = options;
   if (!occupant) return;
-  const conditions = getConditionLabels(occupant);
-  const zoneText = zoneObjects.length ? `; zone: ${zoneObjects.map((object) => object.name).join(", ")}` : "";
-  cell.title = `${occupant.name} ${occupant.hp}/${occupant.maxHp}${conditions.length ? `\n${conditions.join("\n")}` : ""}${zoneText}`;
+  const hoverLines = getActorHoverLines
+    ? getActorHoverLines(occupant, zoneObjects)
+    : [`${occupant.name} ${occupant.hp}/${occupant.maxHp}`, ...getConditionLabels(occupant)];
+  cell.title = hoverLines.join("\n");
   cell.classList.add(occupant.team === "heroes" ? "hero" : "enemy");
   if (occupant.hp <= 0) cell.classList.add("dead");
   if (occupant.hp > 0 && occupant.id === actor?.id) cell.classList.add("current");

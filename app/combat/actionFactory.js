@@ -5,6 +5,8 @@ import {
 } from "./spellActionMappers.js";
 import { createActionFromConsumable } from "./consumableActionMappers.js";
 import { createHitPreventionAcPolicy } from "./reactionPolicy.js";
+import { getWeaponMastery } from "../data/weaponMasteries.js";
+import { createWeaponMasteryEffects } from "./weaponMasteryActionMappers.js";
 
 const DEFAULT_SPELL_SAVE_DC = 10;
 const DEFAULT_ATTACK_BONUS = 0;
@@ -17,6 +19,15 @@ export function createWeaponAction(weaponRecord, options = {}) {
   const damage = options.damage || addDamageBonus(weaponRecord.damage, damageBonus);
   const range = options.range ?? getWeaponRangeSquares(weaponRecord);
   const damageRiders = createWeaponDamageRiders(weaponRecord, baseDamageType);
+  const mastery = getWeaponMastery(weaponRecord.mastery);
+  const masteryActive = mastery && options.enableWeaponMastery !== false;
+  const masteryEffects = !masteryActive
+    ? []
+    : createWeaponMasteryEffects(weaponRecord, mastery);
+  const effects = [
+    ...(options.effects || []),
+    ...masteryEffects,
+  ];
 
   return compactAction({
     id: options.id || weaponRecord.id,
@@ -28,6 +39,11 @@ export function createWeaponAction(weaponRecord, options = {}) {
     damage,
     damageType: baseDamageType,
     damageRiders,
+    weaponMastery: mastery ? mastery.id : null,
+    weaponMasteryName: mastery ? mastery.name : null,
+    weaponMasteryImplementation: mastery ? mastery.implementation : null,
+    weaponMasteryActive: masteryActive ? true : null,
+    effects: effects.length ? effects : null,
     tags: {
       weapon: true,
       melee: range <= 1,
@@ -35,7 +51,82 @@ export function createWeaponAction(weaponRecord, options = {}) {
       attackRoll: true,
       harmful: true,
       requiresHands: true,
+      weaponMastery: Boolean(mastery),
+      ...(mastery ? { [`mastery_${mastery.id}`]: true } : {}),
       ...weaponPropertyTags(weaponRecord),
+    },
+  });
+}
+
+export function createNickAttackAction(primaryWeapon, secondaryWeapon, options = {}) {
+  if (!primaryWeapon || !secondaryWeapon) return null;
+  const nickWeapon = primaryWeapon.mastery === "nick" ? primaryWeapon : secondaryWeapon;
+  if (!isLightWeapon(primaryWeapon) || !isLightWeapon(secondaryWeapon) || !nickWeapon) return null;
+
+  const primaryAction = createWeaponAction(primaryWeapon, {
+    ...options,
+    id: `${options.id || "nick_attack"}_primary`,
+    name: primaryWeapon.name,
+    attackBonus: options.attackBonusByWeapon?.[primaryWeapon.id] ?? options.attackBonus,
+    damageBonus: options.damageBonusByWeapon?.[primaryWeapon.id] ?? options.damageBonus,
+    enableWeaponMastery: false,
+  });
+  const secondaryAction = createWeaponAction(secondaryWeapon, {
+    ...options,
+    id: `${options.id || "nick_attack"}_secondary`,
+    name: secondaryWeapon.name,
+    attackBonus: options.attackBonusByWeapon?.[secondaryWeapon.id] ?? options.attackBonus,
+    damageBonus: options.damageBonusByWeapon?.[secondaryWeapon.id] ?? options.damageBonus,
+    enableWeaponMastery: false,
+  });
+  if (!primaryAction || !secondaryAction) return null;
+
+  return compactAction({
+    id: options.id || `nick_attack_${primaryWeapon.id}_${secondaryWeapon.id}`,
+    name: options.name || "Nick Attack",
+    type: "compound_weapon_attack",
+    cost: "action",
+    requiresTarget: true,
+    weaponMastery: "nick",
+    weaponMasteryName: "Nick",
+    weaponMasteryImplementation: "automatic",
+    weaponMasteryActive: true,
+    tags: {
+      weapon: true,
+      attackRoll: true,
+      harmful: true,
+      requiresHands: true,
+      weaponMastery: true,
+      mastery_nick: true,
+    },
+    attacks: [
+      primaryAction,
+      secondaryAction,
+    ],
+  });
+}
+
+export function createNaturalWeaponAction(naturalAttack, options = {}) {
+  if (!naturalAttack) return null;
+  const range = options.range ?? naturalAttack.range ?? 1;
+  return compactAction({
+    id: options.id || naturalAttack.id,
+    name: options.name || naturalAttack.name,
+    type: "weapon_attack",
+    cost: mapUseTimeToCost(options.cost || naturalAttack.useTime || "action"),
+    range,
+    attackBonus: options.attackBonus ?? DEFAULT_ATTACK_BONUS,
+    damage: options.damage || naturalAttack.damage,
+    damageType: options.damageType || naturalAttack.damageType,
+    effects: options.effects || naturalAttack.effects || null,
+    tags: {
+      weapon: false,
+      natural: true,
+      melee: range <= 1,
+      ranged: range > 1,
+      attackRoll: true,
+      harmful: true,
+      ...(naturalAttack.tags || {}),
     },
   });
 }
@@ -44,6 +135,8 @@ export function createSpellAction(spellRecord, options = {}) {
   if (!spellRecord || spellRecord.dialogueRelated || spellRecord.hooks?.ui?.hideInCombat) return null;
   const hooks = spellRecord.hooks || {};
   const damage = getSpellDamage(spellRecord, options);
+  const damageType = resolveSpellDamageType(hooks.damage, options);
+  const damageTypeChoices = spellDamageTypeChoices(hooks.damage);
   const effects = options.effects || createEffectsFromSpell(spellRecord);
   const combatObject = createCombatObjectFromSpell(spellRecord);
   const teleport = createTeleportActionFromSpell(spellRecord);
@@ -103,7 +196,8 @@ export function createSpellAction(spellRecord, options = {}) {
       type: "spell_auto_damage",
       requiresTarget: true,
       damage,
-      damageType: hooks.damage.type || options.damageType,
+      damageType,
+      damageTypeChoices,
       hits: hooks.darts || hooks.hits || 1,
       tags: { ...base.tags, harmful: true },
     });
@@ -130,7 +224,8 @@ export function createSpellAction(spellRecord, options = {}) {
       saveAbility: normalizeAbility(hooks.save?.ability || options.saveAbility),
       spellSaveDC: options.spellSaveDC ?? DEFAULT_SPELL_SAVE_DC,
       damage,
-      damageType: hooks.damage?.type || options.damageType,
+      damageType,
+      damageTypeChoices,
       effects,
       targeting: createTargetingFromArea(spellRecord.area),
       tags: { ...base.tags, savingThrow: true, harmful: true },
@@ -145,7 +240,8 @@ export function createSpellAction(spellRecord, options = {}) {
       saveAbility: normalizeAbility(hooks.save.ability || options.saveAbility),
       spellSaveDC: options.spellSaveDC ?? DEFAULT_SPELL_SAVE_DC,
       damage,
-      damageType: hooks.damage?.type || options.damageType,
+      damageType,
+      damageTypeChoices,
       effects,
       tags: { ...base.tags, savingThrow: true, harmful: true },
     });
@@ -158,7 +254,8 @@ export function createSpellAction(spellRecord, options = {}) {
       type: "spell_attack",
       attackBonus: options.attackBonus ?? DEFAULT_ATTACK_BONUS,
       damage,
-      damageType: hooks.damage?.type || options.damageType,
+      damageType,
+      damageTypeChoices,
       effects: effects.map((effect) => ({ ...effect, trigger: "hit" })),
       tags: { ...base.tags, attackRoll: true, ranged: base.range > 1, melee: base.range <= 1, harmful: true },
     });
@@ -180,6 +277,17 @@ export function createSpellAction(spellRecord, options = {}) {
   }
 
   return null;
+}
+
+function resolveSpellDamageType(damageHook, options = {}) {
+  if (options.damageType) return options.damageType;
+  if (damageHook?.type && damageHook.type !== "choice") return damageHook.type;
+  return damageHook?.choices?.[0] || damageHook?.type || null;
+}
+
+function spellDamageTypeChoices(damageHook) {
+  if (damageHook?.type !== "choice" || !Array.isArray(damageHook.choices)) return null;
+  return [...damageHook.choices];
 }
 
 function createReactionPolicyFromSpell(spellRecord) {
@@ -284,6 +392,10 @@ function weaponPropertyTags(weaponRecord) {
   const tags = Object.fromEntries((weaponRecord.properties || []).map((property) => [propertyTag(property), true]));
   if (tags.two_handed || tags.versatile) tags.two_handed_or_versatile = true;
   return tags;
+}
+
+function isLightWeapon(weaponRecord) {
+  return (weaponRecord.properties || []).includes("light");
 }
 
 function propertyTag(property) {

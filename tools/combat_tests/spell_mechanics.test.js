@@ -10,6 +10,7 @@ import {
 } from "./helpers.js";
 import { combatObjectCells } from "../../app/combat/combatObjects.js";
 import { createSpellAction } from "../../app/combat/actionFactory.js";
+import { formatEvent } from "../../app/combat/combatLog.js";
 import { SPELLS } from "../../app/data/spells.js";
 
 function testProduceFlameGrantsHurlAction() {
@@ -36,6 +37,20 @@ function testHexAddsDamageRiderToCasterAttackHits() {
   hero.economy.actionAvailable = true;
   assert.equal(resolveAction(snapshot, hero, "bow", enemy.id, scriptedDice({ d20: [15], damage: 4 }), log), true);
   assert.equal(enemy.hp, 12, "Hex should add a generic damage rider when the caster hits with an attack roll");
+}
+
+function testChromaticOrbUsesSelectedDamageType() {
+  const { snapshot, hero, enemy, log } = spellHarness();
+  hero.actions.push(createSpellAction(SPELLS.chromatic_orb, { attackBonus: 5 }));
+
+  assert.equal(resolveAction(snapshot, hero, "chromatic_orb", {
+    targetId: enemy.id,
+    choices: { damageType: "thunder" },
+  }, scriptedDice({ d20: [15], damage: 7 }), log), true);
+  const damageEvent = log.events.find((event) => event.type === "damage.applied" && event.detail.sourceId === hero.id);
+  const attackEvent = log.events.find((event) => event.type === "attack.roll" && event.detail.actionId === "chromatic_orb");
+  assert.equal(damageEvent.detail.damageType, "thunder", "Chromatic Orb should use the selected damage type at resolution");
+  assert.ok(formatEvent(attackEvent).includes("casts Chromatic Orb on"), "spell attack logs should describe spell casting rather than generic attacking");
 }
 
 function testArmorOfAgathysTempHpAndRetaliation() {
@@ -233,6 +248,7 @@ function spellHarness() {
 export async function runSpellMechanicCombatTests() {
   testProduceFlameGrantsHurlAction();
   testHexAddsDamageRiderToCasterAttackHits();
+  testChromaticOrbUsesSelectedDamageType();
   testArmorOfAgathysTempHpAndRetaliation();
   testSanctuaryCanWasteIncomingAttack();
   testSleepEscalatesOnFailedRepeatSave();

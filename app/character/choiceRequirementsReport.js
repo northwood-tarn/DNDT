@@ -1,6 +1,8 @@
 import { resolveCharacterSheet } from "./resolveCharacterSheet.js";
 import { CHARACTER_CREATION_STEPS } from "./characterCreationSteps.js";
 import { createCharacterChoicePools } from "./choicePools.js";
+import { getClassById } from "../data/classes.js";
+import { getFeatById } from "../data/feats.js";
 
 export function createChoiceRequirementsReport(draft, options = {}) {
   const sheet = options.sheet || resolveCharacterSheet(draft, {}, {
@@ -106,6 +108,19 @@ function poolRequirements(choicePools) {
       source: { type: "missing_spell_choice", poolId: pool.id, missing: pool.missing },
     }));
   }
+  for (const pool of choicePools.weaponMastery?.pools || []) {
+    if (pool.missing <= 0) continue;
+    out.push(question({
+      id: `weapon_mastery.${pool.id}`,
+      stepId: "gear",
+      kind: "weapon_mastery_pool",
+      label: `Choose ${pool.missing} more ${pool.label.toLowerCase()}.`,
+      path: pool.path,
+      count: pool.count,
+      options: pool.options,
+      source: { type: "missing_weapon_mastery_choice", poolId: pool.id, missing: pool.missing },
+    }));
+  }
   return out;
 }
 
@@ -138,28 +153,45 @@ function requirementFromUnresolved(item) {
     });
   }
   if (item.type === "missing_origin_feat_choice") {
+    const feat = getFeatById(item.featId);
     return question({
       id: item.choiceId,
-      stepId: "background",
+      stepId: item.advancementId ? "class" : "background",
       kind: "origin_feat_choice",
-      label: "Complete origin feat choices.",
+      label: `Choose ${item.count || 1} ${choiceNoun(item.choiceId, item.kind, item.count || 1)} for ${feat?.name || item.featId}.`,
       path: `choices.featChoices.${item.featId}.${item.choiceId}`,
       count: item.count || 1,
+      options: item.options || null,
+      source: item,
+    });
+  }
+  if (["invalid_origin_feat_choice_count", "invalid_origin_feat_choice_value"].includes(item.type) && item.kind && item.options) {
+    const feat = getFeatById(item.featId);
+    return question({
+      id: item.choiceId,
+      stepId: item.advancementId ? "class" : "background",
+      kind: "origin_feat_choice",
+      label: `Choose ${item.count || item.expected || 1} ${choiceNoun(item.choiceId, item.kind, item.count || item.expected || 1)} for ${feat?.name || item.featId}.`,
+      path: `choices.featChoices.${item.featId}.${item.choiceId}`,
+      count: item.count || item.expected || 1,
+      options: item.options,
       source: item,
     });
   }
   if (item.type === "missing_class_choice") {
+    const classRecord = getClassById(item.classId);
     return question({
       id: item.choiceId,
       stepId: "class",
       kind: item.kind,
-      label: `Choose a ${item.kind}.`,
+      label: `Choose a ${classRecord?.name ? `${classRecord.name} ` : ""}${item.kind}.`,
       path: item.kind === "pact" ? "identity.pactId" : "identity.subclassId",
       options: item.options,
       source: item,
     });
   }
   if (item.type === "missing_class_feature_choice") {
+    if (item.kind === "weapon_mastery") return null;
     return question({
       id: item.choiceId,
       stepId: "class",
@@ -177,11 +209,69 @@ function requirementFromUnresolved(item) {
       stepId: stepForIssue(item),
       kind: "issue",
       severity: "error",
-      label: item.message || item.type,
+      label: describeUnresolvedCharacterIssue(item),
       source: item,
     };
   }
   return null;
+}
+
+export function describeUnresolvedCharacterIssue(item) {
+  if (!item || typeof item !== "object") return String(item);
+  if (item.message) return item.message;
+  if (item.type === "missing_origin_feat_choice") {
+    const feat = getFeatById(item.featId);
+    return `Choose ${item.count || 1} ${choiceNoun(item.choiceId, item.kind, item.count || 1)} for ${feat?.name || item.featId}.`;
+  }
+  if (item.type === "invalid_origin_feat_choice_count") {
+    const feat = getFeatById(item.featId);
+    return `${feat?.name || item.featId} needs ${item.expected} choice${item.expected === 1 ? "" : "s"} for ${choiceLabel(item.choiceId)}; ${item.actual} selected.`;
+  }
+  if (item.type === "invalid_origin_feat_choice_value") {
+    const feat = getFeatById(item.featId);
+    return `${feat?.name || item.featId} has an invalid ${choiceLabel(item.choiceId)} selection.`;
+  }
+  if (item.type === "unsupported_origin_feat") return `The selected feat is not supported: ${item.featId}.`;
+  if (item.type === "unsupported_origin_feat_choice_kind") {
+    const feat = getFeatById(item.featId);
+    return `${feat?.name || item.featId} uses an unsupported choice type: ${item.kind}.`;
+  }
+  if (item.type === "missing_lineage_choice") return "Choose a lineage for this species.";
+  if (item.type === "missing_species_feature_choice") return `Choose ${item.count || 1} ${choiceLabel(item.choiceId, item.kind)}.`;
+  if (item.type === "missing_class_choice") {
+    const classRecord = getClassById(item.classId);
+    return `Choose a ${classRecord?.name ? `${classRecord.name} ` : ""}${item.kind}.`;
+  }
+  if (item.type === "missing_class_feature_choice") return `Choose ${item.count || 1} ${choiceLabel(item.choiceId, item.kind)}.`;
+  if (item.type === "premature_class_choice") return `This ${item.choiceId || "class choice"} is not available until level ${item.requiredLevel}.`;
+  if (String(item.type || "").startsWith("invalid_")) return `Invalid character choice: ${humanize(item.type.replace(/^invalid_/, ""))}.`;
+  if (String(item.type || "").startsWith("unsupported_")) return `Unsupported character feature: ${humanize(item.type.replace(/^unsupported_/, ""))}.`;
+  if (item.type) return humanize(item.type);
+  return JSON.stringify(item);
+}
+
+function choiceLabel(choiceId, kind = "") {
+  if (choiceId === "ability") return "ability";
+  if (choiceId === "abilities") return "abilities";
+  if (choiceId === "spell" || choiceId === "spells") return "spell";
+  if (choiceId === "step") return "Misty Step grant";
+  if (choiceId === "proficiencies") return "skill or tool proficiency";
+  if (choiceId === "expertise") return "expertise";
+  if (choiceId === "damage_type") return "damage type";
+  return humanize(kind || choiceId || "choice");
+}
+
+function choiceNoun(choiceId, kind, count) {
+  const label = choiceLabel(choiceId, kind);
+  if (count === 1 || label.endsWith("s")) return label;
+  if (label.endsWith("y")) return `${label.slice(0, -1)}ies`;
+  if (label === "Misty Step grant") return label;
+  if (label === "expertise") return label;
+  return `${label}s`;
+}
+
+function humanize(value) {
+  return String(value || "choice").replace(/_/g, " ");
 }
 
 function question({ id, stepId, kind, label, path, count = 1, options = null, source = null }) {

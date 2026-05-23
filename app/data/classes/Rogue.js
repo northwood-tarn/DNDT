@@ -37,6 +37,14 @@ export default {
   ],
   features: {
     1: [
+      {
+        name: "Weapon Mastery",
+        type: "Passive",
+        description: "Choose two weapons whose mastery properties you can use.",
+        effects: {
+          weaponMastery: [{ count: 2 }]
+        }
+      },
       { name: "Thieves' Tools (Legacy Kit)", type: "Passive",
         description: "Your old, worn set of less‑than‑legal tools. When you pick a lock or disarm a trap, you have expertise (add double your proficiency bonus) on the check. Others can still attempt these tasks using improvised or found tools—this feature doesn’t gate the attempt; it just makes you notably better at it.",
         effects: {

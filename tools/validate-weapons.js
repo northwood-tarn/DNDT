@@ -3,11 +3,13 @@
 
 import path from "node:path";
 import url from "node:url";
+import { WEAPON_MASTERIES } from "../app/data/weaponMasteries.js";
 
 const DEFAULT_WEAPONS_PATH = "app/data/weapons.js";
 
 const VALID_USE_TIMES = new Set(["action", "bonus", "bonus_action", "reaction", "exploration"]);
 const VALID_TYPES = new Set(["melee", "ranged"]);
+const VALID_MASTERIES = new Set(Object.keys(WEAPON_MASTERIES));
 const VALID_DAMAGE_TYPES = new Set([
   "acid",
   "bludgeoning",
@@ -91,6 +93,9 @@ function validateWeaponRecord(errors, item) {
   if (!VALID_TYPES.has(item.type)) fail(errors, id, `type must be one of: ${Array.from(VALID_TYPES).join(", ")}`);
   if (!isDiceExpression(item.damage)) fail(errors, id, "damage must be a dice expression");
   if (!Array.isArray(item.properties)) fail(errors, id, "properties must be an array");
+  if (item.mastery !== undefined && !VALID_MASTERIES.has(item.mastery)) {
+    fail(errors, id, `mastery must be one of: ${Array.from(VALID_MASTERIES).join(", ")}`);
+  }
   if (item.value !== undefined) validatePositiveNumber(errors, id, "value", item.value);
   if (item.effect !== undefined) validateString(errors, id, "effect", item.effect);
   if (item.magical !== undefined && typeof item.magical !== "boolean") fail(errors, id, "magical must be boolean");

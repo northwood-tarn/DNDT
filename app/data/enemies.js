@@ -17,6 +17,21 @@ export const enemies = {
     weaponId: "scimitar",
     damage: "1d6+2",
     damageType: "slashing",
+    resources: [
+      { id: "nimble_escape", name: "Nimble Escape", max: 1, current: 1, recovery: "encounter" }
+    ],
+    features: [
+      {
+        id: "nimble_escape",
+        name: "Nimble Escape",
+        description: "The goblin can spend a limited burst of movement to reposition.",
+        effects: {
+          actionOptions: [
+            { id: "nimble_escape_dash", name: "Nimble Escape", actionType: "bonus_action", actionKind: "dash", resourceId: "nimble_escape" }
+          ]
+        }
+      }
+    ],
     xpValue: 50,
     description: "A small, vicious creature that attacks in packs.",
     aiProfile: "aggressive",
@@ -57,6 +72,18 @@ export const enemies = {
       damage: "2d4+2",
       damageType: "piercing"
     },
+    features: [
+      {
+        id: "pack_bite",
+        name: "Pack Bite",
+        description: "The wolf bites harder when the pack has committed to the attack.",
+        effects: {
+          damageRiders: [
+            { id: "pack_bite_damage", trigger: "source_hits_with_attack_roll", actionTags: ["natural"], damage: "1d4", damageType: "piercing", oncePerTurn: true }
+          ]
+        }
+      }
+    ],
     xpValue: 75,
     description: "A snarling predator that hunts in packs.",
     aiProfile: "pack",
@@ -96,6 +123,18 @@ export const enemies = {
     weaponId: "shortsword",
     damage: "1d6+2",
     damageType: "piercing",
+    features: [
+      {
+        id: "rattling_blade",
+        name: "Rattling Blade",
+        description: "The skeleton's clattering strike leaves the target briefly off-balance.",
+        effects: {
+          conditionRiders: [
+            { id: "rattling_blade_shaken", trigger: "source_hits_with_attack_roll", actionTags: ["weapon"], condition: "next_attack_disadvantage", duration: { type: "turns", remaining: 1 }, oncePerTurn: true }
+          ]
+        }
+      }
+    ],
     xpValue: 50,
     description: "A brittle corpse animated by hostile magic.",
     aiProfile: "guard",
@@ -137,6 +176,9 @@ export const enemies = {
       damage: "2d6+2",
       damageType: "necrotic"
     },
+    activeEffects: [
+      { id: "shade_form", label: "Shade Form", type: "modifier", stat: "ac", amount: 1 }
+    ],
     xpValue: 100,
     description: "A hungry smear of darkness with a human shape.",
     aiProfile: "stalker",
@@ -174,6 +216,17 @@ export const enemies = {
     weaponId: "greatsword",
     damage: "2d6+3",
     damageType: "slashing",
+    auras: [
+      {
+        id: "commanding_presence",
+        name: "Commanding Presence",
+        radiusSquares: 2,
+        affects: "allies",
+        effects: [
+          { id: "commanding_presence_attack", type: "modifier", stat: "attack_roll", amount: 1, stackKey: "enemy_commanding_presence" }
+        ]
+      }
+    ],
     xpValue: 700,
     description: "A disciplined armored combatant trained to hold ground.",
     aiProfile: "tactical",

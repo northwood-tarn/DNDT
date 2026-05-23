@@ -106,6 +106,7 @@ function actorFromDraft(id, overrides) {
     abilities: overrides.abilities,
     choices: {
       backgroundAbilityScores: ["primary", "secondary"],
+      weaponMasteryIds: defaultWeaponMasteries(overrides.identity?.classId),
       ...(overrides.choices || {}),
     },
     gear: {
@@ -121,6 +122,13 @@ function actorFromDraft(id, overrides) {
   const sheet = resolveCharacterSheet(draft, {}, { allowNonCreationLevel: true });
   assert.equal(sheet.metadata.unresolved.length, 0, `${id} smoke sheet should resolve cleanly`);
   return resolvedSheetToCombatActor(sheet, { id, position: { x: 1, y: 1 } });
+}
+
+function defaultWeaponMasteries(classId) {
+  if (classId === "fighter") return ["longsword", "warhammer", "greatsword"];
+  if (classId === "rogue") return ["dagger", "rapier"];
+  if (classId === "paladin") return ["longsword", "warhammer"];
+  return [];
 }
 
 function meleeAttack(overrides = {}) {

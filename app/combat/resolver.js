@@ -41,6 +41,7 @@ import {
 import { combatObjectsAt } from "./combatObjects.js";
 import { canMoveTo, canTargetAction, canUseAction } from "./rules.js";
 import { resolveTeleport } from "./teleportAction.js";
+import { resolveCompoundWeaponAttack } from "./weaponMasteryActions.js";
 export { checkOutcome, currentActor, getActor, livingActors } from "./combatState.js";
 
 export function startTurn(snapshot, actor, log, dice = null) {
@@ -124,6 +125,7 @@ export function moveActor(snapshot, actor, to, log, { force = false, dice = null
 
   actor.position = { ...to };
   if (!force) spendMovement(actor, getMovementStepCost(snapshot, actor, from, to));
+  if (!force) trackMovementStep(actor, from, to);
   log.add("move", {
     round: snapshot.round,
     actorId: actor.id,
@@ -141,7 +143,8 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
   if (!actor || actor.hp <= 0 || snapshot.outcome) return false;
   syncLegacyEconomyFields(actor);
   syncContextualActions(actor);
-  const action = actor.actions.find((item) => item.id === actionId) || actor.actions[0];
+  const baseAction = actor.actions.find((item) => item.id === actionId) || actor.actions[0];
+  const action = actionWithTargetChoices(baseAction, targetId);
   if (!action) return false;
 
   const actionLegality = canUseAction(actor, action);
@@ -215,7 +218,7 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
     return true;
   }
 
-  const target = getActor(snapshot, targetId);
+  const target = getActor(snapshot, targetActorId(targetId));
   const targetLegality = canTargetAction(snapshot, actor, action, target);
   if (!targetLegality.ok) {
     log.add("target.invalid", {
@@ -254,12 +257,15 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
 
   if (action.type === "spell_auto_damage") {
     resolveAutoDamageSpell(snapshot, actor, target, action, dice, log);
+  } else if (action.type === "compound_weapon_attack") {
+    resolveCompoundWeaponAttack(snapshot, actor, target, action, dice, log, { resolveAttack });
   } else if (action.type === "spell_save") {
     resolveSaveSpell(snapshot, actor, target, action, dice, log);
   } else {
     resolveAttack(snapshot, actor, target, action, dice, log);
   }
 
+  markActionResolvedForTurn(actor, action);
   spendActionCost(actor, action.cost);
   spendConsumableForAction(actor, action);
   clearOffenseEndedConditions(actor, action, log, snapshot);
@@ -293,6 +299,21 @@ function hasAreaAnchor(targetPayload) {
   return Boolean(anchor && Number.isFinite(anchor.x) && Number.isFinite(anchor.y));
 }
 
+function targetActorId(targetPayload) {
+  if (typeof targetPayload === "string") return targetPayload;
+  return targetPayload?.targetId || null;
+}
+
+function actionWithTargetChoices(action, targetPayload) {
+  const choices = targetPayload?.choices || {};
+  if (!choices.damageType) return action;
+  if (!Array.isArray(action?.damageTypeChoices) || !action.damageTypeChoices.includes(choices.damageType)) return action;
+  return {
+    ...action,
+    damageType: choices.damageType,
+  };
+}
+
 function isAreaSaveAction(action, targetPayload) {
   return action?.type === "spell_area_save" ||
     action?.type === "spell_object" ||
@@ -322,7 +343,9 @@ function resolvePush(snapshot, actor, target, action, dice, log) {
     };
     if (!canForcedMoveTo(snapshot, next, target.id)) {
       collisionAt = next;
-      collisionSquares = action.distanceSquares - movedSquares;
+      collisionSquares = collisionDealsDamage(snapshot, next, target.id)
+        ? action.distanceSquares - movedSquares
+        : 0;
       break;
     }
     const from = { ...target.position };
@@ -357,6 +380,26 @@ function resolvePush(snapshot, actor, target, action, dice, log) {
   cleanupInvalidSourceConditions(snapshot, log);
 }
 
+function trackMovementStep(actor, from, to) {
+  actor.turnFlags ??= {};
+  actor.turnFlags.movementSteps ??= [];
+  actor.turnFlags.movementSteps.push({
+    from,
+    to,
+    dx: Math.sign(to.x - from.x),
+    dy: Math.sign(to.y - from.y),
+  });
+}
+
+function markActionResolvedForTurn(actor, action) {
+  actor.turnFlags ??= {};
+  actor.turnFlags.actionsResolved ??= {};
+  actor.turnFlags.actionsResolved[action.id] = true;
+  if (action.type === "weapon_attack" || action.type === "melee_attack" || action.type === "compound_weapon_attack") {
+    actor.turnFlags.attackActionResolved = true;
+  }
+}
+
 function pushDirection(actorPos, targetPos) {
   const dx = targetPos.x - actorPos.x;
   const dy = targetPos.y - actorPos.y;
@@ -369,6 +412,10 @@ function canForcedMoveTo(snapshot, pos, targetId) {
     !isMovementBlocked(snapshot.grid, pos) &&
     !combatObjectsAt(snapshot, pos).some((object) => object.blocksMovement) &&
     !actorAt(snapshot, pos, targetId);
+}
+
+function collisionDealsDamage(snapshot, pos, targetId) {
+  return !actorAt(snapshot, pos, targetId);
 }
 
 function clearOffenseEndedConditions(actor, action, log, snapshot) {
