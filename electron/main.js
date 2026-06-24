@@ -1,7 +1,14 @@
 // electron/main.js — main process (CommonJS)
-const { app, BrowserWindow, screen, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
+
+const DESIGN_VIEWPORT = Object.freeze({
+  width: 1280,
+  height: 800,
+  minWidth: 1100,
+  minHeight: 720,
+});
 
 function resolveFromApp(...segments) {
   return path.join(app.getAppPath(), ...segments);
@@ -31,21 +38,22 @@ function resolveSafeRelPath(relPath) {
 
 let win;
 function createWindow() {
-  const primary = screen.getPrimaryDisplay();
-  const startWidth = 1280;
-  const startHeight = 800;
-
+  const combatPreview = process.argv.includes("--combat-preview");
+  const creatorPreview = process.argv.includes("--creator-preview");
+  const designPreview = combatPreview || creatorPreview;
+  let windowButtonHideTimer = null;
   win = new BrowserWindow({
-    width: startWidth,
-    height: startHeight,
-    minWidth: 1100,
-    minHeight: 720,
-    backgroundColor: '#0b0f14',
-    show: true,
+    width: DESIGN_VIEWPORT.width,
+    height: DESIGN_VIEWPORT.height,
+    minWidth: DESIGN_VIEWPORT.minWidth,
+    minHeight: DESIGN_VIEWPORT.minHeight,
+    backgroundColor: designPreview ? '#050706' : '#0b0f14',
+    show: !designPreview,
     frame: false,                       // ⬅ remove OS title bar
     titleBarStyle: 'hiddenInset',       // macOS smooth dragging
     fullscreenable: true,
     resizable: true,
+    autoHideMenuBar: true,
     webPreferences: {
       preload: resolveFromApp('electron', 'preload.js'),
       contextIsolation: true,
@@ -55,9 +63,40 @@ function createWindow() {
     }
   });
 
-  const indexPath = resolveFromApp('app', 'index.html');
+  const indexPath = combatPreview
+    ? resolveFromApp('app', 'combat_test', 'index.html')
+    : creatorPreview
+      ? resolveFromApp('app', 'character_creator', 'step_index.html')
+      : resolveFromApp('app', 'index.html');
   win.loadFile(indexPath);
-  win.center();
+
+  if (designPreview && process.platform === 'darwin' && typeof win.setWindowButtonVisibility === 'function') {
+    const hideWindowButtons = () => {
+      win.setWindowButtonVisibility(false);
+    };
+    const revealWindowButtons = () => {
+      win.setWindowButtonVisibility(true);
+      if (windowButtonHideTimer) clearTimeout(windowButtonHideTimer);
+      windowButtonHideTimer = setTimeout(hideWindowButtons, 4500);
+    };
+
+    hideWindowButtons();
+    win.webContents.on('before-input-event', (event, input) => {
+      if (input.type === 'keyDown' && input.key === 'Escape') {
+        event.preventDefault();
+        revealWindowButtons();
+      }
+    });
+  }
+
+  if (designPreview) {
+    win.once('ready-to-show', () => {
+      win.center();
+      win.show();
+    });
+  } else {
+    win.center();
+  }
 }
 
 app.whenReady().then(() => {

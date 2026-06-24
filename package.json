@@ -15,6 +15,8 @@
     "test:character": "node tools/test-character.js",
     "test:combat": "node tools/test-combat.js",
     "creator:harness": "node tools/no-cache-static-server.mjs app",
+    "preview:combat": "env -u ELECTRON_RUN_AS_NODE electron . --combat-preview",
+    "preview:creator": "env -u ELECTRON_RUN_AS_NODE electron . --creator-preview",
     "dev": "npm run validate || true && electron .",
     "play": "electron .",
     "start": "electron .",

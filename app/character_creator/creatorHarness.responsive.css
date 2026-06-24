@@ -1,0 +1,44 @@
+@media (max-width: 1180px) {
+  .creator-shell {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+
+  .creator-step[data-step="identity"] .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .creator-step[data-step="identity"] .name-field,
+  .creator-step[data-step="identity"] .background-field,
+  .creator-step[data-step="identity"] label:not(.name-field):not(.species-field):not(.class-field):not(.background-field),
+  .creator-step[data-step="identity"] .species-field,
+  .creator-step[data-step="identity"] .class-field {
+    grid-column: span 1;
+  }
+
+  .creator-step[data-step="identity"] .choice-card-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 980px) {
+  .creator-shell,
+  .form-grid,
+  .ability-grid,
+  .pool-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .creator-panel {
+    border-right: 0;
+    border-bottom: 1px solid #324139;
+  }
+
+  .option-info-main {
+    grid-template-columns: 1fr;
+  }
+
+  .option-info-thumb {
+    width: 100%;
+    height: 180px;
+  }
+}

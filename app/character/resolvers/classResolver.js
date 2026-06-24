@@ -1,4 +1,5 @@
 import { CLASSES, findClassByIdOrName } from "../../data/classes.js";
+import { getDeviceRecipeById, listDeviceRecipes } from "../../data/deviceRecipes.js";
 import { getWeaponById } from "../../data/weapons.js";
 import { isDeclarativeFeatureImplemented } from "../featureImplementation.js";
 import { resolveOriginFeat } from "./originFeatResolver.js";
@@ -300,6 +301,7 @@ function applyFeatureEffects(sheet, draft, feature, featureId, level) {
 
 function classFeatureChoiceOptions(requirement, draft) {
   if (requirement.options?.length) return requirement.options;
+  if (requirement.kind === "device_recipe") return availableDeviceRecipeIds(draft);
   if (requirement.kind === "weapon") return [...(draft.gear?.weaponIds || [])];
   return null;
 }
@@ -389,6 +391,7 @@ function applyClassFeatureChoice(sheet, requirement, chosen, featureId, options 
   if (requirement.kind === "skill") addUniqueAll(sheet.proficiencies.skills, values);
   if (requirement.kind === "tool") addUniqueAll(sheet.proficiencies.tools, values);
   if (requirement.kind === "spell") addUniqueAll(sheet.spellcasting.knownSpellIds, values);
+  if (requirement.kind === "device_recipe") addDeviceRecipeChoices(sheet, draft, values);
 }
 
 function addExpertise(sheet, expertise) {
@@ -399,6 +402,37 @@ function addExpertise(sheet, expertise) {
 
 function getClassChoice(draft, choiceId) {
   return draft.choices?.classChoices?.[choiceId] || null;
+}
+
+function addDeviceRecipeChoices(sheet, draft, values) {
+  sheet.devices.ability ||= "intelligence";
+  addUniqueAll(sheet.devices.knownRecipeIds, values);
+  const recipeBook = values
+    .map((id) => getDeviceRecipeById(id))
+    .filter(Boolean)
+    .map((recipe) => structuredClone(recipe));
+  const existing = new Set(sheet.devices.recipeBook.map((recipe) => recipe.id));
+  sheet.devices.recipeBook.push(...recipeBook.filter((recipe) => !existing.has(recipe.id)));
+
+  const prepared = (draft.devices?.preparedRecipeIds || []).filter((id) => sheet.devices.knownRecipeIds.includes(id));
+  if (prepared.length) addUniqueAll(sheet.devices.preparedRecipeIds, prepared);
+}
+
+function availableDeviceRecipeIds(draft) {
+  const classRecord = findClass(CLASSES, draft.identity?.classId);
+  const subclass = findSubclass(classRecord, draft.identity?.subclassId);
+  const recipeIds = normalizeDeviceRecipeIds(subclass?.deviceRecipes || []);
+  return listDeviceRecipes({ ids: recipeIds, level: draft.identity?.level || 1 }).map((recipe) => recipe.id);
+}
+
+function findSubclass(classRecord, subclassId) {
+  if (!classRecord || !subclassId) return null;
+  const normalized = String(subclassId).trim().toLowerCase();
+  return Object.values(classRecord.subclasses || {}).find((subclass) => subclass.id === normalized) || null;
+}
+
+function normalizeDeviceRecipeIds(recipes) {
+  return recipes.map((recipe) => typeof recipe === "string" ? recipe : recipe.id).filter(Boolean);
 }
 
 function abilityNameToId(name) {

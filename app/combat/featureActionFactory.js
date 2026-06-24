@@ -19,6 +19,8 @@ export function createFeatureAction(feature, option, context = {}) {
     tags: {
       feature: true,
       harmful: option.harmful === true || option.targetFilter?.team === "enemies" || Boolean(option.damage || option.damageByTargetProperty),
+      ...(Array.isArray(option.tags) ? Object.fromEntries(option.tags.map((tag) => [tag, true])) : {}),
+      ...(option.tags && !Array.isArray(option.tags) && typeof option.tags === "object" ? option.tags : {}),
     },
   };
   if (option.healingFormula) {
@@ -51,6 +53,7 @@ export function createFeatureAction(feature, option, context = {}) {
     spellSaveDC: resolveFeatureSaveDc(option, context),
     damage: resolveFormula(option.damage?.dice || option.damage, context),
     damageType: option.damage?.type || option.damageType || null,
+    damageTypeChoices: structuredClone(option.damageTypeChoices || null),
     damageByTargetProperty: structuredClone(option.damageByTargetProperty || null),
     targeting: structuredClone(option.targeting || null),
     targetFilter: structuredClone(option.targetFilter || null),

@@ -6,9 +6,8 @@ const _state = {
   "ui.logo": "ui/dndlogo.png",
   "ui.mainscreen": "images/mainscreen.png",
   "ui.murky": "backgrounds/murky-background.png",
-  "fx.sunburst": "fx/sunburst.png",
-  "fx.flame": "fx/flame.png",
-  "fx.fogTexture": "fx/fog-texture.png",
+  "fx.sunburst": "images/effects/sunburst.png",
+  "fx.flame": "images/effects/flame.png",
   "pc.placeholder": "sprites/pc_nobody.png",
   "death.screen": "ui/death.png"
 },

@@ -1,0 +1,496 @@
+:root {
+  background: #050706;
+  color-scheme: dark;
+  --font-ui: "Myriad Pro", "Myriad", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  --font-prose: "Baskerville", "Baskerville Old Face", "Garamond", "Times New Roman", serif;
+  --font-speaker: "Avenir Light", "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --dlg-location-color: rgba(255, 255, 255, 0.10);
+  --dlg-prose-color: rgba(120, 123, 123, 0.90);
+  --dlg-speaker-color: rgba(255, 255, 255, 0.30);
+  --dlg-skill-color: #634a72;
+  --dlg-class-color: #845b02;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #050706;
+}
+
+.creator-bg {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #050706;
+}
+
+.creator-fog-field {
+  position: absolute;
+  inset: -7%;
+  overflow: hidden;
+  background: #05110f;
+}
+
+.creator-fog-field::after {
+  content: "";
+  position: absolute;
+  inset: 5%;
+  background:
+    radial-gradient(circle at 52% 30%, rgba(24, 77, 70, 0.22), transparent 34%),
+    radial-gradient(circle at 42% 76%, rgba(38, 111, 94, 0.16), transparent 40%),
+    rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+}
+
+.creator-fog-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  filter: saturate(0.92) contrast(1.08) brightness(0.72);
+  transform: translate3d(-1.5%, -1%, 0) scale(1.08);
+  transform-origin: center;
+  transition: opacity 8s ease-in-out;
+  will-change: opacity, transform;
+  animation: fog-layer-drift 126s ease-in-out infinite alternate;
+}
+
+.creator-fog-layer.is-visible {
+  opacity: 0.48;
+}
+
+.creator-fog-layer:nth-child(2) {
+  mix-blend-mode: screen;
+  filter: saturate(0.82) contrast(1.16) brightness(0.54);
+  animation-delay: -63s;
+}
+
+.creator-flame {
+  position: absolute;
+  top: 32px;
+  left: 50%;
+  width: 46px;
+  height: auto;
+  transform: translateX(-50%);
+  opacity: 0.2;
+  animation: flame-breathe 9s ease-in-out infinite;
+}
+
+@keyframes fog-layer-drift {
+  0% {
+    transform: translate3d(-1.8%, -1.2%, 0) scale(1.08) rotate(-0.35deg);
+  }
+  50% {
+    transform: translate3d(1.1%, 0.8%, 0) scale(1.115) rotate(0.2deg);
+  }
+  100% {
+    transform: translate3d(2.2%, -0.6%, 0) scale(1.095) rotate(0.45deg);
+  }
+}
+
+.preview-window-drag {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 82px;
+  z-index: 10;
+  -webkit-app-region: drag;
+}
+
+.details-toggle {
+  position: fixed;
+  top: 24px;
+  right: 28px;
+  z-index: 20;
+  width: 24px;
+  height: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.12);
+  color: rgba(255, 255, 255, 0.35);
+  font-family: var(--font-speaker);
+  font-size: 13px;
+  line-height: 1;
+  -webkit-app-region: no-drag;
+}
+
+.creator-preview-shell {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1.12fr 1fr;
+  height: min(100vh, var(--app-window-height));
+  padding: 84px 58px 54px;
+}
+
+.creator-preview-shell.is-summary {
+  grid-template-columns: 118px minmax(0, 1fr);
+  column-gap: 16px;
+}
+
+.creator-preview-shell.is-summary .preview-left {
+  display: none;
+}
+
+.creator-preview-shell.is-summary .preview-center {
+  grid-column: 1;
+  justify-self: start;
+  align-self: stretch;
+  width: 104px;
+  min-width: 0;
+  padding-top: 0;
+}
+
+.creator-preview-shell.is-summary .preview-right {
+  grid-column: 2;
+  justify-self: stretch;
+  max-width: none;
+  padding-top: 70px;
+}
+
+.page-fade {
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+
+.page-fade.is-resetting {
+  opacity: 0;
+  transition: none;
+}
+
+.page-fade.is-visible {
+  opacity: 1;
+}
+
+.preview-column {
+  min-width: 0;
+}
+
+.preview-left {
+  align-self: start;
+  display: grid;
+  gap: 9px;
+  align-content: start;
+  max-height: calc(min(100vh, var(--app-window-height)) - 243px);
+  max-width: 380px;
+  overflow-y: auto;
+  margin-top: 130px;
+  padding-right: 8px;
+  scrollbar-color: rgba(180, 206, 204, 0.18) transparent;
+  scrollbar-width: thin;
+}
+
+.preview-left.has-open-dropdown {
+  overflow: visible;
+}
+
+.preview-center {
+  align-self: start;
+  justify-self: center;
+  min-width: 220px;
+  padding-top: 65px;
+  text-align: center;
+}
+
+.preview-right {
+  align-self: start;
+  justify-self: end;
+  max-width: 360px;
+  padding-top: 130px;
+}
+
+.sample-kicker,
+.sample-label {
+  margin: 0;
+  font-family: var(--font-speaker);
+  font-size: 13px;
+  line-height: 1;
+  color: var(--dlg-speaker-color);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.preview-left .sample-kicker {
+  padding-left: 12px;
+}
+
+.sample-title {
+  margin: 0 0 26px;
+  font-family: var(--font-speaker);
+  font-size: 42px;
+  font-weight: 300;
+  line-height: 0.98;
+  color: rgba(255, 255, 255, 0.78);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.creator-field {
+  width: 100%;
+  min-height: 52px;
+  border: 0;
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.10);
+  caret-color: rgba(255, 255, 255, 0.62);
+  outline: none;
+  padding: 7px 12px 9px;
+}
+
+.background-dropdown {
+  position: relative;
+}
+
+.background-dropdown-button {
+  display: block;
+  min-height: 42px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.54);
+  font-family: var(--font-speaker);
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.background-dropdown-button::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  width: 7px;
+  height: 7px;
+  border-right: 1px solid rgba(255, 255, 255, 0.34);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.34);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.background-options {
+  display: none;
+  position: absolute;
+  z-index: 4;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  max-height: min(calc(6 * 44px), var(--dropdown-available-height, calc(6 * 44px)));
+  overflow: auto;
+  background: rgba(1, 7, 7, 0.94);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+.background-dropdown.is-open .background-options {
+  display: grid;
+}
+
+.background-option {
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.54);
+  font-family: var(--font-speaker);
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  padding: 10px 12px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.background-option:hover,
+.background-option:focus,
+.background-option.is-selected {
+  color: rgba(255, 255, 255, 0.80);
+  background: rgba(255, 255, 255, 0.05);
+  outline: none;
+}
+
+.background-option.is-disabled,
+.background-option:disabled {
+  color: rgba(255, 255, 255, 0.20);
+  background: transparent;
+  cursor: default;
+}
+
+.background-option.is-disabled .option-meta,
+.background-option:disabled .option-meta {
+  color: rgba(170, 190, 190, 0.18);
+}
+
+.creator-choice-list {
+  display: grid;
+  gap: 8px;
+}
+
+.creator-choice-option {
+  text-align: left;
+}
+
+.creator-preview-shell.is-features .preview-left {
+  gap: 0;
+}
+
+.creator-preview-shell.is-features .creator-choice-list {
+  gap: 4px;
+  margin-top: -12px;
+}
+
+.creator-preview-shell.is-features .sample-kicker {
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.44);
+}
+
+.feature-source-group {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  padding: 8px 0 8px 15px;
+  background: transparent;
+}
+
+.feature-source-group::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 0;
+  width: 1px;
+  background: rgba(170, 190, 190, 0.22);
+}
+
+.feature-source-group .subsection-kicker {
+  margin-bottom: 2px;
+  padding-left: 0;
+}
+
+.feature-source-group .background-option {
+  border-bottom: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.creator-choice-empty {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.34);
+  font-family: var(--font-speaker);
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.feat-subchoice {
+  display: grid;
+  gap: 5px;
+  margin: 0 0 7px 12px;
+}
+
+.feat-subchoice-title {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.44);
+  font-family: var(--font-speaker);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.feat-subchoice-dropdown {
+  min-width: 0;
+}
+
+.feat-subchoice-button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  padding: 9px 32px 9px 11px;
+  background-color: rgba(0, 0, 0, 0.20);
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 13px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+
+.feat-subchoice-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.feat-subchoice-count {
+  color: rgba(170, 190, 190, 0.52);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.feat-subchoice-dropdown.is-open .feat-subchoice-button,
+.feat-subchoice-button:focus-visible {
+  background-color: rgba(255, 255, 255, 0.055);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.feat-subchoice-options {
+  max-height: min(calc(6 * 47px), var(--dropdown-available-height, calc(6 * 47px)));
+  overflow-y: auto;
+}
+
+.feat-subchoice-group {
+  padding: 10px 12px 5px;
+  color: rgba(170, 190, 190, 0.38);
+  font-family: var(--font-speaker);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  pointer-events: none;
+  text-transform: uppercase;
+}
+
+.feat-subchoice-option {
+  min-height: 34px;
+}
+
+.feat-subchoice-option.is-selected {
+  color: rgba(255, 255, 255, 0.84);
+  background: rgba(99, 74, 114, 0.22);
+}
+
+.creator-choice-dropdown {
+  width: 100%;
+}
+
+.creator-choice-dropdown .feat-subchoice-button {
+  width: 100%;
+  min-height: 42px;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: transparent;
+  padding: 10px 38px 10px 12px;
+}
+
+.feat-inline-group {
+  display: grid;
+  gap: 4px;
+}
+
+.feat-subchoice-option .option-meta {
+  display: block;
+  margin-top: 3px;
+  color: rgba(170, 190, 190, 0.32);
+  font-size: 10px;
+  letter-spacing: 0.10em;
+}

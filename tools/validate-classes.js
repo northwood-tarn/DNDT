@@ -287,6 +287,11 @@ function validateDeviceRecipes(errors, ownerId, recipes) {
   const ids = new Set();
   for (const [index, recipe] of recipes.entries()) {
     const id = `${ownerId}.deviceRecipes[${index}]`;
+    if (typeof recipe === "string") {
+      if (ids.has(recipe)) errors.push(`${id}: duplicate recipe id "${recipe}"`);
+      ids.add(recipe);
+      continue;
+    }
     validateString(errors, id, "id", recipe.id);
     validateString(errors, id, "name", recipe.name);
     validateString(errors, id, "use", recipe.use);
@@ -297,7 +302,7 @@ function validateDeviceRecipes(errors, ownerId, recipes) {
 }
 
 function validateSubclassFeatureChoices(errors, ownerId, subclass) {
-  const recipeIds = new Set((subclass.deviceRecipes || []).map((recipe) => recipe.id));
+  const recipeIds = new Set((subclass.deviceRecipes || []).map((recipe) => typeof recipe === "string" ? recipe : recipe.id));
   for (const [level, features] of Object.entries(subclass.features || {})) {
     for (const [featureIndex, feature] of (features || []).entries()) {
       for (const [choiceIndex, choice] of (feature.effects?.choiceRequirements || []).entries()) {

@@ -1,3 +1,5 @@
+import { DEVICE_RECIPE_LIST } from "../deviceRecipes.js";
+
 // Class file structure:
 // Each class file exports a default object representing a character class with the following keys:
 // - name: String representing the class name.
@@ -379,11 +381,7 @@ export default {
             } }
         ]
       },
-      deviceRecipes: [
-        { id: "fire_granado", name: "Fire Granado", use: "Action", text: "Thrown 20 ft; 5-ft radius explosion, 2d6 fire (DEX save half)." },
-        { id: "acid_flask", name: "Acid Flask", use: "Action", text: "Thrown 20 ft; on hit 2d6 acid, target’s AC −1 until end of next turn." },
-        { id: "lightning_paper", name: "Lightning Paper", use: "Bonus Action", text: "Apply to weapon; for 2 rounds, attacks deal +1d6 lightning." }
-      ]
+      deviceRecipes: DEVICE_RECIPE_LIST.map((recipe) => recipe.id)
     }
   }
 }

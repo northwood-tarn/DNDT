@@ -84,6 +84,14 @@ export function createEmptyResolvedCharacterSheet(overrides = {}) {
       preparedSpellIds: [],
       ...overrides.spellcasting,
     },
+    devices: {
+      ability: null,
+      saveDc: null,
+      knownRecipeIds: [],
+      preparedRecipeIds: [],
+      recipeBook: [],
+      ...overrides.devices,
+    },
     equipment: {
       weaponIds: [],
       masteredWeaponIds: [],
@@ -115,6 +123,7 @@ export function validateResolvedCharacterSheet(sheet) {
     "durability",
     "narrative",
     "spellcasting",
+    "devices",
     "equipment",
     "metadata",
   ]) {
@@ -150,6 +159,9 @@ export function validateResolvedCharacterSheet(sheet) {
     "features",
     "featureHooks",
     "advancement.abilityScoreImprovements",
+    "devices.knownRecipeIds",
+    "devices.preparedRecipeIds",
+    "devices.recipeBook",
     "equipment.weaponIds",
     "equipment.masteredWeaponIds",
     "equipment.inventory",

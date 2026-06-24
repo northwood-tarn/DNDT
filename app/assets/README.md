@@ -9,7 +9,7 @@ app/assets/backgrounds/
 Background images used by runtime loaders.
 
 ```text
-app/assets/fx/
+app/assets/images/effects/
 ```
 
 Small effect sprites and textures.

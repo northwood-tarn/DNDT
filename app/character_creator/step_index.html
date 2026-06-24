@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Character Creator</title>
+    <link rel="stylesheet" href="../styles/designViewport.css">
+    <link rel="stylesheet" href="./stepCreator.css">
+  </head>
+  <body>
+    <div class="creator-bg" aria-hidden="true">
+      <div class="creator-fog-field">
+        <img class="creator-fog-layer" alt="">
+        <img class="creator-fog-layer" alt="">
+      </div>
+      <img class="creator-flame" src="../assets/images/effects/flame-black.png" alt="">
+    </div>
+    <div class="preview-window-drag" aria-hidden="true"></div>
+    <button id="detailsToggle" class="details-toggle" type="button" aria-expanded="false" aria-controls="creatorDetails">i</button>
+
+    <main id="creatorShell" class="creator-preview-shell design-viewport page-fade" aria-label="Character creator presentation preview">
+      <section class="preview-column preview-left" aria-label="Typography sample">
+        <p id="stepTitle" class="sample-kicker">Your Name</p>
+        <input
+          id="characterName"
+          class="sample-title creator-field creator-name-entry"
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          aria-label="Character name"
+        >
+        <div id="backgroundDropdown" class="background-dropdown" hidden>
+          <button id="backgroundDropdownButton" class="creator-field background-dropdown-button" type="button" aria-label="Choose background" aria-expanded="false"></button>
+          <div id="backgroundOptions" class="background-options" role="listbox"></div>
+        </div>
+        <div id="speciesDropdown" class="background-dropdown" hidden>
+          <button id="speciesDropdownButton" class="creator-field background-dropdown-button" type="button" aria-label="Choose species" aria-expanded="false"></button>
+          <div id="speciesOptions" class="background-options" role="listbox"></div>
+        </div>
+        <p id="lineageTitle" class="sample-kicker subsection-kicker" hidden>Your Lineage</p>
+        <div id="lineageDropdown" class="background-dropdown" hidden>
+          <button id="lineageDropdownButton" class="creator-field background-dropdown-button" type="button" aria-label="Choose lineage" aria-expanded="false"></button>
+          <div id="lineageOptions" class="background-options" role="listbox"></div>
+        </div>
+        <div id="classDropdown" class="background-dropdown" hidden>
+          <button id="classDropdownButton" class="creator-field background-dropdown-button" type="button" aria-label="Choose class" aria-expanded="false"></button>
+          <div id="classOptions" class="background-options" role="listbox"></div>
+        </div>
+        <p id="subclassTitle" class="sample-kicker subsection-kicker" hidden>Your Subclass</p>
+        <div id="subclassDropdown" class="background-dropdown" hidden>
+          <button id="subclassDropdownButton" class="creator-field background-dropdown-button" type="button" aria-label="Choose subclass" aria-expanded="false"></button>
+          <div id="subclassOptions" class="background-options" role="listbox"></div>
+        </div>
+        <div id="abilityTable" class="ability-table" hidden></div>
+        <div id="featChoices" class="creator-choice-list" hidden></div>
+      </section>
+
+      <section class="preview-column preview-center" aria-label="Chosen name">
+        <p id="chosenName" class="chosen-name" hidden></p>
+        <div id="portraitTiles" class="portrait-tiles" hidden></div>
+      </section>
+      <section class="preview-column preview-right" aria-label="Context information">
+        <p id="infoPanel" class="info-panel" aria-live="polite">Uttered in admiration and tenderness, disgust and hatred, what is the name by which you were known?</p>
+        <div id="grantPanel" class="grant-panel" aria-live="polite"></div>
+      </section>
+    </main>
+    <nav id="stepDiamonds" class="step-diamonds page-fade" aria-label="Character creation steps" hidden></nav>
+    <button id="nextStepButton" class="creator-next-button page-fade" type="button" aria-label="Next section">
+      <img src="../assets/images/ui/forward-arrow-sumie.png" alt="">
+    </button>
+    <aside id="creatorDetails" class="creator-details" aria-label="Full creator right panel details" hidden>
+      <div class="creator-details-head">
+        <p>Creator Details</p>
+        <button id="detailsClose" type="button" aria-label="Close creator details">x</button>
+      </div>
+      <div id="detailsBody" class="creator-details-body"></div>
+    </aside>
+    <div id="uiTooltip" class="ui-tooltip" role="tooltip" hidden></div>
+    <script type="module" src="./stepCreator.js"></script>
+  </body>
+</html>

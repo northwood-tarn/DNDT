@@ -9,6 +9,7 @@ export function finalizeResolvedSheetFields(sheet) {
   finalizeInitiative(sheet);
   finalizePassivePerception(sheet);
   finalizeSpellcasting(sheet);
+  finalizeDevices(sheet);
   finalizeArmorClass(sheet);
 }
 
@@ -88,6 +89,21 @@ function finalizeSpellcasting(sheet) {
   sheet.spellcasting.spellSaveDc = 8 + sheet.proficiencyBonus + abilityMod;
   sheet.spellcasting.spellAttackBonus = sheet.proficiencyBonus + abilityMod;
   sheet.spellcasting.slots = spellSlotsFor(sheet);
+}
+
+function finalizeDevices(sheet) {
+  const known = new Set(sheet.devices?.knownRecipeIds || []);
+  const prepared = (sheet.devices?.preparedRecipeIds || []).filter((id) => known.has(id));
+  sheet.devices = {
+    ability: sheet.devices?.ability || (known.size ? "intelligence" : null),
+    saveDc: null,
+    knownRecipeIds: [...known],
+    preparedRecipeIds: [...new Set(prepared)],
+    recipeBook: sheet.devices?.recipeBook || [],
+  };
+  if (!sheet.devices.ability) return;
+  const abilityMod = sheet.abilities[sheet.devices.ability]?.modifier || 0;
+  sheet.devices.saveDc = 8 + sheet.proficiencyBonus + abilityMod;
 }
 
 function spellSlotsFor(sheet) {

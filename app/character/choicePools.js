@@ -1,5 +1,6 @@
 import { armor } from "../data/armor.js";
 import { BACKGROUND_LIST } from "../data/backgrounds.js";
+import { getDeviceRecipeById } from "../data/deviceRecipes.js";
 import { findClassByIdOrName } from "../data/classes.js";
 import { getFeatById, listFeats } from "../data/feats.js";
 import { SPECIES_LIST } from "../data/species.js";
@@ -30,7 +31,38 @@ export function createCharacterChoicePools(draft) {
     spells: createSpellChoicePools(draft),
     gear: createGearChoicePools(draft),
     weaponMastery: createWeaponMasteryChoicePools(draft),
+    devices: createDeviceRecipeChoicePools(draft),
     feats: createFeatChoicePools(draft),
+  };
+}
+
+export function createDeviceRecipeChoicePools(draft) {
+  const classRecord = findClassByIdOrName(draft.identity?.classId);
+  const subclass = findSubclassById(classRecord, draft.identity?.subclassId);
+  if (!subclass?.deviceRecipes?.length) return { required: false, pools: [] };
+  const level = draft.identity?.level || 1;
+  const knownIds = selectedDeviceRecipeIds(draft)
+    .filter((id) => subclassDeviceRecipeIds(subclass).includes(id))
+    .filter((id) => (getDeviceRecipeById(id)?.minLevel || 1) <= level);
+  const count = preparedDeviceCount(subclass, level);
+  if (!knownIds.length || !count) return { required: false, pools: [] };
+  const options = knownIds
+    .map(getDeviceRecipeById)
+    .filter(Boolean)
+    .sort((a, b) => a.name.localeCompare(b.name));
+  const selected = (draft.devices?.preparedRecipeIds || []).filter((id) => knownIds.includes(id));
+  return {
+    required: true,
+    classId: classRecord.id,
+    subclassId: subclass.id,
+    pools: [gearPool({
+      id: "prepared_devices",
+      label: "Prepared Devices",
+      path: "devices.preparedRecipeIds",
+      count: { min: Math.min(count, options.length), max: count },
+      options,
+      selected,
+    })],
   };
 }
 

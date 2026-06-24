@@ -15,6 +15,16 @@ body {
   overflow: hidden;
 }
 
+.preview-window-drag {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 64px;
+  z-index: 1000;
+  -webkit-app-region: drag;
+}
+
 button {
   font: inherit;
 }
@@ -23,10 +33,19 @@ select {
   font: inherit;
 }
 
+button,
+select,
+dialog,
+.controls,
+.command-row,
+.grid {
+  -webkit-app-region: no-drag;
+}
+
 .combat-shell {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
-  height: 100vh;
+  height: min(100vh, var(--app-window-height));
   overflow: hidden;
 }
 
@@ -78,6 +97,10 @@ h2 {
   justify-content: space-between;
 }
 
+.topbar > div:first-child {
+  -webkit-app-region: drag;
+}
+
 button,
 select {
   border: 1px solid rgba(241, 238, 229, 0.22);
@@ -119,7 +142,7 @@ label {
   gap: 2px;
   min-height: 0;
   aspect-ratio: 3 / 2;
-  max-height: calc(100vh - 172px);
+  max-height: calc(min(100vh, var(--app-window-height)) - 172px);
 }
 
 .cell {

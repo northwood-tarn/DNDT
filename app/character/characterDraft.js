@@ -51,6 +51,10 @@ export function createEmptyCharacterDraft(overrides = {}) {
       preparedSpellIds: [],
       ...overrides.spells,
     },
+    devices: {
+      preparedRecipeIds: [],
+      ...overrides.devices,
+    },
     metadata: {
       source: "character_creator",
       notes: [],
@@ -68,6 +72,7 @@ export function validateCharacterDraft(draft, options = {}) {
   if (!draft.choices || typeof draft.choices !== "object") errors.push("choices are required");
   if (!draft.gear || typeof draft.gear !== "object") errors.push("gear is required");
   if (!draft.spells || typeof draft.spells !== "object") errors.push("spells is required");
+  if (!draft.devices || typeof draft.devices !== "object") errors.push("devices is required");
 
   const level = draft.identity?.level;
   if (options.allowNonCreationLevel) {
@@ -90,6 +95,7 @@ export function validateCharacterDraft(draft, options = {}) {
   if (!Array.isArray(draft.gear?.attunedItemIds)) errors.push("gear.attunedItemIds must be an array");
   if (!Array.isArray(draft.spells?.knownSpellIds)) errors.push("spells.knownSpellIds must be an array");
   if (!Array.isArray(draft.spells?.preparedSpellIds)) errors.push("spells.preparedSpellIds must be an array");
+  if (!Array.isArray(draft.devices?.preparedRecipeIds)) errors.push("devices.preparedRecipeIds must be an array");
 
   return errors;
 }

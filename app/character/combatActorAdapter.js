@@ -1,10 +1,11 @@
 import { getConsumableById } from "../data/consumables.js";
 import { getArmorById } from "../data/armor.js";
+import { getDeviceRecipeById } from "../data/deviceRecipes.js";
 import { getSpellRecordById } from "../data/spells.js";
 import { getWeaponById } from "../data/weapons.js";
 import { createConsumableAction, createNickAttackAction, createSpellAction, createWeaponAction } from "../combat/actionFactory.js";
 import { normalizeCombatActor, validateCombatActor } from "../combat/actor.js";
-import { createFeatureActionsFromFeatures } from "../combat/featureActionFactory.js";
+import { createFeatureAction, createFeatureActionsFromFeatures } from "../combat/featureActionFactory.js";
 
 const ABILITY_ABBREVIATIONS = {
   strength: "str",
@@ -31,6 +32,7 @@ export function resolvedSheetToCombatActor(sheet, options = {}) {
     level: sheet.identity.level,
     proficiencyBonus: sheet.proficiencyBonus,
     spellSaveDC: sheet.spellcasting.spellSaveDc || null,
+    deviceSaveDC: sheet.devices?.saveDc || null,
     spellSlots: normalizeSpellSlots(sheet.spellcasting.slots || {}),
     initiativeBonus: sheet.combatBasics.initiativeBonus || 0,
     attackActionAttacks: sheet.combatBasics.attackActionAttacks || 1,
@@ -46,6 +48,7 @@ export function resolvedSheetToCombatActor(sheet, options = {}) {
     conditionImmunities: [...(sheet.durability.conditionImmunities || [])],
     resources: structuredClone(sheet.resources || []),
     features: structuredClone(sheet.features || []),
+    devices: structuredClone(sheet.devices || {}),
     featureHooks: structuredClone(sheet.featureHooks || []),
     equipment: {
       armorId: sheet.equipment.armorId || null,
@@ -68,9 +71,44 @@ function createCombatActionsFromSheet(sheet) {
   return [
     ...createWeaponActions(sheet),
     ...createSpellActions(sheet),
+    ...createDeviceActions(sheet),
     ...createConsumableActions(sheet),
     ...createFeatureActions(sheet),
   ].filter(Boolean);
+}
+
+function createDeviceActions(sheet) {
+  const prepared = new Set(sheet.devices?.preparedRecipeIds || []);
+  return (sheet.devices?.knownRecipeIds || [])
+    .filter((recipeId) => prepared.has(recipeId))
+    .map((recipeId) => getDeviceRecipeById(recipeId))
+    .filter(Boolean)
+    .map((recipe) => createDeviceAction(sheet, recipe))
+    .filter(Boolean);
+}
+
+function createDeviceAction(sheet, recipe) {
+  return createFeatureAction(
+    {
+      id: `device:${recipe.id}`,
+      name: recipe.name,
+      description: recipe.text,
+      effects: {},
+    },
+    {
+      id: `device_${recipe.id}`,
+      name: recipe.name,
+      resourceId: "prepared_devices",
+      description: recipe.text,
+      ...(recipe.action || {}),
+      tags: { device: true, harmful: Boolean(recipe.action?.damage || recipe.action?.save) },
+    },
+    {
+      resources: sheet.resources || [],
+      resolveFormula: (formula) => resolveFormula(formula, sheet),
+      resolveSaveDc: (option) => resolveFeatureSaveDc(option, sheet),
+    }
+  );
 }
 
 function normalizeSpellSlots(slots) {
@@ -260,6 +298,7 @@ function resolveFormula(formula, sheet) {
 
 function resolveFeatureSaveDc(option, sheet) {
   if (option.save?.dcFrom === "spellSaveDC") return sheet.spellcasting.spellSaveDc;
+  if (option.save?.dcFrom === "deviceSaveDC") return sheet.devices?.saveDc;
   if (option.save?.dcFrom === "classSaveDC") return 8 + sheet.proficiencyBonus + classAbilityModifier(sheet);
   return option.save?.dc || option.spellSaveDC;
 }

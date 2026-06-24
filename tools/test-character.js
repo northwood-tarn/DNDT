@@ -11,6 +11,7 @@ import { runRepresentativeBuildTests } from "./character_tests/representative_bu
 import { runReportsAndPreviewTests } from "./character_tests/reports_and_preview.test.js";
 import { runSubclassReadinessTests } from "./character_tests/subclass_readiness.test.js";
 import { runSpellcastingFrameTests } from "./character_tests/spellcasting_frame.test.js";
+import { runStepCreatorPipelineTests } from "./character_tests/step_creator_pipeline.test.js";
 
 async function main() {
   runAbilityScoreTests();
@@ -26,6 +27,7 @@ async function main() {
   runSubclassReadinessTests();
   runReportsAndPreviewTests();
   runSpellcastingFrameTests();
+  runStepCreatorPipelineTests();
   console.log("[character:test] OK");
 }
 
