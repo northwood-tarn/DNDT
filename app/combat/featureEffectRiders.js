@@ -122,6 +122,8 @@ function effectRiderMatches(source, target, action, rider, options) {
   if (rider.oncePerTurn && source?.turnFlags?.effectRiders?.[rider.id]) return false;
   if (rider.oncePerCombat && source?.combatFlags?.effectRiders?.[rider.id]) return false;
   if (rider.resourceId && getResourceUses(source, rider.resourceId) <= 0) return false;
+  if (rider.requiresSourceCondition && !(source?.conditions || []).some((condition) => condition.id === rider.requiresSourceCondition)) return false;
+  if (Array.isArray(rider.actionIds) && !rider.actionIds.includes(action?.id)) return false;
   if (Array.isArray(rider.actionTypes) && !rider.actionTypes.includes(action?.type)) return false;
   if (Array.isArray(rider.actionTags) && !matchesActionTags(action, rider.actionTags)) return false;
   if (Array.isArray(rider.damageTypes) && !rider.damageTypes.includes(action?.damageType)) return false;

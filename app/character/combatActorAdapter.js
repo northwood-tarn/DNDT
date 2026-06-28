@@ -50,6 +50,7 @@ export function resolvedSheetToCombatActor(sheet, options = {}) {
     features: structuredClone(sheet.features || []),
     devices: structuredClone(sheet.devices || {}),
     featureHooks: structuredClone(sheet.featureHooks || []),
+    luck: createLuckProfile(sheet),
     equipment: {
       armorId: sheet.equipment.armorId || null,
       armorType: getArmorById(sheet.equipment.armorId)?.type || null,
@@ -83,11 +84,45 @@ function createDeviceActions(sheet) {
     .filter((recipeId) => prepared.has(recipeId))
     .map((recipeId) => getDeviceRecipeById(recipeId))
     .filter(Boolean)
-    .map((recipe) => createDeviceAction(sheet, recipe))
+    .flatMap((recipe) => createDeviceActionVariants(sheet, recipe))
     .filter(Boolean);
 }
 
-function createDeviceAction(sheet, recipe) {
+function createDeviceActionVariants(sheet, recipe) {
+  const actions = [createDeviceAction(sheet, recipe)];
+  if (hasResource(sheet, "quick_rigging")) {
+    actions.push(createDeviceAction(sheet, recipe, {
+      id: `quick_device_${recipe.id}`,
+      name: `Quick Rigging: ${recipe.name}`,
+      actionType: "bonus_action",
+      additionalResourceIds: ["quick_rigging"],
+    }));
+  }
+  if (hasResource(sheet, "double_rig")) {
+    actions.push(createDeviceAction(sheet, recipe, {
+      id: `double_rig_${recipe.id}`,
+      name: `Double Rig: ${recipe.name}`,
+      actionType: "bonus_action",
+      additionalResourceIds: ["quick_rigging", "double_rig"],
+      deviceRig: {
+        mode: "double_first",
+        immediateDamage: deviceHasImmediateDamage(recipe),
+      },
+    }));
+    actions.push(createDeviceAction(sheet, recipe, {
+      id: `double_rig_followup_${recipe.id}`,
+      name: `Double Rig Follow-up: ${recipe.name}`,
+      actionType: "free",
+      deviceRig: {
+        mode: "double_followup",
+        immediateDamage: deviceHasImmediateDamage(recipe),
+      },
+    }));
+  }
+  return actions;
+}
+
+function createDeviceAction(sheet, recipe, overrides = {}) {
   return createFeatureAction(
     {
       id: `device:${recipe.id}`,
@@ -101,6 +136,7 @@ function createDeviceAction(sheet, recipe) {
       resourceId: "prepared_devices",
       description: recipe.text,
       ...(recipe.action || {}),
+      ...overrides,
       tags: { device: true, harmful: Boolean(recipe.action?.damage || recipe.action?.save) },
     },
     {
@@ -109,6 +145,15 @@ function createDeviceAction(sheet, recipe) {
       resolveSaveDc: (option) => resolveFeatureSaveDc(option, sheet),
     }
   );
+}
+
+function hasResource(sheet, resourceId) {
+  return (sheet.resources || []).some((resource) => resource.id === resourceId);
+}
+
+function deviceHasImmediateDamage(recipe) {
+  const action = recipe?.action || {};
+  return Boolean(action.damage || action.damageByTargetProperty);
 }
 
 function normalizeSpellSlots(slots) {
@@ -139,12 +184,25 @@ function createPassiveFeatureEffects(sheet) {
       amount: Number.isFinite(modifier.amount) ? modifier.amount : Number(modifier.value) || 0,
       die: modifier.die || null,
       mode: modifier.mode || null,
+      resourceId: modifier.resourceId || null,
+      consumeOn: modifier.consumeOn || null,
       requiresMark: structuredClone(modifier.requiresMark || null),
       ability: modifier.ability || null,
+      abilities: structuredClone(modifier.abilities || []),
+      conditionId: modifier.conditionId || null,
+      conditionIds: structuredClone(modifier.conditionIds || []),
       damageType: modifier.damageType || null,
+      damageTypes: structuredClone(modifier.damageTypes || []),
       sourceFeatureId: feature.id,
     })))
     .filter((effect) => effect.stat);
+}
+
+function createLuckProfile(sheet) {
+  const rerolls = (sheet.features || []).flatMap((feature) => feature.effects?.d20Rerolls || []);
+  const naturalRolls = unique(rerolls.flatMap((reroll) => reroll.naturalRolls || []));
+  if (!naturalRolls.length) return null;
+  return { points: Number.POSITIVE_INFINITY, max: Number.POSITIVE_INFINITY, usedThisCombat: false, naturalRolls };
 }
 
 function createFeatureAuras(sheet) {
@@ -240,6 +298,7 @@ function createSpellActions(sheet) {
       return createSpellAction(spell, {
         attackBonus: sheet.spellcasting.spellAttackBonus || 0,
         spellSaveDC: sheet.spellcasting.spellSaveDc || 10,
+        casterLevel: sheet.identity.level || 1,
       });
     })
     .filter(Boolean);
@@ -256,6 +315,9 @@ function createConsumableActions(sheet) {
 function createFeatureActions(sheet) {
   return createFeatureActionsFromFeatures(sheet.features || [], {
     resources: sheet.resources || [],
+    level: sheet.identity.level,
+    speciesId: sheet.identity.speciesId,
+    lineageId: sheet.identity.lineageId,
     resolveFormula: (formula) => resolveFormula(formula, sheet),
     resolveSaveDc: (option) => resolveFeatureSaveDc(option, sheet),
   });
@@ -293,6 +355,7 @@ function resolveFormula(formula, sheet) {
     .replace(/\bintelligence_modifier\b/g, String(sheet.abilities.intelligence?.modifier || 0))
     .replace(/\bwisdom_modifier\b/g, String(sheet.abilities.wisdom?.modifier || 0))
     .replace(/\bcharisma_modifier\b/g, String(sheet.abilities.charisma?.modifier || 0))
+    .replace(/\bproficiency_bonus\b/g, String(sheet.proficiencyBonus || 0))
     .replace(/\s+/g, "");
 }
 
@@ -300,7 +363,13 @@ function resolveFeatureSaveDc(option, sheet) {
   if (option.save?.dcFrom === "spellSaveDC") return sheet.spellcasting.spellSaveDc;
   if (option.save?.dcFrom === "deviceSaveDC") return sheet.devices?.saveDc;
   if (option.save?.dcFrom === "classSaveDC") return 8 + sheet.proficiencyBonus + classAbilityModifier(sheet);
+  if (option.save?.dcFrom === "ability") return 8 + sheet.proficiencyBonus + abilityModifier(sheet, option.save.abilityScore);
+  if (option.createsCombatObject?.collapse?.manual?.save?.dcFrom === "spellSaveDC") return sheet.spellcasting.spellSaveDc;
   return option.save?.dc || option.spellSaveDC;
+}
+
+function abilityModifier(sheet, ability) {
+  return sheet.abilities[String(ability || "").toLowerCase()]?.modifier || 0;
 }
 
 function classAbilityModifier(sheet) {

@@ -30,6 +30,9 @@ import {
   startTurn,
   validateCombatActor,
 } from "./helpers.js";
+import { preflightAction } from "../../app/combat/actionResult.js";
+import { createSpellAction } from "../../app/combat/actionFactory.js";
+import { SPELLS } from "../../app/data/spells.js";
 
 function testInitiativeIsLogged() {
   const controller = createCombatController();
@@ -273,6 +276,28 @@ function testPushIntoActorDoesNotDealCollisionDamage() {
   assert.equal(log.events.some((event) => event.type === "collision.damage"), false, "actor collision should not log environmental collision damage");
 }
 
+function testSelectorPreflightForTargetingShapes() {
+  const snapshot = makeHarnessSnapshot();
+  const hero = snapshot.actors[0];
+  hero.position = { x: 0, y: 0 };
+  hero.actions.push(
+    createSpellAction(SPELLS.word_of_radiance, { spellSaveDC: 13, casterLevel: 5 }),
+    createSpellAction(SPELLS.far_step, { spellSaveDC: 13 })
+  );
+  const farStep = hero.actions.find((action) => action.id === "far_step");
+  farStep.effects[0].action.attackBonus = 0;
+
+  assert.equal(hero.actions.find((action) => action.id === "word_of_radiance").requiresTarget, false, "self-centered area spells should not ask the harness for a target");
+  assert.equal(preflightAction(snapshot, hero, "word_of_radiance", null).ok, true, "self-centered area spells should preflight without an anchor");
+
+  assert.equal(resolveAction(snapshot, hero, "far_step", null, scriptedDice(), createCombatLog()), true);
+  const teleport = hero.actions.find((action) => action.id === "far_step_teleport");
+  hero.economy.bonusActionAvailable = true;
+  assert.ok(teleport?.targeting?.shape, "granted teleport actions should expose grid targeting");
+  assert.deepEqual(getValidTargets(snapshot, hero.id, teleport.id), [], "grid-target actions should not expose actor target buttons");
+  assert.equal(preflightAction(snapshot, hero, teleport.id, { anchor: { x: 0, y: 2 } }).ok, true, "grid-target teleport actions should preflight with an anchor");
+}
+
 
 export async function runActionCombatTests() {
   testInitiativeIsLogged();
@@ -281,4 +306,5 @@ export async function runActionCombatTests() {
   testPushMovesTargetWithoutOpportunityAttack();
   testPushCollisionDamage();
   testPushIntoActorDoesNotDealCollisionDamage();
+  testSelectorPreflightForTargetingShapes();
 }

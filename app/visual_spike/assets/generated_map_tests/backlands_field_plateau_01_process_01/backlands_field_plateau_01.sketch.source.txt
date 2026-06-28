@@ -1,0 +1,51 @@
+Backlands Field Plateau (backlands_field_plateau_01) - Large 16 x 11
+
+Legend:
+blank = terrain: blocked / dark / wall / void
+. = terrain: walkable
+h = terrain: half cover
+C = terrain: 3/4 cover stone
+H = terrain: hazard
+S = terrain: stairs
+R = terrain: slope / ramp
+L = marker: fixed light
+P = marker: hero spawn
+M = marker: enemy spawn
+T = marker: transition
+V = marker: conversation trigger
+N = marker: NPC / neutral
+
+Image layers:
+0 = none
+1 = greyharbour_empty_field_river_hint_01.png
+Origin = 960,120; tile = 128x64
+
+
+y\x  00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+00      .  .  .  M  .  M  .  .  .  .  .  .  M  .   
+01      .  .  .  .  .  .  .  .  .  .  .  .  .  .   
+02      .  .  .  .  .  .  .  .  .  .  .  .  .  .   
+03      .  .  .  .  .  .  .  .  .  .  .  .  .  .   
+04      .  .  .  .  .  .  .  .  .  .  .  .  .  .   
+05      .  .  .  .  .  .  .  .  .  .  .  .  .  .   
+06      .  .  .  .  .  .  .  .  .  .  .  .  .  .   
+07      .  .  .  .  .  .  .  .  .  .  .  .  .  .   
+08      .  .  .  .  .  .  .  .  .  .  .  .  .  .   
+09      .  .  .  .  .  .  .  .  .  .  .  .  .  .   
+10      .  .  P  P  .  P  .  .  .  .  .  .  .  .   
+
+Altitude layer:
+Height values are 5 ft bands. Adjacent height changes are treated as slope/ramp unless layout terrain marks S stairs or a blocking/non-walkable cell.
+
+y\x  00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+00    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+01    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+02    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+03    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+04    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+05    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+06    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+07    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+08    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+09    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+10    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0

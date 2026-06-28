@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Deep Library Grid Sketch v1</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #eee;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #111;
+    }
+
+    .wrap {
+      width: min(100%, 1280px);
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    p {
+      margin: 0 0 16px;
+      color: #bbb;
+      line-height: 1.4;
+      max-width: 920px;
+    }
+
+    svg {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      display: block;
+      background: #151515;
+      border: 1px solid #333;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 14px;
+      font-size: 13px;
+      color: #ccc;
+    }
+
+    .key {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .swatch {
+      width: 16px;
+      height: 16px;
+      border: 1px solid rgba(255,255,255,.35);
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>Deep Library Greyharbour - Primitive Grid Sketch v1</h1>
+    <p>
+      First-pass layout sketch only: 17 x 12 local exploration grid, large middle corridor,
+      two chair cul-de-sacs, a rear aisle into a second row of books, and seven beeswax lamps.
+      This is the review artifact before dark/lit art generation.
+    </p>
+
+    <svg id="sketch" viewBox="0 0 1920 1080" role="img" aria-label="Primitive isometric grid sketch for a Deep Library exploration area"></svg>
+
+    <div class="legend">
+      <span class="key"><span class="swatch" style="background:#394958"></span>Blocked shelves / book masses</span>
+      <span class="key"><span class="swatch" style="background:#b8c7b2"></span>Walkable library floor</span>
+      <span class="key"><span class="swatch" style="background:#c9b57a"></span>Main corridor</span>
+      <span class="key"><span class="swatch" style="background:#8d6f88"></span>Chair cul-de-sac</span>
+      <span class="key"><span class="swatch" style="background:#d7c35b"></span>Beeswax lamp</span>
+      <span class="key"><span class="swatch" style="background:#6992c8"></span>Transition</span>
+    </div>
+  </main>
+
+  <script>
+    const svg = document.getElementById('sketch');
+    const ns = 'http://www.w3.org/2000/svg';
+    const width = 17;
+    const height = 12;
+    const tileW = 128;
+    const tileH = 64;
+    const halfW = tileW / 2;
+    const halfH = tileH / 2;
+    const origin = { x: 832, y: 96 };
+
+    const cells = new Map();
+    const key = (x, y) => `${x},${y}`;
+    const set = (x, y, state) => cells.set(key(x, y), state);
+    const has = (x, y, state) => cells.get(key(x, y)) === state;
+
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        set(x, y, 'blocked');
+      }
+    }
+
+    // Large middle corridor.
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 7; x <= 9; x += 1) set(x, y, 'corridor');
+    }
+
+    // Two cul-de-sacs with chairs.
+    [[3, 3], [4, 3], [5, 3], [3, 4], [4, 4], [5, 4], [4, 5], [5, 5]].forEach(([x, y]) => set(x, y, 'culdesac'));
+    [[11, 6], [12, 6], [13, 6], [11, 7], [12, 7], [13, 7], [11, 8], [12, 8]].forEach(([x, y]) => set(x, y, 'culdesac'));
+
+    // Connect cul-de-sacs to the middle corridor.
+    [[6, 4], [6, 5], [10, 7], [10, 8]].forEach(([x, y]) => set(x, y, 'walkable'));
+
+    // Rear aisle into a second row of books.
+    [[11, 2], [12, 2], [13, 2], [14, 2], [15, 2], [10, 2], [10, 3], [11, 3], [12, 3]].forEach(([x, y]) => set(x, y, 'walkable'));
+
+    // Entry/exit transition cells.
+    [[8, 0], [8, 11], [15, 2]].forEach(([x, y]) => set(x, y, 'transition'));
+
+    const lamps = [
+      [8, 1], [7, 4], [5, 4], [12, 2], [9, 6], [12, 7], [8, 10]
+    ];
+
+    const chairs = [
+      [4, 4], [5, 5], [12, 7], [11, 8]
+    ];
+
+    const fills = {
+      blocked: '#394958',
+      walkable: '#b8c7b2',
+      corridor: '#c9b57a',
+      culdesac: '#8d6f88',
+      transition: '#6992c8'
+    };
+
+    function diamondPoints(cx, cy) {
+      return [
+        [cx, cy - halfH],
+        [cx + halfW, cy],
+        [cx, cy + halfH],
+        [cx - halfW, cy]
+      ].map(([x, y]) => `${x},${y}`).join(' ');
+    }
+
+    function center(x, y) {
+      return {
+        x: origin.x + (x - y) * halfW,
+        y: origin.y + (x + y) * halfH
+      };
+    }
+
+    function add(tag, attrs) {
+      const el = document.createElementNS(ns, tag);
+      Object.entries(attrs).forEach(([name, value]) => el.setAttribute(name, value));
+      svg.appendChild(el);
+      return el;
+    }
+
+    add('rect', { x: 0, y: 0, width: 1920, height: 1080, fill: '#111' });
+
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        const c = center(x, y);
+        const state = cells.get(key(x, y));
+        add('polygon', {
+          points: diamondPoints(c.x, c.y),
+          fill: fills[state],
+          stroke: '#1a1f22',
+          'stroke-width': 2
+        });
+      }
+    }
+
+    // Shelf strokes inside blocked cells to make book masses obvious.
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        if (!has(x, y, 'blocked')) continue;
+        const c = center(x, y);
+        add('line', { x1: c.x - 30, y1: c.y - 8, x2: c.x + 30, y2: c.y - 8, stroke: '#526270', 'stroke-width': 3, opacity: .7 });
+        add('line', { x1: c.x - 24, y1: c.y + 6, x2: c.x + 24, y2: c.y + 6, stroke: '#24303a', 'stroke-width': 3, opacity: .8 });
+      }
+    }
+
+    chairs.forEach(([x, y]) => {
+      const c = center(x, y);
+      add('rect', { x: c.x - 20, y: c.y - 12, width: 40, height: 24, rx: 3, fill: '#3a2633', stroke: '#f1d49a', 'stroke-width': 3 });
+    });
+
+    lamps.forEach(([x, y], i) => {
+      const c = center(x, y);
+      add('circle', { cx: c.x, cy: c.y, r: 35, fill: '#d7c35b', opacity: .18 });
+      add('circle', { cx: c.x, cy: c.y, r: 15, fill: '#ffe88a', opacity: .9 });
+      add('text', { x: c.x, y: c.y + 5, fill: '#111', 'font-size': 15, 'font-weight': 700, 'text-anchor': 'middle' }).textContent = String(i + 1);
+    });
+
+    [[8, 0, 'entry'], [8, 11, 'deeper stacks'], [15, 2, 'rear row']].forEach(([x, y, label]) => {
+      const c = center(x, y);
+      add('text', { x: c.x, y: c.y + 58, fill: '#d9e9ff', 'font-size': 22, 'font-weight': 700, 'text-anchor': 'middle' }).textContent = label;
+    });
+
+    add('text', { x: 40, y: 58, fill: '#eee', 'font-size': 28, 'font-weight': 700 }).textContent = 'Deep Library layout sketch v1';
+    add('text', { x: 40, y: 94, fill: '#bbb', 'font-size': 20 }).textContent = 'Grid/collision review before dark + lit exploration plates.';
+  </script>
+</body>
+</html>

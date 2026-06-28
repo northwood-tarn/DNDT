@@ -17,6 +17,10 @@ export const enemies = {
     weaponId: "scimitar",
     damage: "1d6+2",
     damageType: "slashing",
+    actionRefs: [
+      { template: "weapon_attack", weaponId: "scimitar" },
+      { template: "bonus_dash", id: "nimble_escape_dash", name: "Nimble Escape", resourceId: "nimble_escape" }
+    ],
     resources: [
       { id: "nimble_escape", name: "Nimble Escape", max: 1, current: 1, recovery: "encounter" }
     ],
@@ -25,11 +29,7 @@ export const enemies = {
         id: "nimble_escape",
         name: "Nimble Escape",
         description: "The goblin can spend a limited burst of movement to reposition.",
-        effects: {
-          actionOptions: [
-            { id: "nimble_escape_dash", name: "Nimble Escape", actionType: "bonus_action", actionKind: "dash", resourceId: "nimble_escape" }
-          ]
-        }
+        sourceAbility: "Cunning Action"
       }
     ],
     xpValue: 50,
@@ -72,6 +72,10 @@ export const enemies = {
       damage: "2d4+2",
       damageType: "piercing"
     },
+    actionRefs: [
+      { template: "natural_attack", naturalAttackId: "bite", name: "Bite", damage: "2d4+2", damageType: "piercing" },
+      { template: "bonus_dash", id: "predatory_rush", name: "Predatory Rush", uses: 1 }
+    ],
     features: [
       {
         id: "pack_bite",
@@ -123,6 +127,10 @@ export const enemies = {
     weaponId: "shortsword",
     damage: "1d6+2",
     damageType: "piercing",
+    actionRefs: [
+      { template: "weapon_attack", weaponId: "shortsword" },
+      { template: "spell_action", spellId: "sacred_flame", id: "grave_spark", name: "Grave Spark", spellSaveDC: 12, casterLevel: 1 }
+    ],
     features: [
       {
         id: "rattling_blade",
@@ -176,6 +184,10 @@ export const enemies = {
       damage: "2d6+2",
       damageType: "necrotic"
     },
+    actionRefs: [
+      { template: "natural_attack", naturalAttackId: "draining_touch", name: "Draining Touch", damage: "2d6+2", damageType: "necrotic" },
+      { template: "spell_action", spellId: "hex", id: "shadow_mark", name: "Shadow Mark", spellSaveDC: 12, uses: 1 }
+    ],
     activeEffects: [
       { id: "shade_form", label: "Shade Form", type: "modifier", stat: "ac", amount: 1 }
     ],
@@ -216,6 +228,10 @@ export const enemies = {
     weaponId: "greatsword",
     damage: "2d6+3",
     damageType: "slashing",
+    actionRefs: [
+      { template: "weapon_attack", weaponId: "greatsword" },
+      { template: "self_heal", id: "knightly_second_wind", name: "Knightly Second Wind", healing: "1d10+3", uses: 1 }
+    ],
     auras: [
       {
         id: "commanding_presence",
@@ -246,6 +262,133 @@ export const enemies = {
     loot: {
       gold: { min: 12, max: 40 },
       table: "martial",
+      rarityBias: "uncommon"
+    }
+  },
+  bandit_archer: {
+    id: "bandit_archer",
+    name: "Bandit Archer",
+    role: "archer",
+    creatureType: "humanoid",
+    size: "medium",
+    level: 3,
+    hp: 24,
+    maxHp: 24,
+    ac: 14,
+    speed: 6,
+    attackBonus: 5,
+    weaponId: "shortbow",
+    damage: "1d6+3",
+    damageType: "piercing",
+    actionRefs: [
+      { template: "spell_action", spellId: "ray_of_frost", id: "pinning_frost", name: "Pinning Frost", attackBonus: 5, casterLevel: 3, uses: 1 },
+      { template: "weapon_attack", weaponId: "shortbow" }
+    ],
+    xpValue: 125,
+    description: "A disciplined bowman with a stolen freezing charm tied around the wrist.",
+    aiProfile: "archer",
+    awareness: {
+      vision: "lantern",
+      hostility: "territorial",
+      visionRange: 50
+    },
+    saves: {
+      str: 0,
+      dex: 3,
+      con: 1,
+      int: 0,
+      wis: 1,
+      cha: 0
+    },
+    loot: {
+      gold: { min: 4, max: 14 },
+      table: "martial",
+      rarityBias: "common"
+    }
+  },
+  cult_hexer: {
+    id: "cult_hexer",
+    name: "Cult Hexer",
+    role: "stalker",
+    creatureType: "humanoid",
+    size: "medium",
+    level: 5,
+    hp: 32,
+    maxHp: 32,
+    ac: 13,
+    speed: 6,
+    attackBonus: 5,
+    weaponId: "dagger",
+    damage: "1d4+2",
+    damageType: "piercing",
+    actionRefs: [
+      { template: "spell_action", spellId: "mind_sliver", id: "splinter_thought", name: "Splinter Thought", spellSaveDC: 13, casterLevel: 5, uses: 2 },
+      { template: "weapon_attack", weaponId: "dagger" }
+    ],
+    xpValue: 250,
+    description: "A muttering occultist who turns stolen warlock lessons into battlefield curses.",
+    aiProfile: "tactical",
+    awareness: {
+      vision: "darkvision",
+      hostility: "onsight",
+      visionRange: 60
+    },
+    saves: {
+      str: -1,
+      dex: 2,
+      con: 1,
+      int: 2,
+      wis: 1,
+      cha: 2
+    },
+    loot: {
+      gold: { min: 8, max: 20 },
+      table: "occult",
+      rarityBias: "uncommon"
+    }
+  },
+  grave_brute: {
+    id: "grave_brute",
+    name: "Grave Brute",
+    role: "defender",
+    creatureType: "undead",
+    undeadRank: "bound",
+    size: "large",
+    level: 8,
+    hp: 72,
+    maxHp: 72,
+    ac: 15,
+    speed: 6,
+    attackBonus: 7,
+    naturalAttack: {
+      id: "stone_fist",
+      name: "Stone Fist",
+      damage: "2d8+4",
+      damageType: "bludgeoning"
+    },
+    actionRefs: [
+      { template: "self_heal", id: "stitched_together", name: "Stitched Together", healing: "1d10+4", uses: 1 },
+      { template: "natural_attack", naturalAttackId: "stone_fist", name: "Stone Fist", damage: "2d8+4", damageType: "bludgeoning" }
+    ],
+    xpValue: 900,
+    description: "A heavy corpse packed with grave-stone and bad repairs.",
+    aiProfile: "guard",
+    awareness: {
+      vision: "darkvision",
+      hostility: "territorial",
+      visionRange: 60
+    },
+    saves: {
+      str: 4,
+      dex: -1,
+      con: 4,
+      int: -2,
+      wis: 0,
+      cha: -2
+    },
+    loot: {
+      gold: { min: 0, max: 12 },
+      table: "undead",
       rarityBias: "uncommon"
     }
   }

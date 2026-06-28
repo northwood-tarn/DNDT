@@ -1,0 +1,53 @@
+{
+  "status": "superseded",
+  "notes": [
+    "Six full-size exploration draft images generated to test the current visual style rules at production-like scale.",
+    "Review in order by draft number. These are draft exemplars, not accepted production plates.",
+    "Superseded by the clean-plate/runtime-visibility correction: these drafts asked the image generator to bake runtime Lanterna darkness into the art, which is no longer the production approach.",
+    "Use these only as evidence of the mistaken approach, not as style targets."
+  ],
+  "drafts": [
+    {
+      "number": 1,
+      "chapter": "Act 1 Greyharbour",
+      "title": "The docks at Greyharbour",
+      "path": "app/docs/style_refs/full_size_drafts/01_act1_greyharbour_docks.png",
+      "status": "unreviewed"
+    },
+    {
+      "number": 2,
+      "chapter": "Act 1 Greyharbour",
+      "title": "Amidst the stacks in the Deep Library",
+      "path": "app/docs/style_refs/full_size_drafts/02_act1_deep_library_stacks.png",
+      "status": "unreviewed"
+    },
+    {
+      "number": 3,
+      "chapter": "Act 2 Necropolis",
+      "title": "Necropolis well with symmetrical lower level",
+      "path": "app/docs/style_refs/full_size_drafts/03_act2_necropolis_well.png",
+      "status": "unreviewed"
+    },
+    {
+      "number": 4,
+      "chapter": "Act 2 Necropolis",
+      "title": "Necropolis throne room",
+      "path": "app/docs/style_refs/full_size_drafts/04_act2_necropolis_throne_room.png",
+      "status": "unreviewed"
+    },
+    {
+      "number": 5,
+      "chapter": "Act 3 Backlands",
+      "title": "Mountain-side path with root bridge and top-left exit",
+      "path": "app/docs/style_refs/full_size_drafts/05_act3_backlands_mountain_root_path.png",
+      "status": "unreviewed"
+    },
+    {
+      "number": 6,
+      "chapter": "Act 3 Backlands",
+      "title": "Path through deep semicircular rut",
+      "path": "app/docs/style_refs/full_size_drafts/06_act3_backlands_semicircular_rut.png",
+      "status": "unreviewed"
+    }
+  ]
+}

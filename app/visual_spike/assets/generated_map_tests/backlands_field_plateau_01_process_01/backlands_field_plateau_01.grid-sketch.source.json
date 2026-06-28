@@ -1,0 +1,4423 @@
+{
+  "schemaVersion": 2,
+  "id": "backlands_field_plateau_01",
+  "name": "Backlands Field Plateau",
+  "mode": "combat",
+  "size": "large_16x11",
+  "grid": {
+    "projection": "isometric_square",
+    "tileWidth": 128,
+    "tileHeight": 64,
+    "origin": {
+      "x": 960,
+      "y": 120
+    },
+    "width": 16,
+    "height": 11,
+    "coordinateRule": "x increases down-right; y increases down-left"
+  },
+  "layers": {
+    "0": {
+      "kind": "dark_default_art",
+      "path": null,
+      "width": null,
+      "height": null
+    },
+    "1": {
+      "kind": "lanterna_danger_lit_art",
+      "path": "greyharbour_empty_field_river_hint_01.png",
+      "width": 1920,
+      "height": 1080
+    },
+    "2": {
+      "kind": "playable_grid"
+    },
+    "3": {
+      "kind": "altitude"
+    },
+    "4": {
+      "kind": "placed_objects"
+    }
+  },
+  "image": {
+    "width": 1920,
+    "height": 1080,
+    "darkPlate": null,
+    "litPlate": "greyharbour_empty_field_river_hint_01.png",
+    "combatRuntimePrimaryLayer": 1,
+    "explorationRevealLayer": null
+  },
+  "cells": [
+    {
+      "x": 0,
+      "y": 0,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "display": "M",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": [
+        {
+          "symbol": "M",
+          "state": "enemy_spawn",
+          "label": "enemy spawn"
+        }
+      ]
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 0,
+      "display": "M",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": [
+        {
+          "symbol": "M",
+          "state": "enemy_spawn",
+          "label": "enemy spawn"
+        }
+      ]
+    },
+    {
+      "x": 7,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 11,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 13,
+      "y": 0,
+      "display": "M",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": [
+        {
+          "symbol": "M",
+          "state": "enemy_spawn",
+          "label": "enemy spawn"
+        }
+      ]
+    },
+    {
+      "x": 14,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 15,
+      "y": 0,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 7,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 11,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 13,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 14,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 15,
+      "y": 1,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 5,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 7,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 11,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 13,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 14,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 15,
+      "y": 2,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 7,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 11,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 13,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 14,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 15,
+      "y": 3,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 5,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 7,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 11,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 13,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 14,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 15,
+      "y": 4,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 7,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 11,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 13,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 14,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 15,
+      "y": 5,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 0,
+      "y": 6,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 6,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 2,
+      "y": 6,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 3,
+      "y": 6,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 5,
+      "y": 6,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 6,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 7,
+      "y": 6,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 6,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 6,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 6,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 11,
+      "y": 6,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 6,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 13,
+      "y": 6,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 14,
+      "y": 6,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 15,
+      "y": 6,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 0,
+      "y": 7,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 7,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 2,
+      "y": 7,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 5,
+      "y": 7,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 7,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 7,
+      "y": 7,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 7,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 7,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 7,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 11,
+      "y": 7,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 7,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 13,
+      "y": 7,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 14,
+      "y": 7,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 15,
+      "y": 7,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 0,
+      "y": 8,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 2,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 3,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 4,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 5,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 7,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 11,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 13,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 14,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 15,
+      "y": 8,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 0,
+      "y": 9,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 2,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 3,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 4,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 5,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 7,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 11,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 13,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 14,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 15,
+      "y": 9,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 0,
+      "y": 10,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 2,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 3,
+      "y": 10,
+      "display": "P",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": [
+        {
+          "symbol": "P",
+          "state": "hero_spawn",
+          "label": "hero spawn"
+        }
+      ]
+    },
+    {
+      "x": 4,
+      "y": 10,
+      "display": "P",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": [
+        {
+          "symbol": "P",
+          "state": "hero_spawn",
+          "label": "hero spawn"
+        }
+      ]
+    },
+    {
+      "x": 5,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 10,
+      "display": "P",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": [
+        {
+          "symbol": "P",
+          "state": "hero_spawn",
+          "label": "hero spawn"
+        }
+      ]
+    },
+    {
+      "x": 7,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 11,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 13,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 14,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 15,
+      "y": 10,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / dark / wall / void"
+      },
+      "altitude": 0,
+      "markers": []
+    }
+  ],
+  "featureDefinitions": {
+    "1": "",
+    "2": "",
+    "3": "",
+    "4": "",
+    "5": "",
+    "6": "",
+    "7": "",
+    "8": "",
+    "9": ""
+  },
+  "featureMetadata": {
+    "1": {
+      "cover": "none",
+      "blocksMovement": true,
+      "blocksLineOfSight": false,
+      "blocksTargeting": false
+    },
+    "2": {
+      "cover": "none",
+      "blocksMovement": true,
+      "blocksLineOfSight": false,
+      "blocksTargeting": false
+    },
+    "3": {
+      "cover": "none",
+      "blocksMovement": true,
+      "blocksLineOfSight": false,
+      "blocksTargeting": false
+    },
+    "4": {
+      "cover": "none",
+      "blocksMovement": true,
+      "blocksLineOfSight": false,
+      "blocksTargeting": false
+    },
+    "5": {
+      "cover": "none",
+      "blocksMovement": true,
+      "blocksLineOfSight": false,
+      "blocksTargeting": false
+    },
+    "6": {
+      "cover": "none",
+      "blocksMovement": true,
+      "blocksLineOfSight": false,
+      "blocksTargeting": false
+    },
+    "7": {
+      "cover": "none",
+      "blocksMovement": true,
+      "blocksLineOfSight": false,
+      "blocksTargeting": false
+    },
+    "8": {
+      "cover": "none",
+      "blocksMovement": true,
+      "blocksLineOfSight": false,
+      "blocksTargeting": false
+    },
+    "9": {
+      "cover": "none",
+      "blocksMovement": true,
+      "blocksLineOfSight": false,
+      "blocksTargeting": false
+    }
+  },
+  "playable": {
+    "layer": 2,
+    "cells": [
+      {
+        "x": 1,
+        "y": 0
+      },
+      {
+        "x": 2,
+        "y": 0
+      },
+      {
+        "x": 3,
+        "y": 0
+      },
+      {
+        "x": 4,
+        "y": 0
+      },
+      {
+        "x": 5,
+        "y": 0
+      },
+      {
+        "x": 6,
+        "y": 0
+      },
+      {
+        "x": 7,
+        "y": 0
+      },
+      {
+        "x": 8,
+        "y": 0
+      },
+      {
+        "x": 9,
+        "y": 0
+      },
+      {
+        "x": 10,
+        "y": 0
+      },
+      {
+        "x": 11,
+        "y": 0
+      },
+      {
+        "x": 12,
+        "y": 0
+      },
+      {
+        "x": 13,
+        "y": 0
+      },
+      {
+        "x": 14,
+        "y": 0
+      },
+      {
+        "x": 1,
+        "y": 1
+      },
+      {
+        "x": 2,
+        "y": 1
+      },
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 4,
+        "y": 1
+      },
+      {
+        "x": 5,
+        "y": 1
+      },
+      {
+        "x": 6,
+        "y": 1
+      },
+      {
+        "x": 7,
+        "y": 1
+      },
+      {
+        "x": 8,
+        "y": 1
+      },
+      {
+        "x": 9,
+        "y": 1
+      },
+      {
+        "x": 10,
+        "y": 1
+      },
+      {
+        "x": 11,
+        "y": 1
+      },
+      {
+        "x": 12,
+        "y": 1
+      },
+      {
+        "x": 13,
+        "y": 1
+      },
+      {
+        "x": 14,
+        "y": 1
+      },
+      {
+        "x": 1,
+        "y": 2
+      },
+      {
+        "x": 2,
+        "y": 2
+      },
+      {
+        "x": 3,
+        "y": 2
+      },
+      {
+        "x": 4,
+        "y": 2
+      },
+      {
+        "x": 5,
+        "y": 2
+      },
+      {
+        "x": 6,
+        "y": 2
+      },
+      {
+        "x": 7,
+        "y": 2
+      },
+      {
+        "x": 8,
+        "y": 2
+      },
+      {
+        "x": 9,
+        "y": 2
+      },
+      {
+        "x": 10,
+        "y": 2
+      },
+      {
+        "x": 11,
+        "y": 2
+      },
+      {
+        "x": 12,
+        "y": 2
+      },
+      {
+        "x": 13,
+        "y": 2
+      },
+      {
+        "x": 14,
+        "y": 2
+      },
+      {
+        "x": 1,
+        "y": 3
+      },
+      {
+        "x": 2,
+        "y": 3
+      },
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 3
+      },
+      {
+        "x": 5,
+        "y": 3
+      },
+      {
+        "x": 6,
+        "y": 3
+      },
+      {
+        "x": 7,
+        "y": 3
+      },
+      {
+        "x": 8,
+        "y": 3
+      },
+      {
+        "x": 9,
+        "y": 3
+      },
+      {
+        "x": 10,
+        "y": 3
+      },
+      {
+        "x": 11,
+        "y": 3
+      },
+      {
+        "x": 12,
+        "y": 3
+      },
+      {
+        "x": 13,
+        "y": 3
+      },
+      {
+        "x": 14,
+        "y": 3
+      },
+      {
+        "x": 1,
+        "y": 4
+      },
+      {
+        "x": 2,
+        "y": 4
+      },
+      {
+        "x": 3,
+        "y": 4
+      },
+      {
+        "x": 4,
+        "y": 4
+      },
+      {
+        "x": 5,
+        "y": 4
+      },
+      {
+        "x": 6,
+        "y": 4
+      },
+      {
+        "x": 7,
+        "y": 4
+      },
+      {
+        "x": 8,
+        "y": 4
+      },
+      {
+        "x": 9,
+        "y": 4
+      },
+      {
+        "x": 10,
+        "y": 4
+      },
+      {
+        "x": 11,
+        "y": 4
+      },
+      {
+        "x": 12,
+        "y": 4
+      },
+      {
+        "x": 13,
+        "y": 4
+      },
+      {
+        "x": 14,
+        "y": 4
+      },
+      {
+        "x": 1,
+        "y": 5
+      },
+      {
+        "x": 2,
+        "y": 5
+      },
+      {
+        "x": 3,
+        "y": 5
+      },
+      {
+        "x": 4,
+        "y": 5
+      },
+      {
+        "x": 5,
+        "y": 5
+      },
+      {
+        "x": 6,
+        "y": 5
+      },
+      {
+        "x": 7,
+        "y": 5
+      },
+      {
+        "x": 8,
+        "y": 5
+      },
+      {
+        "x": 9,
+        "y": 5
+      },
+      {
+        "x": 10,
+        "y": 5
+      },
+      {
+        "x": 11,
+        "y": 5
+      },
+      {
+        "x": 12,
+        "y": 5
+      },
+      {
+        "x": 13,
+        "y": 5
+      },
+      {
+        "x": 14,
+        "y": 5
+      },
+      {
+        "x": 1,
+        "y": 6
+      },
+      {
+        "x": 2,
+        "y": 6
+      },
+      {
+        "x": 3,
+        "y": 6
+      },
+      {
+        "x": 4,
+        "y": 6
+      },
+      {
+        "x": 5,
+        "y": 6
+      },
+      {
+        "x": 6,
+        "y": 6
+      },
+      {
+        "x": 7,
+        "y": 6
+      },
+      {
+        "x": 8,
+        "y": 6
+      },
+      {
+        "x": 9,
+        "y": 6
+      },
+      {
+        "x": 10,
+        "y": 6
+      },
+      {
+        "x": 11,
+        "y": 6
+      },
+      {
+        "x": 12,
+        "y": 6
+      },
+      {
+        "x": 13,
+        "y": 6
+      },
+      {
+        "x": 14,
+        "y": 6
+      },
+      {
+        "x": 1,
+        "y": 7
+      },
+      {
+        "x": 2,
+        "y": 7
+      },
+      {
+        "x": 3,
+        "y": 7
+      },
+      {
+        "x": 4,
+        "y": 7
+      },
+      {
+        "x": 5,
+        "y": 7
+      },
+      {
+        "x": 6,
+        "y": 7
+      },
+      {
+        "x": 7,
+        "y": 7
+      },
+      {
+        "x": 8,
+        "y": 7
+      },
+      {
+        "x": 9,
+        "y": 7
+      },
+      {
+        "x": 10,
+        "y": 7
+      },
+      {
+        "x": 11,
+        "y": 7
+      },
+      {
+        "x": 12,
+        "y": 7
+      },
+      {
+        "x": 13,
+        "y": 7
+      },
+      {
+        "x": 14,
+        "y": 7
+      },
+      {
+        "x": 1,
+        "y": 8
+      },
+      {
+        "x": 2,
+        "y": 8
+      },
+      {
+        "x": 3,
+        "y": 8
+      },
+      {
+        "x": 4,
+        "y": 8
+      },
+      {
+        "x": 5,
+        "y": 8
+      },
+      {
+        "x": 6,
+        "y": 8
+      },
+      {
+        "x": 7,
+        "y": 8
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 9,
+        "y": 8
+      },
+      {
+        "x": 10,
+        "y": 8
+      },
+      {
+        "x": 11,
+        "y": 8
+      },
+      {
+        "x": 12,
+        "y": 8
+      },
+      {
+        "x": 13,
+        "y": 8
+      },
+      {
+        "x": 14,
+        "y": 8
+      },
+      {
+        "x": 1,
+        "y": 9
+      },
+      {
+        "x": 2,
+        "y": 9
+      },
+      {
+        "x": 3,
+        "y": 9
+      },
+      {
+        "x": 4,
+        "y": 9
+      },
+      {
+        "x": 5,
+        "y": 9
+      },
+      {
+        "x": 6,
+        "y": 9
+      },
+      {
+        "x": 7,
+        "y": 9
+      },
+      {
+        "x": 8,
+        "y": 9
+      },
+      {
+        "x": 9,
+        "y": 9
+      },
+      {
+        "x": 10,
+        "y": 9
+      },
+      {
+        "x": 11,
+        "y": 9
+      },
+      {
+        "x": 12,
+        "y": 9
+      },
+      {
+        "x": 13,
+        "y": 9
+      },
+      {
+        "x": 14,
+        "y": 9
+      },
+      {
+        "x": 1,
+        "y": 10
+      },
+      {
+        "x": 2,
+        "y": 10
+      },
+      {
+        "x": 3,
+        "y": 10
+      },
+      {
+        "x": 4,
+        "y": 10
+      },
+      {
+        "x": 5,
+        "y": 10
+      },
+      {
+        "x": 6,
+        "y": 10
+      },
+      {
+        "x": 7,
+        "y": 10
+      },
+      {
+        "x": 8,
+        "y": 10
+      },
+      {
+        "x": 9,
+        "y": 10
+      },
+      {
+        "x": 10,
+        "y": 10
+      },
+      {
+        "x": 11,
+        "y": 10
+      },
+      {
+        "x": 12,
+        "y": 10
+      },
+      {
+        "x": 13,
+        "y": 10
+      },
+      {
+        "x": 14,
+        "y": 10
+      }
+    ]
+  },
+  "heroSpawns": [
+    {
+      "x": 3,
+      "y": 10,
+      "order": 1,
+      "role": "player_character"
+    },
+    {
+      "x": 4,
+      "y": 10,
+      "order": 2,
+      "role": "chosen_npc_1"
+    },
+    {
+      "x": 6,
+      "y": 10,
+      "order": 3,
+      "role": "chosen_npc_2"
+    }
+  ],
+  "imageNote": "",
+  "altitude": {
+    "layer": 3,
+    "unitFeet": 5,
+    "connectorRule": "Adjacent height changes are treated as slope/ramp unless layout terrain marks S stairs or a blocking/non-walkable cell.",
+    "cells": [
+      {
+        "x": 0,
+        "y": 0,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 0,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 0,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 0,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 0,
+        "height": 0
+      },
+      {
+        "x": 5,
+        "y": 0,
+        "height": 0
+      },
+      {
+        "x": 6,
+        "y": 0,
+        "height": 0
+      },
+      {
+        "x": 7,
+        "y": 0,
+        "height": 0
+      },
+      {
+        "x": 8,
+        "y": 0,
+        "height": 0
+      },
+      {
+        "x": 9,
+        "y": 0,
+        "height": 0
+      },
+      {
+        "x": 10,
+        "y": 0,
+        "height": 0
+      },
+      {
+        "x": 11,
+        "y": 0,
+        "height": 0
+      },
+      {
+        "x": 12,
+        "y": 0,
+        "height": 0
+      },
+      {
+        "x": 13,
+        "y": 0,
+        "height": 0
+      },
+      {
+        "x": 14,
+        "y": 0,
+        "height": 0
+      },
+      {
+        "x": 15,
+        "y": 0,
+        "height": 0
+      },
+      {
+        "x": 0,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 5,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 6,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 7,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 8,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 9,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 10,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 11,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 12,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 13,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 14,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 15,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 0,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 5,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 6,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 7,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 8,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 9,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 10,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 11,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 12,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 13,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 14,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 15,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 0,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 5,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 6,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 7,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 8,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 9,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 10,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 11,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 12,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 13,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 14,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 15,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 0,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 5,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 6,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 7,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 8,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 9,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 10,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 11,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 12,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 13,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 14,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 15,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 0,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 5,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 6,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 7,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 8,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 9,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 10,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 11,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 12,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 13,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 14,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 15,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 0,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 5,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 6,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 7,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 8,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 9,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 10,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 11,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 12,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 13,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 14,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 15,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 0,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 5,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 6,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 7,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 8,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 9,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 10,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 11,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 12,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 13,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 14,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 15,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 0,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 5,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 6,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 7,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 8,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 9,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 10,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 11,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 12,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 13,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 14,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 15,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 0,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 5,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 6,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 7,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 8,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 9,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 10,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 11,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 12,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 13,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 14,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 15,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 0,
+        "y": 10,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 10,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 10,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 10,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 10,
+        "height": 0
+      },
+      {
+        "x": 5,
+        "y": 10,
+        "height": 0
+      },
+      {
+        "x": 6,
+        "y": 10,
+        "height": 0
+      },
+      {
+        "x": 7,
+        "y": 10,
+        "height": 0
+      },
+      {
+        "x": 8,
+        "y": 10,
+        "height": 0
+      },
+      {
+        "x": 9,
+        "y": 10,
+        "height": 0
+      },
+      {
+        "x": 10,
+        "y": 10,
+        "height": 0
+      },
+      {
+        "x": 11,
+        "y": 10,
+        "height": 0
+      },
+      {
+        "x": 12,
+        "y": 10,
+        "height": 0
+      },
+      {
+        "x": 13,
+        "y": 10,
+        "height": 0
+      },
+      {
+        "x": 14,
+        "y": 10,
+        "height": 0
+      },
+      {
+        "x": 15,
+        "y": 10,
+        "height": 0
+      }
+    ]
+  },
+  "placedObjects": {
+    "layer": 4,
+    "items": []
+  },
+  "finalPassability": {
+    "rule": "playable cells minus blocking placed object footprints",
+    "cells": [
+      {
+        "x": 1,
+        "y": 0
+      },
+      {
+        "x": 2,
+        "y": 0
+      },
+      {
+        "x": 3,
+        "y": 0
+      },
+      {
+        "x": 4,
+        "y": 0
+      },
+      {
+        "x": 5,
+        "y": 0
+      },
+      {
+        "x": 6,
+        "y": 0
+      },
+      {
+        "x": 7,
+        "y": 0
+      },
+      {
+        "x": 8,
+        "y": 0
+      },
+      {
+        "x": 9,
+        "y": 0
+      },
+      {
+        "x": 10,
+        "y": 0
+      },
+      {
+        "x": 11,
+        "y": 0
+      },
+      {
+        "x": 12,
+        "y": 0
+      },
+      {
+        "x": 13,
+        "y": 0
+      },
+      {
+        "x": 14,
+        "y": 0
+      },
+      {
+        "x": 1,
+        "y": 1
+      },
+      {
+        "x": 2,
+        "y": 1
+      },
+      {
+        "x": 3,
+        "y": 1
+      },
+      {
+        "x": 4,
+        "y": 1
+      },
+      {
+        "x": 5,
+        "y": 1
+      },
+      {
+        "x": 6,
+        "y": 1
+      },
+      {
+        "x": 7,
+        "y": 1
+      },
+      {
+        "x": 8,
+        "y": 1
+      },
+      {
+        "x": 9,
+        "y": 1
+      },
+      {
+        "x": 10,
+        "y": 1
+      },
+      {
+        "x": 11,
+        "y": 1
+      },
+      {
+        "x": 12,
+        "y": 1
+      },
+      {
+        "x": 13,
+        "y": 1
+      },
+      {
+        "x": 14,
+        "y": 1
+      },
+      {
+        "x": 1,
+        "y": 2
+      },
+      {
+        "x": 2,
+        "y": 2
+      },
+      {
+        "x": 3,
+        "y": 2
+      },
+      {
+        "x": 4,
+        "y": 2
+      },
+      {
+        "x": 5,
+        "y": 2
+      },
+      {
+        "x": 6,
+        "y": 2
+      },
+      {
+        "x": 7,
+        "y": 2
+      },
+      {
+        "x": 8,
+        "y": 2
+      },
+      {
+        "x": 9,
+        "y": 2
+      },
+      {
+        "x": 10,
+        "y": 2
+      },
+      {
+        "x": 11,
+        "y": 2
+      },
+      {
+        "x": 12,
+        "y": 2
+      },
+      {
+        "x": 13,
+        "y": 2
+      },
+      {
+        "x": 14,
+        "y": 2
+      },
+      {
+        "x": 1,
+        "y": 3
+      },
+      {
+        "x": 2,
+        "y": 3
+      },
+      {
+        "x": 3,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 3
+      },
+      {
+        "x": 5,
+        "y": 3
+      },
+      {
+        "x": 6,
+        "y": 3
+      },
+      {
+        "x": 7,
+        "y": 3
+      },
+      {
+        "x": 8,
+        "y": 3
+      },
+      {
+        "x": 9,
+        "y": 3
+      },
+      {
+        "x": 10,
+        "y": 3
+      },
+      {
+        "x": 11,
+        "y": 3
+      },
+      {
+        "x": 12,
+        "y": 3
+      },
+      {
+        "x": 13,
+        "y": 3
+      },
+      {
+        "x": 14,
+        "y": 3
+      },
+      {
+        "x": 1,
+        "y": 4
+      },
+      {
+        "x": 2,
+        "y": 4
+      },
+      {
+        "x": 3,
+        "y": 4
+      },
+      {
+        "x": 4,
+        "y": 4
+      },
+      {
+        "x": 5,
+        "y": 4
+      },
+      {
+        "x": 6,
+        "y": 4
+      },
+      {
+        "x": 7,
+        "y": 4
+      },
+      {
+        "x": 8,
+        "y": 4
+      },
+      {
+        "x": 9,
+        "y": 4
+      },
+      {
+        "x": 10,
+        "y": 4
+      },
+      {
+        "x": 11,
+        "y": 4
+      },
+      {
+        "x": 12,
+        "y": 4
+      },
+      {
+        "x": 13,
+        "y": 4
+      },
+      {
+        "x": 14,
+        "y": 4
+      },
+      {
+        "x": 1,
+        "y": 5
+      },
+      {
+        "x": 2,
+        "y": 5
+      },
+      {
+        "x": 3,
+        "y": 5
+      },
+      {
+        "x": 4,
+        "y": 5
+      },
+      {
+        "x": 5,
+        "y": 5
+      },
+      {
+        "x": 6,
+        "y": 5
+      },
+      {
+        "x": 7,
+        "y": 5
+      },
+      {
+        "x": 8,
+        "y": 5
+      },
+      {
+        "x": 9,
+        "y": 5
+      },
+      {
+        "x": 10,
+        "y": 5
+      },
+      {
+        "x": 11,
+        "y": 5
+      },
+      {
+        "x": 12,
+        "y": 5
+      },
+      {
+        "x": 13,
+        "y": 5
+      },
+      {
+        "x": 14,
+        "y": 5
+      },
+      {
+        "x": 1,
+        "y": 6
+      },
+      {
+        "x": 2,
+        "y": 6
+      },
+      {
+        "x": 3,
+        "y": 6
+      },
+      {
+        "x": 4,
+        "y": 6
+      },
+      {
+        "x": 5,
+        "y": 6
+      },
+      {
+        "x": 6,
+        "y": 6
+      },
+      {
+        "x": 7,
+        "y": 6
+      },
+      {
+        "x": 8,
+        "y": 6
+      },
+      {
+        "x": 9,
+        "y": 6
+      },
+      {
+        "x": 10,
+        "y": 6
+      },
+      {
+        "x": 11,
+        "y": 6
+      },
+      {
+        "x": 12,
+        "y": 6
+      },
+      {
+        "x": 13,
+        "y": 6
+      },
+      {
+        "x": 14,
+        "y": 6
+      },
+      {
+        "x": 1,
+        "y": 7
+      },
+      {
+        "x": 2,
+        "y": 7
+      },
+      {
+        "x": 3,
+        "y": 7
+      },
+      {
+        "x": 4,
+        "y": 7
+      },
+      {
+        "x": 5,
+        "y": 7
+      },
+      {
+        "x": 6,
+        "y": 7
+      },
+      {
+        "x": 7,
+        "y": 7
+      },
+      {
+        "x": 8,
+        "y": 7
+      },
+      {
+        "x": 9,
+        "y": 7
+      },
+      {
+        "x": 10,
+        "y": 7
+      },
+      {
+        "x": 11,
+        "y": 7
+      },
+      {
+        "x": 12,
+        "y": 7
+      },
+      {
+        "x": 13,
+        "y": 7
+      },
+      {
+        "x": 14,
+        "y": 7
+      },
+      {
+        "x": 1,
+        "y": 8
+      },
+      {
+        "x": 2,
+        "y": 8
+      },
+      {
+        "x": 3,
+        "y": 8
+      },
+      {
+        "x": 4,
+        "y": 8
+      },
+      {
+        "x": 5,
+        "y": 8
+      },
+      {
+        "x": 6,
+        "y": 8
+      },
+      {
+        "x": 7,
+        "y": 8
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 9,
+        "y": 8
+      },
+      {
+        "x": 10,
+        "y": 8
+      },
+      {
+        "x": 11,
+        "y": 8
+      },
+      {
+        "x": 12,
+        "y": 8
+      },
+      {
+        "x": 13,
+        "y": 8
+      },
+      {
+        "x": 14,
+        "y": 8
+      },
+      {
+        "x": 1,
+        "y": 9
+      },
+      {
+        "x": 2,
+        "y": 9
+      },
+      {
+        "x": 3,
+        "y": 9
+      },
+      {
+        "x": 4,
+        "y": 9
+      },
+      {
+        "x": 5,
+        "y": 9
+      },
+      {
+        "x": 6,
+        "y": 9
+      },
+      {
+        "x": 7,
+        "y": 9
+      },
+      {
+        "x": 8,
+        "y": 9
+      },
+      {
+        "x": 9,
+        "y": 9
+      },
+      {
+        "x": 10,
+        "y": 9
+      },
+      {
+        "x": 11,
+        "y": 9
+      },
+      {
+        "x": 12,
+        "y": 9
+      },
+      {
+        "x": 13,
+        "y": 9
+      },
+      {
+        "x": 14,
+        "y": 9
+      },
+      {
+        "x": 1,
+        "y": 10
+      },
+      {
+        "x": 2,
+        "y": 10
+      },
+      {
+        "x": 3,
+        "y": 10
+      },
+      {
+        "x": 4,
+        "y": 10
+      },
+      {
+        "x": 5,
+        "y": 10
+      },
+      {
+        "x": 6,
+        "y": 10
+      },
+      {
+        "x": 7,
+        "y": 10
+      },
+      {
+        "x": 8,
+        "y": 10
+      },
+      {
+        "x": 9,
+        "y": 10
+      },
+      {
+        "x": 10,
+        "y": 10
+      },
+      {
+        "x": 11,
+        "y": 10
+      },
+      {
+        "x": 12,
+        "y": 10
+      },
+      {
+        "x": 13,
+        "y": 10
+      },
+      {
+        "x": 14,
+        "y": 10
+      }
+    ]
+  },
+  "cover": [],
+  "lighting": []
+}

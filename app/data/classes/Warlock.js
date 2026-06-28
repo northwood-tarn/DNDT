@@ -53,13 +53,6 @@ export default {
         effects: { advancement: [{ type: "ability_score_improvement", choices: ["ability_score", "feat"] }] }
       }
     ],
-    5: [{
-      name: "Extra Attack (Pact of the Blade)",
-      type: "Passive",
-      condition: { pact: "Blade" },
-      description: "When you take the Attack action with your pact weapon, you can make two attacks.",
-      effects: { attackAction: [{ attacks: 2, scope: "pact_weapon" }] }
-    }],
     8: [
       {
         name: "Ability Score Improvement",
@@ -86,6 +79,18 @@ export default {
         description:
           "Increase ability scores or take a feat (engine-defined advancement rule).",
         effects: { advancement: [{ type: "ability_score_improvement", choices: ["ability_score", "feat"] }] }
+      }
+    ],
+    13: [
+      {
+        name: "Mystic Arcanum",
+        type: "Special",
+        uses: "longRest:1",
+        description: "Choose one 7th-level spell as an Arcanum. Cast it once per long rest without expending a slot.",
+        effects: {
+          choiceRequirements: [{ id: "mystic_arcanum_spell", kind: "spell", count: 1 }],
+          resources: [{ id: "mystic_arcanum_7", name: "Mystic Arcanum (7th)", max: 1, recovery: "long_rest" }]
+        }
       }
     ]
   },
@@ -133,8 +138,12 @@ export default {
               resources: [{ id: "blade_channel", name: "Blade Channel", max: 1, recovery: "short_rest" }],
               actionOptions: [{
                 id: "blade_channel",
+                name: "Blade Channel",
                 actionType: "bonus_action",
-                duration: { value: 1, unit: "minute" },
+                resourceId: "blade_channel",
+                requiresTarget: false,
+                duration: { rounds: 10, tick: "turn_end" },
+                damageTypeChoices: ["radiant", "necrotic", "fire"],
                 pactWeaponDamageBonus: { dice: "1d6", damageTypeChoice: ["radiant", "necrotic", "fire"] }
               }]
             }
@@ -213,7 +222,7 @@ export default {
               "Once per long rest, regain one expended Warlock spell slot (bonus action in combat, or 1 minute outside combat).",
             effects: {
               resources: [{ id: "grimoire_recall", name: "Grimoire Recall", max: 1, recovery: "long_rest" }],
-              actionOptions: [{ id: "grimoire_recall", actionType: "bonus_action", restoresResource: "warlock_spell_slot", amount: 1 }]
+              actionOptions: [{ id: "grimoire_recall", actionType: "bonus_action", resourceId: "grimoire_recall", restoresResource: "warlock_spell_slot", amount: 1 }]
             }
           }
         ],
@@ -258,7 +267,7 @@ export default {
               "Once per short rest, teleport up to 30 ft to a space you can see, as per the Misty Step spell.",
             effects: {
               resources: [{ id: "token_of_passage", name: "Token of Passage", max: 1, recovery: "short_rest" }],
-              actionOptions: [{ id: "token_of_passage", actionType: "bonus_action", teleportFt: 30, requiresSight: true }]
+              actionOptions: [{ id: "token_of_passage", actionType: "bonus_action", resourceId: "token_of_passage", teleportFt: 30, requiresSight: true }]
             }
           }
         ],
@@ -290,12 +299,30 @@ export default {
               resources: [{ id: "cataclysmic_debt", name: "Cataclysmic Debt", max: 1, recovery: "long_rest" }],
               actionOptions: [{
                 id: "cataclysmic_debt",
+                name: "Cataclysmic Debt",
                 actionType: "action",
+                resourceId: "cataclysmic_debt",
                 rangeFt: 30,
-                target: "visible_enemies",
-                applyCondition: "cataclysmic_debt",
-                linkedDamageOnHit: { dice: "charisma_modifier", type: "force" },
-                endsWhenFirstMarkedCreatureDies: true
+                targeting: { mode: "nearby_actors" },
+                targetFilter: { team: "enemies" },
+                effects: [{
+                  type: "condition",
+                  trigger: "failed_save",
+                  condition: "cataclysmic_debt",
+                  duration: { rounds: 10, tick: "turn_end" }
+                }],
+                activeEffectOnResolve: {
+                  id: "cataclysmic_debt_link",
+                  label: "Cataclysmic Debt",
+                  duration: { rounds: 10, tick: "turn_end" },
+                  damageRider: {
+                    trigger: "source_hits_with_attack_roll",
+                    requiresConditionOnTarget: "cataclysmic_debt",
+                    splashCondition: "cataclysmic_debt",
+                    damage: "charisma_modifier",
+                    damageType: "force"
+                  }
+                }
               }]
             }
           }
@@ -384,12 +411,14 @@ export default {
                 actionType: "bonus_action",
                 resourceId: "form_of_dread",
                 requiresTarget: false,
-                temporaryHpFormula: "1d10+level"
+                temporaryHpFormula: "1d10+level",
+                selfCondition: { id: "form_of_dread_active", duration: { rounds: 10, tick: "turn_end" } }
               }],
               conditionRiders: [{
                 id: "form_of_dread_frighten",
                 name: "Form of Dread",
                 trigger: "source_hits_with_attack_roll",
+                requiresSourceCondition: "form_of_dread_active",
                 oncePerTurn: true,
                 save: { ability: "wisdom", dcFrom: "spellSaveDC" },
                 condition: "frightened",
@@ -465,6 +494,7 @@ export default {
                 actionType: "action",
                 resourceId: "deathless_form",
                 requiresTarget: false,
+                selfCondition: { id: "deathless_form_active", duration: { rounds: 10, tick: "turn_end" } },
                 effects: [
                   { type: "modifier", trigger: "failed_save", target: "self", stat: "damage_reduction", damageType: "all", multiplier: 0.5, duration: { kind: "rounds", rounds: 10, tick: "turn_end" } },
                   { type: "modifier", trigger: "failed_save", target: "self", stat: "speed", amountFt: 30, mode: "fly", duration: { kind: "rounds", rounds: 10, tick: "turn_end" } }
@@ -474,6 +504,7 @@ export default {
                 id: "deathless_form_necrotic",
                 name: "Deathless Form",
                 trigger: "source_hits_with_attack_roll",
+                requiresSourceCondition: "deathless_form_active",
                 oncePerTurn: true,
                 damage: "2d8",
                 damageType: "necrotic"
@@ -514,14 +545,22 @@ export default {
               resources: [{ id: "borrowed_flame", name: "Borrowed Flame", max: 1, recovery: "short_rest" }],
               actionOptions: [{
                 id: "borrowed_flame",
+                name: "Borrowed Flame",
                 actionType: "bonus_action",
+                resourceId: "borrowed_flame",
+                requiresTarget: false,
                 temporaryHpFormula: "1d8 + charisma_modifier",
                 duration: { value: 1, unit: "minute" },
                 light: { brightRadiusFt: 20 },
-                retaliateWhileTemporaryHp: {
-                  trigger: "melee_hit_taken",
-                  damage: { dice: "charisma_modifier", type: "radiant" },
-                  limit: "first_enemy"
+                selfCondition: {
+                  id: "borrowed_flame",
+                  duration: { rounds: 10, tick: "turn_end" },
+                  damageRetaliation: {
+                    trigger: "hit_by_melee",
+                    damage: "charisma_modifier",
+                    damageType: "radiant",
+                    requiresTempHp: true
+                  }
                 }
               }]
             }
@@ -560,8 +599,12 @@ export default {
               resources: [{ id: "door_in_the_floor", name: "The Door in the Floor", max: 1, recovery: "short_rest" }],
               actionOptions: [{
                 id: "door_in_the_floor",
+                name: "The Door in the Floor",
                 actionType: "bonus_action",
+                resourceId: "door_in_the_floor",
                 rangeFt: 30,
+                teleportFt: 30,
+                requiresSight: true,
                 requiresLitDestination: true,
                 modes: ["teleport_self", "pull_willing_ally"],
                 createsCombatObject: {
@@ -584,46 +627,42 @@ export default {
             name: "Last Light",
             type: "Action",
             uses: "longRest",
-            description: "Once per long rest, create a 20-ft-radius lantern field centered on a point you can see within 60 ft. It starts at 4d8 intensity and does not require concentration. At the start of each of your turns, its intensity increases by 1d8. At 4d8 to 6d8, allies inside gain temporary HP equal to your Charisma modifier at the start of their turns and cannot be blinded or frightened, while enemies inside cannot benefit from invisibility or being hidden; the first time each turn an enemy inside takes radiant or fire damage, it takes extra radiant damage equal to your proficiency bonus. At 7d8 or higher, those beneficial effects stop. At the start of each allied creature's turn inside the field, that creature takes radiant damage equal to the excess intensity: 1d8 at 7d8, 2d8 at 8d8, 3d8 at 9d8, and 4d8 at 10d8. You may collapse the field as a bonus action on any turn after creating it. If manually collapsed, each enemy in the field makes a Constitution save against your spell save DC, taking radiant damage equal to the current intensity on a failed save, or half on a success. If the field reaches 10d8, it collapses automatically: enemies in the field save against 10d8 radiant damage, and allies in the field save against 4d8 radiant damage, taking half on success.",
+            description: "Once per long rest, create a 20-ft-radius lantern field centered on a point you can see within 60 ft. The field carries two charges, each starting at 4d8 and increasing by 1d8 at the start of each of your turns. Allies inside gain temporary HP equal to your Charisma modifier at the start of their turns and shed the blinded and frightened conditions. Enemies inside cannot benefit from invisibility or being hidden. On a later turn before the charge reaches 8d8, you may collapse the field as a bonus action; enemies inside make a Constitution save against your spell save DC, taking radiant damage equal to the manual charge on a failed save, or half on a success. If you do not collapse it first, the overload charge explodes as soon as it reaches 8d8.",
             effects: {
               resources: [{ id: "last_light", name: "Last Light", max: 1, recovery: "long_rest" }],
               actionOptions: [{
                 id: "last_light",
+                name: "Last Light",
                 actionType: "action",
+                resourceId: "last_light",
                 rangeFt: 60,
                 createsCombatObject: {
                   id: "last_light_field",
+                  name: "Last Light",
                   shape: "radius",
                   radiusFt: 20,
-                  duration: { until: "collapse" },
-                  intensity: { startDice: 4, die: "d8", increaseAtStartOfOwnerTurn: 1, automaticCollapseDice: 10 },
-                  stableThroughDice: 6,
-                  stableEffects: {
-                    allyStartTurnTemporaryHp: "charisma_modifier",
-                    allyConditionPrevention: ["blinded", "frightened"],
-                    enemyCannotBenefitFrom: ["invisible", "hidden"],
-                    firstRadiantOrFireDamageBonusPerTurn: "proficiency_bonus"
+                  timers: {
+                    manual: { startDice: 4, die: "d8", increaseAtStartOfOwnerTurn: 1, expiresAtDice: 8 },
+                    overload: { startDice: 4, die: "d8", increaseAtStartOfOwnerTurn: 1, explodesAtDice: 8 }
                   },
-                  unstableEffects: {
-                    allyStartTurnExcessDamage: { dicePerExcessIntensity: "1d8", type: "radiant" }
-                  },
+                  effects: [
+                    { type: "temp_hp", trigger: "turn_start", affects: "allies", amountFormula: "charisma_modifier" },
+                    { type: "remove_conditions", trigger: "turn_start", affects: "allies", conditions: ["blinded", "frightened"] },
+                    { type: "remove_conditions", trigger: "turn_start", affects: "enemies", conditions: ["hidden", "invisible"] }
+                  ],
                   collapse: {
                     manual: {
                       actionType: "bonus_action",
                       target: "enemies_in_area",
                       save: { ability: "constitution", dcFrom: "spellSaveDC", onSave: "half" },
-                      damage: { diceFromIntensity: true, type: "radiant" }
+                      damage: { diceFromTimer: "manual", type: "radiant" }
                     },
                     automatic: {
-                      atIntensityDice: 10,
-                      enemies: {
-                        save: { ability: "constitution", dcFrom: "spellSaveDC", onSave: "half" },
-                        damage: { dice: "10d8", type: "radiant" }
-                      },
-                      allies: {
-                        save: { ability: "constitution", dcFrom: "spellSaveDC", onSave: "half" },
-                        damage: { dice: "4d8", type: "radiant" }
-                      }
+                      timer: "overload",
+                      target: "creatures_in_area",
+                      save: { ability: "constitution", dcFrom: "spellSaveDC", onSave: "half" },
+                      damage: { diceFromTimer: "overload", type: "radiant" },
+                      removeObject: true
                     }
                   }
                 }

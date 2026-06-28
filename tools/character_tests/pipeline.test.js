@@ -14,6 +14,7 @@ export function runCharacterPipelineTests() {
   resolvesSpeciesFeatureChoices();
   reportsMissingLineageChoices();
   resolvesClassIntoSheet();
+  resolvesHighLevelHitPointProgression();
   resolvesCombatReadySheetFields();
   doesNotRequireLevelOneSubclassChoices();
   rejectsPrematureSubclassChoices();
@@ -367,6 +368,16 @@ function resolvesClassIntoSheet() {
   assert.equal(sheet.features.some((item) => item.id === "class:fighter:second_wind"), true);
   assert.equal(sheet.equipment.masteredWeaponIds.includes("longsword"), true);
   assert.deepEqual(validateResolvedCharacterSheet(sheet), []);
+}
+
+function resolvesHighLevelHitPointProgression() {
+  const draft = createEmptyCharacterDraft({
+    identity: { characterName: "Seasoned Paladin", level: 7, classId: "paladin", subclassId: "oath_of_glory" },
+    abilities: { strength: 16, dexterity: 10, constitution: 14, intelligence: 10, wisdom: 12, charisma: 16 },
+    choices: { weaponMasteryIds: ["longsword", "warhammer"] },
+  });
+  const sheet = resolveCharacterSheet(draft, {}, { allowNonCreationLevel: true });
+  assert.equal(sheet.durability.maxHp, 60, "level 7 paladin HP should include level-one HP plus six fixed later levels");
 }
 
 function resolvesCombatReadySheetFields() {

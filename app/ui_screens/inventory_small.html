@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Screen Small: Inventory</title>
+    <link rel="stylesheet" href="../styles/designViewport.css">
+    <link rel="stylesheet" href="./inventory_small.css">
+  </head>
+  <body>
+    <main class="inventory-screen design-viewport" aria-label="Inventory lookup preview">
+      <div class="fog-layer fog-one" aria-hidden="true"></div>
+      <div class="fog-layer fog-two" aria-hidden="true"></div>
+      <div class="fog-layer fog-three" aria-hidden="true"></div>
+
+      <div class="lanterna-emblem" aria-hidden="true">
+        <div class="lanterna-flame">
+          <div class="lanterna-flame-fill"></div>
+          <div class="lanterna-flame-outline">
+            <svg viewBox="0 0 70 100" aria-hidden="true" focusable="false">
+              <defs>
+                <filter id="lanterna-flame-edge" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+                  <feMorphology in="SourceAlpha" operator="dilate" radius="1.1" result="outer" />
+                  <feMorphology in="SourceAlpha" operator="erode" radius="1.1" result="inner" />
+                  <feComposite in="outer" in2="inner" operator="out" result="edge" />
+                  <feFlood flood-color="#cdfcf4" flood-opacity="0.02" result="lineColor" />
+                  <feComposite in="lineColor" in2="edge" operator="in" />
+                </filter>
+              </defs>
+              <image href="../assets/images/effects/flame.png" width="70" height="100" filter="url(#lanterna-flame-edge)" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <section class="inventory-column" aria-label="Inventory">
+        <header class="inventory-head">
+          <h1>Inventory</h1>
+          <div class="inventory-resources" aria-label="Resources">
+            <div class="resource-row">
+              <span>Gold</span>
+              <span>43</span>
+            </div>
+            <div class="resource-row">
+              <span>Map fragments</span>
+              <span>7</span>
+            </div>
+          </div>
+        </header>
+
+        <div class="inventory-scroll">
+          <section class="inventory-group" aria-label="Equipped">
+            <h2>Equipped</h2>
+            <button class="inventory-row is-equipped" type="button" data-title="Studded Leather" data-description="Boiled leather stitched with dark brass rings. Light enough to move in, loud if you hurry.">
+              <span>Studded Leather</span>
+              <span>armor</span>
+            </button>
+            <div class="inventory-row has-menu is-equipped" data-title="Shield" data-description="A battered round shield. While carried, only one weapon can be equipped.">
+              <button class="item-main" type="button">
+                <span>Shield</span>
+                <span>off hand</span>
+              </button>
+              <button class="item-menu-button" type="button" aria-haspopup="menu" aria-expanded="false">Swap</button>
+              <div class="item-menu" role="menu" hidden>
+                <button type="button" role="menuitem">Unequip shield</button>
+                <button type="button" role="menuitem">Swap for torch</button>
+              </div>
+            </div>
+            <div class="inventory-row has-menu is-equipped" data-title="Quarterstaff" data-description="A blackened staff, polished where the hand remembers it. Equipped as the active weapon.">
+              <button class="item-main" type="button">
+                <span>Quarterstaff</span>
+                <span>weapon</span>
+              </button>
+              <button class="item-menu-button" type="button" aria-haspopup="menu" aria-expanded="false">Swap</button>
+              <div class="item-menu" role="menu" hidden>
+                <button type="button" role="menuitem">Equip dagger instead</button>
+                <button type="button" role="menuitem">Unequip shield for second weapon</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="inventory-group" aria-label="Consumables">
+            <h2>Consumables</h2>
+            <div class="inventory-row has-menu" data-title="Healing Potion" data-description="A small red bottle, clouded at the glass. Restores health when used.">
+              <button class="item-main" type="button">
+                <span>Healing Potion</span>
+                <span>x2</span>
+              </button>
+              <button class="item-menu-button" type="button" aria-haspopup="menu" aria-expanded="false">Use</button>
+              <div class="item-menu" role="menu" hidden>
+                <button type="button" role="menuitem">Use on self</button>
+                <button type="button" role="menuitem">Use on ally</button>
+                <button type="button" role="menuitem">Set quick slot</button>
+              </div>
+            </div>
+            <div class="inventory-row has-menu" data-title="Smoke Vial" data-description="Grey powder suspended in oil. Break it and the room becomes uncertain.">
+              <button class="item-main" type="button">
+                <span>Smoke Vial</span>
+                <span>x1</span>
+              </button>
+              <button class="item-menu-button" type="button" aria-haspopup="menu" aria-expanded="false">Use</button>
+              <div class="item-menu" role="menu" hidden>
+                <button type="button" role="menuitem">Throw nearby</button>
+                <button type="button" role="menuitem">Throw at target</button>
+                <button type="button" role="menuitem">Set quick slot</button>
+              </div>
+            </div>
+            <div class="inventory-row has-menu" data-title="Lantern Oil" data-description="Clean oil with a faint green-blue sheen. Good for light, fire, and bad decisions.">
+              <button class="item-main" type="button">
+                <span>Lantern Oil</span>
+                <span>x3</span>
+              </button>
+              <button class="item-menu-button" type="button" aria-haspopup="menu" aria-expanded="false">Use</button>
+              <div class="item-menu" role="menu" hidden>
+                <button type="button" role="menuitem">Refill lantern</button>
+                <button type="button" role="menuitem">Pour out</button>
+                <button type="button" role="menuitem">Set quick slot</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="inventory-group" aria-label="Items">
+            <h2>Items</h2>
+            <div class="inventory-row has-menu" data-title="Dagger" data-description="Small, useful, and too easily forgotten until it is needed. Can replace the equipped weapon.">
+              <button class="item-main" type="button">
+                <span>Dagger</span>
+                <span>weapon</span>
+              </button>
+              <button class="item-menu-button" type="button" aria-haspopup="menu" aria-expanded="false">Equip</button>
+              <div class="item-menu" role="menu" hidden>
+                <button type="button" role="menuitem">Equip as weapon</button>
+                <button type="button" role="menuitem">Throw</button>
+              </div>
+            </div>
+            <button class="inventory-row" type="button" data-title="Rope, 50 ft." data-description="Frayed at one end. Strong enough for a climb, questionable for a fall.">
+              <span>Rope, 50 ft.</span>
+              <span></span>
+            </button>
+            <button class="inventory-row" type="button" data-title="Chalk" data-description="Six white sticks wrapped in cloth. Marks stone, doors, maps, and mistakes.">
+              <span>Chalk</span>
+              <span>x6</span>
+            </button>
+            <button class="inventory-row" type="button" data-title="Sealed Letter" data-description="The wax is intact. The handwriting on the outside is careful enough to be afraid.">
+              <span>Sealed Letter</span>
+              <span>quest</span>
+            </button>
+          </section>
+        </div>
+
+        <footer class="item-summary is-empty" aria-live="polite">
+          <p class="screen-kicker">Selected</p>
+          <h2 id="itemSummaryTitle"></h2>
+          <p id="itemSummaryDescription"></p>
+        </footer>
+      </section>
+    </main>
+    <script type="module" src="./inventory_small.js"></script>
+  </body>
+</html>

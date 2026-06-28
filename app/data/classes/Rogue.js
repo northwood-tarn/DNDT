@@ -47,6 +47,24 @@ export default {
           weaponMastery: [{ count: 2 }]
         }
       },
+      {
+        name: "Sneak Attack",
+        type: "Passive",
+        description: "Once per turn, when you hit with a finesse or ranged weapon attack, deal extra damage if you had advantage or an ally threatens the target.",
+        effects: {
+          damageRiders: [{
+            id: "sneak_attack",
+            name: "Sneak Attack",
+            trigger: "source_hits_with_attack_roll",
+            actionTags: ["weapon"],
+            requiresAnyActionTag: ["finesse", "ranged"],
+            requiresAttackAdvantageOrAdjacentAlly: true,
+            oncePerTurn: true,
+            damage: "sneak_attack_dice",
+            damageType: "same_as_action"
+          }]
+        }
+      },
       { name: "Thieves' Tools (Legacy Kit)", type: "Passive",
         description: "Your old, worn set of less‑than‑legal tools. When you pick a lock or disarm a trap, you have expertise (add double your proficiency bonus) on the check. Others can still attempt these tasks using improvised or found tools—this feature doesn’t gate the attempt; it just makes you notably better at it.",
         effects: {
@@ -61,8 +79,8 @@ export default {
         effects: {
           actionOptions: [
             { id: "cunning_action_dash", name: "Cunning Action: Dash", actionType: "bonus_action", actionKind: "dash" },
-            { id: "cunning_action_disengage", name: "Cunning Action: Disengage", actionType: "bonus_action", description: "Take the Disengage action as a bonus action." },
-            { id: "cunning_action_hide", name: "Cunning Action: Hide", actionType: "bonus_action", description: "Take the Hide action as a bonus action." }
+            { id: "cunning_action_disengage", name: "Cunning Action: Disengage", actionType: "bonus_action", actionKind: "disengage", description: "Take the Disengage action as a bonus action." },
+            { id: "cunning_action_hide", name: "Cunning Action: Hide", actionType: "bonus_action", actionKind: "hide", description: "Take the Hide action as a bonus action." }
           ]
         }
       }
@@ -326,19 +344,18 @@ export default {
             description: "Once per combat, assemble and use a device as a bonus action from your known recipes. You begin play knowing one origin device of your choice.",
             effects: {
               resources: [{ id: "quick_rigging", name: "Quick Rigging", max: 1, recovery: "combat" }],
-              actionOptions: [{ id: "quick_rigging", actionType: "bonus_action" }],
               choiceRequirements: [{
                 id: "origin_device",
                 kind: "device_recipe",
-                count: 1,
-                options: ["fire_granado", "acid_flask", "lightning_paper"]
+                count: 1
               }]
             } },
           { name: "Bombmaker", type: "Special",
-            description: "You gain a Cookbook with 2 recipes. After a long rest, choose 3 devices to prepare; they are created and ready to use.",
+            description: "You gain A Strange Kit and a Cookbook with 2 recipes. After a long rest, prepare a number of devices equal to your Rogue level; they are created and ready to use.",
             effects: {
+              proficiencies: { tools: ["strange_kit"] },
               choiceRequirements: [{ id: "saboteur_cookbook_recipes", kind: "device_recipe", count: 2 }],
-              resources: [{ id: "prepared_devices", name: "Prepared Devices", max: 3, recovery: "long_rest" }]
+              resources: [{ id: "prepared_devices", name: "Prepared Devices", max: "saboteur_level", recovery: "long_rest" }]
             } }
         ],
         7: [
@@ -350,10 +367,9 @@ export default {
         ],
         11: [
           { name: "Master of Mixtures", type: "Passive",
-            description: "Add 2 more recipes to your Cookbook. After a long rest, prepare 5 devices. Your devices deal +1d6 extra damage of their type.",
+            description: "Add 2 more recipes to your Cookbook. Your devices deal +1d6 extra damage of their type.",
             effects: {
               choiceRequirements: [{ id: "saboteur_advanced_recipes", kind: "device_recipe", count: 2 }],
-              resources: [{ id: "prepared_devices", name: "Prepared Devices", max: 5, recovery: "long_rest" }],
               damageRiders: [{
                 id: "master_of_mixtures_damage",
                 name: "Master of Mixtures",
@@ -362,6 +378,11 @@ export default {
                 damage: "1d6",
                 damageType: "same_as_action"
               }]
+            } },
+          { name: "Double Rig", type: "Bonus Action",
+            description: "Once per combat, when you use Quick Rigging, you may deploy two prepared devices with the same bonus action. Only one of the two devices may deal immediate damage.",
+            effects: {
+              resources: [{ id: "double_rig", name: "Double Rig", max: 1, recovery: "combat" }]
             } }
         ],
         13: [

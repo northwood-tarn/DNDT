@@ -1,0 +1,305 @@
+[
+  {
+    "id": "cover_three_quarter_x02_y01",
+    "kind": "cover",
+    "assetRole": "three_quarter_cover",
+    "label": "three-quarter cover object",
+    "source": "terrain three_quarter cover",
+    "cells": [
+      {
+        "x": 2,
+        "y": 1,
+        "altitude": 0
+      }
+    ],
+    "footprint": {
+      "minX": 2,
+      "minY": 1,
+      "maxX": 2,
+      "maxY": 1,
+      "widthCells": 1,
+      "heightCells": 1
+    },
+    "pixelBounds": {
+      "minX": 800,
+      "minY": 204,
+      "maxX": 928,
+      "maxY": 268
+    },
+    "anchorPixel": {
+      "x": 864,
+      "y": 268
+    },
+    "zIndex": 3,
+    "blocksMovement": true,
+    "emitsLight": false,
+    "assetPrompt": "placed_asset_prompts/cover_three_quarter_x02_y01.prompt.txt",
+    "assetPath": "placed_assets/cover_three_quarter_x02_y01.png",
+    "validation": [
+      "Asset base must fit the listed cells exactly.",
+      "Asset may visually rise upward, but its gameplay footprint may not expand.",
+      "No extra props or ground affordances outside the footprint."
+    ],
+    "assetRegistration": {
+      "required": true,
+      "localAnchorPixel": "required in asset source coordinates; this is the asset pixel that must land on anchorPixel",
+      "localFootprintBounds": "required in asset source coordinates; this is the contact/base footprint to scale against pixelBounds",
+      "rule": "Do not infer placement from the cropped bitmap bounds. The source asset must declare its own registration."
+    }
+  },
+  {
+    "id": "cover_three_quarter_x02_y02",
+    "kind": "cover",
+    "assetRole": "three_quarter_cover",
+    "label": "three-quarter cover object",
+    "source": "terrain three_quarter cover",
+    "cells": [
+      {
+        "x": 2,
+        "y": 2,
+        "altitude": 0
+      }
+    ],
+    "footprint": {
+      "minX": 2,
+      "minY": 2,
+      "maxX": 2,
+      "maxY": 2,
+      "widthCells": 1,
+      "heightCells": 1
+    },
+    "pixelBounds": {
+      "minX": 736,
+      "minY": 236,
+      "maxX": 864,
+      "maxY": 300
+    },
+    "anchorPixel": {
+      "x": 800,
+      "y": 300
+    },
+    "zIndex": 4,
+    "blocksMovement": true,
+    "emitsLight": false,
+    "assetPrompt": "placed_asset_prompts/cover_three_quarter_x02_y02.prompt.txt",
+    "assetPath": "placed_assets/cover_three_quarter_x02_y02.png",
+    "validation": [
+      "Asset base must fit the listed cells exactly.",
+      "Asset may visually rise upward, but its gameplay footprint may not expand.",
+      "No extra props or ground affordances outside the footprint."
+    ],
+    "assetRegistration": {
+      "required": true,
+      "localAnchorPixel": "required in asset source coordinates; this is the asset pixel that must land on anchorPixel",
+      "localFootprintBounds": "required in asset source coordinates; this is the contact/base footprint to scale against pixelBounds",
+      "rule": "Do not infer placement from the cropped bitmap bounds. The source asset must declare its own registration."
+    }
+  },
+  {
+    "id": "cover_three_quarter_x02_y03",
+    "kind": "cover",
+    "assetRole": "three_quarter_cover",
+    "label": "three-quarter cover object",
+    "source": "terrain three_quarter cover",
+    "cells": [
+      {
+        "x": 2,
+        "y": 3,
+        "altitude": 0
+      }
+    ],
+    "footprint": {
+      "minX": 2,
+      "minY": 3,
+      "maxX": 2,
+      "maxY": 3,
+      "widthCells": 1,
+      "heightCells": 1
+    },
+    "pixelBounds": {
+      "minX": 672,
+      "minY": 268,
+      "maxX": 800,
+      "maxY": 332
+    },
+    "anchorPixel": {
+      "x": 736,
+      "y": 332
+    },
+    "zIndex": 5,
+    "blocksMovement": true,
+    "emitsLight": false,
+    "assetPrompt": "placed_asset_prompts/cover_three_quarter_x02_y03.prompt.txt",
+    "assetPath": "placed_assets/cover_three_quarter_x02_y03.png",
+    "validation": [
+      "Asset base must fit the listed cells exactly.",
+      "Asset may visually rise upward, but its gameplay footprint may not expand.",
+      "No extra props or ground affordances outside the footprint."
+    ],
+    "assetRegistration": {
+      "required": true,
+      "localAnchorPixel": "required in asset source coordinates; this is the asset pixel that must land on anchorPixel",
+      "localFootprintBounds": "required in asset source coordinates; this is the contact/base footprint to scale against pixelBounds",
+      "rule": "Do not infer placement from the cropped bitmap bounds. The source asset must declare its own registration."
+    }
+  },
+  {
+    "id": "cover_half_x03_y05",
+    "kind": "cover",
+    "assetRole": "half_cover",
+    "label": "half-cover object",
+    "source": "terrain half cover",
+    "cells": [
+      {
+        "x": 3,
+        "y": 5,
+        "altitude": 0
+      }
+    ],
+    "footprint": {
+      "minX": 3,
+      "minY": 5,
+      "maxX": 3,
+      "maxY": 5,
+      "widthCells": 1,
+      "heightCells": 1
+    },
+    "pixelBounds": {
+      "minX": 608,
+      "minY": 364,
+      "maxX": 736,
+      "maxY": 428
+    },
+    "anchorPixel": {
+      "x": 672,
+      "y": 428
+    },
+    "zIndex": 8,
+    "blocksMovement": false,
+    "emitsLight": false,
+    "assetPrompt": "placed_asset_prompts/cover_half_x03_y05.prompt.txt",
+    "assetPath": "placed_assets/cover_half_x03_y05.png",
+    "validation": [
+      "Asset base must fit the listed cells exactly.",
+      "Asset may visually rise upward, but its gameplay footprint may not expand.",
+      "No extra props or ground affordances outside the footprint."
+    ],
+    "assetRegistration": {
+      "required": true,
+      "localAnchorPixel": "required in asset source coordinates; this is the asset pixel that must land on anchorPixel",
+      "localFootprintBounds": "required in asset source coordinates; this is the contact/base footprint to scale against pixelBounds",
+      "rule": "Do not infer placement from the cropped bitmap bounds. The source asset must declare its own registration."
+    }
+  },
+  {
+    "id": "cover_half_x02_y08",
+    "kind": "cover",
+    "assetRole": "half_cover",
+    "label": "half-cover object",
+    "source": "terrain half cover",
+    "cells": [
+      {
+        "x": 2,
+        "y": 8,
+        "altitude": 0
+      }
+    ],
+    "footprint": {
+      "minX": 2,
+      "minY": 8,
+      "maxX": 2,
+      "maxY": 8,
+      "widthCells": 1,
+      "heightCells": 1
+    },
+    "pixelBounds": {
+      "minX": 352,
+      "minY": 428,
+      "maxX": 480,
+      "maxY": 492
+    },
+    "anchorPixel": {
+      "x": 416,
+      "y": 492
+    },
+    "zIndex": 10,
+    "blocksMovement": false,
+    "emitsLight": false,
+    "assetPrompt": "placed_asset_prompts/cover_half_x02_y08.prompt.txt",
+    "assetPath": "placed_assets/cover_half_x02_y08.png",
+    "validation": [
+      "Asset base must fit the listed cells exactly.",
+      "Asset may visually rise upward, but its gameplay footprint may not expand.",
+      "No extra props or ground affordances outside the footprint."
+    ],
+    "assetRegistration": {
+      "required": true,
+      "localAnchorPixel": "required in asset source coordinates; this is the asset pixel that must land on anchorPixel",
+      "localFootprintBounds": "required in asset source coordinates; this is the contact/base footprint to scale against pixelBounds",
+      "rule": "Do not infer placement from the cropped bitmap bounds. The source asset must declare its own registration."
+    }
+  },
+  {
+    "id": "feature_1",
+    "kind": "custom_feature",
+    "assetRole": "blocking_feature",
+    "label": "A large tree, burning",
+    "source": "numbered feature 1",
+    "cells": [
+      {
+        "x": 7,
+        "y": 2,
+        "altitude": 4
+      },
+      {
+        "x": 8,
+        "y": 2,
+        "altitude": 4
+      },
+      {
+        "x": 7,
+        "y": 3,
+        "altitude": 4
+      },
+      {
+        "x": 8,
+        "y": 3,
+        "altitude": 4
+      }
+    ],
+    "footprint": {
+      "minX": 7,
+      "minY": 2,
+      "maxX": 8,
+      "maxY": 3,
+      "widthCells": 2,
+      "heightCells": 2
+    },
+    "pixelBounds": {
+      "minX": 992,
+      "minY": 396,
+      "maxX": 1248,
+      "maxY": 524
+    },
+    "anchorPixel": {
+      "x": 1120,
+      "y": 524
+    },
+    "zIndex": 11,
+    "blocksMovement": true,
+    "emitsLight": true,
+    "assetPrompt": "placed_asset_prompts/feature_1.prompt.txt",
+    "assetPath": "placed_assets/feature_1.png",
+    "validation": [
+      "Asset base must fit the listed cells exactly.",
+      "Asset may visually rise upward, but its gameplay footprint may not expand.",
+      "No extra props or ground affordances outside the footprint."
+    ],
+    "assetRegistration": {
+      "required": true,
+      "localAnchorPixel": "required in asset source coordinates; this is the asset pixel that must land on anchorPixel",
+      "localFootprintBounds": "required in asset source coordinates; this is the contact/base footprint to scale against pixelBounds",
+      "rule": "Do not infer placement from the cropped bitmap bounds. The source asset must declare its own registration."
+    }
+  }
+]

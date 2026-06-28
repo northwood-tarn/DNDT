@@ -88,10 +88,10 @@ export function applyCollisionDamage(snapshot, source, target, action, collision
   markDefeated(snapshot, source, target, hpBefore, log);
 }
 
-export function applyDamage(snapshot, source, target, action, dice, log, { critical = false } = {}) {
+export function applyDamage(snapshot, source, target, action, dice, log, { critical = false, attackRoll = null } = {}) {
   const rolled = rollActionDamage(source, action, dice, { critical });
   applyDamageAmount(snapshot, source, target, action, rolled, Math.max(0, rolled.total), dice, log);
-  applyDamageRiders(snapshot, source, target, action, dice, log, { critical });
+  applyDamageRiders(snapshot, source, target, action, dice, log, { critical, attackRoll });
   applyDamageRetaliation(snapshot, source, target, action, dice, log);
 }
 
@@ -140,6 +140,10 @@ function applyActionEffects(snapshot, actor, target, action, log, trigger, dice 
       applyForcedMovementEffect(snapshot, actor, target, action, effect, log, dice);
       continue;
     }
+    if (effect.type === "remove_conditions") {
+      applyRemoveConditionsEffect(snapshot, actor, target, action, effect, log);
+      continue;
+    }
     if (effect.type !== "condition" || !effect.condition) continue;
     const preventedBy = hasAuraConditionPrevention(snapshot, target, effect.condition, { source: actor, action });
     if (preventedBy) {
@@ -171,6 +175,26 @@ function applyActionEffects(snapshot, actor, target, action, log, trigger, dice 
       alreadyPresent: !added,
     });
     applyConditionSideEffects(snapshot, actor, target, action, effect.condition, log);
+  }
+}
+
+function applyRemoveConditionsEffect(snapshot, actor, target, action, effect, log) {
+  const conditions = Array.isArray(effect.conditions) ? effect.conditions : [];
+  const maxRemoved = Math.max(1, effect.maxRemoved || conditions.length || 1);
+  let removed = 0;
+  for (const condition of conditions) {
+    if (removed >= maxRemoved) break;
+    if (!removeCondition(target, condition)) continue;
+    removed += 1;
+    log.add("condition.removed", {
+      round: snapshot.round,
+      actorId: target.id,
+      actorName: target.name,
+      condition,
+      reason: action.name,
+      sourceId: actor.id,
+      sourceName: actor.name,
+    });
   }
 }
 
@@ -299,7 +323,7 @@ export function applyDamageAmount(snapshot, source, target, action, rolled, amou
   markDefeated(snapshot, source, target, hpBefore, log);
 }
 
-function applyDamageRiders(snapshot, source, target, action, dice, log, { critical = false } = {}) {
+function applyDamageRiders(snapshot, source, target, action, dice, log, { critical = false, attackRoll = null } = {}) {
   if (!dice || !isAttackRollAction(action)) return;
   for (const rider of action.damageRiders || []) {
     applyDamageRider(snapshot, source, target, rider, dice, log, { critical });
@@ -317,6 +341,8 @@ function applyDamageRiders(snapshot, source, target, action, dice, log, { critic
   for (const effect of source.activeEffects || []) {
     const rider = effect.damageRider;
     if (!rider || rider.trigger !== "source_hits_with_attack_roll") continue;
+    if (rider.requiresConditionOnTarget && !(target.conditions || []).some((condition) => condition.id === rider.requiresConditionOnTarget)) continue;
+    if (Array.isArray(rider.actionTags) && !rider.actionTags.every((tag) => action.tags?.[tag] === true)) continue;
     const result = applyDamageRider(snapshot, source, target, {
       id: `${effect.id}_rider`,
       name: `${effect.label || effect.id} rider`,
@@ -324,13 +350,13 @@ function applyDamageRiders(snapshot, source, target, action, dice, log, { critic
     }, dice, log, { critical });
     if (result.triggered) consumeActiveEffectRider(snapshot, source, effect, log);
   }
-  for (const rider of collectFeatureDamageRiders(source, target, action, { trigger: "source_hits_with_attack_roll", critical, snapshot })) {
+  for (const rider of collectFeatureDamageRiders(source, target, action, { trigger: "source_hits_with_attack_roll", critical, snapshot, attackRoll })) {
     if (applyDamageRider(snapshot, source, target, rider, dice, log, { critical, sourceAction: action }).triggered) {
       markFeatureDamageRiderUsed(source, rider);
     }
   }
   if ((target.conditions || []).some((condition) => condition.id === "surprised")) {
-    for (const rider of collectFeatureDamageRiders(source, target, action, { trigger: "source_hits_surprised_target", critical, snapshot })) {
+    for (const rider of collectFeatureDamageRiders(source, target, action, { trigger: "source_hits_surprised_target", critical, snapshot, attackRoll })) {
       if (applyDamageRider(snapshot, source, target, rider, dice, log, { critical, sourceAction: action }).triggered) {
         markFeatureDamageRiderUsed(source, rider);
       }
@@ -365,7 +391,34 @@ function applyDamageRider(snapshot, source, target, rider, dice, log, { critical
     damageType: resolveRiderDamageType(sourceAction, rider),
     featureDamageRider: rider.featureDamageRider === true,
   }, rolled, amount, dice, log);
+  applySplashConditionDamage(snapshot, source, target, rider, rolled, amount, dice, log, sourceAction);
+  if (Array.isArray(rider.effects) && rider.effects.length) {
+    applyActionEffects(snapshot, source, target, {
+      id: rider.id,
+      name: rider.name,
+      spellSaveDC: sourceAction?.spellSaveDC,
+      effects: rider.effects,
+    }, log, "hit", dice);
+  }
   return { triggered: true, applied: amount > 0 };
+}
+
+function applySplashConditionDamage(snapshot, source, primaryTarget, rider, rolled, amount, dice, log, sourceAction) {
+  if (!rider.splashCondition || amount <= 0) return;
+  const targets = (snapshot.actors || [])
+    .filter((actor) => actor.id !== primaryTarget.id && actor.hp > 0)
+    .filter((actor) => (actor.conditions || []).some((condition) =>
+      condition.id === rider.splashCondition && (!condition.sourceActorId || condition.sourceActorId === source.id)
+    ));
+  for (const target of targets) {
+    applyDamageAmount(snapshot, source, target, {
+      id: `${rider.id}_splash`,
+      name: rider.name,
+      damage: rider.damage,
+      damageType: resolveRiderDamageType(sourceAction, rider),
+      featureDamageRider: rider.featureDamageRider === true,
+    }, rolled, amount, dice, log);
+  }
 }
 
 function consumeActiveEffectRider(snapshot, source, effect, log) {
@@ -397,11 +450,12 @@ function applyDamageRetaliation(snapshot, source, target, action, dice, log) {
     const retaliation = condition.damageRetaliation;
     if (!retaliation || retaliation.trigger !== "hit_by_melee") continue;
     if (retaliation.requiresTempHp && !(target._tempHpBeforeLastDamage > 0)) continue;
-    const rolled = dice.rollDamage(retaliation.damage);
+    const damage = resolveRiderDamageFormula(target, retaliation.damage);
+    const rolled = dice.rollDamage(damage);
     applyDamageAmount(snapshot, target, source, {
       id: `${condition.sourceActionId}_retaliation`,
       name: `${conditionName(condition.id)} retaliation`,
-      damage: retaliation.damage,
+      damage,
       damageType: retaliation.damageType || "untyped",
     }, rolled, Math.max(0, rolled.total), dice, log);
   }

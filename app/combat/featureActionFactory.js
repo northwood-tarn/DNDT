@@ -5,63 +5,99 @@ export function createFeatureActionsFromFeatures(features = [], context = {}) {
 }
 
 export function createFeatureAction(feature, option, context = {}) {
-  const resource = option.resourceId
-    ? (context.resources || []).find((item) => item.id === option.resourceId)
+  const resolvedOption = resolveContextualOption(option, context);
+  const resourceId = resolvedOption.resourceId || inferredResourceId(resolvedOption, context);
+  const resource = resourceId
+    ? (context.resources || []).find((item) => item.id === resourceId)
     : null;
   const base = {
-    id: option.id,
-    name: option.name || feature.name,
-    cost: actionTypeToCost(option.actionType),
-    requiresTarget: option.requiresTarget === true,
-    resourceId: option.resourceId || null,
+    id: resolvedOption.id,
+    name: resolvedOption.name || feature.name,
+    cost: actionTypeToCost(resolvedOption.actionType),
+    requiresTarget: resolvedOption.requiresTarget === true,
+    resourceId,
     uses: resource ? { max: resource.max, remaining: resource.current ?? resource.max, recovery: resource.recovery } : null,
-    description: option.description || feature.description || "",
+    description: resolvedOption.description || feature.description || "",
     tags: {
       feature: true,
-      harmful: option.harmful === true || option.targetFilter?.team === "enemies" || Boolean(option.damage || option.damageByTargetProperty),
-      ...(Array.isArray(option.tags) ? Object.fromEntries(option.tags.map((tag) => [tag, true])) : {}),
-      ...(option.tags && !Array.isArray(option.tags) && typeof option.tags === "object" ? option.tags : {}),
+      harmful: resolvedOption.harmful === true || resolvedOption.targetFilter?.team === "enemies" || Boolean(resolvedOption.damage || resolvedOption.damageByTargetProperty),
+      ...(Array.isArray(resolvedOption.tags) ? Object.fromEntries(resolvedOption.tags.map((tag) => [tag, true])) : {}),
+      ...(resolvedOption.tags && !Array.isArray(resolvedOption.tags) && typeof resolvedOption.tags === "object" ? resolvedOption.tags : {}),
     },
   };
-  if (option.healingFormula) {
+  if (resolvedOption.healingFormula) {
     return {
       ...base,
       type: "self_heal",
       requiresTarget: false,
-      healing: resolveFormula(option.healingFormula, context),
+      healing: resolveFormula(resolvedOption.healingFormula, context),
     };
   }
-  if (option.actionKind === "dash") return { ...base, type: "dash", requiresTarget: false };
-  if (option.actionKind === "dodge") return { ...base, type: "dodge", requiresTarget: false };
-  if (option.actionKind === "push") {
+  if (resolvedOption.actionKind === "dash") return { ...base, type: "dash", requiresTarget: false };
+  if (resolvedOption.actionKind === "dodge") return { ...base, type: "dodge", requiresTarget: false };
+  if (resolvedOption.actionKind === "disengage") return { ...base, type: "feature_action", actionKind: "disengage", requiresTarget: false };
+  if (resolvedOption.actionKind === "hide") return { ...base, type: "feature_action", actionKind: "hide", requiresTarget: false };
+  if (resolvedOption.teleportFt && !(resolvedOption.createsCombatObject || resolvedOption.object)) {
+    return {
+      ...base,
+      type: "spell_teleport",
+      requiresTarget: true,
+      range: feetToSquares(resolvedOption.teleportFt),
+      requiresSight: resolvedOption.requiresSight === true,
+      targeting: {
+        shape: "radius",
+        radiusSquares: feetToSquares(resolvedOption.teleportFt),
+        radiusFt: resolvedOption.teleportFt,
+      },
+    };
+  }
+  if (resolvedOption.actionKind === "push") {
     return {
       ...base,
       type: "push",
       requiresTarget: true,
-      range: feetToSquares(option.rangeFt ?? option.range ?? 5),
-      distanceSquares: feetToSquares(option.distanceFt ?? option.distance ?? 5),
-      collisionDamage: option.collisionDamage || "1d4",
-      collisionDamageType: option.collisionDamageType || "bludgeoning",
-      requirement: structuredClone(option.requirement || option.requirements || null),
+      range: feetToSquares(resolvedOption.rangeFt ?? resolvedOption.range ?? 5),
+      distanceSquares: feetToSquares(resolvedOption.distanceFt ?? resolvedOption.distance ?? 5),
+      collisionDamage: resolvedOption.collisionDamage || "1d4",
+      collisionDamageType: resolvedOption.collisionDamageType || "bludgeoning",
+      requirement: structuredClone(resolvedOption.requirement || resolvedOption.requirements || null),
     };
   }
   return {
     ...base,
     type: "feature_action",
-    range: feetToSquares(option.rangeFt ?? option.range ?? 0),
-    saveAbility: normalizeAbility(option.save?.ability || option.saveAbility),
-    spellSaveDC: resolveFeatureSaveDc(option, context),
-    damage: resolveFormula(option.damage?.dice || option.damage, context),
-    damageType: option.damage?.type || option.damageType || null,
-    damageTypeChoices: structuredClone(option.damageTypeChoices || null),
-    damageByTargetProperty: structuredClone(option.damageByTargetProperty || null),
-    targeting: structuredClone(option.targeting || null),
-    targetFilter: structuredClone(option.targetFilter || null),
-    save: structuredClone(option.save || null),
-    economyGrant: structuredClone(option.economyGrant || null),
-    mark: structuredClone(option.mark || null),
-    object: structuredClone(option.createsCombatObject || option.object || null),
-    effects: structuredClone(option.effects || []),
+    actionKind: resolvedOption.actionKind || null,
+    requiresTarget: resolvedOption.actionKind === "basic_weapon_attack" || resolvedOption.targeting?.shape ? true : base.requiresTarget,
+    range: feetToSquares(resolvedOption.rangeFt ?? resolvedOption.range ?? 0),
+    saveAbility: normalizeAbility(resolvedOption.save?.ability || resolvedOption.saveAbility),
+    spellSaveDC: resolveFeatureSaveDc(resolvedOption, context),
+    damage: resolveDamage(resolvedOption, context),
+    damageType: resolvedOption.damage?.type || resolvedOption.damageType || null,
+    damageTypeChoices: structuredClone(resolvedOption.damageTypeChoices || null),
+    reactionPolicy: structuredClone(resolvedOption.reactionPolicy || null),
+    teleportFt: resolvedOption.teleportFt || null,
+    requiresSight: resolvedOption.requiresSight === true,
+    temporaryHpFormula: resolvedOption.temporaryHpFormula ? resolveFormula(resolvedOption.temporaryHpFormula, context) : null,
+    grantsDash: resolvedOption.grantsDash === true,
+    pactWeaponDamageBonus: structuredClone(resolvedOption.pactWeaponDamageBonus || null),
+    activeEffectOnResolve: structuredClone(resolvedOption.activeEffectOnResolve || null),
+    selfCondition: structuredClone(resolvedOption.selfCondition || null),
+    damageByTargetProperty: structuredClone(resolvedOption.damageByTargetProperty || null),
+    targeting: structuredClone(resolvedOption.targeting || null),
+    selfCenteredArea: resolvedOption.targeting?.mode === "nearby_actors" || null,
+    targetFilter: structuredClone(resolvedOption.targetFilter || null),
+    save: structuredClone(resolvedOption.save || null),
+    duration: structuredClone(resolvedOption.duration || null),
+    deviceEffect: structuredClone(resolvedOption.deviceEffect || null),
+    economyGrant: structuredClone(resolvedOption.economyGrant || null),
+    resourceRestore: structuredClone(resolvedOption.resourceRestore || null),
+    additionalResourceIds: structuredClone(resolvedOption.additionalResourceIds || []),
+    deviceRig: structuredClone(resolvedOption.deviceRig || null),
+    restoresResource: resolvedOption.restoresResource || null,
+    amount: resolvedOption.amount || null,
+    mark: structuredClone(resolvedOption.mark || null),
+    object: structuredClone(resolvedOption.createsCombatObject || resolvedOption.object || null),
+    effects: structuredClone(resolvedOption.effects || []),
   };
 }
 
@@ -88,6 +124,41 @@ function resolveFormula(formula, context) {
 function resolveFeatureSaveDc(option, context) {
   if (typeof context.resolveSaveDc === "function") return context.resolveSaveDc(option);
   return option.save?.dc || option.spellSaveDC || null;
+}
+
+function resolveContextualOption(option, context) {
+  const variants = option.variantsByLineage?.[context.lineageId] || option.variantsBySpecies?.[context.speciesId] || null;
+  if (!variants) return option;
+  return mergeOption(option, variants);
+}
+
+function mergeOption(base, variant) {
+  const merged = { ...base, ...variant };
+  if (base.save || variant.save) merged.save = { ...(base.save || {}), ...(variant.save || {}) };
+  if (base.targeting || variant.targeting) merged.targeting = { ...(base.targeting || {}), ...(variant.targeting || {}) };
+  if (base.targetFilter || variant.targetFilter) merged.targetFilter = { ...(base.targetFilter || {}), ...(variant.targetFilter || {}) };
+  if (base.tags || variant.tags) merged.tags = mergeTags(base.tags, variant.tags);
+  if (base.effects || variant.effects) merged.effects = [...(base.effects || []), ...(variant.effects || [])];
+  return merged;
+}
+
+function mergeTags(base, variant) {
+  if (Array.isArray(base) || Array.isArray(variant)) return [...(base || []), ...(variant || [])];
+  return { ...(base || {}), ...(variant || {}) };
+}
+
+function inferredResourceId(option, context) {
+  return (context.resources || []).some((resource) => resource.id === option.id) ? option.id : null;
+}
+
+function resolveDamage(option, context) {
+  const dice = option.damage?.dice || option.damage;
+  const base = resolveFormula(dice, context);
+  const additions = (option.damageScaling || [])
+    .filter((entry) => !Number.isFinite(entry.minLevel) || (context.level || 1) >= entry.minLevel)
+    .map((entry) => resolveFormula(entry.add, context))
+    .filter(Boolean);
+  return [base, ...additions].filter(Boolean).join("+") || null;
 }
 
 function normalizeAbility(ability) {

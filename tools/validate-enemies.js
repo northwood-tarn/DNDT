@@ -6,6 +6,8 @@ import url from "node:url";
 import { weapons } from "../app/data/weapons.js";
 import { WEAPON_MASTERY_IDS } from "../app/data/weaponMasteries.js";
 import { AI_PROFILE_IDS } from "../app/combat/aiProfiles.js";
+import { validateCombatAction } from "../app/combat/actionSchema.js";
+import { compileEnemyActions, validateEnemyActionRefs } from "../app/combat/enemyActionCompiler.js";
 
 const DEFAULT_ENEMIES_PATH = "app/data/enemies.js";
 
@@ -172,11 +174,26 @@ function validateEnemyRecord(errors, enemy, key) {
   validateString(errors, id, "aiProfile", enemy.aiProfile);
   if (enemy.aiProfile && !VALID_AI_PROFILES.has(enemy.aiProfile)) fail(errors, id, `aiProfile must be one of: ${Array.from(VALID_AI_PROFILES).join(", ")}`);
   validateAttackSource(errors, enemy);
-  validateOptionalArrays(errors, enemy, ["tags", "resources", "features", "featureHooks", "activeEffects", "auras", "marks", "resistances", "immunities", "conditionImmunities"]);
+  validateOptionalArrays(errors, enemy, ["tags", "resources", "features", "featureHooks", "activeEffects", "auras", "marks", "resistances", "immunities", "conditionImmunities", "actionRefs"]);
   validateEnemyFeatureSurfaces(errors, enemy);
+  validateEnemyActionSurface(errors, enemy);
   validateAwareness(errors, enemy);
   validateSaves(errors, enemy);
   validateLoot(errors, enemy);
+}
+
+function validateEnemyActionSurface(errors, enemy) {
+  const id = enemy?.id || "<unknown>";
+  for (const error of validateEnemyActionRefs(enemy)) fail(errors, id, error);
+  const actions = compileEnemyActions(enemy);
+  if (!actions.length) fail(errors, id, "action compiler must emit at least one action");
+  const resourceIds = new Set((enemy.resources || []).map(resource => resource.id));
+  for (const action of actions) {
+    for (const error of validateCombatAction(action)) fail(errors, id, `compiled action ${action.id}: ${error}`);
+    for (const resourceId of [action.resourceId, ...(action.additionalResourceIds || [])].filter(Boolean)) {
+      if (!resourceIds.has(resourceId)) fail(errors, id, `compiled action ${action.id} references missing resource: ${resourceId}`);
+    }
+  }
 }
 
 function validateOptionalArrays(errors, enemy, fields) {

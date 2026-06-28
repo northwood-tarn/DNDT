@@ -41,6 +41,7 @@ export async function runScenarioCombatTests() {
     validateScenarioBaseline(createCombatScenario(option.id), option.id);
   }
   testDefaultScenarioContract();
+  testBacklandsFieldPlateauStageScenario();
   testGeneratedCharacterArenaContract();
   testGeneratedCharacterArenaUsesSavedCharacterRecord();
   testCombatLifecycleLoadsSavedCharacterForGeneratedArena();
@@ -162,6 +163,43 @@ function testDefaultScenarioContract() {
   const scenario = createCombatScenario();
   assert.equal(scenario.id, "generated-character-arena", "generated character arena should be the default combat scenario");
   validateScenarioBaseline(scenario, "default scenario contract");
+}
+
+function testBacklandsFieldPlateauStageScenario() {
+  const scenario = createCombatScenario("backlands-field-plateau-01", { diceSeed: "backlands-test" });
+  validateScenarioBaseline(scenario, "backlands-field-plateau-01 contract");
+  const snapshot = createSnapshotFromScenario(scenario);
+  const actorPositions = scenario.actors.map((actor) => keyOf(actor.position));
+  const presentation = scenario.metadata.presentation;
+
+  assert.equal(snapshot.grid.width, 16, "backlands field grid width should match authored metadata");
+  assert.equal(snapshot.grid.height, 11, "backlands field grid height should match authored metadata");
+  assert.equal(snapshot.grid.blocked.size, 22, "backlands field blocked cells should be derived from final passability");
+  assert.equal(snapshot.actors.length, 6, "backlands field scenario should start as 3-vs-3");
+  assert.equal(new Set(actorPositions).size, 6, "backlands field actor positions should be unique");
+  for (const actor of snapshot.actors) {
+    assert.equal(isMovementBlocked(snapshot.grid, actor.position), false, `${actor.id} should start on passable terrain`);
+  }
+  assert.equal(
+    presentation.backgroundImage,
+    "../visual_spike/assets/generated_map_tests/backlands_field_plateau_01_process_01/greyharbour_empty_field_river_hint_01.png",
+    "backlands field scenario should use the generated map image"
+  );
+  assert.equal(presentation.visualGround, "stage_image", "backlands field scenario should render over a stage image");
+  assert.equal(presentation.gridProjection.kind, "stage_metadata", "backlands field scenario should use fixed stage projection");
+  assert.equal(presentation.stage.grid.origin.x, 960, "backlands field authored grid origin x should remain cell center metadata");
+  assert.equal(presentation.stage.grid.origin.y, 120, "backlands field authored grid origin y should remain cell center metadata");
+  assert.equal(presentation.gridProjection.origin.x, 960, "backlands field projection origin x should match cell top vertex");
+  assert.equal(presentation.gridProjection.origin.y, 88, "backlands field projection origin y should shift to cell top vertex");
+  assert.equal(presentation.actorMiniatures.enabled, true, "backlands field scenario should render projected actor figurines");
+  assert.ok(
+    presentation.actorMiniatures.assets.fighter.endsWith("protagonist_staff_guard_miniature_base_gold_runtime_192x320.png"),
+    "backlands fighter should use a perspective miniature asset"
+  );
+  assert.ok(
+    presentation.actorMiniatures.assets.enemies.endsWith("shadow_enemy_crop.png"),
+    "backlands enemies should use a perspective enemy miniature asset"
+  );
 }
 
 function testGeneratedCharacterArenaContract() {
@@ -311,10 +349,38 @@ function testGeneratedEncounterArenaContract() {
 
   const boneGuard = createCombatScenario("generated-encounter-bone-guard");
   const shadowHounds = createCombatScenario("generated-encounter-shadow-hounds");
+  const levelSevenTrial = createCombatScenario("generated-encounter-level-7-team-trial");
+  const levelSevenCasterTrial = createCombatScenario("generated-encounter-level-7-caster-trial");
   validateScenarioBaseline(boneGuard, "generated-encounter-bone-guard contract");
   validateScenarioBaseline(shadowHounds, "generated-encounter-shadow-hounds contract");
+  validateScenarioBaseline(levelSevenTrial, "generated-encounter-level-7-team-trial contract");
+  validateScenarioBaseline(levelSevenCasterTrial, "generated-encounter-level-7-caster-trial contract");
   assert.equal(boneGuard.encounterId, "combat_bone_guard", "bone guard scenario should load the configured encounter");
   assert.equal(shadowHounds.encounterId, "combat_shadow_hounds", "shadow hounds scenario should load the configured encounter");
+  assert.equal(levelSevenTrial.actors.filter((actor) => actor.team === "heroes").length, 3, "level 7 trial should include the PC and two companions");
+  assert.equal(levelSevenTrial.actors.find((actor) => actor.id === "generated_pc")?.level, 7, "level 7 trial should use a level 7 PC");
+  assert.deepEqual(
+    levelSevenCasterTrial.actors.filter((actor) => actor.team === "heroes").map((actor) => actor.className),
+    ["Wizard / Dirt Wizard", "Warlock / The Lantern / Pact of the Tome", "Paladin / Oath of Glory"],
+    "caster trial should include resolved canonical wizard, warlock, and paladin builds"
+  );
+  assert.ok(
+    levelSevenCasterTrial.actors.find((actor) => actor.id === "generated_pc")?.actions.some((action) => action.id === "fireball"),
+    "caster trial wizard should expose resolved area spell testing"
+  );
+  assert.ok(
+    levelSevenCasterTrial.actors.find((actor) => actor.id === "npc_warlock")?.actions.some((action) => action.id === "hex"),
+    "caster trial warlock should expose resolved bonus-action spell testing"
+  );
+  assert.ok(
+    levelSevenCasterTrial.actors.find((actor) => actor.id === "npc_paladin")?.actions.some((action) => action.id === "bless"),
+    "caster trial paladin should expose resolved party buff testing"
+  );
+  assert.equal(
+    levelSevenCasterTrial.actors.filter((actor) => actor.team === "heroes").every((actor) => actor.metadata?.source === "resolved_character_sheet"),
+    true,
+    "caster trial heroes should be emitted from resolved character sheets"
+  );
 }
 
 async function testGeneratedEncounterTemplateSmokeTurns() {
@@ -466,19 +532,31 @@ function testScenarioRegistryIsCanonical() {
   assert.deepEqual(
     options.map((scenario) => scenario.id),
     [
+      "generated-empty-arena",
+      "dockside-stage-grid",
+      "backlands-field-plateau-01",
+      "trench-ramp-live-test",
       "generated-character-arena",
       "generated-wizard-shield-arena",
       "generated-encounter-goblin-skirmish",
       "generated-encounter-bone-guard",
       "generated-encounter-shadow-hounds",
+      "generated-encounter-level-7-team-trial",
+      "generated-encounter-level-7-caster-trial",
     ],
-    "only generated-character arenas should be exposed through the combat scenario registry"
+    "combat preview scenarios should be exposed through the combat scenario registry"
   );
   assert.deepEqual(
     options.map((scenario) => scenario.group),
     [
       "Generated Character Tests",
+      "Stage Geometry Tests",
+      "Stage Geometry Tests",
+      "Stage Geometry Tests",
+      "Generated Character Tests",
       "Reaction Tests",
+      "Encounter Templates",
+      "Encounter Templates",
       "Encounter Templates",
       "Encounter Templates",
       "Encounter Templates",

@@ -1,5 +1,6 @@
 import { createEncounterCombatScenario } from "../encounterScenario.js";
 import { getGeneratedEncounterScenarioConfig } from "./generatedEncounterScenarioConfigs.js";
+import { createTrialParty } from "./trialParties.js";
 
 export function createGeneratedEncounterArenaScenario(idOrOptions = {}, maybeOptions = {}) {
   const requestedId = typeof idOrOptions === "string" ? idOrOptions : idOrOptions.id;
@@ -7,9 +8,11 @@ export function createGeneratedEncounterArenaScenario(idOrOptions = {}, maybeOpt
   const config = getGeneratedEncounterScenarioConfig(requestedId) || getGeneratedEncounterScenarioConfig("generated-encounter-goblin-skirmish");
   const variantId = options.variantId || config.variantId;
   const encounterId = options.encounterId || config.encounterId;
+  const heroes = config.partyPreset ? createTrialParty(config.partyPreset) : options.heroes;
   const scenario = createEncounterCombatScenario(encounterId, {
     id: config.id,
     ...options,
+    heroes,
     fallbackVariantId: variantId,
     heroPositions: [options.heroPosition || config.heroPosition],
   });

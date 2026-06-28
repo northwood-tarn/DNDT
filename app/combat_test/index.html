@@ -18,9 +18,17 @@
           </div>
           <div class="controls">
             <select id="scenarioSelect" aria-label="Combat scenario"></select>
+            <label class="tilt-toggle">
+              <input id="tiltShiftToggle" type="checkbox" checked>
+              <span>Tilt</span>
+            </label>
             <button id="diceToggle" type="button">Deterministic Dice</button>
             <button id="resetButton" type="button">Reset</button>
           </div>
+        </div>
+        <div class="board-rotate-controls" aria-label="Rotate combat map">
+          <button id="rotateBoardLeft" class="rotate-board-button" type="button" title="Rotate map left">↶</button>
+          <button id="rotateBoardRight" class="rotate-board-button" type="button" title="Rotate map right">↷</button>
         </div>
         <div id="grid" class="grid" aria-label="Combat grid"></div>
         <div class="command-row">

@@ -1,0 +1,121 @@
+{
+  "stageId": "dockside_gridfirst_stage_v1",
+  "status": "draft_grid_validation",
+  "image": {
+    "runtimePlate": "dockside_gridfirst_stage_v1_grid_preview.png",
+    "sourcePlate": "dockside_gridfirst_stage_v1_source.png",
+    "width": 1920,
+    "height": 1080
+  },
+  "grid": {
+    "projection": "isometric_square",
+    "tileWidth": 128,
+    "tileHeight": 64,
+    "origin": { "x": 900, "y": 250 },
+    "width": 11,
+    "height": 8,
+    "coordinateRule": "x increases down-right; y increases down-left"
+  },
+  "walkable": {
+    "bounds": [
+      { "x": 0, "y": 0, "w": 11, "h": 8 }
+    ],
+    "notes": "Draft assumes the visible 11x8 lattice is available before blockers are applied. Validate edge cells against final art before promotion."
+  },
+  "blocked": [
+    { "x": 5, "y": 0, "kind": "shrine_base" },
+    { "x": 6, "y": 0, "kind": "shrine_base" },
+    { "x": 0, "y": 1, "kind": "rail_or_post" },
+    { "x": 10, "y": 1, "kind": "upper_wall" },
+    { "x": 9, "y": 2, "kind": "candle_blocker" },
+    { "x": 0, "y": 5, "kind": "dock_post" },
+    { "x": 10, "y": 6, "kind": "broken_edge" }
+  ],
+  "cover": [
+    { "x": 2, "y": 2, "kind": "half", "source": "low stone edge" },
+    { "x": 7, "y": 3, "kind": "half", "source": "rubble" },
+    { "x": 3, "y": 5, "kind": "half", "source": "dock crates/posts" },
+    { "x": 8, "y": 5, "kind": "half", "source": "broken stone edge" }
+  ],
+  "elevation": [
+    {
+      "id": "upper_platform",
+      "cells": [
+        { "x": 7, "y": 0 },
+        { "x": 8, "y": 0 },
+        { "x": 9, "y": 0 },
+        { "x": 7, "y": 1 },
+        { "x": 8, "y": 1 },
+        { "x": 9, "y": 1 }
+      ],
+      "heightFt": 5
+    }
+  ],
+  "stairs": [
+    {
+      "id": "upper_platform_stairs",
+      "fromElevation": 0,
+      "toElevation": 5,
+      "cells": [
+        { "x": 7, "y": 2 },
+        { "x": 8, "y": 2 }
+      ],
+      "notes": "Stair band is expected to occupy one tile depth. Validate after final art pass."
+    }
+  ],
+  "interactables": [
+    {
+      "id": "dockside_shrine_lantern",
+      "cell": { "x": 5, "y": 0 },
+      "blocksMovement": true,
+      "notes": "Visual blocker and possible encounter object."
+    }
+  ],
+  "spawns": {
+    "defaultHeroSpawns": [
+      { "x": 1, "y": 6 },
+      { "x": 2, "y": 6 },
+      { "x": 1, "y": 7 },
+      { "x": 2, "y": 7 }
+    ],
+    "defaultEnemySpawns": [
+      { "x": 8, "y": 1 },
+      { "x": 9, "y": 1 },
+      { "x": 8, "y": 3 },
+      { "x": 9, "y": 3 }
+    ],
+    "namedZones": {
+      "dock_entry": [
+        { "x": 1, "y": 6 },
+        { "x": 2, "y": 6 },
+        { "x": 1, "y": 7 },
+        { "x": 2, "y": 7 }
+      ],
+      "upper_platform": [
+        { "x": 7, "y": 0 },
+        { "x": 8, "y": 0 },
+        { "x": 9, "y": 0 },
+        { "x": 8, "y": 1 },
+        { "x": 9, "y": 1 }
+      ],
+      "ambush_right": [
+        { "x": 9, "y": 3 },
+        { "x": 10, "y": 3 },
+        { "x": 9, "y": 4 }
+      ],
+      "center_scrum": [
+        { "x": 4, "y": 3 },
+        { "x": 5, "y": 3 },
+        { "x": 5, "y": 4 },
+        { "x": 6, "y": 4 }
+      ]
+    }
+  },
+  "validationNotes": [
+    "This is a first grid-validation pass, not final collision truth.",
+    "Grid and metadata use canonical 128x64 diamonds.",
+    "Origin adjusted to { x: 900, y: 250 } after visual read of the generated grid preview.",
+    "Review dockside_gridfirst_stage_v1_validation_overlay.svg against the preview before promoting this stage.",
+    "Create clean art and collision preview companions after art approval."
+  ]
+}

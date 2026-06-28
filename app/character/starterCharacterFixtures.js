@@ -23,6 +23,17 @@ const STARTER_CHARACTER_VARIANT_SPECS = {
       { type: "spells", value: { knownSpellIds: ["fire_bolt"], preparedSpellIds: ["magic_missile", "shield"] } },
     ],
   },
+  warlock: {
+    id: "warlock",
+    name: "Generated Warlock",
+    role: "warlock",
+    steps: [
+      { type: "identity", value: { characterName: "Generated Warlock", level: 1, backgroundId: "guide", speciesId: "tiefling", lineageId: "chthonic", classId: "warlock" } },
+      { type: "abilities", value: { strength: 8, dexterity: 14, constitution: 14, intelligence: 10, wisdom: 10, charisma: 16 } },
+      { type: "gear", value: { weaponIds: ["quarterstaff"], armorId: "leather", shieldId: null, inventory: [{ id: "healing_potion", qty: 1 }], attunedItemIds: [] } },
+      { type: "spells", value: { knownSpellIds: ["eldritch_blast", "mage_hand", "hex", "armor_of_agathys"], preparedSpellIds: [] } },
+    ],
+  },
   cleric: {
     id: "cleric",
     name: "Generated Cleric",

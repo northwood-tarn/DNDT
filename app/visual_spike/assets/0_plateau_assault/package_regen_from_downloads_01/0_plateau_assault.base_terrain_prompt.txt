@@ -1,0 +1,97 @@
+Generate the BASE TERRAIN ONLY for "0 Plateau Assault" as a 1920 x 1080 combat battlefield PNG.
+
+INPUTS
+
+1. BASE TERRAIN CONTROL IMAGE: 0_plateau_assault.base_terrain_control.png
+2. ALTITUDE CONTROL IMAGE: 0_plateau_assault.altitude_control.png
+3. SOURCE METADATA: 0_plateau_assault.grid.json
+4. PLACED ITEM CONTRACTS: 0_plateau_assault.placed_items.json
+
+PURPOSE
+
+This image is only the underlying terrain plate. It must establish the battlefield form: low ground, high ground, cliffs, voids, slope routes, and broad walkable surfaces. It must not contain tactical placed items. Placed items are generated separately and composited later.
+
+IMPORTANT IMAGE-GENERATION METHOD
+
+Use the base terrain control image as the source geometry. The final terrain may be painterly, organic, and styled, but the source masks are not optional references. They are the layout contract.
+
+The control image defines exact region ownership: walkable low ground, upper plateau, slopes, blocked void/cliff mass, and reserved placed-item footprints. Repaint these masks; do not redraw, move, widen, shrink, rotate, or reinterpret them. Organic edges, cracks, grime, lighting, and material texture must live inside the authored masks unless the grid metadata itself changes.
+
+CONTROL LEGEND
+
+Dark/black cells: blocked cliff, void, or non-walkable mass.
+Pale green cells: ordinary walkable low ground.
+Muted tan cells: upper walkable plateau.
+Green route cells: traversable slope/ramp.
+Purple cells: reserved footprints for later placed assets. Leave these areas visually clear and compatible with their surrounding terrain. Do not draw the asset there.
+
+ALTITUDE RULES
+
+Dark green/grey indicates low ground. Increasing tan/orange indicates higher ground. White strokes indicate height-change edges. The +4 area is the high plateau. R cells are the sloped paths. Blank/blocked cells between low ground and plateau are the sheer cliff face and must not read as floor.
+
+BASE-TERRAIN RULES
+
+1. Draw terrain, altitude, slopes, cliff faces, voids, and ambient darkness only.
+2. Do not draw trees, cover columns, lamps, NPCs, doors, chests, traps, bodies, ladders, stairs, bridges, or other placed objects.
+3. Reserved footprints must stay open enough for later compositing, but they must not remain visibly purple or rectangular in the final image.
+4. Reserved footprints should become ordinary bare ground matching their terrain/altitude context, with no object silhouette.
+5. Do not add unmarked props that could imply cover, blockers, interactables, climb routes, lights, or transitions.
+6. The terrain must feel like a coherent dark fantasy battlefield rather than a visible grid, but it must still preserve the exact authored masks.
+7. Preserve the exact cliff/void locations, slope routes, reserved spaces, and altitude relationships.
+8. Favor the organic cliff-and-field language of a painted battlefield through texture, value, silhouette treatment inside masks, and lighting, not by changing the masks.
+
+GRID-DERIVED TERRAIN LAYOUT
+
+y\x  00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+00   .  .  .  R  R  R  R  R  R  R  R  R  R  .  .  .
+01   .  .  *  .                          .  .  .  .
+02   .  .  *  .           *  *  .  .  .  .  .  .  .
+03   .  .  *  .           *  *  .  .  .  .  .  .  .
+04   .  .  .  .           .  .  .  .  .  .  .  .  .
+05   .  .  .  *           .  .  .  .  .  .         
+06   .  .  .  .           .  .  .  .  .            
+07   .  .  .  .           .  .  .  .  .  .  .  .   
+08   .  .  *  .           .  .  .  .  .  .  .  .   
+09   .  .  .  .                          R  .  .   
+10   .  .  .  R  R  R  R  R  R  R  R  R  R         
+
+ALTITUDE
+
+y\x  00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+00    0  0  0  0 +1 +1 +1 +2 +2 +2 +3 +3 +4 +4 +4 +4
+01    0  0  0  0  0  0  0  0  0  0  0  0 +4 +4 +4 +4
+02    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+03    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+04    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+05    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+06    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+07    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+08    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+09    0  0  0  0  0  0  0  0  0  0  0  0 +4 +4 +4 +4
+10    0  0  0  0 +1 +1 +1 +2 +3 +3 +3 +3 +3 +4 +4 +4
+
+RESERVED PLACED-ITEM FOOTPRINTS
+
+- cover_three_quarter_x02_y01: three-quarter cover object; role three_quarter_cover; cells x02 y01; asset prompt placed_asset_prompts/cover_three_quarter_x02_y01.prompt.txt.
+- cover_three_quarter_x02_y02: three-quarter cover object; role three_quarter_cover; cells x02 y02; asset prompt placed_asset_prompts/cover_three_quarter_x02_y02.prompt.txt.
+- cover_three_quarter_x02_y03: three-quarter cover object; role three_quarter_cover; cells x02 y03; asset prompt placed_asset_prompts/cover_three_quarter_x02_y03.prompt.txt.
+- cover_half_x03_y05: half-cover object; role half_cover; cells x03 y05; asset prompt placed_asset_prompts/cover_half_x03_y05.prompt.txt.
+- cover_half_x02_y08: half-cover object; role half_cover; cells x02 y08; asset prompt placed_asset_prompts/cover_half_x02_y08.prompt.txt.
+- feature_1: A large tree, burning; role blocking_feature; cells x07 y02, x08 y02, x07 y03, x08 y03; asset prompt placed_asset_prompts/feature_1.prompt.txt.
+
+IMAGE NOTE FROM SKETCH
+
+Cover is broken columns, strewn across the ground level. Thin and uneven stony paths run up the sides of the area to the top. Above, on top of a large rocky outcrop a large dry tree has been set alight to cast light in the area.
+
+REJECTION CONDITIONS
+
+Reject the base terrain if any of these occur:
+- a placed item is drawn into the base terrain
+- a reserved footprint is filled by a tree, column, lamp, NPC, tactical rock, prop, or cover object
+- reserved cells remain visibly purple, rectangular, or diagram-like
+- authored masks drift, move, scale, rotate, or become only approximate
+- the final image looks like the colored control image with texture added
+- the central cliff face reads as walkable floor
+- a slope route is added outside R cells
+- extra props imply gameplay affordances not in the grid
+- the map contains text, numbers, UI, tokens, character figures, bases, or permanent grid lines

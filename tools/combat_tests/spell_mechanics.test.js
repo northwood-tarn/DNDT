@@ -11,10 +11,12 @@ import {
 import { combatObjectCells } from "../../app/combat/combatObjects.js";
 import { createSpellAction } from "../../app/combat/actionFactory.js";
 import { formatEvent } from "../../app/combat/combatLog.js";
+import { canSeeActor } from "../../app/combat/perception.js";
 import { SPELLS } from "../../app/data/spells.js";
 
 function testProduceFlameGrantsHurlAction() {
   const { snapshot, hero, enemy, log } = spellHarness();
+  enemy.position = { x: 1, y: 0 };
   hero.actions.push(createSpellAction(SPELLS.produce_flame, { attackBonus: 5 }));
 
   assert.equal(resolveAction(snapshot, hero, "produce_flame", null, scriptedDice(), log), true);
@@ -229,6 +231,183 @@ function testCanonicalNoOpportunityAndTeleportFamilies() {
   assert.deepEqual(hero.position, { x: 0, y: 4 }, "Misty Step should teleport to a valid visible destination");
 }
 
+function testCantripRidersAndConditionalDamageResolve() {
+  const { snapshot, hero, enemy, log } = spellHarness();
+  enemy.position = { x: 1, y: 0 };
+  enemy.saves.int = 0;
+  enemy.saves.wis = 0;
+  hero.actions.push(
+    createSpellAction(SPELLS.chill_touch, { attackBonus: 5, casterLevel: 11 }),
+    createSpellAction(SPELLS.mind_sliver, { spellSaveDC: 13, casterLevel: 11 }),
+    createSpellAction(SPELLS.toll_the_dead, { spellSaveDC: 13, casterLevel: 11 })
+  );
+
+  assert.equal(resolveAction(snapshot, hero, "chill_touch", enemy.id, scriptedDice({ d20: [15], damage: 1 }), log), true);
+  assert.ok(enemy.conditions.some((condition) => condition.id === "healing_blocked"), "Chill Touch should apply the generic healing-blocked condition on hit");
+
+  hero.economy.actionAvailable = true;
+  assert.equal(resolveAction(snapshot, hero, "mind_sliver", enemy.id, scriptedDice({ d20: [1], damage: 1 }), log), true);
+  assert.ok(enemy.activeEffects.some((effect) => effect.stat === "save" && effect.die === "1d4"), "Mind Sliver should create a next-save penalty effect");
+
+  hero.economy.actionAvailable = true;
+  assert.equal(resolveAction(snapshot, hero, "spark", enemy.id, scriptedDice({ d20: [20], damage: [4, 1] }), log), true);
+  assert.equal(enemy.activeEffects.some((effect) => effect.stat === "save"), false, "next-save penalty effects should be consumed by the next saving throw");
+
+  hero.economy.actionAvailable = true;
+  enemy.hp = 19;
+  assert.equal(resolveAction(snapshot, hero, "toll_the_dead", enemy.id, scriptedDice({ d20: [1], damage: 12 }), log), true);
+  const tollDamage = log.events.findLast((event) => event.type === "damage.roll" && event.detail.label === "Toll the Dead");
+  assert.equal(tollDamage.detail.dice, "3d12", "Toll the Dead should use its scaled alternate die against damaged targets");
+}
+
+function testMultiBeamAndGrantedSpellActionsResolve() {
+  const { snapshot, hero, enemy, log } = spellHarness();
+  enemy.hp = 50;
+  enemy.maxHp = 50;
+  hero.actions.push(
+    createSpellAction(SPELLS.eldritch_blast, { attackBonus: 5, casterLevel: 11 }),
+    createSpellAction(SPELLS.leech, { attackBonus: 5, casterLevel: 11 }),
+    createSpellAction(SPELLS.flame_blade, { attackBonus: 5 }),
+    createSpellAction(SPELLS.far_step, { spellSaveDC: 13 })
+  );
+
+  assert.equal(resolveAction(snapshot, hero, "eldritch_blast", enemy.id, scriptedDice({ d20: [15, 15, 15], damage: [2, 2, 2] }), log), true);
+  assert.equal(log.events.filter((event) => event.type === "attack.roll" && event.detail.actionId.startsWith("eldritch_blast_")).length, 3, "multi-beam spell attacks should resolve one attack roll per beam");
+
+  hero.economy.actionAvailable = true;
+  assert.equal(resolveAction(snapshot, hero, "leech", enemy.id, scriptedDice({ d20: [15, 15, 15], damage: [3, 3, 3] }), log), true);
+  assert.equal(hero.tempHp, 3, "Leech should grant party temporary HP from total damage dealt by its beams");
+
+  hero.economy.actionAvailable = true;
+  assert.equal(resolveAction(snapshot, hero, "flame_blade", null, scriptedDice(), log), true);
+  assert.ok(hero.actions.some((action) => action.id === "flame_blade_attack" && action.cost === "bonus"), "Flame Blade should grant a reusable bonus-action spell attack");
+
+  hero.economy.bonusActionAvailable = true;
+  assert.equal(resolveAction(snapshot, hero, "far_step", null, scriptedDice(), log), true);
+  assert.ok(hero.actions.some((action) => action.id === "far_step_teleport" && action.type === "spell_teleport"), "Far Step should grant its later-turn teleport action");
+}
+
+function testIndividualSpellAssignmentsResolve() {
+  const { snapshot, hero, enemy, log } = spellHarness();
+  const secondEnemy = {
+    ...structuredClone(enemy),
+    id: "enemy_two",
+    name: "Enemy Two",
+    hp: 20,
+    maxHp: 20,
+    position: { x: 0, y: 3 },
+  };
+  snapshot.actors.push(secondEnemy);
+  hero.actions.push(
+    createSpellAction(SPELLS.eldritch_blast, { attackBonus: 5, casterLevel: 7 }),
+    createSpellAction(SPELLS.magic_missile, { spellSaveDC: 13 })
+  );
+
+  assert.equal(resolveAction(snapshot, hero, "eldritch_blast", {
+    targetIds: [enemy.id, secondEnemy.id],
+  }, scriptedDice({ d20: [15, 15], damage: [3, 4] }), log), true);
+  assert.equal(log.events.filter((event) => event.type === "attack.roll" && event.detail.actionId.startsWith("eldritch_blast_")).length, 2, "Eldritch Blast beams should resolve against individually assigned targets");
+  assert.equal(enemy.hp, 17, "first beam should damage the first chosen target");
+  assert.equal(secondEnemy.hp, 16, "second beam should damage the second chosen target");
+
+  hero.economy.actionAvailable = true;
+  assert.equal(resolveAction(snapshot, hero, "magic_missile", {
+    targetIds: [enemy.id, secondEnemy.id, secondEnemy.id],
+  }, scriptedDice({ damage: [2, 3, 4] }), log), true);
+  assert.equal(enemy.hp, 15, "first dart should damage its assigned target");
+  assert.equal(secondEnemy.hp, 9, "two darts should be able to stack on one target");
+}
+
+function testDarknessBlocksSightAndImposesAttackDisadvantage() {
+  const { snapshot, hero, enemy, log } = spellHarness();
+  hero.actions.push(createSpellAction(SPELLS.darkness, { spellSaveDC: 13 }));
+  hero.actions.push({
+    id: "blade",
+    name: "Blade",
+    type: "weapon_attack",
+    range: 1,
+    attackBonus: 5,
+    damage: "1d6",
+    damageType: "slashing",
+    tags: { harmful: true, attackRoll: true, weapon: true, melee: true },
+  });
+  enemy.position = { x: 1, y: 0 };
+
+  assert.equal(resolveAction(snapshot, hero, "darkness", { anchor: { x: 1, y: 0 } }, scriptedDice(), log), true);
+  assert.equal(canSeeActor(snapshot, hero, enemy).ok, false, "Darkness should block sight to creatures inside it");
+
+  hero.economy.actionAvailable = true;
+  assert.equal(resolveAction(snapshot, hero, "blade", enemy.id, scriptedDice({ d20: [15, 5], damage: 1 }), log), true);
+  const attack = log.events.findLast((event) => event.type === "attack.roll" && event.detail.actionId === "blade");
+  assert.equal(attack.detail.mode, "disadvantage", "attacks into Darkness should roll with disadvantage");
+}
+
+function testLeveledSpellSlotOncePerTurn() {
+  const { snapshot, hero, enemy, log } = spellHarness();
+  hero.spellSlots = { 1: { max: 2, current: 2 }, 2: { max: 1, current: 1 } };
+  hero.actions.push(
+    createSpellAction(SPELLS.shield_of_faith, { spellSaveDC: 13 }),
+    createSpellAction(SPELLS.magic_missile, { spellSaveDC: 13 }),
+    createSpellAction(SPELLS.fire_bolt, { attackBonus: 5, casterLevel: 7 })
+  );
+
+  assert.equal(resolveAction(snapshot, hero, "shield_of_faith", hero.id, scriptedDice(), log), true);
+  assert.equal(hero.spellSlots[1].current, 1, "the first leveled spell should spend a slot");
+  hero.economy.actionAvailable = true;
+  assert.equal(resolveAction(snapshot, hero, "magic_missile", enemy.id, scriptedDice({ damage: 2 }), log), false, "a second spell-slot spell should be blocked on the same turn");
+  assert.equal(resolveAction(snapshot, hero, "fire_bolt", enemy.id, scriptedDice({ d20: [15], damage: 3 }), log), true, "a cantrip should remain legal after spending one spell slot");
+}
+
+function testSelfCenteredAreaSpellsFilterTargets() {
+  const { snapshot, hero, enemy, log } = spellHarness();
+  const ally = {
+    ...structuredClone(enemy),
+    id: "ally",
+    name: "Ally",
+    team: "heroes",
+    hp: 20,
+    maxHp: 20,
+    position: { x: 0, y: 1 },
+  };
+  enemy.position = { x: 1, y: 0 };
+  snapshot.actors.push(ally);
+  hero.actions.push(createSpellAction(SPELLS.word_of_radiance, { spellSaveDC: 13, casterLevel: 11 }));
+
+  assert.equal(resolveAction(snapshot, hero, "word_of_radiance", null, scriptedDice({ d20: [1], damage: 6 }), log), true);
+  assert.equal(enemy.hp, 14, "self-centered enemy-only area spells should damage nearby enemies");
+  assert.equal(ally.hp, 20, "self-centered enemy-only area spells should not damage nearby allies");
+}
+
+function testCleansingSpellRemovesRegisteredCondition() {
+  const { snapshot, hero, log } = spellHarness();
+  hero.conditions = [{ id: "poisoned", label: "Poisoned" }];
+  hero.actions.push(createSpellAction(SPELLS.lesser_restoration, { spellSaveDC: 13 }));
+
+  assert.equal(resolveAction(snapshot, hero, "lesser_restoration", hero.id, scriptedDice(), log), true);
+  assert.equal(hero.conditions.some((condition) => condition.id === "poisoned"), false, "Lesser Restoration should remove one supported condition through the generic effect schema");
+}
+
+function testCureWoundsTargetsChosenAlly() {
+  const { snapshot, hero, enemy, log } = spellHarness();
+  const ally = {
+    ...structuredClone(enemy),
+    id: "ally",
+    name: "Ally",
+    team: "heroes",
+    hp: 8,
+    maxHp: 20,
+    position: { x: 1, y: 0 },
+  };
+  snapshot.actors.push(ally);
+  hero.actions.push(createSpellAction(SPELLS.cure_wounds, { spellSaveDC: 13 }));
+
+  const cureWounds = hero.actions.find((action) => action.id === "cure_wounds");
+  assert.equal(cureWounds.requiresTarget, true, "Cure Wounds should ask the player to choose a friendly target");
+  assert.equal(resolveAction(snapshot, hero, "cure_wounds", ally.id, scriptedDice({ damage: 7 }), log), true);
+  assert.equal(hero.hp, 20, "Cure Wounds should not auto-target the caster");
+  assert.equal(ally.hp, 15, "Cure Wounds should heal the selected ally");
+}
+
 function spellHarness() {
   const snapshot = makeHarnessSnapshot();
   const hero = snapshot.actors[0];
@@ -260,4 +439,12 @@ export async function runSpellMechanicCombatTests() {
   testConcentrationCombatObjectExpiresAfterSourceDuration();
   testCanonicalForcedMovementSpellFamilies();
   testCanonicalNoOpportunityAndTeleportFamilies();
+  testCantripRidersAndConditionalDamageResolve();
+  testMultiBeamAndGrantedSpellActionsResolve();
+  testIndividualSpellAssignmentsResolve();
+  testDarknessBlocksSightAndImposesAttackDisadvantage();
+  testLeveledSpellSlotOncePerTurn();
+  testSelfCenteredAreaSpellsFilterTargets();
+  testCleansingSpellRemovesRegisteredCondition();
+  testCureWoundsTargetsChosenAlly();
 }

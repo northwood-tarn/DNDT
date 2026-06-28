@@ -1,0 +1,99 @@
+Generate the BASE TERRAIN ONLY for "Trench Ramp Test 01" as a 1920 x 1080 combat battlefield PNG.
+
+INPUTS
+
+1. BASE TERRAIN CONTROL IMAGE: trench_ramp_test_01.base_terrain_control.png
+2. ALTITUDE CONTROL IMAGE: trench_ramp_test_01.altitude_control.png
+3. SOURCE METADATA: trench_ramp_test_01.grid.json
+4. PLACED ITEM CONTRACTS: trench_ramp_test_01.placed_items.json
+
+PURPOSE
+
+This image is only the underlying terrain plate. It must establish the battlefield form: low ground, high ground, cliffs, voids, slope routes, and broad walkable surfaces. It must not contain tactical placed items. Placed items are generated separately and composited later. The grid-derived masks are authoritative for rules; the visible terrain should read as a place, not as colored cells repainted one by one.
+
+IMPORTANT IMAGE-GENERATION METHOD
+
+Use the base terrain control image as the source geometry. The final terrain may be painterly, organic, and styled, but the source masks are not optional references. They are the layout contract.
+
+The control image defines exact region ownership: walkable low ground, upper plateau, slopes, blocked void/cliff mass, and reserved placed-item footprints. Repaint these masks; do not redraw, move, widen, shrink, rotate, or reinterpret them. Organic edges, cracks, grime, lighting, and material texture must live inside the authored masks unless the grid metadata itself changes.
+
+CONTROL LEGEND
+
+Dark/black cells: blocked cliff, void, or non-walkable mass.
+Pale green cells: ordinary walkable low ground.
+Muted tan cells: upper walkable plateau.
+Green route cells: traversable slope/ramp.
+Purple cells: reserved footprints for later placed assets. Leave these areas visually clear and compatible with their surrounding terrain. Do not draw the asset there.
+
+ALTITUDE RULES
+
+Dark green/grey indicates low ground. Increasing tan/orange indicates higher ground. White strokes indicate height-change edges. The -2 area is the deep trench floor. R cells are the broad ramp out of the trench. Altitude 0 cells are regular ground. Blank/blocked cells around the trench edge are sheer trench walls or non-walkable dark mass and must not read as floor.
+
+BASE-TERRAIN RULES
+
+1. Draw terrain, altitude, slopes, cliff faces, voids, and ambient darkness only.
+2. Do not draw trees, cover columns, lamps, NPCs, doors, chests, traps, bodies, ladders, stairs, bridges, or other placed objects.
+3. Reserved footprints must stay open enough for later compositing, but they must not remain visibly purple or rectangular in the final image.
+4. Reserved footprints should become ordinary bare ground matching their terrain/altitude context, with no object silhouette.
+5. Do not add unmarked props that could imply cover, blockers, interactables, climb routes, lights, or transitions.
+6. The terrain must feel like a coherent dark fantasy battlefield rather than a visible grid, but it must still preserve the exact authored masks.
+7. Preserve the exact cliff/void locations, slope routes, reserved spaces, and altitude relationships.
+8. Favor the organic cliff-and-field language of a painted battlefield through texture, value, silhouette treatment inside masks, and lighting, not by changing the masks.
+
+GRID-DERIVED TERRAIN LAYOUT
+
+y\x  00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+00                  .  .  .  .  .  .  .  .  .  .  .
+01               .  .  .  .  .  .  .  .  .  .  .  .
+02            .  .  .  .  .  .  .  .  *  .  .  .  .
+03            .  .  .  .  .  .  .  .  .  .  .  .  .
+04               .  .  .  .  .  .  *  .  .  *  .  .
+05                  .  .  .  .  .  .  .  .  .  .  .
+06                           R  R  .  .  *  .  .  *
+07                        R  R  R  .  .  .  .  .  .
+08   .  .  .  *  .  .  R  R     .  .  .  .  .  *  .
+09   .  .  .  .  *  .  R        .  .  .  .  .  .  .
+10   .  .  .  .  .  .           .  .  .  .  .  .  .
+
+ALTITUDE
+
+y\x  00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+00    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+01    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+02    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+03    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+04    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+05    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+06    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+07    0  0  0  0  0  0  0 -1  0  0  0  0  0  0  0  0
+08   -2 -2 -2 -2 -2 -2 -1 -1  0  0  0  0  0  0  0  0
+09   -2 -2 -2 -2 -2 -2 -1  0  0  0  0  0  0  0  0  0
+10   -2 -2 -2 -2 -2 -2  0  0  0  0  0  0  0  0  0  0
+
+RESERVED PLACED-ITEM FOOTPRINTS
+
+- cover_half_x03_y08: half-cover object; role half_cover; cells x03 y08; asset prompt placed_asset_prompts/cover_half_x03_y08.prompt.txt.
+- cover_half_x04_y09: half-cover object; role half_cover; cells x04 y09; asset prompt placed_asset_prompts/cover_half_x04_y09.prompt.txt.
+- cover_three_quarter_x11_y02: three-quarter cover object; role three_quarter_cover; cells x11 y02; asset prompt placed_asset_prompts/cover_three_quarter_x11_y02.prompt.txt.
+- cover_half_x10_y04: half-cover object; role half_cover; cells x10 y04; asset prompt placed_asset_prompts/cover_half_x10_y04.prompt.txt.
+- cover_three_quarter_x13_y04: three-quarter cover object; role three_quarter_cover; cells x13 y04; asset prompt placed_asset_prompts/cover_three_quarter_x13_y04.prompt.txt.
+- cover_half_x12_y06: half-cover object; role half_cover; cells x12 y06; asset prompt placed_asset_prompts/cover_half_x12_y06.prompt.txt.
+- cover_three_quarter_x15_y06: three-quarter cover object; role three_quarter_cover; cells x15 y06; asset prompt placed_asset_prompts/cover_three_quarter_x15_y06.prompt.txt.
+- cover_half_x14_y08: half-cover object; role half_cover; cells x14 y08; asset prompt placed_asset_prompts/cover_half_x14_y08.prompt.txt.
+
+IMAGE NOTE FROM SKETCH
+
+Large Backlands-adjacent combat plate: a deep, dark trench enters from the lower-left and opens onto regular stony ground through one broad ramp. The trench floor and ramp must both support two grid-square-wide movement paths. The upper/right regular ground should be broad and readable enough for a fight with sparse cover. No visible grid, no actors, no labels, no UI, and no decorative objects that imply unmarked cover or blocked cells.
+
+REJECTION CONDITIONS
+
+Reject the base terrain if any of these occur:
+- a placed item is drawn into the base terrain
+- a reserved footprint is filled by a tree, column, lamp, NPC, tactical rock, prop, or cover object
+- reserved cells remain visibly purple, rectangular, or diagram-like
+- authored masks drift, move, scale, rotate, or become only approximate
+- the final image looks like the colored control image with texture added
+- the trench wall or non-walkable dark mass reads as walkable floor
+- a slope route is added outside R cells
+- extra props imply gameplay affordances not in the grid
+- the map contains text, numbers, UI, tokens, character figures, bases, or permanent grid lines

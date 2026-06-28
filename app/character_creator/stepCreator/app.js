@@ -5,7 +5,7 @@ import { SPECIES_LIST } from "../../data/species.js";
 import { getFeatById, listOriginFeats } from "../../data/feats.js";
 import { SPELLS } from "../../data/spells.js";
 import { getToolById, listToolsByPool } from "../../data/tools.js";
-import { createFeatChoicePools, createGearChoicePools, createSpellChoicePools, createWeaponMasteryChoicePools } from "../../character/choicePools.js";
+import { createDeviceRecipeChoicePools, createFeatChoicePools, createGearChoicePools, createSpellChoicePools, createWeaponMasteryChoicePools } from "../../character/choicePools.js";
 import { assignClassDefaultAbilityScores } from "../../character/abilityScores.js";
 import { ABILITY_IDS, createEmptyCharacterDraft } from "../../character/characterDraft.js";
 import { SKILL_OPTIONS } from "../creatorHarnessOptions.js";
@@ -646,6 +646,16 @@ function renderFeatureChoices() {
   }
   if (sourceGroup) nodes.push(sourceGroup);
 
+  for (const pool of createDeviceRecipeChoicePools(state.draft).pools) {
+    const group = document.createElement("section");
+    group.className = "feature-source-group";
+    const title = document.createElement("p");
+    title.className = "sample-kicker subsection-kicker";
+    title.textContent = pool.label;
+    group.append(title, renderDeviceDropdown(pool));
+    nodes.push(group);
+  }
+
   if (!nodes.length) {
     const empty = document.createElement("p");
     empty.className = "creator-choice-empty";
@@ -653,6 +663,25 @@ function renderFeatureChoices() {
     nodes.push(empty);
   }
   els.featChoices.replaceChildren(...nodes);
+}
+
+function renderDeviceDropdown(pool) {
+  return multiSelectDropdown({
+    options: pool.options.map((option) => ({
+      id: option.id,
+      name: option.name,
+      meta: `Level ${option.minLevel || 1} recipe`,
+      text: option.text,
+    })),
+    selected: pool.selected,
+    count: pool.count,
+    emptyLabel: "Prepare devices",
+    onPreview: (option) => previewDeviceOption(option, pool.label),
+    onChange: (values, option) => {
+      previewDeviceOption(option, pool.label);
+      setDeviceSelection(pool, values);
+    },
+  });
 }
 
 function renderGearChoices() {
@@ -1078,6 +1107,12 @@ function previewFeatChoice(feat, option) {
 
 function previewSpellOption(option, source) {
   state.hoveredSpellOption = { option, source };
+  renderGrants();
+  renderDetails();
+}
+
+function previewDeviceOption(option, source) {
+  state.hoveredGearOption = { option: { ...option, description: option.text || option.description || "" }, pool: { label: source || "Device Recipe" } };
   renderGrants();
   renderDetails();
 }
@@ -1730,6 +1765,11 @@ function setSpellSelection(pool, values) {
   state.draft.spells[bucket] = [...new Set([...retained, ...values])];
 }
 
+function setDeviceSelection(pool, values) {
+  const optionIds = new Set((pool.options || []).map((option) => option.id));
+  state.draft.devices.preparedRecipeIds = values.filter((recipeId) => optionIds.has(recipeId)).slice(0, pool.count.max);
+}
+
 function getFeatChoice(featId, choiceId) {
   const selected = state.draft.choices.featChoices?.[featId]?.[choiceId];
   return Array.isArray(selected) ? selected : selected ? [selected] : [];
@@ -1906,10 +1946,10 @@ function summaryAbilityHeader(group) {
   name.textContent = group.name;
   const score = document.createElement("span");
   score.className = "summary-ability-score";
-  score.textContent = `Score ${group.score}`;
+  score.textContent = String(group.score);
   const mod = document.createElement("span");
   mod.className = "summary-ability-mod";
-  mod.textContent = `Mod ${group.mod}`;
+  mod.textContent = String(group.mod);
   const save = document.createElement("span");
   save.className = "summary-ability-save";
   save.textContent = `Save ${group.save}`;
@@ -2058,7 +2098,7 @@ function summarySpellGroups() {
 
 function summaryGearLines() {
   const pools = createGearChoicePools(state.draft).pools;
-  return pools.flatMap((pool) => {
+  const gearLines = pools.flatMap((pool) => {
     return pool.selected.map((id) => {
       const option = pool.options.find((item) => item.id === id);
       return {
@@ -2071,6 +2111,17 @@ function summaryGearLines() {
       };
     });
   });
+  const deviceLines = createDeviceRecipeChoicePools(state.draft).pools.flatMap((pool) =>
+    pool.selected.map((id) => {
+      const option = pool.options.find((item) => item.id === id);
+      return {
+        text: `Prepared Device: ${option?.name || titleCase(id)}`,
+        info: option?.text || "Prepared device recipe.",
+        preview: () => previewDeviceOption(option || { id, name: titleCase(id) }, "Prepared Device"),
+      };
+    })
+  );
+  return [...gearLines, ...deviceLines];
 }
 
 function spellName(id) {

@@ -1,8 +1,9 @@
 import { normalizeCombatActor, validateCombatActor } from "./actor.js";
 import { normalizeCombatObjects } from "./combatObjects.js";
 import { createGeneratedEncounterArenaScenario } from "./scenarios/generatedEncounterArena.js";
-import { createGeneratedCharacterArenaScenario } from "./scenarios/generatedCharacterArena.js";
+import { createBacklandsFieldPlateauScenario, createDocksideStageGridScenario, createGeneratedCharacterArenaScenario, createGeneratedEmptyArenaScenario } from "./scenarios/generatedCharacterArena.js";
 import { GENERATED_ENCOUNTER_SCENARIOS, getGeneratedEncounterScenarioConfig } from "./scenarios/generatedEncounterScenarioConfigs.js";
+import { createTrenchRampLiveScenario } from "./scenarios/trenchRampLiveScenario.js";
 
 export { createGeneratedCharacterArenaScenario } from "./scenarios/generatedCharacterArena.js";
 export { createGeneratedEncounterArenaScenario } from "./scenarios/generatedEncounterArena.js";
@@ -12,6 +13,10 @@ export const DEFAULT_COMBAT_SCENARIO_ID = "generated-character-arena";
 
 export function getCombatScenarioOptions() {
   return [
+    { id: "generated-empty-arena", name: "Empty Base Arena", group: "Generated Character Tests" },
+    { id: "dockside-stage-grid", name: "Dockside Stage Grid", group: "Stage Geometry Tests" },
+    { id: "backlands-field-plateau-01", name: "Backlands Field Plateau 01", group: "Stage Geometry Tests" },
+    { id: "trench-ramp-live-test", name: "Trench Ramp Live Test", group: "Stage Geometry Tests" },
     { id: "generated-character-arena", name: "Generated Character Arena", group: "Generated Character Tests" },
     { id: "generated-wizard-shield-arena", name: "Generated Wizard Shield Arena", group: "Reaction Tests" },
     ...GENERATED_ENCOUNTER_SCENARIOS.map((scenario) => ({ id: scenario.id, name: scenario.name, group: "Encounter Templates" })),
@@ -19,6 +24,10 @@ export function getCombatScenarioOptions() {
 }
 
 export function createCombatScenario(id = DEFAULT_COMBAT_SCENARIO_ID, options = {}) {
+  if (id === "generated-empty-arena") return createGeneratedEmptyArenaScenario(options);
+  if (id === "dockside-stage-grid") return createDocksideStageGridScenario(options);
+  if (id === "backlands-field-plateau-01") return createBacklandsFieldPlateauScenario(options);
+  if (id === "trench-ramp-live-test") return createTrenchRampLiveScenario(options);
   if (id === "generated-character-arena") return createGeneratedCharacterArenaScenario(options);
   if (id === "generated-wizard-shield-arena") return createGeneratedCharacterArenaScenario({ ...options, variantId: "wizard", enemyAttackBonus: 4, enemyPosition: { x: 3, y: 1 }, diceSeed: "shield-2" });
   if (getGeneratedEncounterScenarioConfig(id)) return createGeneratedEncounterArenaScenario(id, options);

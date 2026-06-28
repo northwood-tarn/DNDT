@@ -16,6 +16,7 @@ import {
 import { conditionName, getConditionRules, normalizeEffectDuration } from "./effects.js";
 import { removeActiveEffect } from "./modifiers.js";
 import { getConsumableById } from "../data/consumables.js";
+import { spendActionSpellSlot } from "./spellSlots.js";
 
 export function resolveDash(snapshot, actor, action, log) {
   const before = getMovementRemaining(actor);
@@ -126,14 +127,14 @@ export function resolveConsumable(snapshot, actor, action, dice, log) {
     return false;
   }
   if (actor.hp >= actor.maxHp) {
-    log.add("target.invalid", {
+    log.add("healing.skipped", {
       round: snapshot.round,
       actorId: actor.id,
       actorName: actor.name,
       targetName: actor.name,
       reason: "already at full health",
     });
-    return false;
+    return true;
   }
   if (hasConditionRule(actor, "blocksHealing")) {
     log.add("target.invalid", {
@@ -185,32 +186,34 @@ export function resolveConsumable(snapshot, actor, action, dice, log) {
   return true;
 }
 
-export function resolveSelfHeal(snapshot, actor, action, dice, log) {
-  if (actor.hp >= actor.maxHp) {
+export function resolveHealingAction(snapshot, actor, target, action, dice, log) {
+  const recipient = target || actor;
+  if (recipient.hp >= recipient.maxHp) {
     log.add("target.invalid", {
       round: snapshot.round,
       actorId: actor.id,
       actorName: actor.name,
-      targetName: actor.name,
+      targetName: recipient.name,
       reason: "already at full health",
     });
     return false;
   }
-  if (hasConditionRule(actor, "blocksHealing")) {
+  if (hasConditionRule(recipient, "blocksHealing")) {
     log.add("target.invalid", {
       round: snapshot.round,
       actorId: actor.id,
       actorName: actor.name,
-      targetName: actor.name,
+      targetName: recipient.name,
       reason: "healing is blocked",
     });
     return false;
   }
   const healingDice = action.healing || "1d6";
   const rolled = dice.rollDamage(healingDice);
-  const hpBefore = actor.hp;
-  actor.hp = Math.min(actor.maxHp, actor.hp + Math.max(0, rolled.total));
+  const hpBefore = recipient.hp;
+  recipient.hp = Math.min(recipient.maxHp, recipient.hp + Math.max(0, rolled.total));
   spendActionCost(actor, action.cost);
+  spendActionSpellSlot(actor, action);
   spendActionUse(action);
   spendResourceUse(actor, action.resourceId);
   log.add("healing.roll", {
@@ -227,12 +230,18 @@ export function resolveSelfHeal(snapshot, actor, action, dice, log) {
     round: snapshot.round,
     actorId: actor.id,
     actorName: actor.name,
-    amount: actor.hp - hpBefore,
+    targetId: recipient.id,
+    targetName: recipient.name,
+    amount: recipient.hp - hpBefore,
     hpBefore,
-    hpAfter: actor.hp,
+    hpAfter: recipient.hp,
     remaining: null,
   });
   return true;
+}
+
+export function resolveSelfHeal(snapshot, actor, action, dice, log) {
+  return resolveHealingAction(snapshot, actor, actor, action, dice, log);
 }
 
 function resolveContextualCheck(snapshot, actor, action, dice, log) {

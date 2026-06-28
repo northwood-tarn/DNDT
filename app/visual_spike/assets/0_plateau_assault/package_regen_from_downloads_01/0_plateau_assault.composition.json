@@ -1,0 +1,295 @@
+{
+  "schemaVersion": 1,
+  "stageId": "0_plateau_assault",
+  "name": "0 Plateau Assault",
+  "image": {
+    "width": 1920,
+    "height": 1080,
+    "baseTerrain": "0_plateau_assault.base_terrain.png",
+    "baseTerrainControl": "0_plateau_assault.base_terrain_control.png",
+    "altitudeControl": "0_plateau_assault.altitude_control.png",
+    "compositeTarget": "0_plateau_assault.composite.png",
+    "debugCompositeTarget": "0_plateau_assault.composite_debug.png"
+  },
+  "projection": {
+    "projection": "isometric_square",
+    "tileWidth": 128,
+    "tileHeight": 64,
+    "origin": {
+      "x": 800,
+      "y": 140
+    },
+    "width": 16,
+    "height": 11,
+    "coordinateRule": "x increases down-right; y increases down-left"
+  },
+  "layers": [
+    {
+      "id": "base_terrain",
+      "kind": "raster",
+      "path": "0_plateau_assault.base_terrain.png",
+      "zIndex": 0
+    },
+    {
+      "id": "cover_three_quarter_x02_y01",
+      "kind": "placed_asset",
+      "assetRole": "three_quarter_cover",
+      "path": "placed_assets/cover_three_quarter_x02_y01.png",
+      "cells": [
+        {
+          "x": 2,
+          "y": 1,
+          "altitude": 0
+        }
+      ],
+      "footprint": {
+        "minX": 2,
+        "minY": 1,
+        "maxX": 2,
+        "maxY": 1,
+        "widthCells": 1,
+        "heightCells": 1
+      },
+      "anchorPixel": {
+        "x": 864,
+        "y": 268
+      },
+      "assetRegistration": {
+        "required": true,
+        "localAnchorPixel": "required in asset source coordinates; this is the asset pixel that must land on anchorPixel",
+        "localFootprintBounds": "required in asset source coordinates; this is the contact/base footprint to scale against pixelBounds",
+        "rule": "Do not infer placement from the cropped bitmap bounds. The source asset must declare its own registration."
+      },
+      "pixelBounds": {
+        "minX": 800,
+        "minY": 204,
+        "maxX": 928,
+        "maxY": 268
+      },
+      "zIndex": 103,
+      "blocksMovement": true,
+      "emitsLight": false
+    },
+    {
+      "id": "cover_three_quarter_x02_y02",
+      "kind": "placed_asset",
+      "assetRole": "three_quarter_cover",
+      "path": "placed_assets/cover_three_quarter_x02_y02.png",
+      "cells": [
+        {
+          "x": 2,
+          "y": 2,
+          "altitude": 0
+        }
+      ],
+      "footprint": {
+        "minX": 2,
+        "minY": 2,
+        "maxX": 2,
+        "maxY": 2,
+        "widthCells": 1,
+        "heightCells": 1
+      },
+      "anchorPixel": {
+        "x": 800,
+        "y": 300
+      },
+      "assetRegistration": {
+        "required": true,
+        "localAnchorPixel": "required in asset source coordinates; this is the asset pixel that must land on anchorPixel",
+        "localFootprintBounds": "required in asset source coordinates; this is the contact/base footprint to scale against pixelBounds",
+        "rule": "Do not infer placement from the cropped bitmap bounds. The source asset must declare its own registration."
+      },
+      "pixelBounds": {
+        "minX": 736,
+        "minY": 236,
+        "maxX": 864,
+        "maxY": 300
+      },
+      "zIndex": 104,
+      "blocksMovement": true,
+      "emitsLight": false
+    },
+    {
+      "id": "cover_three_quarter_x02_y03",
+      "kind": "placed_asset",
+      "assetRole": "three_quarter_cover",
+      "path": "placed_assets/cover_three_quarter_x02_y03.png",
+      "cells": [
+        {
+          "x": 2,
+          "y": 3,
+          "altitude": 0
+        }
+      ],
+      "footprint": {
+        "minX": 2,
+        "minY": 3,
+        "maxX": 2,
+        "maxY": 3,
+        "widthCells": 1,
+        "heightCells": 1
+      },
+      "anchorPixel": {
+        "x": 736,
+        "y": 332
+      },
+      "assetRegistration": {
+        "required": true,
+        "localAnchorPixel": "required in asset source coordinates; this is the asset pixel that must land on anchorPixel",
+        "localFootprintBounds": "required in asset source coordinates; this is the contact/base footprint to scale against pixelBounds",
+        "rule": "Do not infer placement from the cropped bitmap bounds. The source asset must declare its own registration."
+      },
+      "pixelBounds": {
+        "minX": 672,
+        "minY": 268,
+        "maxX": 800,
+        "maxY": 332
+      },
+      "zIndex": 105,
+      "blocksMovement": true,
+      "emitsLight": false
+    },
+    {
+      "id": "cover_half_x03_y05",
+      "kind": "placed_asset",
+      "assetRole": "half_cover",
+      "path": "placed_assets/cover_half_x03_y05.png",
+      "cells": [
+        {
+          "x": 3,
+          "y": 5,
+          "altitude": 0
+        }
+      ],
+      "footprint": {
+        "minX": 3,
+        "minY": 5,
+        "maxX": 3,
+        "maxY": 5,
+        "widthCells": 1,
+        "heightCells": 1
+      },
+      "anchorPixel": {
+        "x": 672,
+        "y": 428
+      },
+      "assetRegistration": {
+        "required": true,
+        "localAnchorPixel": "required in asset source coordinates; this is the asset pixel that must land on anchorPixel",
+        "localFootprintBounds": "required in asset source coordinates; this is the contact/base footprint to scale against pixelBounds",
+        "rule": "Do not infer placement from the cropped bitmap bounds. The source asset must declare its own registration."
+      },
+      "pixelBounds": {
+        "minX": 608,
+        "minY": 364,
+        "maxX": 736,
+        "maxY": 428
+      },
+      "zIndex": 108,
+      "blocksMovement": false,
+      "emitsLight": false
+    },
+    {
+      "id": "cover_half_x02_y08",
+      "kind": "placed_asset",
+      "assetRole": "half_cover",
+      "path": "placed_assets/cover_half_x02_y08.png",
+      "cells": [
+        {
+          "x": 2,
+          "y": 8,
+          "altitude": 0
+        }
+      ],
+      "footprint": {
+        "minX": 2,
+        "minY": 8,
+        "maxX": 2,
+        "maxY": 8,
+        "widthCells": 1,
+        "heightCells": 1
+      },
+      "anchorPixel": {
+        "x": 416,
+        "y": 492
+      },
+      "assetRegistration": {
+        "required": true,
+        "localAnchorPixel": "required in asset source coordinates; this is the asset pixel that must land on anchorPixel",
+        "localFootprintBounds": "required in asset source coordinates; this is the contact/base footprint to scale against pixelBounds",
+        "rule": "Do not infer placement from the cropped bitmap bounds. The source asset must declare its own registration."
+      },
+      "pixelBounds": {
+        "minX": 352,
+        "minY": 428,
+        "maxX": 480,
+        "maxY": 492
+      },
+      "zIndex": 110,
+      "blocksMovement": false,
+      "emitsLight": false
+    },
+    {
+      "id": "feature_1",
+      "kind": "placed_asset",
+      "assetRole": "blocking_feature",
+      "path": "placed_assets/feature_1.png",
+      "cells": [
+        {
+          "x": 7,
+          "y": 2,
+          "altitude": 4
+        },
+        {
+          "x": 8,
+          "y": 2,
+          "altitude": 4
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "altitude": 4
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "altitude": 4
+        }
+      ],
+      "footprint": {
+        "minX": 7,
+        "minY": 2,
+        "maxX": 8,
+        "maxY": 3,
+        "widthCells": 2,
+        "heightCells": 2
+      },
+      "anchorPixel": {
+        "x": 1120,
+        "y": 524
+      },
+      "assetRegistration": {
+        "required": true,
+        "localAnchorPixel": "required in asset source coordinates; this is the asset pixel that must land on anchorPixel",
+        "localFootprintBounds": "required in asset source coordinates; this is the contact/base footprint to scale against pixelBounds",
+        "rule": "Do not infer placement from the cropped bitmap bounds. The source asset must declare its own registration."
+      },
+      "pixelBounds": {
+        "minX": 992,
+        "minY": 396,
+        "maxX": 1248,
+        "maxY": 524
+      },
+      "zIndex": 111,
+      "blocksMovement": true,
+      "emitsLight": true
+    }
+  ],
+  "validation": [
+    "Base terrain contains no placed items.",
+    "Each placed asset base footprint aligns to its reserved cells.",
+    "Composite contains no extra tactical affordances outside authored cells.",
+    "Runtime collision, cover, light, and interaction data come from grid metadata, not from the bitmap."
+  ]
+}

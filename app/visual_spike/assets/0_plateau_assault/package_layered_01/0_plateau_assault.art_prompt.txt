@@ -1,0 +1,116 @@
+Edit the placement control plate into a 1920 x 1080 combat battlefield PNG for "0 Plateau Assault".
+
+EDIT INPUTS
+
+1. EDIT SOURCE IMAGE: 0_plateau_assault.placement_control.png
+2. SECONDARY CONSTRAINT IMAGE: 0_plateau_assault.altitude_control.png
+3. SOURCE METADATA: 0_plateau_assault.grid.json
+
+The placement control plate is the actual source image to transform. Preserve its region silhouettes exactly. The final art is a repaint/material transformation of that source image into the DNDT dark fantasy combat-map style. It is not a new composition and not a reference-inspired redraw.
+
+SOURCE-IMAGE TRANSFORMATION RULES
+
+1. Keep every colored region in the placement control plate in the same shape and position.
+2. Repaint each colored region into art, but do not move, expand, shrink, rotate, soften, or reinterpret its silhouette.
+3. The black regions remain non-walkable cliff/void/blocked mass with the same silhouettes.
+4. The green slope regions remain the only traversable ramp/slope regions with the same silhouettes.
+5. The yellow cover regions remain the only cover footprints with the same silhouettes.
+6. The orange feature region remains the only burning-tree/fire feature footprint with the same 2x2 silhouette.
+7. The tan upper plateau and pale green low ground remain continuous walkable surfaces within their exact source-image masks.
+8. Use the altitude control plate only to decide height, cliff edge, and slope treatment. Do not let it change placement silhouettes.
+
+ABSOLUTE GRID OBEDIENCE RULES
+
+1. Preserve every tactical footprint exactly.
+2. Do not move objects for pictorial balance.
+3. Do not resize objects into adjacent cells unless those cells are part of the listed footprint.
+4. Do not add cover-like objects outside cover cells.
+5. Do not add blocker-like objects outside blocked or feature cells.
+6. Do not add ramp-like surfaces outside R cells.
+7. Do not add stair-like surfaces unless S cells exist.
+8. Do not add light sources outside light or feature-light cells.
+9. Plain walkable cells must remain visually plain and standable.
+10. Blank cells inside the map are collision facts, not unused art space.
+11. If the map would look prettier by moving an object, do not move it.
+
+STYLE
+
+Dark fantasy underground combat plate. Open-air cavern field, not a tunnel. Painterly negative-ink direction, dark negative space, readable surfaces, restrained detail, no decorative grit. Combat is globally readable because the Lanterna flares in danger, but the mood remains dark and severe.
+
+PLACEMENT CONTROL LEGEND
+
+Dark/black cells: blocked cliff, void, or non-walkable mass.
+Pale green cells: ordinary walkable low ground.
+Muted tan cells: upper walkable plateau.
+Green route cells: traversable slope/ramp.
+Yellow cells: cover, exactly where marked.
+Orange cells: blocking feature/light footprint, exactly where marked.
+Spawn metadata is in the JSON. The placement control plate deliberately omits spawn symbols so marker shapes cannot contaminate final art.
+
+ALTITUDE CONTROL LEGEND
+
+Dark green/grey: low ground.
+Increasing tan/orange: higher ground.
+White edge strokes: height-change edges.
+The +4 area is the high plateau. R cells are the sloped paths. Blank/blocked cells between low ground and plateau are the sheer cliff face and must not read as floor.
+
+GRID-DERIVED LAYOUT
+
+y\x  00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+00   .  .  .  R  R  R  R  R  R  R  R  R  R  .  .  .
+01   .  .  C  .                          .  .  .  .
+02   .  .  C  .           1  1  .  .  .  .  .  M  .
+03   .  .  C  .           1  1  M  .  .  .  .  .  .
+04   .  .  .  .           .  .  .  .  .  .  .  M  .
+05   P  .  .  h           .  .  .  .  .  .         
+06   P  .  .  .           .  .  M  .  .            
+07   P  .  .  .           .  .  .  .  .  .  .  .   
+08   .  .  h  .           .  .  .  .  .  .  .  .   
+09   .  .  .  .                          R  .  .   
+10   .  .  .  R  R  R  R  R  R  R  R  R  R         
+
+ALTITUDE
+
+y\x  00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+00    0  0  0  0 +1 +1 +1 +2 +2 +2 +3 +3 +4 +4 +4 +4
+01    0  0  0  0  0  0  0  0  0  0  0  0 +4 +4 +4 +4
+02    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+03    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+04    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+05    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+06    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+07    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+08    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+09    0  0  0  0  0  0  0  0  0  0  0  0 +4 +4 +4 +4
+10    0  0  0  0 +1 +1 +1 +2 +3 +3 +3 +3 +3 +4 +4 +4
+
+SCENE-SPECIFIC REQUIREMENTS
+
+- Low ground occupies the left side and must read lower than the plateau.
+- The right side is the +4 upper plateau and must read as one broad upper fighting surface.
+- The central blank band is the sheer rocky front face of the plateau, not traversable ground.
+- The top and bottom R-cell bands are the only traversable slope routes up.
+- three_quarter cover occupies exactly cell x02 y01.
+- three_quarter cover occupies exactly cell x02 y02.
+- three_quarter cover occupies exactly cell x02 y03.
+- half cover occupies exactly cell x03 y05.
+- half cover occupies exactly cell x02 y08.
+- Feature 1 (A large tree, burning) occupies exactly: x07 y02, x08 y02, x07 y03, x08 y03.
+
+IMAGE NOTE FROM SKETCH
+
+Cover is broken columns, strewn across the ground level. Thin and uneven stony paths run up the sides of the area to the top. Above, on top of a large rocky outcrop a large dry tree has been set alight to cast light in the area.
+
+Use this note only for terrain mood and material context in the base terrain. If the note mentions placed items such as trees, cover, columns, lamps, NPCs, or fires, do not draw those items into the base terrain. Those objects are handled by separate placed-asset prompts.
+
+REJECTION CONDITIONS
+
+Reject the image if any of these occur:
+- any placement-control region silhouette changes
+- a feature, cover object, ramp, cliff edge, or light source moves away from its control-plate cells
+- the burning tree is not contained to its marked feature footprint
+- the broken-column cover is not on the marked cover cells
+- the central cliff face reads as walkable floor
+- extra rocks, pillars, ruins, fires, ladders, stairs, bridges, rubble, or paths imply gameplay affordances not in the grid
+- the slopes are hidden or visually disconnected from the plateau
+- the final image contains text, numbers, grid labels, UI, tokens, character figures, bases, or permanent grid lines

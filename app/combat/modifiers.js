@@ -60,6 +60,9 @@ export function rollDamageReduction(snapshot, actor, damageType, dice) {
 
 export function collectModifierDetails(snapshot, actor, stat, context = {}) {
   if (!actor) return [];
+  const statOptions = stat === "attack_roll" || stat === "save" || stat === "ability_check"
+    ? new Set([stat, "d20_test"])
+    : new Set([stat]);
   const effects = [
     ...(actor.activeEffects || []),
     ...featureHookModifierEffects(actor, stat),
@@ -78,8 +81,9 @@ export function collectModifierDetails(snapshot, actor, stat, context = {}) {
     .filter((effect) => effect?.type === "modifier")
     .filter((effect) => (effect.trigger || "passive") === "passive")
     .filter((effect) => effectAffectsActor(effect, actor))
-    .filter((effect) => effect.stat === stat)
+    .filter((effect) => statOptions.has(effect.stat))
     .filter((effect) => matchesAbility(effect, context.ability))
+    .filter((effect) => matchesConditionContext(effect, context.action))
     .filter((effect) => matchesDamageType(effect, context.damageType))
     .filter((effect) => matchesEquipmentCondition(effect, actor))
     .filter((effect) => matchesTags(effect, context.action))
@@ -201,8 +205,26 @@ function formatModifierReason(part) {
 }
 
 function matchesAbility(effect, ability) {
+  if (Array.isArray(effect.abilities) && effect.abilities.length) {
+    return effect.abilities.map((item) => String(item).toLowerCase().slice(0, 3)).includes(String(ability || "").toLowerCase().slice(0, 3));
+  }
   if (!effect.ability || effect.ability === "all") return true;
   return String(effect.ability).toLowerCase() === String(ability || "").toLowerCase();
+}
+
+function matchesConditionContext(effect, action = {}) {
+  const ids = [
+    effect.conditionId,
+    ...(Array.isArray(effect.conditionIds) ? effect.conditionIds : []),
+  ].filter(Boolean);
+  if (!ids.length) return true;
+  const actionIds = [
+    action.condition,
+    action.conditionId,
+    action.saveCondition,
+    action.name,
+  ].filter(Boolean).map((item) => String(item).toLowerCase());
+  return ids.some((id) => actionIds.includes(String(id).toLowerCase()));
 }
 
 function matchesDamageType(effect, damageType) {

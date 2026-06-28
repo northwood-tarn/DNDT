@@ -1,0 +1,93 @@
+Generate a 1920 x 1080 combat map image for "0 Plateau Assault".
+
+This image must be based on the grid metadata below. Treat the grid as the source of truth. Do not invent new playable areas, extra platforms, extra ramps, extra stairs, extra cover, extra light sources, or extra paths. Do not include text, coordinate labels, numbers, UI, tokens, actors, miniatures, bases, icons, permanent grid lines, or baked player-centered visibility circles in the final art.
+
+STYLE
+
+Dark fantasy underground setting. The world is underground but this battlefield is an open-air cavern field, not a tunnel. Use the established DNDT map style: dark negative space, painterly-but-readable surfaces, restrained detail, clear walkable shapes, and no pointless grit. Combat maps may be globally readable because the Lanterna flares under danger, but keep the mood dark and serious.
+
+SCENE INTENT
+
+The heroes begin on low ground at the left edge. They approach a large rocky outcrop/plateau on the right. The plateau top is high ground at altitude +4. The central dark band is the sheer front face of the rocky outcrop and is not traversable. The only playable routes up are the thin, uneven stony slope paths along the top and bottom edges. The high plateau contains enemy positions and a large dry burning tree that functions as a blocking light source. Broken columns on the lower left provide cover for the approach.
+
+LIGHTING
+
+The burning tree on the upper plateau is the major environmental light source. It casts yellow-orange firelight across the plateau and a little down the rocky face. Keep the firelight local and directional; do not flood the whole battlefield with ambient light. The final art should still read as an underground dark fantasy combat area.
+
+GRID CONTRACT
+
+Grid projection: isometric_square
+Grid size: 16 x 11
+Tile size: 128 x 64
+Coordinate rule: x increases down-right; y increases down-left
+
+Terrain symbols:
+blank = blocked / non-walkable / cliff face / void / dense feature
+. = walkable
+h = half cover, walkable
+C = three-quarter cover, blocking
+R = traversable slope / ramp
+S = stairs
+H = hazard
+P = hero spawn marker, still walkable
+M = enemy spawn marker, still walkable
+1 = custom blocking feature: A large tree, burning
+
+LAYOUT GRID
+
+y\x  00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+00   .  .  .  R  R  R  R  R  R  R  R  R  R  .  .  .
+01   .  .  C  .                          .  .  .  .
+02   .  .  C  .           1  1  .  .  .  .  .  M  .
+03   .  .  C  .           1  1  M  .  .  .  .  .  .
+04   .  .  .  .           .  .  .  .  .  .  .  M  .
+05   P  .  .  h           .  .  .  .  .  .         
+06   P  .  .  .           .  .  M  .  .            
+07   P  .  .  .           .  .  .  .  .  .  .  .   
+08   .  .  h  .           .  .  .  .  .  .  .  .   
+09   .  .  .  .                          R  .  .   
+10   .  .  .  R  R  R  R  R  R  R  R  R  R         
+
+ALTITUDE GRID
+
+Altitude values are 5 ft bands. +4 is the upper plateau. Height changes on R cells are sloped approaches unless a cell is blocked.
+
+y\x  00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+00    0  0  0  0 +1 +1 +1 +2 +2 +2 +3 +3 +4 +4 +4 +4
+01    0  0  0  0  0  0  0  0  0  0  0  0 +4 +4 +4 +4
+02    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+03    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+04    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+05    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+06    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+07    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+08    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+09    0  0  0  0  0  0  0  0  0  0  0  0 +4 +4 +4 +4
+10    0  0  0  0 +1 +1 +1 +2 +3 +3 +3 +3 +3 +4 +4 +4
+
+REQUIRED SPATIAL READING
+
+- Low ground occupies the left side and stays visually lower.
+- The high plateau occupies the right side and must look like a broad upper fighting surface.
+- The central blank gap must look like a steep rocky cliff/front face, not playable empty floor.
+- Top and bottom R bands must look like narrow uneven stony slope paths that can be walked.
+- C cells at x02 y01-y03 are broken column 3/4 cover on the lower approach.
+- h cells are smaller half-cover broken stones/column fragments on the lower ground.
+- The four "1" cells at x07-y02, x08-y02, x07-y03, x08-y03 are one large burning dry tree feature. It blocks movement and lights the upper plateau.
+- P cells on the left edge are default hero start cells and must be open, flat, and readable as low ground.
+- M cells on the plateau are enemy starting positions and must be open enough for medium enemies.
+
+IMAGE NOTE FROM SKETCH
+
+Cover is broken columns, strewn across the ground level. Thin and uneven stony paths run up the sides of the area to the top. Above, on top of a large rocky outcrop a large dry tree has been set alight to cast light in the area.
+
+NEGATIVE CONSTRAINTS
+
+- Do not make the central cliff face walkable.
+- Do not add a front stairway or direct central route onto the plateau.
+- Do not add extra bridges, ladders, ramps, stairs, or scenic paths.
+- Do not make lit unreachable areas look like tactical destinations.
+- Do not clutter the ground with small growths, cracks, pebbles, or meaningless marks.
+- Do not let props occupy normal walkable cells unless they are cover or the burning tree feature.
+- Do not hide the slope routes in darkness or decorative texture.
+- Do not make the altitude depend on labels; the art itself must show height through shape, edges, slope, and shadow.

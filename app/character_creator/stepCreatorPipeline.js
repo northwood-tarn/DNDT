@@ -98,6 +98,29 @@ export function createStepCreatorLevelOneSmokeDrafts() {
   ];
 }
 
+export function createStepCreatorSaboteurSmokeDrafts() {
+  return [
+    saboteurDraft({
+      name: "Step Saboteur 3",
+      level: 3,
+      classChoices: {
+        origin_device: "fire_paper",
+        saboteur_cookbook_recipes: ["poison_vial", "smoke_vial"],
+      },
+      preparedRecipeIds: ["fire_paper", "poison_vial", "smoke_vial"],
+    }),
+    saboteurDraft({
+      name: "Step Saboteur 4",
+      level: 4,
+      classChoices: {
+        origin_device: "lightning_paper",
+        saboteur_cookbook_recipes: ["tar_vial", "grave_paper"],
+      },
+      preparedRecipeIds: ["lightning_paper", "tar_vial", "grave_paper"],
+    }),
+  ];
+}
+
 function levelOneDraft({ name, backgroundId, speciesId, lineageId, classId, abilities, gear, spells = {}, choices = {} }) {
   return createEmptyCharacterDraft({
     identity: {
@@ -117,6 +140,42 @@ function levelOneDraft({ name, backgroundId, speciesId, lineageId, classId, abil
     },
     gear: { inventory: [{ id: "healing_potion", qty: 1 }], attunedItemIds: [], ...gear },
     spells,
+  });
+}
+
+function saboteurDraft({ name, level, classChoices, preparedRecipeIds }) {
+  return createEmptyCharacterDraft({
+    identity: {
+      characterName: name,
+      level,
+      backgroundId: "criminal",
+      speciesId: "halfling",
+      lineageId: "lightfoot",
+      classId: "rogue",
+      subclassId: "saboteur",
+      pactId: null,
+    },
+    abilities: {
+      strength: 8,
+      dexterity: 15,
+      constitution: 13,
+      intelligence: 14,
+      wisdom: 10,
+      charisma: 11,
+    },
+    choices: {
+      backgroundAbilityScores: backgroundAbilityScoresFor("criminal", "rogue"),
+      weaponMasteryIds: ["rapier", "dagger"],
+      classChoices,
+    },
+    gear: {
+      weaponIds: ["rapier", "dagger"],
+      armorId: "studded_leather",
+      shieldId: null,
+      inventory: [{ id: "healing_potion", qty: 1 }],
+      attunedItemIds: [],
+    },
+    devices: { preparedRecipeIds },
   });
 }
 

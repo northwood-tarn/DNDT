@@ -358,6 +358,32 @@ function exposesSpellChoicePools() {
   assert.equal(grantedCantrips.grantedSpellDetails.some((detail) => detail.id === "chill_touch" && detail.source), true, "granted class-pool spells should expose source labels");
   assert.deepEqual(grantedPrepared.selected, ["burning_hands"], "free-cast spell grants should not consume prepared spell choices");
   assert.equal(grantedPrepared.grantedSpellIds.includes("magic_missile"), true);
+
+  const levelTenWizard = createSpellChoicePools(createEmptyCharacterDraft({
+    identity: { characterName: "Level Ten Wizard", level: 10, classId: "wizard" },
+  }));
+  const levelTenPrepared = levelTenWizard.pools.find((pool) => pool.id === "prepared_spells");
+  assert.equal(levelTenPrepared.count, 14, "level 10 wizard should use one total prepared spell allowance");
+  assert.equal(levelTenPrepared.options.some((spell) => spell.id === "magic_missile" && spell.level === 1), true);
+  assert.equal(levelTenPrepared.options.some((spell) => spell.id === "fireball" && spell.level === 3), true);
+  assert.equal(levelTenPrepared.options.some((spell) => spell.id === "wall_of_force" && spell.level === 5), true);
+  assert.equal(levelTenPrepared.options.some((spell) => spell.level > 5), false, "level 10 wizard should not see level 6+ spells");
+
+  const warlockPools = createSpellChoicePools(createEmptyCharacterDraft({
+    identity: { characterName: "Known Caster", level: 10, classId: "warlock" },
+  }));
+  assert.equal(warlockPools.pools.some((pool) => pool.id === "prepared_spells"), false, "warlock should not expose prepared spell pools");
+  assert.equal(warlockPools.pools.some((pool) => pool.id === "known_spells"), true, "warlock should expose known spell pools");
+
+  const clericPools = createSpellChoicePools(createEmptyCharacterDraft({
+    identity: { characterName: "Prepared Cleric", level: 10, classId: "cleric" },
+  }));
+  assert.equal(clericPools.pools.some((pool) => pool.id === "prepared_spells"), true, "cleric should expose prepared spell pools");
+
+  const paladinPools = createSpellChoicePools(createEmptyCharacterDraft({
+    identity: { characterName: "Prepared Paladin", level: 10, classId: "paladin" },
+  }));
+  assert.equal(paladinPools.pools.some((pool) => pool.id === "prepared_spells"), true, "paladin should expose prepared spell pools");
 }
 
 function exposesGearChoicePools() {

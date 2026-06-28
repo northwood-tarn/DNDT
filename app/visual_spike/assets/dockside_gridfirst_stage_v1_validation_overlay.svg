@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+<image href="dockside_gridfirst_stage_v1_grid_preview.png" width="1920" height="1080"/>
+<style>.grid{stroke:#63e690;stroke-width:1.5;opacity:.8;vector-effect:non-scaling-stroke}.blocked{fill:#ff3b30;opacity:.32;stroke:#ff3b30;stroke-width:2}.cover{fill:#ffd166;opacity:.28;stroke:#ffd166;stroke-width:2}.stairs{fill:#5ac8fa;opacity:.28;stroke:#5ac8fa;stroke-width:2}.hero{fill:#4cd964;opacity:.35;stroke:#4cd964;stroke-width:2}.enemy{fill:#ff9500;opacity:.35;stroke:#ff9500;stroke-width:2}.label{font:700 18px system-ui,sans-serif;fill:white;text-anchor:middle;paint-order:stroke;stroke:#000;stroke-width:4}</style>
+<g><line class="grid" x1="900.0" y1="250.0" x2="388.0" y2="506.0"/>
+<line class="grid" x1="964.0" y1="282.0" x2="452.0" y2="538.0"/>
+<line class="grid" x1="1028.0" y1="314.0" x2="516.0" y2="570.0"/>
+<line class="grid" x1="1092.0" y1="346.0" x2="580.0" y2="602.0"/>
+<line class="grid" x1="1156.0" y1="378.0" x2="644.0" y2="634.0"/>
+<line class="grid" x1="1220.0" y1="410.0" x2="708.0" y2="666.0"/>
+<line class="grid" x1="1284.0" y1="442.0" x2="772.0" y2="698.0"/>
+<line class="grid" x1="1348.0" y1="474.0" x2="836.0" y2="730.0"/>
+<line class="grid" x1="1412.0" y1="506.0" x2="900.0" y2="762.0"/>
+<line class="grid" x1="1476.0" y1="538.0" x2="964.0" y2="794.0"/>
+<line class="grid" x1="1540.0" y1="570.0" x2="1028.0" y2="826.0"/>
+<line class="grid" x1="1604.0" y1="602.0" x2="1092.0" y2="858.0"/>
+<line class="grid" x1="900.0" y1="250.0" x2="1604.0" y2="602.0"/>
+<line class="grid" x1="836.0" y1="282.0" x2="1540.0" y2="634.0"/>
+<line class="grid" x1="772.0" y1="314.0" x2="1476.0" y2="666.0"/>
+<line class="grid" x1="708.0" y1="346.0" x2="1412.0" y2="698.0"/>
+<line class="grid" x1="644.0" y1="378.0" x2="1348.0" y2="730.0"/>
+<line class="grid" x1="580.0" y1="410.0" x2="1284.0" y2="762.0"/>
+<line class="grid" x1="516.0" y1="442.0" x2="1220.0" y2="794.0"/>
+<line class="grid" x1="452.0" y1="474.0" x2="1156.0" y2="826.0"/>
+<line class="grid" x1="388.0" y1="506.0" x2="1092.0" y2="858.0"/></g>
+<g><polygon class="blocked" points="1220.0,410.0 1284.0,442.0 1220.0,474.0 1156.0,442.0"><title>B</title></polygon><text x="1220.0" y="446.0" class="label">B</text>
+<polygon class="blocked" points="1284.0,442.0 1348.0,474.0 1284.0,506.0 1220.0,474.0"><title>B</title></polygon><text x="1284.0" y="478.0" class="label">B</text>
+<polygon class="blocked" points="836.0,282.0 900.0,314.0 836.0,346.0 772.0,314.0"><title>B</title></polygon><text x="836.0" y="318.0" class="label">B</text>
+<polygon class="blocked" points="1476.0,602.0 1540.0,634.0 1476.0,666.0 1412.0,634.0"><title>B</title></polygon><text x="1476.0" y="638.0" class="label">B</text>
+<polygon class="blocked" points="1348.0,602.0 1412.0,634.0 1348.0,666.0 1284.0,634.0"><title>B</title></polygon><text x="1348.0" y="638.0" class="label">B</text>
+<polygon class="blocked" points="580.0,410.0 644.0,442.0 580.0,474.0 516.0,442.0"><title>B</title></polygon><text x="580.0" y="446.0" class="label">B</text>
+<polygon class="blocked" points="1156.0,762.0 1220.0,794.0 1156.0,826.0 1092.0,794.0"><title>B</title></polygon><text x="1156.0" y="798.0" class="label">B</text>
+<polygon class="cover" points="900.0,378.0 964.0,410.0 900.0,442.0 836.0,410.0"><title>C</title></polygon><text x="900.0" y="414.0" class="label">C</text>
+<polygon class="cover" points="1156.0,570.0 1220.0,602.0 1156.0,634.0 1092.0,602.0"><title>C</title></polygon><text x="1156.0" y="606.0" class="label">C</text>
+<polygon class="cover" points="772.0,506.0 836.0,538.0 772.0,570.0 708.0,538.0"><title>C</title></polygon><text x="772.0" y="542.0" class="label">C</text>
+<polygon class="cover" points="1092.0,666.0 1156.0,698.0 1092.0,730.0 1028.0,698.0"><title>C</title></polygon><text x="1092.0" y="702.0" class="label">C</text>
+<polygon class="stairs" points="1220.0,538.0 1284.0,570.0 1220.0,602.0 1156.0,570.0"><title>S</title></polygon><text x="1220.0" y="574.0" class="label">S</text>
+<polygon class="stairs" points="1284.0,570.0 1348.0,602.0 1284.0,634.0 1220.0,602.0"><title>S</title></polygon><text x="1284.0" y="606.0" class="label">S</text>
+<polygon class="hero" points="580.0,474.0 644.0,506.0 580.0,538.0 516.0,506.0"><title>H</title></polygon><text x="580.0" y="510.0" class="label">H</text>
+<polygon class="hero" points="644.0,506.0 708.0,538.0 644.0,570.0 580.0,538.0"><title>H</title></polygon><text x="644.0" y="542.0" class="label">H</text>
+<polygon class="hero" points="516.0,506.0 580.0,538.0 516.0,570.0 452.0,538.0"><title>H</title></polygon><text x="516.0" y="542.0" class="label">H</text>
+<polygon class="hero" points="580.0,538.0 644.0,570.0 580.0,602.0 516.0,570.0"><title>H</title></polygon><text x="580.0" y="574.0" class="label">H</text>
+<polygon class="enemy" points="1348.0,538.0 1412.0,570.0 1348.0,602.0 1284.0,570.0"><title>E</title></polygon><text x="1348.0" y="574.0" class="label">E</text>
+<polygon class="enemy" points="1412.0,570.0 1476.0,602.0 1412.0,634.0 1348.0,602.0"><title>E</title></polygon><text x="1412.0" y="606.0" class="label">E</text>
+<polygon class="enemy" points="1220.0,602.0 1284.0,634.0 1220.0,666.0 1156.0,634.0"><title>E</title></polygon><text x="1220.0" y="638.0" class="label">E</text>
+<polygon class="enemy" points="1284.0,634.0 1348.0,666.0 1284.0,698.0 1220.0,666.0"><title>E</title></polygon><text x="1284.0" y="670.0" class="label">E</text></g>
+</svg>

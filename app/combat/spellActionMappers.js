@@ -1,9 +1,15 @@
-export function createEffectsFromSpell(spellRecord) {
+import {
+  createSpellActionExtrasFromScaling,
+  getScaledSpellDamage,
+  scaleSlotDamage,
+} from "./spellScaling.js";
+
+export function createEffectsFromSpell(spellRecord, options = {}) {
   const applyEffect = spellRecord.hooks?.applyEffect;
   if (!applyEffect) return [];
   const effects = effectPayloads(applyEffect)
     .flatMap((payload) => {
-      const effect = createConditionEffect(payload, spellRecord);
+      const effect = createConditionEffect(payload, spellRecord, options);
       return Array.isArray(effect) ? effect : [effect];
     })
     .filter(Boolean);
@@ -104,7 +110,14 @@ export function createCombatObjectFromSpell(spellRecord) {
 }
 
 export function getSpellDamage(spellRecord, options = {}) {
-  return options.damage || spellRecord.hooks?.damage?.dice || firstTierDamage(spellRecord.hooks?.damage?.diceByTier) || null;
+  return getScaledSpellDamage(spellRecord, options);
+}
+
+export function createSpellActionExtras(spellRecord, options = {}) {
+  return {
+    ...createSpellActionExtrasFromScaling(spellRecord, options),
+    ...areaExtrasFromEffect(spellRecord.hooks?.applyEffect),
+  };
 }
 
 function effectPayloads(applyEffect) {
@@ -114,8 +127,8 @@ function effectPayloads(applyEffect) {
   return payloads;
 }
 
-function createConditionEffect(payload, spellRecord) {
-  const special = specialEffectFromEffect(payload, spellRecord);
+function createConditionEffect(payload, spellRecord, options = {}) {
+  const special = specialEffectFromEffect(payload, spellRecord, options);
   if (special) return special;
   const movement = forcedMovementFromEffect(payload);
   if (movement) return movement;
@@ -148,7 +161,7 @@ function createConditionEffect(payload, spellRecord) {
   return effect;
 }
 
-function specialEffectFromEffect(payload, spellRecord) {
+function specialEffectFromEffect(payload, spellRecord, options = {}) {
   const kind = String(payload?.kind || "").toLowerCase();
   if (kind === "held_flame" && payload.laterAction) {
     return {
@@ -201,6 +214,67 @@ function specialEffectFromEffect(payload, spellRecord) {
       },
     ];
   }
+  if (kind === "conjured_blade" && payload.attack && payload.damage) {
+    return {
+      type: "grant_action",
+      trigger: "action_resolved",
+      target: "self",
+      duration: spellDuration(spellRecord.duration),
+      action: {
+        id: `${spellRecord.id}_attack`,
+        name: `${spellRecord.name}: Strike`,
+        type: "spell_attack",
+        cost: payload.attack.asBonusActionEachTurn ? "bonus" : "action",
+        range: 1,
+        attackBonus: options.attackBonus ?? 0,
+        damage: scaleSlotDamage(payload.damage.dice, payload.scaling?.per2SlotsAboveBase, options.slotLevel || spellRecord.level),
+        damageType: payload.damage.type || "fire",
+        tags: {
+          spell: true,
+          attackRoll: true,
+          melee: true,
+          harmful: true,
+          requiresHands: true,
+        },
+      },
+    };
+  }
+  if (kind === "grant_bonus_action_ability" && payload.ability?.type === "teleport") {
+    const rangeFt = payload.ability.distanceFt || 30;
+    return {
+      type: "grant_action",
+      trigger: "action_resolved",
+      target: "self",
+      duration: spellDuration(spellRecord.duration),
+      action: {
+        id: `${spellRecord.id}_teleport`,
+        name: payload.name || `${spellRecord.name}: Teleport`,
+        type: "spell_teleport",
+        cost: "bonus",
+        requiresTarget: true,
+        range: feetToSquares(rangeFt),
+        targeting: {
+          shape: "radius",
+          radiusSquares: feetToSquares(rangeFt),
+          radiusFt: rangeFt,
+        },
+        tags: {
+          spell: true,
+          harmful: false,
+          requiresSight: payload.ability.requiresSight === true,
+        },
+      },
+    };
+  }
+  if (kind === "cleanse_one" && Array.isArray(payload.conditions)) {
+    return {
+      type: "remove_conditions",
+      trigger: "action_resolved",
+      target: "target",
+      conditions: payload.conditions.map(normalizeConditionId),
+      maxRemoved: 1,
+    };
+  }
   return null;
 }
 
@@ -222,12 +296,27 @@ function forcedMovementFromEffect(payload) {
       distanceSquares: feetToSquares(payload.distanceFt || payload.distance || 0),
     };
   }
+  if (kind === "random_move") {
+    return {
+      type: "forced_movement",
+      trigger: "failed_save",
+      direction: "away_from_source",
+      distanceSquares: feetToSquares(payload.distanceFt || payload.distance || 0),
+    };
+  }
   return null;
 }
 
 function normalizeObjectShape(shape) {
   if (shape === "sphere" || shape === "cylinder") return "radius";
   return shape || "radius";
+}
+
+function areaExtrasFromEffect(applyEffect) {
+  const kind = String(applyEffect?.kind || "").toLowerCase();
+  if (kind === "area_affects_enemies_only") return { selfCenteredArea: true, targetTeamFilter: "enemies" };
+  if (kind === "area_around_caster") return { selfCenteredArea: true, targetTeamFilter: "enemies" };
+  return {};
 }
 
 function retaliationDamageAmount(payload) {
@@ -328,6 +417,19 @@ function modifierFromEffect(payload, spellRecord) {
       duration: durationFromEffect(payload, spellRecord),
     };
   }
+  if (kind === "penalty_next_save") {
+    return {
+      type: "modifier",
+      trigger: "failed_save",
+      stat: "save",
+      amount: 0,
+      die: payload.amount || payload.die || "1d4",
+      multiplier: -1,
+      target: "target",
+      consumeOn: "outgoing_save",
+      duration: durationFromEffect(payload, spellRecord),
+    };
+  }
   return null;
 }
 
@@ -358,6 +460,7 @@ function conditionFromEffect(payload) {
   if (kind === "apply_condition_bundle" && normalizeConditionId(payload.name) === "wracked_by_pain") return "wracked_by_pain";
   if (kind === "no_reactions_on_fail") return "reactions_blocked";
   if (kind === "no_opportunity_attacks") return "opportunity_attacks_blocked";
+  if (kind === "no_healing") return "healing_blocked";
   if (kind === "charmed") return "charmed";
   if (kind === "frightened") return "frightened";
   if (kind === "condition" || kind === "apply_condition") return normalizeConditionId(payload.name || payload.condition);
@@ -405,15 +508,6 @@ function spellDuration(duration = {}) {
   return { kind: "rounds", rounds, tick: "turn_end" };
 }
 
-function firstTierDamage(diceByTier) {
-  if (!diceByTier || typeof diceByTier !== "object") return null;
-  const firstKey = Object.keys(diceByTier)
-    .map(Number)
-    .filter(Number.isFinite)
-    .sort((a, b) => a - b)[0];
-  const value = diceByTier[firstKey];
-  return typeof value === "string" ? value : value?.dice || null;
-}
 
 function normalizeConditionId(name) {
   return name ? String(name).trim().toLowerCase().replace(/\s+/g, "_") : null;

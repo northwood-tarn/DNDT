@@ -1,0 +1,57 @@
+Generate one isolated placed asset for "0 Plateau Assault".
+
+ASSET CONTRACT
+
+Asset id: cover_half_x02_y08
+Kind: cover
+Role: half_cover
+Label: half-cover object
+Source: terrain half cover
+Footprint cells: x02 y08
+Footprint size: 1 x 1 isometric grid cells
+Blocks movement: no
+Emits light: no
+
+PRIMARY REQUEST
+
+Create only this object as a separate compositable isometric asset. It will be placed over the base terrain by code, so do not include surrounding map terrain except a minimal contact shadow inside the footprint.
+
+OUTPUT REQUIREMENTS
+
+1. Transparent PNG preferred. If native transparency is unavailable, use a perfectly flat #00ff00 chroma-key background.
+2. Isometric camera matching a 128 x 64 diamond grid.
+3. The object's base/contact footprint must fit exactly inside the listed cells.
+4. The object may visually rise upward, but its base must not expand outside its footprint.
+5. No extra props, ground details, labels, UI, grid lines, characters, or duplicate objects.
+6. Do not include a rectangular floor tile. The asset should be a cutout object.
+7. Include a soft contact shadow only if it remains inside the footprint.
+8. Provide or record an explicit localAnchorPixel in the source image: the pixel that must land on the listed final-map anchor.
+9. Provide or record explicit localFootprintBounds in the source image: the pixel bounds of the object's contact/base footprint, not the full visible branches/flames/silhouette.
+10. Do not rely on the generated bitmap's cropped bounding box for placement. Cropped-image bottom-center is not a valid registration method.
+
+STYLE
+
+DNDT dark fantasy, painterly negative-ink direction, restrained detail, clear silhouette, readable tactical object. Match the gloomy underground battlefield tone.
+
+SKETCH NOTE CONTEXT
+
+Cover is broken columns, strewn across the ground level. Thin and uneven stony paths run up the sides of the area to the top. Above, on top of a large rocky outcrop a large dry tree has been set alight to cast light in the area.
+
+Use this note only where it describes this asset's material or identity. Do not create any other object mentioned in the note.
+
+PLACEMENT METADATA
+
+Anchor pixel in final 1920 x 1080 map: x416, y492
+Pixel bounds of footprint: left 352, top 428, right 480, bottom 492
+Required asset registration: localAnchorPixel and localFootprintBounds must be captured before compositing.
+Z index: 10
+
+REJECTION CONDITIONS
+
+Reject the asset if:
+- the base footprint is too wide or shifted for the listed cells
+- it includes additional tactical objects
+- it contains visible grid, text, UI, or labels
+- it includes surrounding terrain that would fight the base terrain image
+- it lacks explicit localAnchorPixel or localFootprintBounds registration
+- it cannot be cleanly composited over the reserved footprint

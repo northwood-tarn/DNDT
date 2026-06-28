@@ -1,6 +1,6 @@
 import { getActionUses, getItemQuantity, getMovementRemaining, syncContextualActions } from "./actor.js";
 import { classifyCover, getCoverAt } from "./cover.js";
-import { actorAt, findReachable, keyOf } from "./grid.js";
+import { actorAt, distance, findReachable, keyOf } from "./grid.js";
 import { currentActor, livingActors } from "./resolver.js";
 import { canTargetAction, canUseAction } from "./rules.js";
 
@@ -32,11 +32,12 @@ export function getValidTargets(snapshot, actorId, actionId) {
   const action = getActionById(actor, actionId);
   if (!actor || !action || actor.hp <= 0 || !canSelectCombatAction(snapshot, actorId, actionId)) return [];
   if (action.requiresTarget === false) return [];
-  if (action.type === "target_test" || action.type === "spell_area_save" || action.type === "spell_object") return [];
+  if (action.type === "target_test" || action.targeting?.shape) return [];
 
   const candidates = action.allowDefeatedTarget ? (snapshot.actors || []) : livingActors(snapshot);
   return candidates
-    .filter((target) => canTargetAction(snapshot, actor, action, target).ok);
+    .filter((target) => canTargetAction(snapshot, actor, action, target).ok)
+    .filter((target) => !isHealingAction(action) || canReceiveHealing(target));
 }
 
 export function getValidTargetKeys(snapshot, actorId, actionId) {
@@ -107,7 +108,14 @@ export function canSelectCombatAction(snapshot, actorId, actionId) {
   if (!actor || !action || actor.hp <= 0 || !canUseAction(actor, action).ok) return false;
   if (action.itemId && getItemQuantity(actor, action.itemId) <= 0) return false;
   if (action.type === "consumable" && actor.hp >= actor.maxHp) return false;
-  if ((action.type === "self_heal" || action.type === "spell_self_heal") && actor.hp >= actor.maxHp) return false;
+  if (action.type === "self_heal" && actor.hp >= actor.maxHp) return false;
+  if (isHealingAction(action) && action.requiresTarget === false && actor.hp >= actor.maxHp) return false;
+  if (isHealingAction(action) && action.requiresTarget !== false) {
+    return livingActors(snapshot).some((target) => canReceiveHealing(target) && canTargetAction(snapshot, actor, action, target).ok);
+  }
+  if (action.type === "feature_action" && action.requiresTarget === false && action.targeting?.mode === "nearby_actors") {
+    return hasNearbyFeatureTargets(snapshot, actor, action);
+  }
   return true;
 }
 
@@ -139,7 +147,7 @@ export function hasAnyUsefulOption(snapshot, actorId) {
   const hasMovement = getMovementRemaining(actor) > 0 && getReachableSquares(snapshot, actor.id).length > 1;
   const hasUsableAction = actor.actions.some((action) => {
     if (!canSelectCombatAction(snapshot, actor.id, action.id)) return false;
-    if (action.type === "target_test" || action.type === "spell_area_save" || action.type === "spell_object") return true;
+    if (action.type === "target_test" || action.targeting?.shape) return true;
     return action.requiresTarget === false || getValidTargets(snapshot, actor.id, action.id).length > 0;
   });
   return hasMovement || hasUsableAction;
@@ -162,4 +170,24 @@ export function canPlayerAct(snapshot, actorId, uiBusy = false) {
 
 function getActorById(snapshot, actorId) {
   return snapshot.actors.find((actor) => actor.id === actorId) || null;
+}
+
+function isHealingAction(action) {
+  return action?.type === "spell_self_heal";
+}
+
+function canReceiveHealing(actor) {
+  return actor && actor.hp > 0 && actor.hp < actor.maxHp;
+}
+
+function hasNearbyFeatureTargets(snapshot, actor, action) {
+  return livingActors(snapshot)
+    .filter((target) => target.id !== actor.id)
+    .filter((target) => distance(actor.position, target.position) <= (action.range || 0))
+    .some((target) => {
+      const team = action.targetFilter?.team;
+      if (team === "enemies") return target.team !== actor.team;
+      if (team === "allies") return target.team === actor.team;
+      return true;
+    });
 }

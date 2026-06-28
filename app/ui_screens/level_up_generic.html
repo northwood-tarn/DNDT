@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Screen 1: Generic Level Up</title>
+    <link rel="stylesheet" href="../styles/designViewport.css">
+    <link rel="stylesheet" href="./inventory_small.css">
+    <link rel="stylesheet" href="./level_up_screen2.css">
+  </head>
+  <body>
+    <main class="inventory-screen level-up-screen design-viewport" aria-label="Generic level up">
+      <div class="fog-layer fog-one" aria-hidden="true"></div>
+      <div class="fog-layer fog-two" aria-hidden="true"></div>
+      <div class="fog-layer fog-three" aria-hidden="true"></div>
+
+      <section class="level-column" aria-label="Level up controls">
+        <header class="level-title">
+          <p class="screen-kicker">Level up</p>
+          <h1 id="levelTitle">Level 2</h1>
+          <p id="characterLine" class="level-subtitle"></p>
+        </header>
+
+        <div id="levelContent" class="choice-scroll"></div>
+        <button id="completeLevelButton" class="complete-button" type="button">Complete level up</button>
+      </section>
+
+      <aside class="detail-column" aria-label="Details">
+        <section class="detail-card">
+          <p class="screen-kicker">Details</p>
+          <h2 id="detailTitle"></h2>
+          <div id="detailText"></div>
+        </section>
+      </aside>
+    </main>
+    <script type="module" src="./level_up_generic.js"></script>
+  </body>
+</html>

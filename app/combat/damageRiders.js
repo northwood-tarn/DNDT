@@ -1,6 +1,8 @@
 import { spendResourceUse } from "./actor.js";
 import { getActionTags } from "./actionTags.js";
+import { livingActors } from "./combatState.js";
 import { hasStraightMovementThisTurn } from "./featureHooks.js";
+import { distance } from "./grid.js";
 import { targetHasRequiredMark } from "./marks.js";
 
 const ABILITY_TOKEN_TO_MOD = {
@@ -71,6 +73,7 @@ function damageRiderMatches(source, target, action, rider, options) {
   if (rider.oncePerTurn && source?.turnFlags?.damageRiders?.[rider.id]) return false;
   if (rider.oncePerCombat && source?.combatFlags?.damageRiders?.[rider.id]) return false;
   if (rider.resourceId && getResourceUses(source, rider.resourceId) <= 0) return false;
+  if (rider.requiresSourceCondition && !(source?.conditions || []).some((condition) => condition.id === rider.requiresSourceCondition)) return false;
   if (Number.isFinite(rider.requiresStraightMovementBeforeActionSquares) && !hasStraightMovementThisTurn(source, rider.requiresStraightMovementBeforeActionSquares)) return false;
   if (rider.targetHpBelowFraction != null && !targetHpBelowFraction(target, rider.targetHpBelowFraction, options.trigger)) return false;
   if (rider.onlyRound != null && options.snapshot?.round !== rider.onlyRound) return false;
@@ -78,6 +81,8 @@ function damageRiderMatches(source, target, action, rider, options) {
   if (rider.requiresMark && !targetHasRequiredMark(source, target, rider.requiresMark)) return false;
   if (Array.isArray(rider.actionTypes) && !rider.actionTypes.includes(action?.type)) return false;
   if (Array.isArray(rider.actionTags) && !matchesActionTags(action, rider.actionTags)) return false;
+  if (Array.isArray(rider.requiresAnyActionTag) && !matchesAnyActionTag(action, rider.requiresAnyActionTag)) return false;
+  if (rider.requiresAttackAdvantageOrAdjacentAlly && !hasAttackAdvantageOrAdjacentAlly(source, target, options)) return false;
   if (Array.isArray(rider.damageTypes) && !rider.damageTypes.includes(action?.damageType)) return false;
   return true;
 }
@@ -85,6 +90,25 @@ function damageRiderMatches(source, target, action, rider, options) {
 function matchesActionTags(action, requiredTags) {
   const tags = getActionTags(action);
   return requiredTags.every((tag) => tags[tag] === true);
+}
+
+function matchesAnyActionTag(action, requiredTags) {
+  const tags = getActionTags(action);
+  return requiredTags.some((tag) => tags[tag] === true);
+}
+
+function hasAttackAdvantageOrAdjacentAlly(source, target, options) {
+  if (options.attackRoll?.mode === "advantage") return true;
+  return hasAdjacentAllyThreateningTarget(source, target, options.snapshot);
+}
+
+function hasAdjacentAllyThreateningTarget(source, target, snapshot) {
+  if (!source || !target || !snapshot) return false;
+  return livingActors(snapshot).some((ally) =>
+    ally.id !== source.id &&
+    ally.team === source.team &&
+    distance(ally.position, target.position) === 1
+  );
 }
 
 function targetHpBelowFraction(target, fraction, trigger) {
@@ -103,7 +127,13 @@ function getResourceUses(actor, resourceId) {
 function resolveFormulaToken(source, token) {
   if (token === "proficiency_bonus") return source?.proficiencyBonus || 0;
   if (token === "level") return source?.level || 1;
+  if (token === "sneak_attack_dice") return sneakAttackDice(source?.level || 1);
   const ability = ABILITY_TOKEN_TO_MOD[token];
   if (!ability) return null;
   return Math.max(0, source?.abilityMods?.[ability] || 0);
+}
+
+function sneakAttackDice(level) {
+  const dice = Math.max(1, Math.ceil((Math.max(1, level) || 1) / 2));
+  return `${dice}d6`;
 }

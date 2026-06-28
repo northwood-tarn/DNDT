@@ -6,11 +6,13 @@ import { runCreationStepTests } from "./character_tests/creation_steps.test.js";
 import { runFeatContractTests } from "./character_tests/feat_contract.test.js";
 import { runGeneratedVariantTests } from "./character_tests/generated_variants.test.js";
 import { runHighLevelReadinessTests } from "./character_tests/high_level_readiness.test.js";
+import { runLevelUpManifestTests } from "./character_tests/level_up_manifest.test.js";
 import { runNarrativeAccessTests } from "./character_tests/narrative_access.test.js";
 import { runRepresentativeBuildTests } from "./character_tests/representative_builds.test.js";
 import { runReportsAndPreviewTests } from "./character_tests/reports_and_preview.test.js";
 import { runSubclassReadinessTests } from "./character_tests/subclass_readiness.test.js";
 import { runSpellcastingFrameTests } from "./character_tests/spellcasting_frame.test.js";
+import { runSpeciesFeatureTests } from "./character_tests/species_features.test.js";
 import { runStepCreatorPipelineTests } from "./character_tests/step_creator_pipeline.test.js";
 
 async function main() {
@@ -22,11 +24,13 @@ async function main() {
   runFeatContractTests();
   runGeneratedVariantTests();
   runHighLevelReadinessTests();
+  runLevelUpManifestTests();
   runNarrativeAccessTests();
   runRepresentativeBuildTests();
   runSubclassReadinessTests();
   runReportsAndPreviewTests();
   runSpellcastingFrameTests();
+  runSpeciesFeatureTests();
   runStepCreatorPipelineTests();
   console.log("[character:test] OK");
 }

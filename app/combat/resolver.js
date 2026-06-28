@@ -8,6 +8,7 @@ import {
   removeCondition,
   resetTurnEconomy,
   spendActionCost,
+  spendResourceUse,
   spendItem,
   spendMovement,
   syncContextualActions,
@@ -23,6 +24,7 @@ import {
   resolveContextualEndEffect,
   resolveDash,
   resolveDodge,
+  resolveHealingAction,
   resolveSelfHeal,
 } from "./basicActionResolvers.js";
 import { resolveFeatureAction } from "./featureActionResolver.js";
@@ -39,7 +41,12 @@ import {
   resolveSaveSpell,
 } from "./combatResolution.js";
 import { combatObjectsAt } from "./combatObjects.js";
+import { combatObjectContains } from "./combatObjects.js";
+import { applyDamageAmount, rollSaveD20 } from "./combatEffectsResolution.js";
+import { rollSaveModifier } from "./modifiers.js";
 import { canMoveTo, canTargetAction, canUseAction } from "./rules.js";
+import { applySpellCastEndEffects } from "./spellCastEndEffects.js";
+import { spendActionSpellSlot } from "./spellSlots.js";
 import { resolveTeleport } from "./teleportAction.js";
 import { resolveCompoundWeaponAttack } from "./weaponMasteryActions.js";
 export { checkOutcome, currentActor, getActor, livingActors } from "./combatState.js";
@@ -47,11 +54,13 @@ export { checkOutcome, currentActor, getActor, livingActors } from "./combatStat
 export function startTurn(snapshot, actor, log, dice = null) {
   const droppedEnemyOnPreviousTurn = actor?.combatFlags?.droppedEnemyOnLastTurn === true;
   processOngoingEffects(snapshot, actor, "turn_start", dice, log);
+  resolveLastLightOverloads(snapshot, actor, dice, log);
   resetTurnEconomy(actor, snapshot);
   actor.turnFlags.droppedEnemyOnPreviousTurn = droppedEnemyOnPreviousTurn;
   actor.combatFlags ??= {};
   actor.combatFlags.droppedEnemyOnLastTurn = false;
   dispatchActorTrigger(snapshot, "turn_start", actor, dice, log);
+  syncLastLightCollapseActions(snapshot, actor);
   syncContextualActions(actor);
   log.add("turn.start", {
     round: snapshot.round,
@@ -171,6 +180,11 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
     return resolved;
   }
   if (action.type === "feature_action") {
+    if (action.actionKind === "collapse_combat_object") {
+      const resolved = resolveCollapseCombatObject(snapshot, actor, action, dice, log);
+      cleanupInvalidSourceConditions(snapshot, log);
+      return resolved;
+    }
     const resolved = resolveFeatureAction(snapshot, actor, action, targetId, dice, log);
     cleanupInvalidSourceConditions(snapshot, log);
     return resolved;
@@ -185,17 +199,43 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
     cleanupInvalidSourceConditions(snapshot, log);
     return resolved;
   }
-  if (action.type === "self_heal" || action.type === "spell_self_heal") {
+  if (action.type === "self_heal") {
     const resolved = resolveSelfHeal(snapshot, actor, action, dice, log);
     cleanupInvalidSourceConditions(snapshot, log);
     return resolved;
   }
-  if (action.type === "spell_teleport") { const resolved = resolveTeleport(snapshot, actor, action, targetId, log); cleanupInvalidSourceConditions(snapshot, log); return resolved; }
+  if (action.type === "spell_self_heal") {
+    const target = action.requiresTarget === false ? actor : getActor(snapshot, targetActorId(targetId));
+    const targetLegality = action.requiresTarget === false
+      ? { ok: true }
+      : canTargetAction(snapshot, actor, action, target);
+    if (!targetLegality.ok) {
+      log.add("target.invalid", {
+        round: snapshot.round,
+        actorId: actor.id,
+        actorName: actor.name,
+        targetName: target?.name || targetId || "target",
+        reason: targetLegality.reason,
+      });
+      return false;
+    }
+    const resolved = resolveHealingAction(snapshot, actor, target, action, dice, log);
+    cleanupInvalidSourceConditions(snapshot, log);
+    return resolved;
+  }
+  if (action.type === "spell_teleport") {
+    const resolved = resolveTeleport(snapshot, actor, action, targetId, log);
+    if (resolved) afterResolvedAction(snapshot, actor, action, log);
+    cleanupInvalidSourceConditions(snapshot, log);
+    return resolved;
+  }
   if (action.type === "spell_effect" && action.requiresTarget === false) {
     beginConcentrationForCast(snapshot, actor, action, log);
     applyActionResolvedEffects(snapshot, actor, actor, action, log);
     spendActionCost(actor, action.cost);
+    spendActionLinkedResources(actor, action);
     spendConsumableForAction(actor, action);
+    afterResolvedAction(snapshot, actor, action, log);
     cleanupInvalidSourceConditions(snapshot, log);
     return true;
   }
@@ -212,7 +252,67 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
       : resolveAreaSaveSpell(snapshot, actor, action, targetId, dice, log);
     if (!resolved) return false;
     spendActionCost(actor, action.cost);
+    spendActionLinkedResources(actor, action);
     spendConsumableForAction(actor, action);
+    afterResolvedAction(snapshot, actor, action, log);
+    checkOutcome(snapshot, log);
+    cleanupInvalidSourceConditions(snapshot, log);
+    return true;
+  }
+
+  if (isIndividualMultiTargetAction(action)) {
+    const rawTargetIds = targetActorIds(targetId);
+    const targetIds = (!isExplicitTargetList(targetId) && action.targetAssignments === "per_hit" && rawTargetIds.length === 1)
+      ? Array(action.maxTargets).fill(rawTargetIds[0])
+      : rawTargetIds.slice(0, action.maxTargets);
+    const targets = targetIds
+      .map((id) => getActor(snapshot, id))
+      .filter(Boolean);
+    const selectedTargets = action.allowRepeatedTargets ? targets : uniqueActors(targets).slice(0, action.maxTargets);
+    const invalidTarget = selectedTargets.find((target) => !canTargetAction(snapshot, actor, action, target).ok);
+    if (!selectedTargets.length || invalidTarget) {
+      const targetLegality = invalidTarget ? canTargetAction(snapshot, actor, action, invalidTarget) : { reason: "no valid targets selected" };
+      log.add("target.invalid", {
+        round: snapshot.round,
+        actorId: actor.id,
+        actorName: actor.name,
+        targetName: invalidTarget?.name || "targets",
+        reason: targetLegality.reason,
+      });
+      return false;
+    }
+    beginConcentrationForCast(snapshot, actor, action, log);
+    const startEventIndex = log.events.length;
+    for (const [index, target] of selectedTargets.entries()) {
+      const gate = resolveTargetSaveGate(snapshot, actor, target, action, dice, log);
+      if (!gate.ok) continue;
+      if (action.type === "spell_effect") {
+        applyActionResolvedEffects(snapshot, actor, target, action, log);
+      } else if (action.type === "spell_save") {
+        resolveSaveSpell(snapshot, actor, target, action, dice, log);
+      } else if (action.type === "spell_auto_damage") {
+        resolveAutoDamageSpell(snapshot, actor, target, {
+          ...action,
+          id: `${action.id}_${index + 1}`,
+          name: `${action.name} ${index + 1}`,
+          hits: action.targetAssignments === "per_hit" ? 1 : action.hits,
+        }, dice, log);
+      } else if (action.type === "spell_attack") {
+        resolveAttack(snapshot, actor, target, {
+          ...action,
+          id: `${action.id}_${index + 1}`,
+          name: `${action.name} ${index + 1}`,
+          repeatAttacks: action.targetAssignments === "per_hit" ? 1 : action.repeatAttacks,
+          singleRepeatedAttack: true,
+        }, dice, log);
+      }
+    }
+    applySpellCastEndEffects(snapshot, actor, action, log, startEventIndex);
+    spendActionCost(actor, action.cost);
+    spendActionLinkedResources(actor, action);
+    spendConsumableForAction(actor, action);
+    afterResolvedAction(snapshot, actor, action, log);
+    clearOffenseEndedConditions(actor, action, log, snapshot);
     checkOutcome(snapshot, log);
     cleanupInvalidSourceConditions(snapshot, log);
     return true;
@@ -242,6 +342,8 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
   if (action.type === "push") {
     resolvePush(snapshot, actor, target, action, dice, log);
     spendActionCost(actor, action.cost);
+    spendActionLinkedResources(actor, action);
+    afterResolvedAction(snapshot, actor, action, log);
     checkOutcome(snapshot, log);
     cleanupInvalidSourceConditions(snapshot, log);
     return true;
@@ -250,7 +352,9 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
   if (action.type === "spell_effect") {
     applyActionResolvedEffects(snapshot, actor, target, action, log);
     spendActionCost(actor, action.cost);
+    spendActionLinkedResources(actor, action);
     spendConsumableForAction(actor, action);
+    afterResolvedAction(snapshot, actor, action, log);
     cleanupInvalidSourceConditions(snapshot, log);
     return true;
   }
@@ -267,7 +371,9 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
 
   markActionResolvedForTurn(actor, action);
   spendActionCost(actor, action.cost);
+  spendActionLinkedResources(actor, action);
   spendConsumableForAction(actor, action);
+  afterResolvedAction(snapshot, actor, action, log);
   clearOffenseEndedConditions(actor, action, log, snapshot);
   checkOutcome(snapshot, log);
   cleanupInvalidSourceConditions(snapshot, log);
@@ -292,6 +398,235 @@ function spendConsumableForAction(actor, action) {
   spendItem(actor, action.itemId, 1);
 }
 
+function spendActionLinkedResources(actor, action) {
+  spendActionSpellSlot(actor, action);
+  spendResourceUse(actor, action.resourceId);
+  for (const resourceId of action.additionalResourceIds || []) spendResourceUse(actor, resourceId);
+}
+
+function afterResolvedAction(snapshot, actor, action, log) {
+  if (action.forbiddenTranscriptionRepeat) {
+    clearForbiddenTranscriptionRepeat(actor);
+    return;
+  }
+  if (shouldOfferForbiddenTranscription(actor, action)) {
+    grantForbiddenTranscriptionRepeat(snapshot, actor, action, log);
+    return;
+  }
+  clearForbiddenTranscriptionRepeat(actor);
+}
+
+function shouldOfferForbiddenTranscription(actor, action) {
+  if (!action?.type?.startsWith("spell_")) return false;
+  if (action.forbiddenTranscriptionRepeat) return false;
+  if (action.spellLevel <= 0) return false;
+  if (actor.role !== "warlock") return false;
+  return (actor.resources || []).some((resource) => resource.id === "forbidden_transcription" && (resource.current ?? resource.max ?? 0) > 0);
+}
+
+function grantForbiddenTranscriptionRepeat(snapshot, actor, action, log) {
+  actor.turnFlags ??= {};
+  actor.turnFlags.contextualActions = [createForbiddenTranscriptionAction(action)];
+  syncContextualActions(actor);
+  log.add("action.granted", {
+    round: snapshot.round,
+    sourceId: actor.id,
+    sourceName: actor.name,
+    targetId: actor.id,
+    targetName: actor.name,
+    actionId: actor.turnFlags.contextualActions[0].id,
+    actionName: actor.turnFlags.contextualActions[0].name,
+    sourceActionId: action.id,
+  });
+}
+
+function createForbiddenTranscriptionAction(action) {
+  return {
+    ...structuredClone(action),
+    id: `forbidden_transcription_${action.id}`,
+    name: `Forbidden Transcription: ${action.name}`,
+    cost: "free",
+    resourceId: "forbidden_transcription",
+    uses: null,
+    contextual: true,
+    forbiddenTranscriptionRepeat: true,
+    description: `Cast ${action.name} again without expending a spell slot.`,
+  };
+}
+
+function clearForbiddenTranscriptionRepeat(actor) {
+  if (!actor.turnFlags?.contextualActions?.length) return;
+  actor.turnFlags.contextualActions = actor.turnFlags.contextualActions
+    .filter((action) => !action.forbiddenTranscriptionRepeat);
+  syncContextualActions(actor);
+}
+
+function syncLastLightCollapseActions(snapshot, actor) {
+  const actions = (actor.turnFlags?.contextualActions || []).filter((action) => action.actionKind !== "collapse_combat_object");
+  for (const object of snapshot.combatObjects || []) {
+    if (object.sourceActorId !== actor.id || object.sourceActionId !== "last_light" || !object.collapse?.manual) continue;
+    const manualTimer = timerForCollapse(object, object.collapse.manual);
+    if (!manualTimer || manualTimer.active === false) continue;
+    actions.push({
+      id: `collapse_${object.id}`,
+      name: "Collapse Last Light",
+      type: "feature_action",
+      actionKind: "collapse_combat_object",
+      cost: "bonus",
+      requiresTarget: false,
+      objectId: object.id,
+      contextual: true,
+      tags: { feature: true, harmful: true },
+    });
+  }
+  actor.turnFlags ??= {};
+  actor.turnFlags.contextualActions = actions;
+}
+
+function resolveLastLightOverloads(snapshot, actor, dice, log) {
+  if (!dice) return;
+  for (const object of [...(snapshot.combatObjects || [])]) {
+    if (object.sourceActorId !== actor.id || object.sourceActionId !== "last_light") continue;
+    const collapse = object.collapse?.automatic;
+    const timer = timerForCollapse(object, collapse);
+    if (!collapse || !timer?.active || !Number.isFinite(timer.explodesAtDice) || timer.currentDice < timer.explodesAtDice) continue;
+    const action = {
+      id: `overload_${object.id}`,
+      name: `${object.name} Overload`,
+      spellSaveDC: object.spellSaveDC,
+    };
+    const damage = damageForCollapse(object, collapse);
+    const targets = collapseTargets(snapshot, actor, object, collapse);
+    for (const target of targets) resolveCollapseDamage(snapshot, actor, target, action, object, collapse, damage, dice, log);
+    timer.active = false;
+    if (collapse.removeObject !== false) {
+      snapshot.combatObjects = (snapshot.combatObjects || []).filter((item) => item.id !== object.id);
+    }
+    log.add("object.removed", {
+      round: snapshot.round,
+      actorId: actor.id,
+      actorName: actor.name,
+      objectId: object.id,
+      objectName: object.name,
+      actionId: action.id,
+      reason: "overloaded",
+    });
+  }
+}
+
+function resolveCollapseCombatObject(snapshot, actor, action, dice, log) {
+  const object = (snapshot.combatObjects || []).find((item) => item.id === action.objectId);
+  if (!object || object.sourceActorId !== actor.id) {
+    log.add("target.invalid", {
+      round: snapshot.round,
+      actorId: actor.id,
+      actorName: actor.name,
+      targetName: action.name,
+      reason: "missing combat object",
+    });
+    return false;
+  }
+  const collapse = object.collapse?.manual || {};
+  const timer = timerForCollapse(object, collapse);
+  if (timer?.active === false) {
+    log.add("target.invalid", {
+      round: snapshot.round,
+      actorId: actor.id,
+      actorName: actor.name,
+      targetName: action.name,
+      reason: "timer inactive",
+    });
+    return false;
+  }
+  const damage = damageForCollapse(object, collapse);
+  const targets = collapseTargets(snapshot, actor, object, collapse);
+  for (const target of targets) {
+    resolveCollapseDamage(snapshot, actor, target, action, object, collapse, damage, dice, log);
+  }
+  snapshot.combatObjects = (snapshot.combatObjects || []).filter((item) => item.id !== object.id);
+  spendActionCost(actor, action.cost);
+  actor.turnFlags.contextualActions = (actor.turnFlags.contextualActions || []).filter((item) => item.id !== action.id);
+  syncContextualActions(actor);
+  log.add("object.removed", {
+    round: snapshot.round,
+    actorId: actor.id,
+    actorName: actor.name,
+    objectId: object.id,
+    objectName: object.name,
+    actionId: action.id,
+    reason: "collapsed",
+  });
+  return true;
+}
+
+function timerForCollapse(object, collapse) {
+  const timerId = collapse?.timer || collapse?.damage?.diceFromTimer;
+  if (!timerId) return null;
+  return object.timers?.[timerId] || null;
+}
+
+function damageForCollapse(object, collapse) {
+  const timer = timerForCollapse(object, collapse);
+  if (timer) return `${timer.currentDice || timer.startDice || 4}${timer.die || "d8"}`;
+  return `${object.intensity?.currentDice || object.intensity?.startDice || 4}${object.intensity?.die || "d8"}`;
+}
+
+function collapseTargets(snapshot, actor, object, collapse) {
+  return livingActors(snapshot)
+    .filter((target) => collapse.target !== "enemies_in_area" || target.team !== actor.team)
+    .filter((target) => combatObjectContains(snapshot, object, target.position));
+}
+
+function resolveCollapseDamage(snapshot, actor, target, action, object, collapse, damage, dice, log) {
+  if (!dice) return;
+  const save = collapse.save || {};
+  const ability = String(save.ability || "constitution").slice(0, 3).toLowerCase();
+  const dc = object.spellSaveDC || action.spellSaveDC || 10;
+  const saveModifier = rollSaveModifier(snapshot, target, ability, { name: action.name, saveAbility: ability }, dice);
+  const baseBonus = target.saves?.[ability] || 0;
+  const bonus = baseBonus + saveModifier.total;
+  const roll = rollSaveD20(target, { name: action.name, saveAbility: ability }, dice, snapshot, actor);
+  const total = roll.roll + bonus;
+  const success = !roll.autoFail && total >= dc;
+  log.add("save.roll", {
+    round: snapshot.round,
+    actorId: actor.id,
+    actorName: actor.name,
+    targetId: target.id,
+    targetName: target.name,
+    spellName: action.name,
+    ability,
+    roll: roll.roll,
+    rolls: roll.rolls,
+    mode: roll.mode,
+    reasons: roll.reasons,
+    bonus,
+    baseBonus,
+    modifierReasons: saveModifier.reasons,
+    cover: null,
+    effectiveBonus: bonus,
+    total,
+    dc,
+  });
+  log.add("save.result", {
+    round: snapshot.round,
+    actorId: actor.id,
+    actorName: actor.name,
+    targetId: target.id,
+    targetName: target.name,
+    spellName: action.name,
+    success,
+  });
+  const rolled = dice.rollDamage(damage);
+  const amount = success && save.onSave === "half" ? Math.floor(Math.max(0, rolled.total) / 2) : Math.max(0, rolled.total);
+  applyDamageAmount(snapshot, actor, target, {
+    id: action.id,
+    name: action.name,
+    damage,
+    damageType: collapse.damage?.type || "radiant",
+  }, rolled, amount, dice, log);
+}
+
 function beginConcentrationForCast(snapshot, actor, action, log) { if (action?.concentration) beginConcentration(snapshot, actor, action, log); }
 
 function hasAreaAnchor(targetPayload) {
@@ -302,6 +637,34 @@ function hasAreaAnchor(targetPayload) {
 function targetActorId(targetPayload) {
   if (typeof targetPayload === "string") return targetPayload;
   return targetPayload?.targetId || null;
+}
+
+function targetActorIds(targetPayload) {
+  if (Array.isArray(targetPayload)) return targetPayload;
+  if (Array.isArray(targetPayload?.targetIds)) return targetPayload.targetIds;
+  const single = targetActorId(targetPayload);
+  return single ? [single] : [];
+}
+
+function isExplicitTargetList(targetPayload) {
+  return Array.isArray(targetPayload) || Array.isArray(targetPayload?.targetIds);
+}
+
+function isIndividualMultiTargetAction(action) {
+  return action?.requiresTarget !== false &&
+    Number.isFinite(action.maxTargets) &&
+    action.maxTargets > 1 &&
+    !action.targeting?.shape &&
+    ["spell_effect", "spell_save", "spell_attack", "spell_auto_damage"].includes(action.type);
+}
+
+function uniqueActors(targets) {
+  const seen = new Set();
+  return targets.filter((target) => {
+    if (seen.has(target.id)) return false;
+    seen.add(target.id);
+    return true;
+  });
 }
 
 function actionWithTargetChoices(action, targetPayload) {

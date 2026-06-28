@@ -27,7 +27,7 @@ export function resolveClass(sheet, draft, classRegistry = CLASSES) {
   sheet.identity.classId = classRecord.id;
   sheet.identity.className = classRecord.name;
   sheet.durability.hitDice = `d${classRecord.hitDie}`;
-  sheet.durability.maxHp = calculateLevelOneHp(sheet, classRecord);
+  sheet.durability.maxHp = calculateMaxHp(sheet, classRecord);
   addUniqueAll(sheet.proficiencies.armor, classRecord.armor || []);
   addUniqueAll(sheet.proficiencies.weapons, classRecord.weapons || []);
   addUniqueAll(sheet.proficiencies.tools, classRecord.tools || []);
@@ -204,14 +204,19 @@ function resolvePactChoice(sheet, draft, classRecord, choice) {
   }
 }
 
-function calculateLevelOneHp(sheet, classRecord) {
-  const base = classRecord.hp?.level1?.base;
-  if (!Number.isFinite(base)) return null;
-  const conMod = classRecord.hp.level1.addCon ? sheet.abilities.constitution.modifier : 0;
+function calculateMaxHp(sheet, classRecord) {
+  const levelOneBase = classRecord.hp?.level1?.base;
+  if (!Number.isFinite(levelOneBase)) return null;
+  const level = Math.max(1, sheet.identity.level || 1);
+  const conMod = sheet.abilities.constitution.modifier || 0;
+  const levelOneCon = classRecord.hp.level1.addCon ? conMod : 0;
+  const laterLevelBase = classRecord.hp?.perLevel?.base || 0;
+  const laterLevelCon = classRecord.hp?.perLevel?.addCon ? conMod : 0;
+  const laterLevels = Math.max(0, level - 1);
   const bonus = (sheet.durability.hitPointBonuses || []).reduce((total, item) => (
     total + (Number.isFinite(item.total) ? item.total : 0)
   ), 0);
-  return base + conMod + bonus;
+  return levelOneBase + levelOneCon + laterLevels * (laterLevelBase + laterLevelCon) + bonus;
 }
 
 function addFeatureSet(sheet, draft, featuresByLevel, source) {
@@ -251,11 +256,12 @@ function featureMatchesCondition(feature, sheet, draft) {
 function applyFeatureEffects(sheet, draft, feature, featureId, level) {
   const effects = feature.effects || {};
   for (const resource of effects.resources || []) {
+    const max = resolveResourceMax(resource.max, sheet, feature);
     sheet.resources.push({
       id: resource.id,
       name: resource.name,
-      max: resource.max,
-      current: resource.max,
+      max,
+      current: max,
       recovery: resource.recovery,
       source: featureId,
     });
@@ -263,6 +269,8 @@ function applyFeatureEffects(sheet, draft, feature, featureId, level) {
   for (const expertise of effects.expertise || []) {
     addExpertise(sheet, { ...expertise, source: featureId });
   }
+  addUniqueAll(sheet.proficiencies.skills, effects.proficiencies?.skills || []);
+  addUniqueAll(sheet.proficiencies.tools, effects.proficiencies?.tools || []);
   addUniqueAll(sheet.durability.resistances, effects.resistances || []);
   for (const advancement of effects.advancement || []) {
     if (advancement.type === "ability_score_improvement") {
@@ -294,9 +302,16 @@ function applyFeatureEffects(sheet, draft, feature, featureId, level) {
         options: classFeatureChoiceOptions(requirement, draft),
       });
     } else {
-      applyClassFeatureChoice(sheet, requirement, chosen, featureId, classFeatureChoiceOptions(requirement, draft));
+      applyClassFeatureChoice(sheet, draft, requirement, chosen, featureId, classFeatureChoiceOptions(requirement, draft));
     }
   }
+}
+
+function resolveResourceMax(max, sheet, feature) {
+  if (max === "saboteur_level") return Math.max(3, sheet.identity.level || 3);
+  if (max === "proficiency_bonus") return sheet.proficiencyBonus || 0;
+  if (typeof max === "function") return max(sheet, feature);
+  return max;
 }
 
 function classFeatureChoiceOptions(requirement, draft) {
@@ -359,7 +374,7 @@ function advancementChoiceId(classFeaturePrefix, level) {
   return `${classFeaturePrefix}:level_${level || "unknown"}:ability_score_improvement`;
 }
 
-function applyClassFeatureChoice(sheet, requirement, chosen, featureId, options = null) {
+function applyClassFeatureChoice(sheet, draft, requirement, chosen, featureId, options = null) {
   const values = Array.isArray(chosen) ? chosen : [chosen];
   if (values.length !== requirement.count) {
     sheet.metadata.unresolved.push({

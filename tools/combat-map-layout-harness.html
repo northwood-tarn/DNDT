@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Combat Map Layout Harness</title>
+    <link rel="stylesheet" href="../app/combat_test/combatTest.css">
+    <style>
+      body {
+        margin: 0;
+        background: #111;
+      }
+
+      .fixture {
+        display: grid;
+        width: var(--fixture-width);
+        height: var(--fixture-height);
+        margin: 16px;
+        outline: 2px solid #555;
+      }
+
+      #result {
+        white-space: pre-wrap;
+        color: #eee;
+        font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="fixture" data-name="16:9 exact" style="--fixture-width: 1280px; --fixture-height: 720px">
+      <div id="gridExact" class="grid" aria-label="Exact aspect grid"></div>
+    </section>
+    <section class="fixture" data-name="4:3 container" style="--fixture-width: 1024px; --fixture-height: 768px">
+      <div id="gridTall" class="grid" aria-label="Tall container grid"></div>
+    </section>
+    <section class="fixture" data-name="square container" style="--fixture-width: 720px; --fixture-height: 720px">
+      <div id="gridSquare" class="grid" aria-label="Square container grid"></div>
+    </section>
+    <pre id="result">pending</pre>
+
+    <script type="module">
+      import { renderCombatGrid } from "../app/combat_test/gridUi.js";
+      import {
+        createGridProjectionFromStage,
+      } from "../app/combat/stageMetadata.js";
+
+      const packageBase = "/app/visual_spike/assets/trench_ramp_test_01/";
+      const runtimePlate = `${packageBase}trench_ramp_test_01.lit.png`;
+      const metadata = await fetch(`${packageBase}trench_ramp_test_01.grid.json`).then((response) => response.json());
+      const stage = {
+        stageId: metadata.stageId || metadata.id,
+        status: metadata.status,
+        image: {
+          width: metadata.image.width,
+          height: metadata.image.height,
+          runtimePlate,
+        },
+        grid: metadata.grid,
+      };
+      const metadataCells = metadata.walkable?.cells
+        || (metadata.cells || []).filter((cell) => cell.terrain?.state === "walkable");
+      const walkableKeys = new Set(metadataCells.map((cell) => `${cell.x},${cell.y}`));
+      const blockedKeys = new Set();
+      for (let y = 0; y < stage.grid.height; y += 1) {
+        for (let x = 0; x < stage.grid.width; x += 1) {
+          if (!walkableKeys.has(`${x},${y}`)) blockedKeys.add(`${x},${y}`);
+        }
+      }
+      for (const cover of metadata.cover || []) {
+        if (cover.blocksMovement) blockedKeys.add(`${cover.x},${cover.y}`);
+      }
+
+      const coverByKey = new Map((metadata.cover || []).map((cover) => [`${cover.x},${cover.y}`, cover]));
+      const presentation = {
+        visualStyle: "miniature_tilt_shift",
+        visualGround: "stage_image",
+        backgroundImage: runtimePlate,
+        stage,
+        gridProjection: createGridProjectionFromStage({ image: stage.image, grid: stage.grid }),
+      };
+      const snapshot = {
+        grid: {
+          width: stage.grid.width,
+          height: stage.grid.height,
+          blocked: blockedKeys,
+        },
+        actors: [],
+      };
+      const commonOptions = {
+        snapshot,
+        actor: null,
+        reachable: new Set(),
+        targets: new Set(),
+        shouldPulseTargets: false,
+        selectedTargetId: null,
+        selectedTargetIds: [],
+        animation: null,
+        tabInspectActive: false,
+        presentationSettings: {
+          scenarioPresentation: presentation,
+          tabOverlay: { revealGrid: false },
+          tiltShift: { enabled: false },
+        },
+        boardRotationQuarterTurns: 0,
+        getCoverAtSquare: (_snapshot, pos) => coverByKey.get(`${pos.x},${pos.y}`) || {},
+        getOccupantForDisplay: () => null,
+        getConditionLabels: () => [],
+        getActorHoverLines: () => [],
+        getActorArmorClass: () => null,
+        classIconClass: () => "",
+        onCellClick: () => {},
+      };
+
+      const fixtures = [
+        ["gridExact", "16:9 exact"],
+        ["gridTall", "4:3 container"],
+        ["gridSquare", "square container"],
+      ];
+
+      for (const [id] of fixtures) {
+        renderCombatGrid({ gridEl: document.getElementById(id), ...commonOptions });
+      }
+
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+      const expectedAspect = stage.image.width / stage.image.height;
+      const results = fixtures.map(([id, name]) => {
+        const grid = document.getElementById(id);
+        const rect = grid.getBoundingClientRect();
+        const svg = grid.querySelector("svg.projected-grid");
+        const svgRect = svg.getBoundingClientRect();
+        const style = getComputedStyle(grid);
+        const aspect = rect.width / rect.height;
+        const aspectDelta = Math.abs(aspect - expectedAspect);
+        return {
+          name,
+          gridRect: rectSummary(rect),
+          svgRect: rectSummary(svgRect),
+          expectedAspect: round(expectedAspect),
+          actualAspect: round(aspect),
+          aspectDelta: round(aspectDelta),
+          backgroundSize: style.backgroundSize,
+          backgroundImage: style.backgroundImage.includes(stage.image.runtimePlate),
+          pass: aspectDelta < 0.001 && sameRect(rect, svgRect),
+        };
+      });
+
+      document.getElementById("result").textContent = JSON.stringify(results, null, 2);
+
+      function rectSummary(rect) {
+        return {
+          x: round(rect.x),
+          y: round(rect.y),
+          width: round(rect.width),
+          height: round(rect.height),
+        };
+      }
+
+      function sameRect(a, b) {
+        return Math.abs(a.x - b.x) < 0.001
+          && Math.abs(a.y - b.y) < 0.001
+          && Math.abs(a.width - b.width) < 0.001
+          && Math.abs(a.height - b.height) < 0.001;
+      }
+
+      function round(value) {
+        return Number(value.toFixed(3));
+      }
+    </script>
+  </body>
+</html>

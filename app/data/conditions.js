@@ -108,6 +108,23 @@ export const conditions = [
     ],
   },
   {
+    id: "hidden",
+    name: "Hidden",
+    category: "combat_transient",
+    summary: "Hard to target and poised for a better opening attack until revealed.",
+    mechanics: {
+      incomingAttackDisadvantage: true,
+      outgoingAttackAdvantage: true,
+      consumeOn: "outgoing_attack",
+      duration: "turn_start",
+    },
+    effects: [
+      "Attack rolls against the creature have disadvantage.",
+      "The creature's next attack roll has advantage.",
+      "The condition is consumed after that attack roll or at the start of the creature's next turn.",
+    ],
+  },
+  {
     id: "paralyzed",
     name: "Paralyzed",
     category: "standard",
@@ -390,6 +407,46 @@ export const conditions = [
     mechanics: {},
     effects: [
       "The source spell can add damage when its caster hits this creature with an attack roll.",
+    ],
+  },
+  {
+    id: "form_of_dread_active",
+    name: "Form of Dread",
+    category: "combat_special",
+    summary: "The warlock is transformed by their undead patron.",
+    mechanics: {},
+    effects: [
+      "Warlock patron riders can trigger while this form lasts.",
+    ],
+  },
+  {
+    id: "borrowed_flame",
+    name: "Borrowed Flame",
+    category: "combat_special",
+    summary: "Borrowed light clings to the warlock and retaliates while temporary hit points remain.",
+    mechanics: {},
+    effects: [
+      "The source effect defines its melee retaliation.",
+    ],
+  },
+  {
+    id: "deathless_form_active",
+    name: "Deathless Form",
+    category: "combat_special",
+    summary: "The warlock is suspended in deathless patron power.",
+    mechanics: {},
+    effects: [
+      "Warlock patron riders can trigger while this form lasts.",
+    ],
+  },
+  {
+    id: "cataclysmic_debt",
+    name: "Cataclysmic Debt",
+    category: "combat_special",
+    summary: "Marked as part of a shared debt that echoes force through all marked enemies.",
+    mechanics: {},
+    effects: [
+      "The source effect links marked enemies to shared force damage.",
     ],
   },
   {

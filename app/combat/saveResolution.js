@@ -5,7 +5,7 @@ import { createCombatObjectFromAction } from "./combatObjects.js";
 import { getActor } from "./combatState.js";
 import { applyDamage, applyDamageAmount, applySaveFailureEffects, rollSaveD20 } from "./combatEffectsResolution.js";
 import { applyLuckyToRoll } from "./luck.js";
-import { rollSaveModifier } from "./modifiers.js";
+import { removeActiveEffect, rollSaveModifier } from "./modifiers.js";
 
 export function resolveSaveSpell(snapshot, actor, target, action, dice, log) {
   const cover = classifyCover(snapshot, actor, target, action);
@@ -58,9 +58,10 @@ export function resolveSaveSpell(snapshot, actor, target, action, dice, log) {
     spellName: action.name,
     success,
   });
+  consumeSaveModifiers(snapshot, target, saveModifier, log, "used on saving throw");
 
   if (!success) {
-    if (action.damage) applyDamage(snapshot, actor, target, action, dice, log);
+    if (action.damage) applyDamage(snapshot, actor, target, resolveConditionalDamageAction(action, target), dice, log);
     applySaveFailureEffects(snapshot, actor, target, action, log, dice);
   }
 }
@@ -143,7 +144,7 @@ export function resolveTargetSaveGate(snapshot, actor, target, action, dice, log
 }
 
 export function resolveAreaSaveSpell(snapshot, actor, action, targetPayload, dice, log) {
-  const anchor = targetPayload?.anchor || targetPayload;
+  const anchor = action.selfCenteredArea ? actor.position : targetPayload?.anchor || targetPayload;
   if (!anchor || !Number.isFinite(anchor.x) || !Number.isFinite(anchor.y)) {
     log.add("target.invalid", {
       round: snapshot.round,
@@ -164,7 +165,8 @@ export function resolveAreaSaveSpell(snapshot, actor, action, targetPayload, dic
   });
   const targets = actorsInFootprint(snapshot.actors, cells)
     .map((target) => getActor(snapshot, target.id))
-    .filter(Boolean);
+    .filter(Boolean)
+    .filter((target) => areaTargetMatches(actor, target, action));
 
   log.add("area.target", {
     round: snapshot.round,
@@ -181,6 +183,13 @@ export function resolveAreaSaveSpell(snapshot, actor, action, targetPayload, dic
   for (const target of targets) {
     resolveAreaSaveAgainstTarget(snapshot, actor, target, action, dice, log);
   }
+  return true;
+}
+
+function areaTargetMatches(actor, target, action) {
+  if (target.hp <= 0) return false;
+  if (action.targetTeamFilter === "enemies") return target.team !== actor.team;
+  if (action.targetTeamFilter === "allies") return target.team === actor.team;
   return true;
 }
 
@@ -269,13 +278,38 @@ function resolveAreaSaveAgainstTarget(snapshot, actor, target, action, dice, log
     spellName: action.name,
     success,
   });
+  consumeSaveModifiers(snapshot, target, saveModifier, log, "used on saving throw");
 
   if (action.damage) {
-    const rolled = dice.rollDamage(action.damage);
+    const damageAction = resolveConditionalDamageAction(action, target);
+    const rolled = dice.rollDamage(damageAction.damage);
     const amount = success ? Math.floor(Math.max(0, rolled.total) / 2) : Math.max(0, rolled.total);
-    applyDamageAmount(snapshot, actor, target, action, rolled, amount, dice, log);
+    applyDamageAmount(snapshot, actor, target, damageAction, rolled, amount, dice, log);
   }
   if (!success) applySaveFailureEffects(snapshot, actor, target, action, log, dice);
+}
+
+function resolveConditionalDamageAction(action, target) {
+  const conditional = action?.conditionalDamage;
+  if (!conditional?.alternate) return action;
+  if (conditional.condition === "if_damaged" && Number.isFinite(target.hp) && Number.isFinite(target.maxHp) && target.hp < target.maxHp) {
+    return { ...action, damage: conditional.alternate };
+  }
+  return conditional.base ? { ...action, damage: conditional.base } : action;
+}
+
+function consumeSaveModifiers(snapshot, actor, saveModifier, log, reason) {
+  for (const detail of saveModifier?.details || []) {
+    if (detail.consumeOn !== "outgoing_save") continue;
+    if (!removeActiveEffect(actor, detail.id)) continue;
+    log.add("effect.removed", {
+      round: snapshot.round,
+      actorId: actor.id,
+      actorName: actor.name,
+      effectId: detail.id,
+      reason,
+    });
+  }
 }
 
 function isHarmful(action) {

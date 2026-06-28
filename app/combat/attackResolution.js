@@ -14,11 +14,15 @@ import {
 } from "./reactions.js";
 import { hasCriticalHitTrigger } from "./featureTriggers.js";
 import { prepareDamageRollHooksForAttack } from "./featureHooks.js";
+import { applySpellCastEndEffects } from "./spellCastEndEffects.js";
 import { weaponAttackAbilityModifier } from "./weaponMasteryResolution.js";
 import { createCleaveSecondaryAttack, findCleaveTarget } from "./weaponMasteryActions.js";
+import { getActionTags } from "./actionTags.js";
+import { canSeeActor } from "./perception.js";
 
 export function resolveOpportunityAttacks(snapshot, movingActor, from, to, dice, log) {
   if (!dice) return;
+  if (movingActor.turnFlags?.disengaged) return;
   const attackers = livingActors(snapshot)
     .filter((actor) => actor.team !== movingActor.team)
     .filter((actor) => hasReaction(actor))
@@ -52,6 +56,22 @@ export function resolveOpportunityAttacks(snapshot, movingActor, from, to, dice,
 }
 
 export function resolveAttack(snapshot, actor, target, action, dice, log) {
+  if ((action.repeatAttacks || 1) > 1 && !action.singleRepeatedAttack) {
+    const startEventIndex = log.events.length;
+    const repeats = Math.max(1, Math.floor(action.repeatAttacks || 1));
+    for (let index = 0; index < repeats; index += 1) {
+      if (target.hp <= 0) break;
+      resolveAttack(snapshot, actor, target, {
+        ...action,
+        id: `${action.id}_${index + 1}`,
+        name: `${action.name} ${index + 1}`,
+        repeatAttacks: 1,
+        singleRepeatedAttack: true,
+      }, dice, log);
+    }
+    applySpellCastEndEffects(snapshot, actor, action, log, startEventIndex);
+    return;
+  }
   prepareDamageRollHooksForAttack(actor, action);
   const rollModifier = rollAttackModifier(snapshot, actor, target, action, dice);
   const attackBonus = (action.attackBonus || 0) + rollModifier.total;
@@ -141,7 +161,7 @@ export function resolveAttack(snapshot, actor, target, action, dice, log) {
   consumeAttackRollConditions(snapshot, actor, target, attackRoll, log);
 
   if (hit) {
-    applyDamage(snapshot, actor, target, action, dice, log, { critical });
+    applyDamage(snapshot, actor, target, action, dice, log, { critical, attackRoll });
     applyHitEffects(snapshot, actor, target, action, log, dice);
     applyCleaveOnHit(snapshot, actor, target, action, dice, log);
   } else {
@@ -257,6 +277,17 @@ function rollAttackD20(snapshot, actor, target, action, dice) {
     }
   }
 
+  if (hasFlankingAdvantage(snapshot, actor, target, action)) {
+    advantage += 1;
+    reasons.push("ADV: flanking");
+  }
+
+  const sight = canSeeActor(snapshot, actor, target);
+  if (!sight.ok) {
+    advantage -= 1;
+    reasons.push(`DIS: ${sight.reason}`);
+  }
+
   if (advantage === 0) {
     const d20 = dice.rollD20({ type: "attack", label: action.name });
     return { roll: d20.roll, rolls: [d20.roll], mode: "normal", reasons, consumed };
@@ -272,6 +303,17 @@ function rollAttackD20(snapshot, actor, target, action, dice) {
     reasons,
     consumed,
   };
+}
+
+function hasFlankingAdvantage(snapshot, actor, target, action) {
+  const tags = getActionTags(action);
+  if (!tags.weapon || !tags.melee) return false;
+  if (distance(actor.position, target.position) !== 1) return false;
+  return livingActors(snapshot).some((ally) =>
+    ally.id !== actor.id &&
+    ally.team === actor.team &&
+    distance(ally.position, target.position) === 1
+  );
 }
 
 function consumeAttackRollConditions(snapshot, actor, target, attackRoll, log) {

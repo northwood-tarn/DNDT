@@ -1,0 +1,61 @@
+.prepare-column .inventory-head h1 {
+  letter-spacing: 0.13em;
+}
+
+.prepare-column .inventory-row.is-equipped span:last-child {
+  color: rgba(205, 252, 244, 0.38);
+}
+
+.prepare-column .item-menu {
+  min-width: 172px;
+}
+
+.spell-choice-group h2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.spell-choice-group h2 span:last-child {
+  color: rgba(224, 250, 246, 0.28);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+.spell-choice-row {
+  grid-template-columns: 18px minmax(0, 1fr);
+  column-gap: 9px;
+}
+
+.spell-choice-row .choice-box {
+  width: 10px;
+  height: 10px;
+  border: 1px solid rgba(205, 252, 244, 0.16);
+}
+
+.spell-choice-row.is-prepared .choice-box {
+  background: rgba(205, 252, 244, 0.22);
+  box-shadow: 0 0 10px rgba(164, 245, 230, 0.08);
+}
+
+.spell-choice-row.is-prepared {
+  color: rgba(224, 250, 246, 0.72);
+}
+
+.spell-choice-row.is-choice-blocked {
+  color: rgba(224, 250, 246, 0.24);
+}
+
+.spell-marker {
+  color: rgba(224, 250, 246, 0.28);
+  display: block;
+  margin-top: 2px;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.resource-row.is-overflow-only[hidden] {
+  display: none;
+}

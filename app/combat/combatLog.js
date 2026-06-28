@@ -136,6 +136,8 @@ export function formatEvent(event) {
       return `${prefix}${d.actorName} attacks ${d.targetName}: ${attackRollText(d)} + ${attackBonusText(d)} = ${d.total} vs AC ${d.ac}${coverText(d.cover)} = ${d.effectiveAc}.`;
     case "lucky.roll":
       return `${prefix}${d.actorName} uses Lucky on ${d.rollType} ${d.label}: missed by ${d.missedBy}, rolled ${d.originalRoll} then ${d.secondRoll}, kept ${d.roll}. ${d.pointsRemaining} Luck Point(s) remain.`;
+    case "resourceful.roll":
+      return `${prefix}${d.actorName} uses Resourceful on ${d.rollType} ${d.label}: missed by ${d.missedBy}, rolled ${d.originalRoll} then ${d.secondRoll}, kept ${d.roll}.`;
     case "attack.result":
       if (d.actionType === "spell_attack") {
         return `${prefix}${d.hit ? "Spell hit" : "Spell miss"}: ${d.actorName} ${d.hit ? "hits" : "misses"} ${d.targetName} with ${d.actionName}${d.critical ? " critically" : ""}.`;
@@ -152,7 +154,7 @@ export function formatEvent(event) {
     case "healing.roll":
       return `${prefix}${d.actorName} uses ${d.label}: ${d.dice} rolled [${d.rolls.join(", ")}] + ${d.modifier} = ${d.total}.`;
     case "healing.applied":
-      return `${prefix}${d.actorName} regains ${d.amount} HP (${d.hpBefore} -> ${d.hpAfter}).${Number.isFinite(d.remaining) ? ` ${d.remaining} healing potion(s) remain.` : ""}`;
+      return `${prefix}${d.targetName || d.actorName} regains ${d.amount} HP (${d.hpBefore} -> ${d.hpAfter}).${Number.isFinite(d.remaining) ? ` ${d.remaining} healing potion(s) remain.` : ""}`;
     case "condition.applied":
       return `${prefix}${d.targetName} gains ${d.label}${d.noSave ? " (no save)" : ""} from ${d.actionName}.`;
     case "condition.removed":
@@ -269,5 +271,6 @@ function rollText(detail) {
 
 function luckyText(detail) {
   if (!detail?.lucky?.usedLucky) return "";
-  return `; Lucky ${detail.lucky.originalRoll} -> ${detail.lucky.secondRoll} kept ${detail.lucky.roll}`;
+  const label = detail.lucky.usedResourceful ? "Resourceful" : "Lucky";
+  return `; ${label} ${detail.lucky.originalRoll} -> ${detail.lucky.secondRoll} kept ${detail.lucky.roll}`;
 }

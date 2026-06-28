@@ -1,0 +1,23 @@
+{
+  "areaId": "greyharbour_dock",
+  "runtimeDarkness": true,
+  "lanternaAppliedAtRuntime": true,
+  "darknessOverlay": {
+    "enabled": true,
+    "opacity": 0.85
+  },
+  "lanternaProposal": {
+    "brightFt": 15,
+    "brightCells": 3,
+    "dimFt": 15,
+    "dimCells": 3,
+    "faintFt": 5,
+    "faintCells": 1,
+    "colorFamily": "pale bone-white with slight blue/aluminium cast"
+  },
+  "fixedSources": [],
+  "notes": [
+    "No fixed environmental light sources are declared for this clean plate.",
+    "If future art adds candles, lamps, or work lights, add source-specific fixed light metadata rather than washing the stage with ambient light."
+  ]
+}

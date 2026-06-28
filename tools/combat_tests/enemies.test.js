@@ -1,6 +1,7 @@
 import { enemies, getEnemyStats } from "../../app/data/enemies.js";
 import { expandEncounterEnemyRefs, getEncounterById } from "../../app/data/encounters.js";
 import { createEncounterEnemyActors, createEnemyCombatActor, createEnemyCombatActors } from "../../app/combat/enemyFactory.js";
+import { compileEnemyActions, validateEnemyActionRefs } from "../../app/combat/enemyActionCompiler.js";
 import { checkEnemyAwareness } from "../../app/systems/enemyAwareness.js";
 import { getEffectiveAc } from "../../app/combat/modifiers.js";
 import { combatAuraEffectsAffectingActor } from "../../app/combat/auras.js";
@@ -10,6 +11,8 @@ export async function runEnemyCombatTests() {
   testEnemyLookupAndShape();
   testEnemyAwarenessReadsNestedAwareness();
   testEnemyCombatActorFactory();
+  testEnemyActionReferencesCompile();
+  testEnemyActionReferenceOverrides();
   testEnemyCombatActorFactoryNaturalAttack();
   testEnemyCombatActorFeatureSurface();
   testEnemyDataFeatureExamples();
@@ -20,6 +23,39 @@ export async function runEnemyCombatTests() {
   testEncounterDataExpansion();
   testEncounterInstanceOverrides();
   testEncounterEnemyActorFactory();
+}
+
+function testEnemyActionReferencesCompile() {
+  for (const enemy of Object.values(enemies)) {
+    assert.deepEqual(validateEnemyActionRefs(enemy), [], `${enemy.id} action references should validate`);
+    const actions = compileEnemyActions(enemy);
+    assert.ok(actions.length > 0, `${enemy.id} should compile at least one action`);
+    assert.equal(actions.some((action) => action.id === (enemy.weaponId || enemy.naturalAttack?.id)), true, `${enemy.id} primary action should compile from actionRefs`);
+  }
+}
+
+function testEnemyActionReferenceOverrides() {
+  const actor = createEnemyCombatActor({
+    ...getEnemyStats("goblin"),
+    actionRefs: [{
+      template: "weapon_attack",
+      id: "hooked_knife",
+      name: "Hooked Knife",
+      weaponId: "dagger",
+      damage: "1d8+2",
+      damageType: "piercing",
+      uses: 2,
+      aiPriority: 20,
+      targetPriority: "weakest",
+    }],
+  }, { id: "hook_goblin" });
+  const action = actor.actions.find((item) => item.id === "hooked_knife");
+
+  assert.equal(action.name, "Hooked Knife", "enemy action refs should override action labels");
+  assert.equal(action.damage, "1d8+2", "enemy action refs should override damage");
+  assert.deepEqual(action.uses, { max: 2, remaining: 2 }, "enemy action refs should support limited uses");
+  assert.equal(action.aiPriority, 20, "enemy action refs should carry AI priority hints");
+  assert.equal(action.targetPriority, "weakest", "enemy action refs should carry target preference hints");
 }
 
 function testEnemyFeatureDamageAndConditionRiders() {

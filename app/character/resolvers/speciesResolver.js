@@ -1,4 +1,5 @@
 import { addUniqueAll } from "./resolverUtils.js";
+import { resolveOriginFeat } from "./originFeatResolver.js";
 
 export function resolveSpecies(sheet, draft, speciesRegistry) {
   const speciesId = draft.identity.speciesId;
@@ -79,6 +80,10 @@ function isDeclarativeFeatureImplemented(feature) {
     effects.modifiers?.length ||
     effects.triggeredEffects?.length ||
     effects.reactions?.length ||
+    effects.damageRiders?.length ||
+    effects.conditionRiders?.length ||
+    effects.modifierRiders?.length ||
+    effects.d20Rerolls?.length ||
     effects.narrativeTags?.length ||
     effects.narrativeOnly === true
   );
@@ -117,12 +122,12 @@ function applySpeciesFeatureEffects(sheet, draft, feature, featureId) {
         options: requirement.options || null,
       });
     } else {
-      applySpeciesChoice(sheet, requirement, chosen, featureId);
+      applySpeciesChoice(sheet, draft, requirement, chosen, featureId);
     }
   }
 }
 
-function applySpeciesChoice(sheet, requirement, chosen, featureId) {
+function applySpeciesChoice(sheet, draft, requirement, chosen, featureId) {
   const values = Array.isArray(chosen) ? chosen : [chosen];
   if (values.length !== requirement.count) {
     sheet.metadata.unresolved.push({
@@ -153,11 +158,16 @@ function applySpeciesChoice(sheet, requirement, chosen, featureId) {
     return;
   }
   if (requirement.kind === "origin_feat") {
-    sheet.metadata.unresolved.push({
-      type: "deferred_species_origin_feat_choice",
-      featureId,
-      choiceId: requirement.id,
-      values,
+    const featId = values[0];
+    const resolvedFeat = resolveOriginFeat(sheet, draft, featId, { speciesFeatureId: featureId, choiceId: requirement.id });
+    sheet.features.push({
+      id: `${featureId}:origin_feat:${featId}`,
+      name: `Origin Feat: ${featId}`,
+      source: "species",
+      sourceId: featureId,
+      kind: "origin_feat",
+      grants: resolvedFeat.grants,
+      implemented: resolvedFeat.implemented,
     });
   }
 }

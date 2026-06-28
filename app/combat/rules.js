@@ -5,12 +5,25 @@ import { distance, hasLineOfSight, isWalkable } from "./grid.js";
 import { canUseMovementMode, getMovementStepCost } from "./movementRules.js";
 import { canSeeActor } from "./perception.js";
 import { combatObjectsAt, hasCombatObjectLineOfSight } from "./combatObjects.js";
+import { canSpendSpellSlotThisTurn } from "./spellSlots.js";
 
 export function canUseAction(actor, action) {
   if (!actor || actor.hp <= 0) return blocked("actor is not able to act");
   if (!action) return blocked("action is missing");
   if (getActionUses(action) <= 0) return blocked("no uses remaining");
   if (action.resourceId && getResourceUses(actor, action.resourceId) <= 0) return blocked("no resource uses remaining");
+  for (const resourceId of action.additionalResourceIds || []) {
+    if (getResourceUses(actor, resourceId) <= 0) return blocked(`no ${resourceId} uses remaining`);
+  }
+  const spellSlot = canSpendSpellSlotThisTurn(actor, action);
+  if (!spellSlot.ok) return blocked(spellSlot.reason);
+  const rig = action.deviceRig || {};
+  if (rig.mode === "double_followup") {
+    if (actor.turnFlags?.doubleRigFollowupAvailable !== true) return blocked("requires Double Rig follow-up");
+    if (rig.immediateDamage && actor.turnFlags?.doubleRigImmediateDamageUsed === true) {
+      return blocked("Double Rig already used an immediate-damage device");
+    }
+  }
   if (!canPayActionCost(actor, action.cost) && !canUseBonusDash(actor, action)) {
     return blocked(`${action.cost || "action"} already used`);
   }
@@ -61,9 +74,14 @@ export function canTargetAction(snapshot, actor, action, target) {
 
   const range = distance(actor.position, target.position);
   if (range > action.range) return blocked(`out of range (${range}/${action.range})`);
-  if (!hasLineOfSight(snapshot.grid, actor.position, target.position) ||
-      !hasCombatObjectLineOfSight(snapshot, actor.position, target.position)) return blocked("line of sight blocked");
-  if (getActionTags(action).requiresSight) {
+  const tags = getActionTags(action);
+  const sightRequiredForTargeting = tags.requiresSight || (isHarmfulAction(action) && action.range > 1);
+  if (sightRequiredForTargeting &&
+      (!hasLineOfSight(snapshot.grid, actor.position, target.position) ||
+        !hasCombatObjectLineOfSight(snapshot, actor.position, target.position))) {
+    return blocked("line of sight blocked");
+  }
+  if (tags.requiresSight) {
     const sight = canSeeActor(snapshot, actor, target);
     if (!sight.ok) return sight;
   }

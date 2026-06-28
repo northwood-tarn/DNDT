@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Screen 1: Warlock Level Up</title>
+    <link rel="stylesheet" href="../styles/designViewport.css">
+    <link rel="stylesheet" href="./inventory_small.css">
+    <link rel="stylesheet" href="./level_up_screen2.css">
+  </head>
+  <body>
+    <main class="inventory-screen level-up-screen design-viewport" aria-label="Warlock level up">
+      <div class="fog-layer fog-one" aria-hidden="true"></div>
+      <div class="fog-layer fog-two" aria-hidden="true"></div>
+      <div class="fog-layer fog-three" aria-hidden="true"></div>
+
+      <div class="lanterna-emblem" aria-hidden="true">
+        <div class="lanterna-flame">
+          <div class="lanterna-flame-fill"></div>
+          <div class="lanterna-flame-outline">
+            <svg viewBox="0 0 70 100" aria-hidden="true" focusable="false">
+              <defs>
+                <filter id="lanterna-flame-edge-warlock" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+                  <feMorphology in="SourceAlpha" operator="dilate" radius="1.1" result="outer" />
+                  <feMorphology in="SourceAlpha" operator="erode" radius="1.1" result="inner" />
+                  <feComposite in="outer" in2="inner" operator="out" result="edge" />
+                  <feFlood flood-color="#cdfcf4" flood-opacity="0.02" result="lineColor" />
+                  <feComposite in="lineColor" in2="edge" operator="in" />
+                </filter>
+              </defs>
+              <image href="../assets/images/effects/flame.png" width="70" height="100" filter="url(#lanterna-flame-edge-warlock)" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <section class="level-column" aria-label="Warlock level up controls">
+        <header class="level-title">
+          <p class="screen-kicker">Level up</p>
+          <h1 id="levelTitle">Level 2</h1>
+          <p id="characterLine" class="level-subtitle"></p>
+        </header>
+
+        <div id="levelContent" class="choice-scroll"></div>
+
+        <section class="hp-roller" aria-label="Hit point increase">
+          <h2 id="hpTitle">Hit points</h2>
+          <button id="rollHpButton" class="roll-button" type="button">Roll HP</button>
+          <div id="hpRollResult" class="roll-result" aria-live="polite"></div>
+        </section>
+
+        <button id="completeLevelButton" class="complete-button" type="button">Complete level up</button>
+      </section>
+
+      <aside class="detail-column" aria-label="Details">
+        <section class="detail-card">
+          <p class="screen-kicker">Details</p>
+          <h2 id="detailTitle"></h2>
+          <div id="detailText"></div>
+        </section>
+      </aside>
+    </main>
+    <script type="module" src="./level_up_warlock.js"></script>
+  </body>
+</html>

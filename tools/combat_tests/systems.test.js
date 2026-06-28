@@ -3,6 +3,7 @@ import {
   createCombatLog,
   createSnapshotFromScenario,
   endTurnEffects,
+  getValidTargets,
   getMovementRemaining,
   makeHarnessSnapshot,
   moveActor,
@@ -17,6 +18,7 @@ import { getActionTags } from "../../app/combat/actionTags.js";
 import { createSpellAction } from "../../app/combat/actionFactory.js";
 import { resolveActionResult } from "../../app/combat/actionResult.js";
 import { canSeeActor } from "../../app/combat/perception.js";
+import { createStarterCharacterDraft, resolveCharacterSheet, resolvedSheetToCombatActor } from "../../app/character/index.js";
 import { SPELLS } from "../../app/data/spells.js";
 
 function testActionTagInference() {
@@ -102,11 +104,17 @@ function testPublicCombatApiBoundary() {
   const actor = game.query.currentActor();
   assert.ok(actor, "public API should expose the current actor query");
   assert.deepEqual(getCombatScenarioOptions().map((scenario) => scenario.id), [
+    "generated-empty-arena",
+    "dockside-stage-grid",
+    "backlands-field-plateau-01",
+    "trench-ramp-live-test",
     "generated-character-arena",
     "generated-wizard-shield-arena",
     "generated-encounter-goblin-skirmish",
     "generated-encounter-bone-guard",
     "generated-encounter-shadow-hounds",
+    "generated-encounter-level-7-team-trial",
+    "generated-encounter-level-7-caster-trial",
   ], "public API should expose canonical generated scenario options");
   assert.ok(Array.isArray(game.query.reachableCells(actor.id)), "public API should expose reachable-cell queries");
   assert.equal(game.resolveAction(actor.id, "missing_action", null).ok, false, "public API resolveAction should return structured results");
@@ -384,6 +392,247 @@ function testLuckyUsesNearMissOncePerCombat() {
   );
 }
 
+function testResourcefulAutoTriggersOnAttackNearMiss() {
+  const snapshot = makeHarnessSnapshot();
+  const hero = snapshot.actors[0];
+  const enemy = snapshot.actors[1];
+  const log = createCombatLog();
+  hero.position = { x: 0, y: 0 };
+  enemy.position = { x: 1, y: 0 };
+  hero.resources = [{ id: "resourceful", name: "Resourceful", max: 1, current: 1, recovery: "long_rest" }];
+
+  assert.equal(resolveAction(snapshot, hero, "bow", "enemy", scriptedDice({ d20: [4, 15], damage: 2 }), log), true);
+  assert.ok(
+    log.events.some((event) => event.type === "resourceful.roll" && event.detail.actorId === "hero"),
+    "Resourceful should automatically trigger when an attack misses by 4 or less"
+  );
+  assert.equal(hero.resources.find((item) => item.id === "resourceful").current, 0, "Resourceful should spend its resource");
+  assert.ok(enemy.hp < enemy.maxHp, "Resourceful's replacement roll should be used for hit resolution");
+}
+
+function testBlessCanAffectMultipleSelectedAllies() {
+  const snapshot = makeHarnessSnapshot();
+  const hero = snapshot.actors[0];
+  const ally = {
+    ...structuredClone(hero),
+    id: "ally",
+    name: "Ally",
+    hp: 20,
+    maxHp: 20,
+    position: { x: 1, y: 2 },
+    actions: [],
+  };
+  snapshot.actors.push(ally);
+  hero.actions.push(createSpellAction(SPELLS.bless, { spellSaveDC: 13 }));
+  const log = createCombatLog();
+
+  assert.equal(resolveAction(snapshot, hero, "bless", { targetIds: ["hero", "ally"] }, scriptedDice(), log), true);
+  assert.ok(hero.activeEffects.some((effect) => effect.label === "Bless"), "Bless should apply to the first selected ally");
+  assert.ok(ally.activeEffects.some((effect) => effect.label === "Bless"), "Bless should apply to another selected ally");
+  assert.equal(hero.economy.actionAvailable, false, "multi-target Bless should spend the action once");
+}
+
+function testBlessMultiTargetPassesControllerPreflight() {
+  const snapshot = makeHarnessSnapshot();
+  const hero = snapshot.actors[0];
+  const ally = {
+    ...structuredClone(hero),
+    id: "ally",
+    name: "Ally",
+    hp: 20,
+    maxHp: 20,
+    position: { x: 1, y: 2 },
+    actions: [],
+  };
+  snapshot.actors.push(ally);
+  hero.actions.push(createSpellAction(SPELLS.bless, { spellSaveDC: 13 }));
+  const log = createCombatLog();
+
+  const result = resolveActionResult(snapshot, hero, "bless", { targetIds: ["hero", "ally"] }, scriptedDice(), log);
+  assert.equal(result.ok, true, "controller preflight should accept individual multi-target spell payloads");
+  assert.ok(ally.activeEffects.some((effect) => effect.label === "Bless"), "Bless should resolve through controller preflight");
+}
+
+function testBlessTargetsAlliesWithoutLineOfSightRequirement() {
+  const snapshot = makeHarnessSnapshot();
+  const hero = snapshot.actors[0];
+  const ally = {
+    ...structuredClone(hero),
+    id: "ally",
+    name: "Ally",
+    hp: 20,
+    maxHp: 20,
+    position: { x: 3, y: 2 },
+    actions: [],
+  };
+  snapshot.actors.push(ally);
+  hero.actions.push(createSpellAction(SPELLS.bless, { spellSaveDC: 13 }));
+
+  assert.equal(hero.actions.find((action) => action.id === "bless").requiresSight, false, "Bless should not require sight");
+  assert.ok(
+    getValidTargets(snapshot, hero.id, "bless").some((target) => target.id === "ally"),
+    "Bless should target an ally within range even if a wall blocks line of sight"
+  );
+}
+
+function testFlankingGrantsMeleeWeaponAdvantage() {
+  const snapshot = makeHarnessSnapshot();
+  const hero = snapshot.actors[0];
+  const enemy = snapshot.actors[1];
+  const ally = {
+    ...structuredClone(hero),
+    id: "ally",
+    name: "Ally",
+    position: { x: 2, y: 1 },
+    actions: [],
+  };
+  hero.position = { x: 0, y: 1 };
+  enemy.position = { x: 1, y: 1 };
+  snapshot.actors.push(ally);
+  hero.actions.push({
+    id: "blade",
+    name: "Blade",
+    type: "weapon_attack",
+    range: 1,
+    attackBonus: 0,
+    damage: "1d6",
+    damageType: "slashing",
+    tags: { weapon: true, melee: true, attackRoll: true, harmful: true },
+  });
+  const log = createCombatLog();
+
+  assert.equal(resolveAction(snapshot, hero, "blade", "enemy", scriptedDice({ d20: [3, 15], damage: 2 }), log), true);
+  assert.ok(
+    log.events.some((event) =>
+      event.type === "attack.roll" &&
+      event.detail.actionId === "blade" &&
+      event.detail.mode === "advantage" &&
+      event.detail.reasons.includes("ADV: flanking")
+    ),
+    "opposite allied melee engagement should grant flanking advantage"
+  );
+}
+
+function testFlankingDoesNotRequireOppositeSquares() {
+  const snapshot = makeHarnessSnapshot();
+  const hero = snapshot.actors[0];
+  const enemy = snapshot.actors[1];
+  const ally = {
+    ...structuredClone(hero),
+    id: "ally",
+    name: "Ally",
+    position: { x: 1, y: 2 },
+    actions: [],
+  };
+  hero.position = { x: 0, y: 1 };
+  enemy.position = { x: 1, y: 1 };
+  snapshot.actors.push(ally);
+  hero.actions.push({
+    id: "blade",
+    name: "Blade",
+    type: "weapon_attack",
+    range: 1,
+    attackBonus: 0,
+    damage: "1d6",
+    damageType: "slashing",
+    tags: { weapon: true, melee: true, attackRoll: true, harmful: true },
+  });
+  const log = createCombatLog();
+
+  assert.equal(resolveAction(snapshot, hero, "blade", "enemy", scriptedDice({ d20: [3, 15], damage: 2 }), log), true);
+  assert.ok(
+    log.events.some((event) =>
+      event.type === "attack.roll" &&
+      event.detail.actionId === "blade" &&
+      event.detail.mode === "advantage" &&
+      event.detail.reasons.includes("ADV: flanking")
+    ),
+    "any allied adjacent melee threat should grant flanking advantage"
+  );
+}
+
+function testRogueSneakAttackTriggersFromFlanking() {
+  const draft = createStarterCharacterDraft("rogue");
+  draft.identity.level = 2;
+  const rogue = {
+    ...resolvedSheetToCombatActor(resolveCharacterSheet(draft, {}, { allowNonCreationLevel: true })),
+    id: "rogue",
+    position: { x: 0, y: 1 },
+  };
+  const ally = {
+    ...structuredClone(makeHarnessSnapshot().actors[0]),
+    id: "ally",
+    name: "Ally",
+    position: { x: 1, y: 2 },
+    actions: [],
+  };
+  const enemy = {
+    ...structuredClone(makeHarnessSnapshot().actors[1]),
+    id: "enemy",
+    name: "Enemy",
+    hp: 30,
+    maxHp: 30,
+    ac: 10,
+    position: { x: 1, y: 1 },
+  };
+  const snapshot = createSnapshotFromScenario({
+    id: "rogue-sneak-attack-flanking",
+    grid: { width: 5, height: 5, blocked: [], cover: [] },
+    actors: [rogue, ally, enemy],
+  });
+  const actor = snapshot.actors.find((item) => item.id === "rogue");
+  const target = snapshot.actors.find((item) => item.id === "enemy");
+  const log = createCombatLog();
+
+  assert.equal(resolveAction(snapshot, actor, "rapier", "enemy", scriptedDice({ d20: [4, 16], damage: [5, 4] }), log), true);
+  assert.equal(target.hp, 21, "level-2 rogue should add 1d6 Sneak Attack damage while flanking");
+  assert.ok(
+    log.events.some((event) => event.type === "damage.roll" && event.detail.label === "Sneak Attack" && event.detail.dice === "1d6"),
+    "Sneak Attack should be logged as a damage rider"
+  );
+}
+
+function testRogueSneakAttackScalesWithLevel() {
+  const draft = createStarterCharacterDraft("rogue");
+  draft.identity.level = 5;
+  const rogue = {
+    ...resolvedSheetToCombatActor(resolveCharacterSheet(draft, {}, { allowNonCreationLevel: true })),
+    id: "rogue",
+    position: { x: 0, y: 1 },
+  };
+  const ally = {
+    ...structuredClone(makeHarnessSnapshot().actors[0]),
+    id: "ally",
+    name: "Ally",
+    position: { x: 1, y: 2 },
+    actions: [],
+  };
+  const enemy = {
+    ...structuredClone(makeHarnessSnapshot().actors[1]),
+    id: "enemy",
+    name: "Enemy",
+    hp: 30,
+    maxHp: 30,
+    ac: 10,
+    position: { x: 1, y: 1 },
+  };
+  const snapshot = createSnapshotFromScenario({
+    id: "rogue-sneak-attack-scaling",
+    grid: { width: 5, height: 5, blocked: [], cover: [] },
+    actors: [rogue, ally, enemy],
+  });
+  const actor = snapshot.actors.find((item) => item.id === "rogue");
+  const target = snapshot.actors.find((item) => item.id === "enemy");
+  const log = createCombatLog();
+
+  assert.equal(resolveAction(snapshot, actor, "rapier", "enemy", scriptedDice({ d20: [4, 16], damage: [5, 9] }), log), true);
+  assert.equal(target.hp, 16, "level-5 rogue should add 3d6 Sneak Attack damage while flanking");
+  assert.ok(
+    log.events.some((event) => event.type === "damage.roll" && event.detail.label === "Sneak Attack" && event.detail.dice === "3d6"),
+    "Sneak Attack dice should scale by rogue level"
+  );
+}
+
 function pickTags(tags) {
   return {
     attackRoll: tags.attackRoll,
@@ -411,4 +660,12 @@ export async function runSystemCombatTests() {
   testRollModifierSpellsResolveThroughGenericEffects();
   testBaneAppliesGenericAttackAndSavePenalties();
   testLuckyUsesNearMissOncePerCombat();
+  testResourcefulAutoTriggersOnAttackNearMiss();
+  testBlessCanAffectMultipleSelectedAllies();
+  testBlessMultiTargetPassesControllerPreflight();
+  testBlessTargetsAlliesWithoutLineOfSightRequirement();
+  testFlankingGrantsMeleeWeaponAdvantage();
+  testFlankingDoesNotRequireOppositeSquares();
+  testRogueSneakAttackTriggersFromFlanking();
+  testRogueSneakAttackScalesWithLevel();
 }

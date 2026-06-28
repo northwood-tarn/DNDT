@@ -1,0 +1,117 @@
+Edit the placement control plate into a 1920 x 1080 combat battlefield PNG for "Trench Ramp Test 01".
+
+EDIT INPUTS
+
+1. EDIT SOURCE IMAGE: trench_ramp_test_01.placement_control.png
+2. SECONDARY CONSTRAINT IMAGE: trench_ramp_test_01.altitude_control.png
+3. SOURCE METADATA: trench_ramp_test_01.grid.json
+
+The placement control plate is the authoritative tactical mask, not a visible-art silhouette target. Preserve every gameplay footprint in metadata and validation. The final art may soften, overpaint, texture across, or visually dress those masks when doing so does not create false affordances.
+
+SOURCE-IMAGE TRANSFORMATION RULES
+
+1. Keep every colored region in the placement control plate in the same tactical position.
+2. Repaint the region system into a plausible place; do not expose the control image as permanent grid/tile art.
+3. The black regions remain non-walkable cliff/void/blocked mass in rules and must not read as standable floor.
+4. The green slope regions remain the only traversable ramp/slope regions.
+5. The yellow cover regions remain the only cover footprints.
+6. The orange feature region remains the only burning-tree/fire feature footprint.
+7. The tan upper plateau and pale green low ground remain the only continuous walkable surface classes.
+8. Use the altitude control plate only to decide height, cliff edge, and slope treatment. Do not let it change placement silhouettes.
+9. Organic visual dressing may cross a mask boundary only if it reads as texture, shadow, debris, overhang, or atmosphere rather than usable floor/cover/ramp/blocker.
+
+ABSOLUTE GRID OBEDIENCE RULES
+
+1. Preserve every tactical footprint exactly in metadata, collision, and validation overlays.
+2. Do not move objects for pictorial balance.
+3. Do not resize objects into adjacent cells unless those cells are part of the listed footprint.
+4. Do not add cover-like objects outside cover cells.
+5. Do not add blocker-like objects outside blocked or feature cells.
+6. Do not add ramp-like surfaces outside R cells.
+7. Do not add stair-like surfaces unless S cells exist.
+8. Do not add light sources outside light or feature-light cells.
+9. Plain walkable cells must remain visually plain and standable.
+10. Blank cells inside the map are collision facts, not unused art space; they may receive visual atmosphere or non-affordance dressing, but not floor.
+11. If the map would look prettier by moving an object, do not move it.
+
+STYLE
+
+Dark fantasy underground combat plate. Open-air cavern field, not a tunnel. Painterly negative-ink direction, dark negative space, readable surfaces, restrained detail, no decorative grit. Combat is globally readable because the Lanterna flares in danger, but the mood remains dark and severe.
+
+PLACEMENT CONTROL LEGEND
+
+Dark/black cells: blocked cliff, void, or non-walkable mass.
+Pale green cells: ordinary walkable low ground.
+Muted tan cells: upper walkable plateau.
+Green route cells: traversable slope/ramp.
+Yellow cells: cover, exactly where marked.
+Orange cells: blocking feature/light footprint, exactly where marked.
+Spawn metadata is in the JSON. The placement control plate deliberately omits spawn symbols so marker shapes cannot contaminate final art.
+
+ALTITUDE CONTROL LEGEND
+
+Dark green/grey: low ground.
+Increasing tan/orange: higher ground.
+White edge strokes: height-change edges.
+The -2 area is the deep trench floor. R cells are the broad ramp out of the trench. Altitude 0 cells are regular ground. Blank/blocked cells around the trench edge are sheer trench walls or non-walkable dark mass and must not read as floor.
+
+GRID-DERIVED LAYOUT
+
+y\x  00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+00                  .  .  .  .  .  .  .  .  .  .  .
+01               .  .  .  .  .  .  .  .  .  .  .  .
+02            .  .  .  .  .  .  .  .  C  .  M  M  .
+03            .  .  .  .  .  .  .  .  .  .  .  .  .
+04               .  .  .  .  .  .  h  .  .  C  .  .
+05                  .  .  .  .  .  .  .  M  .  .  .
+06                           R  R  .  .  h  .  .  C
+07                        R  R  R  .  .  .  .  M  .
+08   .  P  P  h  .  .  R  R     .  .  .  .  .  h  .
+09   .  P  .  .  h  .  R        .  M  .  .  .  .  .
+10   .  .  .  .  .  .           .  .  .  .  .  .  .
+
+ALTITUDE
+
+y\x  00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+00    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+01    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+02    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+03    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+04    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+05    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+06    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+07    0  0  0  0  0  0  0 -1  0  0  0  0  0  0  0  0
+08   -2 -2 -2 -2 -2 -2 -1 -1  0  0  0  0  0  0  0  0
+09   -2 -2 -2 -2 -2 -2 -1  0  0  0  0  0  0  0  0  0
+10   -2 -2 -2 -2 -2 -2  0  0  0  0  0  0  0  0  0  0
+
+SCENE-SPECIFIC REQUIREMENTS
+
+- The trench floor occupies the lower-left and must read substantially lower than the regular ground.
+- The upper/right side is altitude 0 regular ground and must read as one broad open fighting surface.
+- The blank band around the trench edge is sheer rocky trench wall or dark non-walkable mass, not traversable ground.
+- The R-cell band is the only traversable ramp route out of the trench.
+- three_quarter cover occupies exactly cell x11 y02.
+- half cover occupies exactly cell x10 y04.
+- three_quarter cover occupies exactly cell x13 y04.
+- half cover occupies exactly cell x12 y06.
+- three_quarter cover occupies exactly cell x15 y06.
+- half cover occupies exactly cell x03 y08.
+- half cover occupies exactly cell x14 y08.
+- half cover occupies exactly cell x04 y09.
+
+IMAGE NOTE FROM SKETCH
+
+Large Backlands-adjacent combat plate: a deep, dark trench enters from the lower-left and opens onto regular stony ground through one broad ramp. The trench floor and ramp must both support two grid-square-wide movement paths. The upper/right regular ground should be broad and readable enough for a fight with sparse cover. No visible grid, no actors, no labels, no UI, and no decorative objects that imply unmarked cover or blocked cells.
+
+Use this note only for terrain mood and material context in the base terrain. If the note mentions placed items such as trees, cover, columns, lamps, NPCs, or fires, do not draw those items into the base terrain. Those objects are handled by separate placed-asset prompts.
+
+REJECTION CONDITIONS
+
+Reject the image if any of these occur:
+- any placement-control region silhouette changes
+- a feature, cover object, ramp, cliff edge, or light source moves away from its control-plate cells
+- - - the trench wall or non-walkable dark mass reads as walkable floor
+- extra rocks, pillars, ruins, fires, ladders, stairs, bridges, rubble, or paths imply gameplay affordances not in the grid
+- the two-cell-wide ramp is hidden, too narrow, or visually disconnected from the trench floor and regular ground
+- the final image contains text, numbers, grid labels, UI, tokens, character figures, bases, or permanent grid lines

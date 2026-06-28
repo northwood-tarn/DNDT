@@ -24,7 +24,8 @@ export function normalizeCombatObjects(objects = []) {
     spellSaveDC: object.spellSaveDC ?? null,
     duration: object.duration ? structuredClone(object.duration) : null,
     effects: Array.isArray(object.effects) ? structuredClone(object.effects) : [],
-    intensity: object.intensity ? structuredClone(object.intensity) : null,
+    intensity: normalizeIntensity(object.intensity),
+    timers: normalizeTimers(object.timers),
     stableThroughDice: object.stableThroughDice ?? null,
     stableEffects: object.stableEffects ? structuredClone(object.stableEffects) : null,
     unstableEffects: object.unstableEffects ? structuredClone(object.unstableEffects) : null,
@@ -50,11 +51,33 @@ export function createCombatObjectFromAction(action, anchor, source) {
   }])[0];
 }
 
+function normalizeIntensity(intensity) {
+  if (!intensity) return null;
+  return {
+    ...structuredClone(intensity),
+    currentDice: Number.isFinite(intensity.currentDice) ? intensity.currentDice : intensity.startDice,
+  };
+}
+
+function normalizeTimers(timers) {
+  if (!timers || typeof timers !== "object") return null;
+  return Object.fromEntries(Object.entries(timers).map(([id, timer]) => ([
+    id,
+    {
+      ...structuredClone(timer),
+      id,
+      active: timer.active !== false,
+      currentDice: Number.isFinite(timer.currentDice) ? timer.currentDice : timer.startDice,
+    },
+  ])));
+}
+
 function resolveObjectEffects(effects, source, action) {
   return (effects || []).map((effect) => ({
     ...effect,
     damage: resolveFormula(effect.damage, source),
     amount: Number.isFinite(effect.amount) ? effect.amount : Number(resolveFormula(effect.amountFormula, source)) || effect.amount,
+    amountFormula: effect.amountFormula || null,
     spellSaveDC: effect.save?.dcFrom === "spellSaveDC" ? action.spellSaveDC : effect.spellSaveDC,
   }));
 }
@@ -114,6 +137,9 @@ function combatObjectPosition(snapshot, object) {
 export function hasCombatObjectLineOfSight(snapshot, from, to) {
   const blockers = (snapshot.combatObjects || []).filter((object) => object.blocksLineOfSight);
   if (!blockers.length) return true;
+  if (blockers.some((object) => combatObjectContains(snapshot, object, from) || combatObjectContains(snapshot, object, to))) {
+    return false;
+  }
   const points = bresenham(from.x, from.y, to.x, to.y);
   for (let i = 1; i < points.length - 1; i++) {
     if (blockers.some((object) => combatObjectContains(snapshot, object, points[i]))) return false;

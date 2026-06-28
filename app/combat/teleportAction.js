@@ -1,6 +1,7 @@
 import { actorAt, distance, hasLineOfSight, inBounds, isMovementBlocked } from "./grid.js";
 import { combatObjectsAt } from "./combatObjects.js";
-import { spendActionCost } from "./actor.js";
+import { spendActionCost, spendActionUse, spendResourceUse } from "./actor.js";
+import { spendActionSpellSlot } from "./spellSlots.js";
 
 export function resolveTeleport(snapshot, actor, action, targetPayload, log) {
   const to = targetPayload?.anchor || targetPayload;
@@ -18,6 +19,12 @@ export function resolveTeleport(snapshot, actor, action, targetPayload, log) {
   const from = { ...actor.position };
   actor.position = { ...to };
   spendActionCost(actor, action.cost);
+  spendActionSpellSlot(actor, action);
+  spendActionUse(action);
+  spendResourceUse(actor, action.resourceId);
+  for (const resourceId of action.additionalResourceIds || []) {
+    spendResourceUse(actor, resourceId);
+  }
   log.add("teleport", {
     round: snapshot.round,
     actorId: actor.id,

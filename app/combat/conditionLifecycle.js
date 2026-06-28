@@ -137,6 +137,36 @@ export function processCombatObjectDurations(snapshot, actor, timing, log) {
   if (!actor || actor.hp <= 0) return;
   for (const object of [...(snapshot.combatObjects || [])]) {
     if (object.sourceActorId !== actor.id) continue;
+    if (timing === "turn_start" && object.intensity?.increaseAtStartOfOwnerTurn) {
+      object.intensity.currentDice = (object.intensity.currentDice || object.intensity.startDice || 0) + object.intensity.increaseAtStartOfOwnerTurn;
+      log.add("object.intensity", {
+        round: snapshot.round,
+        actorId: actor.id,
+        actorName: actor.name,
+        objectId: object.id,
+        objectName: object.name,
+        currentDice: object.intensity.currentDice,
+        die: object.intensity.die || "d8",
+      });
+    }
+    if (timing === "turn_start" && object.timers) {
+      for (const timer of Object.values(object.timers)) {
+        if (!timer?.active || !timer.increaseAtStartOfOwnerTurn) continue;
+        timer.currentDice = (timer.currentDice || timer.startDice || 0) + timer.increaseAtStartOfOwnerTurn;
+        if (Number.isFinite(timer.expiresAtDice) && timer.currentDice >= timer.expiresAtDice) timer.active = false;
+        log.add("object.timer", {
+          round: snapshot.round,
+          actorId: actor.id,
+          actorName: actor.name,
+          objectId: object.id,
+          objectName: object.name,
+          timerId: timer.id,
+          currentDice: timer.currentDice,
+          die: timer.die || "d8",
+          active: timer.active !== false,
+        });
+      }
+    }
     const duration = advanceConditionDuration(object, timing);
     if (!duration.expired) continue;
     snapshot.combatObjects = (snapshot.combatObjects || []).filter((item) => item.id !== object.id);

@@ -1,0 +1,3887 @@
+{
+  "areaId": "greyharbour_dock",
+  "status": "draft_grid_validation",
+  "image": {
+    "runtimePlate": "greyharbour_dock.art.png",
+    "width": 1920,
+    "height": 1080
+  },
+  "grid": {
+    "projection": "isometric_square",
+    "tileWidth": 128,
+    "tileHeight": 64,
+    "origin": {
+      "x": 832,
+      "y": 96
+    },
+    "width": 17,
+    "height": 12,
+    "coordinateRule": "x increases down-right; y increases down-left"
+  },
+  "walkable": {
+    "bounds": [
+      {
+        "x": 8,
+        "y": 0
+      },
+      {
+        "x": 9,
+        "y": 0
+      },
+      {
+        "x": 10,
+        "y": 0
+      },
+      {
+        "x": 11,
+        "y": 0
+      },
+      {
+        "x": 12,
+        "y": 0
+      },
+      {
+        "x": 7,
+        "y": 1
+      },
+      {
+        "x": 8,
+        "y": 1
+      },
+      {
+        "x": 9,
+        "y": 1
+      },
+      {
+        "x": 10,
+        "y": 1
+      },
+      {
+        "x": 11,
+        "y": 1
+      },
+      {
+        "x": 12,
+        "y": 1
+      },
+      {
+        "x": 13,
+        "y": 1
+      },
+      {
+        "x": 6,
+        "y": 2
+      },
+      {
+        "x": 7,
+        "y": 2
+      },
+      {
+        "x": 8,
+        "y": 2
+      },
+      {
+        "x": 9,
+        "y": 2
+      },
+      {
+        "x": 10,
+        "y": 2
+      },
+      {
+        "x": 11,
+        "y": 2
+      },
+      {
+        "x": 12,
+        "y": 2
+      },
+      {
+        "x": 13,
+        "y": 2
+      },
+      {
+        "x": 5,
+        "y": 3
+      },
+      {
+        "x": 6,
+        "y": 3
+      },
+      {
+        "x": 7,
+        "y": 3
+      },
+      {
+        "x": 8,
+        "y": 3
+      },
+      {
+        "x": 9,
+        "y": 3
+      },
+      {
+        "x": 10,
+        "y": 3
+      },
+      {
+        "x": 11,
+        "y": 3
+      },
+      {
+        "x": 12,
+        "y": 3
+      },
+      {
+        "x": 13,
+        "y": 3
+      },
+      {
+        "x": 14,
+        "y": 3
+      },
+      {
+        "x": 4,
+        "y": 4
+      },
+      {
+        "x": 5,
+        "y": 4
+      },
+      {
+        "x": 6,
+        "y": 4
+      },
+      {
+        "x": 7,
+        "y": 4
+      },
+      {
+        "x": 8,
+        "y": 4
+      },
+      {
+        "x": 9,
+        "y": 4
+      },
+      {
+        "x": 10,
+        "y": 4
+      },
+      {
+        "x": 11,
+        "y": 4
+      },
+      {
+        "x": 12,
+        "y": 4
+      },
+      {
+        "x": 13,
+        "y": 4
+      },
+      {
+        "x": 14,
+        "y": 4
+      },
+      {
+        "x": 15,
+        "y": 4
+      },
+      {
+        "x": 3,
+        "y": 5
+      },
+      {
+        "x": 4,
+        "y": 5
+      },
+      {
+        "x": 5,
+        "y": 5
+      },
+      {
+        "x": 6,
+        "y": 5
+      },
+      {
+        "x": 7,
+        "y": 5
+      },
+      {
+        "x": 8,
+        "y": 5
+      },
+      {
+        "x": 9,
+        "y": 5
+      },
+      {
+        "x": 10,
+        "y": 5
+      },
+      {
+        "x": 11,
+        "y": 5
+      },
+      {
+        "x": 12,
+        "y": 5
+      },
+      {
+        "x": 13,
+        "y": 5
+      },
+      {
+        "x": 14,
+        "y": 5
+      },
+      {
+        "x": 15,
+        "y": 5
+      },
+      {
+        "x": 1,
+        "y": 6
+      },
+      {
+        "x": 2,
+        "y": 6
+      },
+      {
+        "x": 3,
+        "y": 6
+      },
+      {
+        "x": 4,
+        "y": 6
+      },
+      {
+        "x": 5,
+        "y": 6
+      },
+      {
+        "x": 6,
+        "y": 6
+      },
+      {
+        "x": 7,
+        "y": 6
+      },
+      {
+        "x": 8,
+        "y": 6
+      },
+      {
+        "x": 9,
+        "y": 6
+      },
+      {
+        "x": 10,
+        "y": 6
+      },
+      {
+        "x": 11,
+        "y": 6
+      },
+      {
+        "x": 12,
+        "y": 6
+      },
+      {
+        "x": 13,
+        "y": 6
+      },
+      {
+        "x": 14,
+        "y": 6
+      },
+      {
+        "x": 15,
+        "y": 6
+      },
+      {
+        "x": 1,
+        "y": 7
+      },
+      {
+        "x": 2,
+        "y": 7
+      },
+      {
+        "x": 3,
+        "y": 7
+      },
+      {
+        "x": 4,
+        "y": 7
+      },
+      {
+        "x": 5,
+        "y": 7
+      },
+      {
+        "x": 6,
+        "y": 7
+      },
+      {
+        "x": 7,
+        "y": 7
+      },
+      {
+        "x": 8,
+        "y": 7
+      },
+      {
+        "x": 9,
+        "y": 7
+      },
+      {
+        "x": 10,
+        "y": 7
+      },
+      {
+        "x": 11,
+        "y": 7
+      },
+      {
+        "x": 12,
+        "y": 7
+      },
+      {
+        "x": 13,
+        "y": 7
+      },
+      {
+        "x": 14,
+        "y": 7
+      },
+      {
+        "x": 2,
+        "y": 8
+      },
+      {
+        "x": 3,
+        "y": 8
+      },
+      {
+        "x": 4,
+        "y": 8
+      },
+      {
+        "x": 5,
+        "y": 8
+      },
+      {
+        "x": 6,
+        "y": 8
+      },
+      {
+        "x": 7,
+        "y": 8
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 9,
+        "y": 8
+      },
+      {
+        "x": 10,
+        "y": 8
+      },
+      {
+        "x": 11,
+        "y": 8
+      },
+      {
+        "x": 12,
+        "y": 8
+      },
+      {
+        "x": 13,
+        "y": 8
+      },
+      {
+        "x": 3,
+        "y": 9
+      },
+      {
+        "x": 4,
+        "y": 9
+      },
+      {
+        "x": 5,
+        "y": 9
+      },
+      {
+        "x": 6,
+        "y": 9
+      },
+      {
+        "x": 7,
+        "y": 9
+      },
+      {
+        "x": 8,
+        "y": 9
+      },
+      {
+        "x": 9,
+        "y": 9
+      },
+      {
+        "x": 10,
+        "y": 9
+      },
+      {
+        "x": 11,
+        "y": 9
+      },
+      {
+        "x": 12,
+        "y": 9
+      },
+      {
+        "x": 13,
+        "y": 9
+      },
+      {
+        "x": 5,
+        "y": 10
+      },
+      {
+        "x": 6,
+        "y": 10
+      },
+      {
+        "x": 7,
+        "y": 10
+      },
+      {
+        "x": 8,
+        "y": 10
+      },
+      {
+        "x": 9,
+        "y": 10
+      },
+      {
+        "x": 10,
+        "y": 10
+      },
+      {
+        "x": 11,
+        "y": 10
+      },
+      {
+        "x": 12,
+        "y": 10
+      },
+      {
+        "x": 6,
+        "y": 11
+      },
+      {
+        "x": 7,
+        "y": 11
+      },
+      {
+        "x": 8,
+        "y": 11
+      },
+      {
+        "x": 9,
+        "y": 11
+      },
+      {
+        "x": 10,
+        "y": 11
+      },
+      {
+        "x": 11,
+        "y": 11
+      },
+      {
+        "x": 12,
+        "y": 11
+      },
+      {
+        "x": 13,
+        "y": 11
+      }
+    ]
+  },
+  "collision": {
+    "cells": [
+      {
+        "x": 0,
+        "y": 0,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 0,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 2,
+        "y": 0,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 3,
+        "y": 0,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 4,
+        "y": 0,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 5,
+        "y": 0,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 6,
+        "y": 0,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 7,
+        "y": 0,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 8,
+        "y": 0,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 9,
+        "y": 0,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 10,
+        "y": 0,
+        "state": "transition",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone",
+        "transitionId": "warehouse_door"
+      },
+      {
+        "x": 11,
+        "y": 0,
+        "state": "transition",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone",
+        "transitionId": "warehouse_door"
+      },
+      {
+        "x": 12,
+        "y": 0,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 13,
+        "y": 0,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 14,
+        "y": 0,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 15,
+        "y": 0,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 16,
+        "y": 0,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 1,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 1,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 2,
+        "y": 1,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 3,
+        "y": 1,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 4,
+        "y": 1,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 5,
+        "y": 1,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 6,
+        "y": 1,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 7,
+        "y": 1,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 8,
+        "y": 1,
+        "state": "difficult",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone",
+        "reason": "dock_clutter_rope_crates_or_barrels"
+      },
+      {
+        "x": 9,
+        "y": 1,
+        "state": "difficult",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone",
+        "reason": "dock_clutter_rope_crates_or_barrels"
+      },
+      {
+        "x": 10,
+        "y": 1,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 11,
+        "y": 1,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 12,
+        "y": 1,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 13,
+        "y": 1,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 14,
+        "y": 1,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 15,
+        "y": 1,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 16,
+        "y": 1,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 2,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 2,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 2,
+        "y": 2,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 3,
+        "y": 2,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 4,
+        "y": 2,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 5,
+        "y": 2,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 6,
+        "y": 2,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 7,
+        "y": 2,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 8,
+        "y": 2,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 9,
+        "y": 2,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 10,
+        "y": 2,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 11,
+        "y": 2,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 12,
+        "y": 2,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 13,
+        "y": 2,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 14,
+        "y": 2,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 15,
+        "y": 2,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 16,
+        "y": 2,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 3,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 3,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 2,
+        "y": 3,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 3,
+        "y": 3,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 4,
+        "y": 3,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 5,
+        "y": 3,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 6,
+        "y": 3,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 7,
+        "y": 3,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 8,
+        "y": 3,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 9,
+        "y": 3,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 10,
+        "y": 3,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 11,
+        "y": 3,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 12,
+        "y": 3,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 13,
+        "y": 3,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 14,
+        "y": 3,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 15,
+        "y": 3,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 16,
+        "y": 3,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 4,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 4,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 2,
+        "y": 4,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 3,
+        "y": 4,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 4,
+        "y": 4,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 5,
+        "y": 4,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 6,
+        "y": 4,
+        "state": "stairs",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone",
+        "stairId": "upper_left_quay_one_cell_steps"
+      },
+      {
+        "x": 7,
+        "y": 4,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 8,
+        "y": 4,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 9,
+        "y": 4,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 10,
+        "y": 4,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 11,
+        "y": 4,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 12,
+        "y": 4,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 13,
+        "y": 4,
+        "state": "difficult",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood",
+        "reason": "dock_clutter_rope_crates_or_barrels"
+      },
+      {
+        "x": 14,
+        "y": 4,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 15,
+        "y": 4,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 16,
+        "y": 4,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 5,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 5,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 2,
+        "y": 5,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 3,
+        "y": 5,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 4,
+        "y": 5,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 5,
+        "y": 5,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 6,
+        "y": 5,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 7,
+        "y": 5,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 8,
+        "y": 5,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 9,
+        "y": 5,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 10,
+        "y": 5,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 11,
+        "y": 5,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 12,
+        "y": 5,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 13,
+        "y": 5,
+        "state": "trigger-only",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood",
+        "triggerHint": "walkable_interaction_zone"
+      },
+      {
+        "x": 14,
+        "y": 5,
+        "state": "difficult",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood",
+        "reason": "dock_clutter_rope_crates_or_barrels"
+      },
+      {
+        "x": 15,
+        "y": 5,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 16,
+        "y": 5,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 6,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 6,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 2,
+        "y": 6,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 3,
+        "y": 6,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 4,
+        "y": 6,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 5,
+        "y": 6,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 6,
+        "y": 6,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 7,
+        "y": 6,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 8,
+        "y": 6,
+        "state": "trigger-only",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone",
+        "triggerHint": "walkable_interaction_zone"
+      },
+      {
+        "x": 9,
+        "y": 6,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 10,
+        "y": 6,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 11,
+        "y": 6,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 12,
+        "y": 6,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 13,
+        "y": 6,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 14,
+        "y": 6,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 15,
+        "y": 6,
+        "state": "transition",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood",
+        "transitionId": "east_timber_pier_exit"
+      },
+      {
+        "x": 16,
+        "y": 6,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 7,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 7,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 2,
+        "y": 7,
+        "state": "transition",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood",
+        "transitionId": "left_skiff_mooring_locked"
+      },
+      {
+        "x": 3,
+        "y": 7,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 4,
+        "y": 7,
+        "state": "difficult",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood",
+        "reason": "dock_clutter_rope_crates_or_barrels"
+      },
+      {
+        "x": 5,
+        "y": 7,
+        "state": "difficult",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone",
+        "reason": "dock_clutter_rope_crates_or_barrels"
+      },
+      {
+        "x": 6,
+        "y": 7,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 7,
+        "y": 7,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 8,
+        "y": 7,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 9,
+        "y": 7,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 10,
+        "y": 7,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 11,
+        "y": 7,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 12,
+        "y": 7,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 13,
+        "y": 7,
+        "state": "stairs",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood",
+        "stairId": "east_pier_one_cell_steps"
+      },
+      {
+        "x": 14,
+        "y": 7,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 15,
+        "y": 7,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 16,
+        "y": 7,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 8,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 8,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 2,
+        "y": 8,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 3,
+        "y": 8,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 4,
+        "y": 8,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 5,
+        "y": 8,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 6,
+        "y": 8,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 7,
+        "y": 8,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 8,
+        "y": 8,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 9,
+        "y": 8,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 10,
+        "y": 8,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 11,
+        "y": 8,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 12,
+        "y": 8,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 13,
+        "y": 8,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 14,
+        "y": 8,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 15,
+        "y": 8,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 16,
+        "y": 8,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 9,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 9,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 2,
+        "y": 9,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 3,
+        "y": 9,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 4,
+        "y": 9,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 5,
+        "y": 9,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 6,
+        "y": 9,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 7,
+        "y": 9,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 8,
+        "y": 9,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 9,
+        "y": 9,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 10,
+        "y": 9,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 11,
+        "y": 9,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 12,
+        "y": 9,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 13,
+        "y": 9,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 14,
+        "y": 9,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 15,
+        "y": 9,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 16,
+        "y": 9,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 10,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 10,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 2,
+        "y": 10,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 3,
+        "y": 10,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 4,
+        "y": 10,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 5,
+        "y": 10,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 6,
+        "y": 10,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 7,
+        "y": 10,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 8,
+        "y": 10,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 9,
+        "y": 10,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 10,
+        "y": 10,
+        "state": "stairs",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone",
+        "stairId": "lower_quay_one_cell_steps"
+      },
+      {
+        "x": 11,
+        "y": 10,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 12,
+        "y": 10,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 13,
+        "y": 10,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 14,
+        "y": 10,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 15,
+        "y": 10,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 16,
+        "y": 10,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 11,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 11,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 2,
+        "y": 11,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 3,
+        "y": 11,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 4,
+        "y": 11,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 5,
+        "y": 11,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 6,
+        "y": 11,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 7,
+        "y": 11,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 8,
+        "y": 11,
+        "state": "walkable",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone"
+      },
+      {
+        "x": 9,
+        "y": 11,
+        "state": "transition",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone",
+        "transitionId": "lower_quay_entry"
+      },
+      {
+        "x": 10,
+        "y": 11,
+        "state": "transition",
+        "groundMaterial": "stone",
+        "footstepSound": "footstep_stone",
+        "transitionId": "lower_quay_entry"
+      },
+      {
+        "x": 11,
+        "y": 11,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 12,
+        "y": 11,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 13,
+        "y": 11,
+        "state": "walkable",
+        "groundMaterial": "wood",
+        "footstepSound": "footstep_wood"
+      },
+      {
+        "x": 14,
+        "y": 11,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 15,
+        "y": 11,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 16,
+        "y": 11,
+        "state": "out-of-bounds",
+        "reason": "water_or_unreachable_cavern_edge"
+      }
+    ],
+    "outOfBounds": [
+      {
+        "x": 0,
+        "y": 0,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 0,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 2,
+        "y": 0,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 3,
+        "y": 0,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 4,
+        "y": 0,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 5,
+        "y": 0,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 6,
+        "y": 0,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 7,
+        "y": 0,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 13,
+        "y": 0,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 14,
+        "y": 0,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 15,
+        "y": 0,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 16,
+        "y": 0,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 1,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 1,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 2,
+        "y": 1,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 3,
+        "y": 1,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 4,
+        "y": 1,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 5,
+        "y": 1,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 6,
+        "y": 1,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 14,
+        "y": 1,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 15,
+        "y": 1,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 16,
+        "y": 1,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 2,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 2,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 2,
+        "y": 2,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 3,
+        "y": 2,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 4,
+        "y": 2,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 5,
+        "y": 2,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 14,
+        "y": 2,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 15,
+        "y": 2,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 16,
+        "y": 2,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 3,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 3,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 2,
+        "y": 3,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 3,
+        "y": 3,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 4,
+        "y": 3,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 15,
+        "y": 3,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 16,
+        "y": 3,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 4,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 4,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 2,
+        "y": 4,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 3,
+        "y": 4,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 16,
+        "y": 4,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 5,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 5,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 2,
+        "y": 5,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 16,
+        "y": 5,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 6,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 16,
+        "y": 6,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 7,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 15,
+        "y": 7,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 16,
+        "y": 7,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 8,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 8,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 14,
+        "y": 8,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 15,
+        "y": 8,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 16,
+        "y": 8,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 9,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 9,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 2,
+        "y": 9,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 14,
+        "y": 9,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 15,
+        "y": 9,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 16,
+        "y": 9,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 10,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 10,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 2,
+        "y": 10,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 3,
+        "y": 10,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 4,
+        "y": 10,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 13,
+        "y": 10,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 14,
+        "y": 10,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 15,
+        "y": 10,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 16,
+        "y": 10,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 0,
+        "y": 11,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 1,
+        "y": 11,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 2,
+        "y": 11,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 3,
+        "y": 11,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 4,
+        "y": 11,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 5,
+        "y": 11,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 14,
+        "y": 11,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 15,
+        "y": 11,
+        "reason": "water_or_unreachable_cavern_edge"
+      },
+      {
+        "x": 16,
+        "y": 11,
+        "reason": "water_or_unreachable_cavern_edge"
+      }
+    ],
+    "difficult": [
+      {
+        "x": 8,
+        "y": 1,
+        "reason": "dock_clutter_rope_crates_or_barrels"
+      },
+      {
+        "x": 9,
+        "y": 1,
+        "reason": "dock_clutter_rope_crates_or_barrels"
+      },
+      {
+        "x": 13,
+        "y": 4,
+        "reason": "dock_clutter_rope_crates_or_barrels"
+      },
+      {
+        "x": 14,
+        "y": 5,
+        "reason": "dock_clutter_rope_crates_or_barrels"
+      },
+      {
+        "x": 4,
+        "y": 7,
+        "reason": "dock_clutter_rope_crates_or_barrels"
+      },
+      {
+        "x": 5,
+        "y": 7,
+        "reason": "dock_clutter_rope_crates_or_barrels"
+      }
+    ],
+    "restricted": []
+  },
+  "groundAudio": {
+    "materials": {
+      "stone": "footstep_stone",
+      "wood": "footstep_wood",
+      "dirt": "footstep_dirt",
+      "grass": "footstep_grass",
+      "gravel": "footstep_gravel",
+      "shallow_water": "footstep_shallow_water"
+    },
+    "overrides": []
+  },
+  "blocked": [
+    {
+      "id": "warehouse_wall",
+      "cells": [
+        {
+          "x": 12,
+          "y": 0
+        },
+        {
+          "x": 13,
+          "y": 0
+        },
+        {
+          "x": 14,
+          "y": 0
+        }
+      ],
+      "reason": "stone_wall_and_warehouse_face",
+      "blocksMovement": true,
+      "blocksSightReadability": true
+    },
+    {
+      "id": "upper_quay_crates",
+      "cells": [
+        {
+          "x": 8,
+          "y": 1
+        },
+        {
+          "x": 9,
+          "y": 1
+        }
+      ],
+      "reason": "stacked_crates_and_rope_clutter",
+      "blocksMovement": false,
+      "blocksSightReadability": false
+    },
+    {
+      "id": "east_pier_crates",
+      "cells": [
+        {
+          "x": 13,
+          "y": 4
+        },
+        {
+          "x": 14,
+          "y": 5
+        }
+      ],
+      "reason": "crate_and_barrel_clutter",
+      "blocksMovement": false,
+      "blocksSightReadability": false
+    }
+  ],
+  "elevation": [
+    {
+      "id": "waterline",
+      "heightFt": -5,
+      "cells": [
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 1,
+          "y": 0
+        },
+        {
+          "x": 2,
+          "y": 0
+        },
+        {
+          "x": 3,
+          "y": 0
+        },
+        {
+          "x": 4,
+          "y": 0
+        },
+        {
+          "x": 5,
+          "y": 0
+        },
+        {
+          "x": 6,
+          "y": 0
+        },
+        {
+          "x": 7,
+          "y": 0
+        },
+        {
+          "x": 13,
+          "y": 0
+        },
+        {
+          "x": 14,
+          "y": 0
+        },
+        {
+          "x": 15,
+          "y": 0
+        },
+        {
+          "x": 16,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": 1,
+          "y": 1
+        },
+        {
+          "x": 2,
+          "y": 1
+        },
+        {
+          "x": 3,
+          "y": 1
+        },
+        {
+          "x": 4,
+          "y": 1
+        },
+        {
+          "x": 5,
+          "y": 1
+        },
+        {
+          "x": 6,
+          "y": 1
+        },
+        {
+          "x": 14,
+          "y": 1
+        },
+        {
+          "x": 15,
+          "y": 1
+        },
+        {
+          "x": 16,
+          "y": 1
+        },
+        {
+          "x": 0,
+          "y": 2
+        },
+        {
+          "x": 1,
+          "y": 2
+        },
+        {
+          "x": 2,
+          "y": 2
+        },
+        {
+          "x": 3,
+          "y": 2
+        },
+        {
+          "x": 4,
+          "y": 2
+        },
+        {
+          "x": 5,
+          "y": 2
+        },
+        {
+          "x": 14,
+          "y": 2
+        },
+        {
+          "x": 15,
+          "y": 2
+        },
+        {
+          "x": 16,
+          "y": 2
+        },
+        {
+          "x": 0,
+          "y": 3
+        },
+        {
+          "x": 1,
+          "y": 3
+        },
+        {
+          "x": 2,
+          "y": 3
+        },
+        {
+          "x": 3,
+          "y": 3
+        },
+        {
+          "x": 4,
+          "y": 3
+        },
+        {
+          "x": 15,
+          "y": 3
+        },
+        {
+          "x": 16,
+          "y": 3
+        },
+        {
+          "x": 0,
+          "y": 4
+        },
+        {
+          "x": 1,
+          "y": 4
+        },
+        {
+          "x": 2,
+          "y": 4
+        },
+        {
+          "x": 3,
+          "y": 4
+        },
+        {
+          "x": 16,
+          "y": 4
+        },
+        {
+          "x": 0,
+          "y": 5
+        },
+        {
+          "x": 1,
+          "y": 5
+        },
+        {
+          "x": 2,
+          "y": 5
+        },
+        {
+          "x": 16,
+          "y": 5
+        },
+        {
+          "x": 0,
+          "y": 6
+        },
+        {
+          "x": 16,
+          "y": 6
+        },
+        {
+          "x": 0,
+          "y": 7
+        },
+        {
+          "x": 15,
+          "y": 7
+        },
+        {
+          "x": 16,
+          "y": 7
+        },
+        {
+          "x": 0,
+          "y": 8
+        },
+        {
+          "x": 1,
+          "y": 8
+        },
+        {
+          "x": 14,
+          "y": 8
+        },
+        {
+          "x": 15,
+          "y": 8
+        },
+        {
+          "x": 16,
+          "y": 8
+        },
+        {
+          "x": 0,
+          "y": 9
+        },
+        {
+          "x": 1,
+          "y": 9
+        },
+        {
+          "x": 2,
+          "y": 9
+        },
+        {
+          "x": 14,
+          "y": 9
+        },
+        {
+          "x": 15,
+          "y": 9
+        },
+        {
+          "x": 16,
+          "y": 9
+        },
+        {
+          "x": 0,
+          "y": 10
+        },
+        {
+          "x": 1,
+          "y": 10
+        },
+        {
+          "x": 2,
+          "y": 10
+        },
+        {
+          "x": 3,
+          "y": 10
+        },
+        {
+          "x": 4,
+          "y": 10
+        },
+        {
+          "x": 13,
+          "y": 10
+        },
+        {
+          "x": 14,
+          "y": 10
+        },
+        {
+          "x": 15,
+          "y": 10
+        },
+        {
+          "x": 16,
+          "y": 10
+        },
+        {
+          "x": 0,
+          "y": 11
+        },
+        {
+          "x": 1,
+          "y": 11
+        },
+        {
+          "x": 2,
+          "y": 11
+        },
+        {
+          "x": 3,
+          "y": 11
+        },
+        {
+          "x": 4,
+          "y": 11
+        },
+        {
+          "x": 5,
+          "y": 11
+        },
+        {
+          "x": 14,
+          "y": 11
+        },
+        {
+          "x": 15,
+          "y": 11
+        },
+        {
+          "x": 16,
+          "y": 11
+        }
+      ],
+      "traversal": "not_walkable"
+    },
+    {
+      "id": "main_quay",
+      "heightFt": 0,
+      "cells": [
+        {
+          "x": 8,
+          "y": 0
+        },
+        {
+          "x": 9,
+          "y": 0
+        },
+        {
+          "x": 10,
+          "y": 0
+        },
+        {
+          "x": 11,
+          "y": 0
+        },
+        {
+          "x": 12,
+          "y": 0
+        },
+        {
+          "x": 7,
+          "y": 1
+        },
+        {
+          "x": 8,
+          "y": 1
+        },
+        {
+          "x": 9,
+          "y": 1
+        },
+        {
+          "x": 10,
+          "y": 1
+        },
+        {
+          "x": 11,
+          "y": 1
+        },
+        {
+          "x": 12,
+          "y": 1
+        },
+        {
+          "x": 13,
+          "y": 1
+        },
+        {
+          "x": 6,
+          "y": 2
+        },
+        {
+          "x": 7,
+          "y": 2
+        },
+        {
+          "x": 8,
+          "y": 2
+        },
+        {
+          "x": 9,
+          "y": 2
+        },
+        {
+          "x": 10,
+          "y": 2
+        },
+        {
+          "x": 11,
+          "y": 2
+        },
+        {
+          "x": 12,
+          "y": 2
+        },
+        {
+          "x": 13,
+          "y": 2
+        },
+        {
+          "x": 5,
+          "y": 3
+        },
+        {
+          "x": 6,
+          "y": 3
+        },
+        {
+          "x": 7,
+          "y": 3
+        },
+        {
+          "x": 8,
+          "y": 3
+        },
+        {
+          "x": 9,
+          "y": 3
+        },
+        {
+          "x": 10,
+          "y": 3
+        },
+        {
+          "x": 11,
+          "y": 3
+        },
+        {
+          "x": 12,
+          "y": 3
+        },
+        {
+          "x": 13,
+          "y": 3
+        },
+        {
+          "x": 14,
+          "y": 3
+        },
+        {
+          "x": 4,
+          "y": 4
+        },
+        {
+          "x": 5,
+          "y": 4
+        },
+        {
+          "x": 6,
+          "y": 4
+        },
+        {
+          "x": 7,
+          "y": 4
+        },
+        {
+          "x": 8,
+          "y": 4
+        },
+        {
+          "x": 9,
+          "y": 4
+        },
+        {
+          "x": 10,
+          "y": 4
+        },
+        {
+          "x": 11,
+          "y": 4
+        },
+        {
+          "x": 12,
+          "y": 4
+        },
+        {
+          "x": 3,
+          "y": 5
+        },
+        {
+          "x": 4,
+          "y": 5
+        },
+        {
+          "x": 5,
+          "y": 5
+        },
+        {
+          "x": 6,
+          "y": 5
+        },
+        {
+          "x": 7,
+          "y": 5
+        },
+        {
+          "x": 8,
+          "y": 5
+        },
+        {
+          "x": 9,
+          "y": 5
+        },
+        {
+          "x": 10,
+          "y": 5
+        },
+        {
+          "x": 11,
+          "y": 5
+        },
+        {
+          "x": 12,
+          "y": 5
+        },
+        {
+          "x": 5,
+          "y": 6
+        },
+        {
+          "x": 6,
+          "y": 6
+        },
+        {
+          "x": 7,
+          "y": 6
+        },
+        {
+          "x": 8,
+          "y": 6
+        },
+        {
+          "x": 9,
+          "y": 6
+        },
+        {
+          "x": 10,
+          "y": 6
+        },
+        {
+          "x": 11,
+          "y": 6
+        },
+        {
+          "x": 12,
+          "y": 6
+        },
+        {
+          "x": 5,
+          "y": 7
+        },
+        {
+          "x": 6,
+          "y": 7
+        },
+        {
+          "x": 7,
+          "y": 7
+        },
+        {
+          "x": 8,
+          "y": 7
+        },
+        {
+          "x": 9,
+          "y": 7
+        },
+        {
+          "x": 10,
+          "y": 7
+        },
+        {
+          "x": 11,
+          "y": 7
+        },
+        {
+          "x": 12,
+          "y": 7
+        },
+        {
+          "x": 5,
+          "y": 8
+        },
+        {
+          "x": 6,
+          "y": 8
+        },
+        {
+          "x": 7,
+          "y": 8
+        },
+        {
+          "x": 8,
+          "y": 8
+        },
+        {
+          "x": 9,
+          "y": 8
+        },
+        {
+          "x": 10,
+          "y": 8
+        },
+        {
+          "x": 11,
+          "y": 8
+        },
+        {
+          "x": 12,
+          "y": 8
+        },
+        {
+          "x": 5,
+          "y": 9
+        },
+        {
+          "x": 6,
+          "y": 9
+        },
+        {
+          "x": 7,
+          "y": 9
+        },
+        {
+          "x": 8,
+          "y": 9
+        },
+        {
+          "x": 9,
+          "y": 9
+        },
+        {
+          "x": 10,
+          "y": 9
+        },
+        {
+          "x": 5,
+          "y": 10
+        },
+        {
+          "x": 6,
+          "y": 10
+        },
+        {
+          "x": 7,
+          "y": 10
+        },
+        {
+          "x": 8,
+          "y": 10
+        },
+        {
+          "x": 9,
+          "y": 10
+        },
+        {
+          "x": 10,
+          "y": 10
+        },
+        {
+          "x": 6,
+          "y": 11
+        },
+        {
+          "x": 7,
+          "y": 11
+        },
+        {
+          "x": 8,
+          "y": 11
+        },
+        {
+          "x": 9,
+          "y": 11
+        },
+        {
+          "x": 10,
+          "y": 11
+        }
+      ],
+      "traversal": "normal"
+    },
+    {
+      "id": "timber_piers",
+      "heightFt": 0,
+      "cells": [
+        {
+          "x": 13,
+          "y": 4
+        },
+        {
+          "x": 14,
+          "y": 4
+        },
+        {
+          "x": 15,
+          "y": 4
+        },
+        {
+          "x": 13,
+          "y": 5
+        },
+        {
+          "x": 14,
+          "y": 5
+        },
+        {
+          "x": 15,
+          "y": 5
+        },
+        {
+          "x": 1,
+          "y": 6
+        },
+        {
+          "x": 2,
+          "y": 6
+        },
+        {
+          "x": 3,
+          "y": 6
+        },
+        {
+          "x": 4,
+          "y": 6
+        },
+        {
+          "x": 13,
+          "y": 6
+        },
+        {
+          "x": 14,
+          "y": 6
+        },
+        {
+          "x": 15,
+          "y": 6
+        },
+        {
+          "x": 1,
+          "y": 7
+        },
+        {
+          "x": 2,
+          "y": 7
+        },
+        {
+          "x": 3,
+          "y": 7
+        },
+        {
+          "x": 4,
+          "y": 7
+        },
+        {
+          "x": 13,
+          "y": 7
+        },
+        {
+          "x": 14,
+          "y": 7
+        },
+        {
+          "x": 2,
+          "y": 8
+        },
+        {
+          "x": 3,
+          "y": 8
+        },
+        {
+          "x": 4,
+          "y": 8
+        },
+        {
+          "x": 13,
+          "y": 8
+        },
+        {
+          "x": 3,
+          "y": 9
+        },
+        {
+          "x": 4,
+          "y": 9
+        },
+        {
+          "x": 11,
+          "y": 9
+        },
+        {
+          "x": 12,
+          "y": 9
+        },
+        {
+          "x": 13,
+          "y": 9
+        },
+        {
+          "x": 11,
+          "y": 10
+        },
+        {
+          "x": 12,
+          "y": 10
+        },
+        {
+          "x": 11,
+          "y": 11
+        },
+        {
+          "x": 12,
+          "y": 11
+        },
+        {
+          "x": 13,
+          "y": 11
+        }
+      ],
+      "traversal": "normal_or_difficult_when_cluttered"
+    }
+  ],
+  "stairs": [
+    {
+      "id": "lower_quay_one_cell_steps",
+      "cells": [
+        {
+          "x": 10,
+          "y": 10
+        }
+      ],
+      "material": "stone",
+      "sourceElevationFt": 0,
+      "destinationElevationFt": 0,
+      "connects": [
+        "lower_quay_entry",
+        "main_quay"
+      ],
+      "oneCellDeep": true
+    },
+    {
+      "id": "upper_left_quay_one_cell_steps",
+      "cells": [
+        {
+          "x": 6,
+          "y": 4
+        }
+      ],
+      "material": "stone",
+      "sourceElevationFt": 0,
+      "destinationElevationFt": 0,
+      "connects": [
+        "central_quay",
+        "upper_left_service_quay"
+      ],
+      "oneCellDeep": true
+    },
+    {
+      "id": "east_pier_one_cell_steps",
+      "cells": [
+        {
+          "x": 13,
+          "y": 7
+        }
+      ],
+      "material": "wood",
+      "sourceElevationFt": 0,
+      "destinationElevationFt": 0,
+      "connects": [
+        "central_quay",
+        "east_timber_pier"
+      ],
+      "oneCellDeep": true
+    }
+  ],
+  "lighting": {
+    "runtimeDarkness": true,
+    "lanternaAppliedAtRuntime": true,
+    "fixedSources": [],
+    "notes": [
+      "Clean plate contains no intentional fixed light sources; use runtime Lanterna reveal and optional future Greyharbour candle/work-lamp metadata only if art is revised to show sources.",
+      "Dark water and cavern edges should remain hidden until revealed; do not bake visibility into the art plate."
+    ]
+  },
+  "playerStart": {
+    "x": 9,
+    "y": 11,
+    "zone": "lower_quay_entry"
+  },
+  "starts": {
+    "companions": [
+      {
+        "x": 10,
+        "y": 11
+      },
+      {
+        "x": 8,
+        "y": 11
+      }
+    ],
+    "npcs": [],
+    "neutral": []
+  },
+  "interactables": [
+    {
+      "id": "drain_grate",
+      "displayName": "Drain grate",
+      "zone": [
+        {
+          "x": 8,
+          "y": 6
+        }
+      ],
+      "triggerType": "inspection",
+      "verb": "inspect",
+      "result": "Reveal brackish water flow below the quay and possible smuggler-route clue.",
+      "requiredState": null,
+      "stateChanges": [
+        "greyharbour_dock.inspected_drain_grate"
+      ],
+      "repeatable": true,
+      "visibility": "visible"
+    },
+    {
+      "id": "left_mooring_skiff",
+      "displayName": "Tethered skiff",
+      "zone": [
+        {
+          "x": 2,
+          "y": 7
+        }
+      ],
+      "triggerType": "transition_or_use",
+      "verb": "use",
+      "result": "If unlocked, transition to outer mooring; otherwise report that the chain is locked.",
+      "requiredState": "has_skiff_key OR greyharbour_dock.skiff_unlocked",
+      "stateChanges": [],
+      "repeatable": true,
+      "visibility": "visible_locked"
+    },
+    {
+      "id": "east_crates",
+      "displayName": "Stacked dock crates",
+      "zone": [
+        {
+          "x": 13,
+          "y": 5
+        },
+        {
+          "x": 14,
+          "y": 5
+        }
+      ],
+      "triggerType": "search",
+      "verb": "search",
+      "result": "Find a damp shipping tag and minor salvage.",
+      "requiredState": null,
+      "stateChanges": [
+        "greyharbour_dock.searched_east_crates"
+      ],
+      "repeatable": false,
+      "visibility": "visible"
+    },
+    {
+      "id": "warehouse_door",
+      "displayName": "Warehouse door",
+      "zone": [
+        {
+          "x": 10,
+          "y": 0
+        },
+        {
+          "x": 11,
+          "y": 0
+        }
+      ],
+      "triggerType": "transition",
+      "verb": "open",
+      "result": "Transition to Greyharbour warehouse if unlocked; otherwise play locked-door response.",
+      "requiredState": "greyharbour.warehouse_access_granted",
+      "stateChanges": [],
+      "repeatable": true,
+      "visibility": "visible_locked"
+    }
+  ],
+  "triggers": {
+    "conversation": [
+      {
+        "id": "central_quay_conversation",
+        "speakerId": "party",
+        "zone": [
+          {
+            "x": 8,
+            "y": 5
+          },
+          {
+            "x": 9,
+            "y": 5
+          },
+          {
+            "x": 8,
+            "y": 6
+          },
+          {
+            "x": 9,
+            "y": 6
+          }
+        ],
+        "dialogueId": "greyharbour_dock.central_quay_party_observation",
+        "repeatable": false,
+        "conditions": [
+          "first_visit"
+        ],
+        "result": "Party comments on the quiet harbour and possible warehouse route."
+      }
+    ],
+    "discovery": [
+      {
+        "id": "discover_skiff_route",
+        "zone": [
+          {
+            "x": 2,
+            "y": 7
+          },
+          {
+            "x": 3,
+            "y": 7
+          }
+        ],
+        "payload": "outer_mooring_route_hint",
+        "reward": null,
+        "journalEffect": "Add note about locked skiff route.",
+        "stateChanges": [
+          "greyharbour_dock.discovered_skiff_route"
+        ],
+        "repeatable": false
+      }
+    ],
+    "inspection": [
+      {
+        "id": "inspect_drain_grate",
+        "objectId": "drain_grate",
+        "zone": [
+          {
+            "x": 8,
+            "y": 6
+          }
+        ],
+        "promptTextId": "greyharbour_dock.inspect_drain_grate.prompt",
+        "result": "Smell of tidewater and old alchemical runoff; possible clue flag.",
+        "stateChanges": [
+          "greyharbour_dock.inspected_drain_grate"
+        ]
+      },
+      {
+        "id": "inspect_east_crates",
+        "objectId": "east_crates",
+        "zone": [
+          {
+            "x": 13,
+            "y": 5
+          }
+        ],
+        "promptTextId": "greyharbour_dock.inspect_east_crates.prompt",
+        "result": "Shipping tag points toward the warehouse.",
+        "stateChanges": [
+          "greyharbour_dock.found_shipping_tag"
+        ]
+      }
+    ],
+    "story": [
+      {
+        "id": "first_entry_dock_reveal",
+        "zone": [
+          {
+            "x": 9,
+            "y": 11
+          },
+          {
+            "x": 10,
+            "y": 11
+          }
+        ],
+        "result": "Optional narration beat: the black water under Greyharbour moves without wind.",
+        "repeatable": false,
+        "conditions": [
+          "first_visit"
+        ]
+      }
+    ]
+  },
+  "transitions": [
+    {
+      "id": "warehouse_door",
+      "sourceAreaId": "greyharbour_dock",
+      "sourceZone": [
+        {
+          "x": 10,
+          "y": 0
+        },
+        {
+          "x": 11,
+          "y": 0
+        }
+      ],
+      "destinationAreaId": "greyharbour_warehouse",
+      "destinationEntry": {
+        "zone": "dock_door_entry",
+        "cell": {
+          "x": 8,
+          "y": 10
+        }
+      },
+      "transitionType": "two-way",
+      "availability": "locked",
+      "condition": "greyharbour.warehouse_access_granted",
+      "fallback": "locked_door_bark",
+      "sceneFlowEventId": "transition.greyharbour_dock.to_warehouse"
+    },
+    {
+      "id": "lower_quay_entry",
+      "sourceAreaId": "greyharbour_dock",
+      "sourceZone": [
+        {
+          "x": 9,
+          "y": 11
+        },
+        {
+          "x": 10,
+          "y": 11
+        }
+      ],
+      "destinationAreaId": "greyharbour_cavern_approach",
+      "destinationEntry": {
+        "zone": "dock_return",
+        "cell": {
+          "x": 8,
+          "y": 1
+        }
+      },
+      "transitionType": "two-way",
+      "availability": "always",
+      "condition": null,
+      "fallback": null,
+      "sceneFlowEventId": "transition.greyharbour_dock.to_cavern_approach"
+    },
+    {
+      "id": "east_timber_pier_exit",
+      "sourceAreaId": "greyharbour_dock",
+      "sourceZone": [
+        {
+          "x": 15,
+          "y": 6
+        }
+      ],
+      "destinationAreaId": "greyharbour_east_pier",
+      "destinationEntry": {
+        "zone": "west_pier_entry",
+        "cell": {
+          "x": 1,
+          "y": 6
+        }
+      },
+      "transitionType": "two-way",
+      "availability": "conditional",
+      "condition": "greyharbour.east_pier_discovered",
+      "fallback": "The eastern pier vanishes into dark water and broken planks.",
+      "sceneFlowEventId": "transition.greyharbour_dock.to_east_pier"
+    },
+    {
+      "id": "left_skiff_mooring_locked",
+      "sourceAreaId": "greyharbour_dock",
+      "sourceZone": [
+        {
+          "x": 2,
+          "y": 7
+        }
+      ],
+      "destinationAreaId": "greyharbour_outer_mooring",
+      "destinationEntry": {
+        "zone": "skiff_arrival",
+        "cell": {
+          "x": 9,
+          "y": 9
+        }
+      },
+      "transitionType": "two-way",
+      "availability": "locked",
+      "condition": "has_skiff_key OR greyharbour_dock.skiff_unlocked",
+      "fallback": "The skiff is chained to a mooring post.",
+      "sceneFlowEventId": "transition.greyharbour_dock.to_outer_mooring"
+    }
+  ],
+  "namedZones": {
+    "lower_quay_entry": [
+      {
+        "x": 9,
+        "y": 11
+      },
+      {
+        "x": 10,
+        "y": 11
+      }
+    ],
+    "main_quay": [
+      {
+        "x": 5,
+        "y": 4
+      },
+      {
+        "x": 6,
+        "y": 4
+      },
+      {
+        "x": 7,
+        "y": 4
+      },
+      {
+        "x": 8,
+        "y": 4
+      },
+      {
+        "x": 9,
+        "y": 4
+      },
+      {
+        "x": 10,
+        "y": 4
+      },
+      {
+        "x": 11,
+        "y": 4
+      },
+      {
+        "x": 12,
+        "y": 4
+      },
+      {
+        "x": 5,
+        "y": 5
+      },
+      {
+        "x": 6,
+        "y": 5
+      },
+      {
+        "x": 7,
+        "y": 5
+      },
+      {
+        "x": 8,
+        "y": 5
+      },
+      {
+        "x": 9,
+        "y": 5
+      },
+      {
+        "x": 10,
+        "y": 5
+      },
+      {
+        "x": 11,
+        "y": 5
+      },
+      {
+        "x": 12,
+        "y": 5
+      },
+      {
+        "x": 5,
+        "y": 6
+      },
+      {
+        "x": 6,
+        "y": 6
+      },
+      {
+        "x": 7,
+        "y": 6
+      },
+      {
+        "x": 8,
+        "y": 6
+      },
+      {
+        "x": 9,
+        "y": 6
+      },
+      {
+        "x": 10,
+        "y": 6
+      },
+      {
+        "x": 11,
+        "y": 6
+      },
+      {
+        "x": 12,
+        "y": 6
+      },
+      {
+        "x": 5,
+        "y": 7
+      },
+      {
+        "x": 6,
+        "y": 7
+      },
+      {
+        "x": 7,
+        "y": 7
+      },
+      {
+        "x": 8,
+        "y": 7
+      },
+      {
+        "x": 9,
+        "y": 7
+      },
+      {
+        "x": 10,
+        "y": 7
+      },
+      {
+        "x": 11,
+        "y": 7
+      },
+      {
+        "x": 12,
+        "y": 7
+      },
+      {
+        "x": 5,
+        "y": 8
+      },
+      {
+        "x": 6,
+        "y": 8
+      },
+      {
+        "x": 7,
+        "y": 8
+      },
+      {
+        "x": 8,
+        "y": 8
+      },
+      {
+        "x": 9,
+        "y": 8
+      },
+      {
+        "x": 10,
+        "y": 8
+      },
+      {
+        "x": 11,
+        "y": 8
+      },
+      {
+        "x": 12,
+        "y": 8
+      },
+      {
+        "x": 5,
+        "y": 9
+      },
+      {
+        "x": 6,
+        "y": 9
+      },
+      {
+        "x": 7,
+        "y": 9
+      },
+      {
+        "x": 8,
+        "y": 9
+      },
+      {
+        "x": 9,
+        "y": 9
+      },
+      {
+        "x": 10,
+        "y": 9
+      },
+      {
+        "x": 11,
+        "y": 9
+      },
+      {
+        "x": 12,
+        "y": 9
+      }
+    ],
+    "central_conversation_platform": [
+      {
+        "x": 8,
+        "y": 5
+      },
+      {
+        "x": 9,
+        "y": 5
+      },
+      {
+        "x": 8,
+        "y": 6
+      },
+      {
+        "x": 9,
+        "y": 6
+      }
+    ],
+    "upper_left_service_quay": [
+      {
+        "x": 7,
+        "y": 1
+      },
+      {
+        "x": 8,
+        "y": 1
+      },
+      {
+        "x": 7,
+        "y": 2
+      },
+      {
+        "x": 8,
+        "y": 2
+      }
+    ],
+    "warehouse_threshold": [
+      {
+        "x": 10,
+        "y": 0
+      },
+      {
+        "x": 11,
+        "y": 0
+      }
+    ],
+    "east_timber_pier": [
+      {
+        "x": 13,
+        "y": 5
+      },
+      {
+        "x": 14,
+        "y": 5
+      },
+      {
+        "x": 15,
+        "y": 6
+      },
+      {
+        "x": 13,
+        "y": 7
+      }
+    ],
+    "left_skiff_mooring": [
+      {
+        "x": 2,
+        "y": 7
+      },
+      {
+        "x": 3,
+        "y": 7
+      }
+    ]
+  },
+  "validationNotes": [
+    "Draft grid origin is a conservative proposal over a generated image; verify with a visible 128x64 overlay before production.",
+    "The art contains many small stone paver lines that are decorative and do not equal gameplay grid cells.",
+    "Some dock props overlap route edges; metadata marks cluttered cells difficult rather than blocked unless a player figure would clearly collide.",
+    "Warehouse threshold is visible and readable, but its lock/availability is a story proposal.",
+    "No fixed light sources are declared because the clean plate should rely on runtime Lanterna and darkness systems."
+  ]
+}

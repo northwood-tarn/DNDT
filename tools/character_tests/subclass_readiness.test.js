@@ -65,8 +65,21 @@ function resolvesFutureSubclassEffectsWhenAllowed() {
   assert.equal(wicklight?.implemented, true, "declarative subclass effects should be marked implemented in the resolved sheet");
   assert.equal(fiendPatronSpear?.implemented, true, "declarative subclass damage riders should be marked implemented in the resolved sheet");
   assert.equal(lastLight?.effects?.actionOptions?.[0]?.createsCombatObject?.id, "last_light_field");
-  assert.equal(lastLight.effects.actionOptions[0].createsCombatObject.collapse.automatic.enemies.damage.dice, "10d8");
-  assert.equal(lastLight.effects.actionOptions[0].createsCombatObject.collapse.automatic.allies.damage.dice, "4d8");
+  const lastLightField = lastLight.effects.actionOptions[0].createsCombatObject;
+  assert.equal(lastLightField.timers.manual.startDice, 4);
+  assert.equal(lastLightField.timers.manual.expiresAtDice, 8);
+  assert.equal(lastLightField.timers.overload.startDice, 4);
+  assert.equal(lastLightField.timers.overload.explodesAtDice, 8);
+  assert.equal(lastLightField.collapse.manual.actionType, "bonus_action");
+  assert.equal(lastLightField.collapse.manual.damage.diceFromTimer, "manual");
+  assert.equal(lastLightField.collapse.automatic.damage.diceFromTimer, "overload");
+  assert.equal(lastLightField.effects.some((effect) => effect.type === "temp_hp" && effect.amountFormula === "charisma_modifier"), true);
+  assert.equal(lastLightField.effects.some((effect) => (
+    effect.type === "remove_conditions" &&
+    effect.affects === "enemies" &&
+    effect.conditions.includes("hidden") &&
+    effect.conditions.includes("invisible")
+  )), true);
 }
 
 function resolvesFuturePactEffectsWhenAllowed() {

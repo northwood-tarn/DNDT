@@ -1,0 +1,47 @@
+{
+  "stageId": "0_plateau_assault",
+  "source": "/Users/jon/Downloads/0_plateau_assault.grid-sketch.json",
+  "generatedAt": "2026-06-24T01:45:23.765Z",
+  "purpose": "layered grid-locked map generation package",
+  "sequence": [
+    "author sketch",
+    "export grid-sketch json and sketch txt",
+    "build package with canonical grid metadata",
+    "generate base terrain control plate with reserved placed-item footprints",
+    "generate altitude control plate as the secondary constraint image",
+    "generate placed item contracts",
+    "generate base terrain prompt without placed items",
+    "generate one isolated asset prompt per placed item",
+    "generate deterministic composition metadata",
+    "generate or paint the base terrain image",
+    "generate placed assets in isolated canvases",
+    "composite placed assets over the base terrain by metadata",
+    "validate composite against grid and placed item contracts"
+  ],
+  "legacyAllInOneSequence": [
+    "generate placement control plate as the edit source image",
+    "generate altitude control plate as the secondary constraint image",
+    "generate combined SVG audit plate",
+    "generate edit prompt",
+    "edit the placement control plate into art while preserving region silhouettes",
+    "validate against placement control plate, checklist, and grid metadata",
+    "reject or approve for runtime validation overlay"
+  ],
+  "files": {
+    "grid": "0_plateau_assault.grid.json",
+    "placementControlPng": "0_plateau_assault.placement_control.png",
+    "baseTerrainControlPng": "0_plateau_assault.base_terrain_control.png",
+    "altitudeControlPng": "0_plateau_assault.altitude_control.png",
+    "combinedControlSvg": "0_plateau_assault.combined_control.svg",
+    "gridLockedArtPng": "0_plateau_assault.art_grid_locked_v1.png",
+    "artPrompt": "0_plateau_assault.art_prompt.txt",
+    "baseTerrainPrompt": "0_plateau_assault.base_terrain_prompt.txt",
+    "placedItems": "0_plateau_assault.placed_items.json",
+    "composition": "0_plateau_assault.composition.json",
+    "layeredReadme": "0_plateau_assault.layered_pipeline.md",
+    "assetPromptsDir": "placed_asset_prompts",
+    "placedAssetsDir": "placed_assets",
+    "validationChecklist": "0_plateau_assault.validation_checklist.md",
+    "manifest": "0_plateau_assault.generation_manifest.json"
+  }
+}

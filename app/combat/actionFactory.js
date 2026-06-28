@@ -1,6 +1,7 @@
 import {
   createCombatObjectFromSpell,
   createEffectsFromSpell,
+  createSpellActionExtras,
   getSpellDamage,
 } from "./spellActionMappers.js";
 import { createActionFromConsumable } from "./consumableActionMappers.js";
@@ -132,12 +133,14 @@ export function createNaturalWeaponAction(naturalAttack, options = {}) {
 }
 
 export function createSpellAction(spellRecord, options = {}) {
-  if (!spellRecord || spellRecord.dialogueRelated || spellRecord.hooks?.ui?.hideInCombat) return null;
+  if (!spellRecord || spellRecord.hooks?.ui?.hideInCombat) return null;
+  if (spellRecord.dialogueRelated && !hasCombatSpellHooks(spellRecord)) return null;
   const hooks = spellRecord.hooks || {};
   const damage = getSpellDamage(spellRecord, options);
   const damageType = resolveSpellDamageType(hooks.damage, options);
   const damageTypeChoices = spellDamageTypeChoices(hooks.damage);
-  const effects = options.effects || createEffectsFromSpell(spellRecord);
+  const effects = options.effects || createEffectsFromSpell(spellRecord, options);
+  const spellExtras = createSpellActionExtras(spellRecord, options);
   const combatObject = createCombatObjectFromSpell(spellRecord);
   const teleport = createTeleportActionFromSpell(spellRecord);
   const harmful = Boolean(
@@ -152,6 +155,7 @@ export function createSpellAction(spellRecord, options = {}) {
     name: options.name || spellRecord.name,
     cost: mapCastingToCost(spellRecord.casting),
     range: getSpellRangeSquares(spellRecord),
+    maxTargets: spellTargetCount(spellRecord, options),
     description: describeSpell(spellRecord),
     concentration: spellRecord.concentration === true,
     sourceSpellId: spellRecord.id,
@@ -191,6 +195,7 @@ export function createSpellAction(spellRecord, options = {}) {
 
   if (hooks.autoHit) {
     if (!damage || !hooks.damage?.type) return null;
+    const hits = hooks.darts || hooks.hits || 1;
     return compactAction({
       ...base,
       type: "spell_auto_damage",
@@ -198,7 +203,11 @@ export function createSpellAction(spellRecord, options = {}) {
       damage,
       damageType,
       damageTypeChoices,
-      hits: hooks.darts || hooks.hits || 1,
+      hits,
+      maxTargets: Math.max(base.maxTargets || 1, hits),
+      targetAssignments: hits > 1 ? "per_hit" : null,
+      allowRepeatedTargets: hits > 1,
+      requireExactTargetCount: hits > 1,
       tags: { ...base.tags, harmful: true },
     });
   }
@@ -206,10 +215,11 @@ export function createSpellAction(spellRecord, options = {}) {
   if (hooks.healing) {
     const healing = options.healing || hooks.healing.dice;
     if (!healing) return null;
+    const requiresTarget = spellRecord.target?.type !== "self";
     return compactAction({
       ...base,
       type: "spell_self_heal",
-      requiresTarget: false,
+      requiresTarget,
       healing,
       tags: { ...base.tags, harmful: false },
     });
@@ -220,12 +230,13 @@ export function createSpellAction(spellRecord, options = {}) {
     return compactAction({
       ...base,
       type: "spell_area_save",
-      requiresTarget: true,
+      requiresTarget: spellExtras.selfCenteredArea ? false : true,
       saveAbility: normalizeAbility(hooks.save?.ability || options.saveAbility),
       spellSaveDC: options.spellSaveDC ?? DEFAULT_SPELL_SAVE_DC,
       damage,
       damageType,
       damageTypeChoices,
+      ...spellExtras,
       effects,
       targeting: createTargetingFromArea(spellRecord.area),
       tags: { ...base.tags, savingThrow: true, harmful: true },
@@ -242,6 +253,7 @@ export function createSpellAction(spellRecord, options = {}) {
       damage,
       damageType,
       damageTypeChoices,
+      ...spellExtras,
       effects,
       tags: { ...base.tags, savingThrow: true, harmful: true },
     });
@@ -249,6 +261,7 @@ export function createSpellAction(spellRecord, options = {}) {
 
   if (hooks.attack) {
     if (!damage || !hooks.damage?.type) return null;
+    const repeatAttacks = spellExtras.repeatAttacks || 1;
     return compactAction({
       ...base,
       type: "spell_attack",
@@ -256,6 +269,11 @@ export function createSpellAction(spellRecord, options = {}) {
       damage,
       damageType,
       damageTypeChoices,
+      ...spellExtras,
+      maxTargets: Math.max(base.maxTargets || 1, repeatAttacks),
+      targetAssignments: repeatAttacks > 1 ? "per_hit" : null,
+      allowRepeatedTargets: repeatAttacks > 1,
+      requireExactTargetCount: repeatAttacks > 1,
       effects: effects.map((effect) => ({ ...effect, trigger: "hit" })),
       tags: { ...base.tags, attackRoll: true, ranged: base.range > 1, melee: base.range <= 1, harmful: true },
     });
@@ -267,6 +285,7 @@ export function createSpellAction(spellRecord, options = {}) {
       type: "spell_effect",
       requiresTarget: spellRecord.target?.type !== "self",
       spellSaveDC: options.spellSaveDC ?? DEFAULT_SPELL_SAVE_DC,
+      ...spellExtras,
       effects: effects.map((effect) => ({
         ...effect,
         trigger: "action_resolved",
@@ -277,6 +296,34 @@ export function createSpellAction(spellRecord, options = {}) {
   }
 
   return null;
+}
+
+function spellTargetCount(spellRecord, options = {}) {
+  const repeatAttacks = repeatAttacksFromEffect(spellRecord?.hooks?.applyEffect, options.casterLevel);
+  if (repeatAttacks > 1) return repeatAttacks;
+  const hits = spellRecord?.hooks?.autoHit ? (spellRecord.hooks.darts || spellRecord.hooks.hits || 1) : 1;
+  if (hits > 1) return hits;
+  const count = Number(spellRecord?.target?.count);
+  return Number.isFinite(count) && count > 1 && spellRecord?.area?.shape === "none" ? count : null;
+}
+
+function repeatAttacksFromEffect(applyEffect, casterLevel = 1) {
+  if (String(applyEffect?.kind || "").toLowerCase() !== "multi_beam") return 1;
+  return valueByLevel(applyEffect.beamsByLevel, casterLevel) || 1;
+}
+
+function valueByLevel(values, casterLevel = 1) {
+  if (!values || typeof values !== "object") return null;
+  const level = Number(casterLevel) || 1;
+  return Object.entries(values)
+    .map(([required, value]) => [Number(required), Number(value)])
+    .filter(([required, value]) => Number.isFinite(required) && Number.isFinite(value) && required <= level)
+    .sort((a, b) => b[0] - a[0])[0]?.[1] || null;
+}
+
+function hasCombatSpellHooks(spellRecord) {
+  const hooks = spellRecord?.hooks || {};
+  return Boolean(hooks.attack || hooks.save || hooks.damage || hooks.healing || hooks.autoHit);
 }
 
 function resolveSpellDamageType(damageHook, options = {}) {

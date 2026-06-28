@@ -131,6 +131,45 @@ export function applyLuckyNearMissD20({
   return result;
 }
 
+export function applyResourcefulNearMissD20({
+  actor = null,
+  currentRoll = null,
+  context = {},
+  rollD20 = null,
+} = {}) {
+  if (context?.type !== "attack") return noLucky(currentRoll);
+  const targetNumber = Number(context.targetNumber);
+  const bonus = Number(context.bonus || 0);
+  if (!actor || !Number.isFinite(targetNumber) || !Number.isFinite(currentRoll) || typeof rollD20 !== "function") {
+    return noLucky(currentRoll);
+  }
+  const resource = Array.isArray(actor.resources)
+    ? actor.resources.find((item) => item.id === "resourceful")
+    : null;
+  if (!resource || (resource.current ?? resource.max ?? 0) <= 0 || actor.combatFlags?.resourcefulUsed === true) {
+    return noLucky(currentRoll);
+  }
+  const total = currentRoll + bonus;
+  const missedBy = targetNumber - total;
+  if (missedBy <= 0 || missedBy > 4) return noLucky(currentRoll);
+
+  const second = rollD20({ type: context.type, label: context.label });
+  const finalRoll = Math.max(currentRoll, second.roll);
+  resource.current = Math.max(0, (resource.current ?? resource.max ?? 0) - 1);
+  actor.combatFlags ??= {};
+  actor.combatFlags.resourcefulUsed = true;
+  return {
+    roll: finalRoll,
+    total: finalRoll,
+    usedLucky: true,
+    usedResourceful: true,
+    originalRoll: currentRoll,
+    secondRoll: second.roll,
+    missedBy,
+    pointsRemaining: resource.current,
+  };
+}
+
 function noLucky(currentRoll) {
   return {
     roll: currentRoll,

@@ -10,6 +10,7 @@ import { SPELLS_LEVEL_3 } from "./spells/level3.js";
 import { SPELLS_LEVEL_4 } from "./spells/level4.js";
 import { SPELLS_LEVEL_5 } from "./spells/level5.js";
 import { SPELLS_LEVEL_6 } from "./spells/level6.js";
+import { SPELLS_LEVEL_7 } from "./spells/level7.js";
 
 export const SPELL_SCHEMA = {
   "id": "unique_id_string",
@@ -94,6 +95,7 @@ export const SPELLS = {
   ...SPELLS_LEVEL_4,
   ...SPELLS_LEVEL_5,
   ...SPELLS_LEVEL_6,
+  ...SPELLS_LEVEL_7,
 };
 
 export function getSpellById(id) {

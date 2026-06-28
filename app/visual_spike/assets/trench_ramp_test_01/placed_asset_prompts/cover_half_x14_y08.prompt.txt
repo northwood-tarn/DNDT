@@ -1,0 +1,57 @@
+Generate one isolated placed asset for "Trench Ramp Test 01".
+
+ASSET CONTRACT
+
+Asset id: cover_half_x14_y08
+Kind: cover
+Role: half_cover
+Label: half-cover object
+Source: terrain half cover
+Footprint cells: x14 y08
+Footprint size: 1 x 1 isometric grid cells
+Blocks movement: no
+Emits light: no
+
+PRIMARY REQUEST
+
+Create only this object as a separate compositable isometric asset. It will be placed over the base terrain by code, so do not include surrounding map terrain except a minimal contact shadow inside the footprint.
+
+OUTPUT REQUIREMENTS
+
+1. Transparent PNG preferred. If native transparency is unavailable, use a perfectly flat #00ff00 chroma-key background.
+2. Isometric camera matching a 128 x 64 diamond grid.
+3. The object's base/contact footprint must fit exactly inside the listed cells.
+4. The object may visually rise upward, but its base must not expand outside its footprint.
+5. No extra props, ground details, labels, UI, grid lines, characters, or duplicate objects.
+6. Do not include a rectangular floor tile. The asset should be a cutout object.
+7. Include a soft contact shadow only if it remains inside the footprint.
+8. Provide or record an explicit localAnchorPixel in the source image: the pixel that must land on the listed final-map anchor.
+9. Provide or record explicit localFootprintBounds in the source image: the pixel bounds of the object's contact/base footprint, not the full visible branches/flames/silhouette.
+10. Do not rely on the generated bitmap's cropped bounding box for placement. Cropped-image bottom-center is not a valid registration method.
+
+STYLE
+
+DNDT dark fantasy, painterly negative-ink direction, restrained detail, clear silhouette, readable tactical object. Match the gloomy underground battlefield tone.
+
+SKETCH NOTE CONTEXT
+
+Large Backlands-adjacent combat plate: a deep, dark trench enters from the lower-left and opens onto regular stony ground through one broad ramp. The trench floor and ramp must both support two grid-square-wide movement paths. The upper/right regular ground should be broad and readable enough for a fight with sparse cover. No visible grid, no actors, no labels, no UI, and no decorative objects that imply unmarked cover or blocked cells.
+
+Use this note only where it describes this asset's material or identity. Do not create any other object mentioned in the note.
+
+PLACEMENT METADATA
+
+Anchor pixel in final 1920 x 1080 map: x1344, y996
+Pixel bounds of footprint: left 1280, top 932, right 1408, bottom 996
+Required asset registration: localAnchorPixel and localFootprintBounds must be captured before compositing.
+Z index: 22
+
+REJECTION CONDITIONS
+
+Reject the asset if:
+- the base footprint is too wide or shifted for the listed cells
+- it includes additional tactical objects
+- it contains visible grid, text, UI, or labels
+- it includes surrounding terrain that would fight the base terrain image
+- it lacks explicit localAnchorPixel or localFootprintBounds registration
+- it cannot be cleanly composited over the reserved footprint

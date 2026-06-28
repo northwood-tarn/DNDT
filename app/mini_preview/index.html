@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tara Mini Grid Preview</title>
+  <style>
+    :root {
+      --tile-w: 128px;
+      --tile-h: 64px;
+      --stage-w: 1120px;
+      --stage-h: 720px;
+      --origin-x: 560px;
+      --origin-y: 120px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #111412;
+      color: #d9d2bd;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .stage {
+      position: relative;
+      width: min(100vw, var(--stage-w));
+      aspect-ratio: 14 / 9;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 38%, rgba(112, 104, 82, 0.14), transparent 42%),
+        linear-gradient(180deg, #1d211e 0%, #111412 100%);
+      border: 1px solid rgba(214, 196, 140, 0.22);
+    }
+
+    .grid,
+    .actors {
+      position: absolute;
+      inset: 0;
+    }
+
+    .cell {
+      position: absolute;
+      width: var(--tile-w);
+      height: var(--tile-h);
+      padding: 0;
+      transform: translate(-50%, -50%);
+      clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+      background: rgba(255, 255, 255, 0.018);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      cursor: pointer;
+    }
+
+    .cell:nth-child(odd) {
+      background: rgba(255, 255, 255, 0.026);
+    }
+
+    .cell:hover,
+    .cell:focus-visible {
+      background: rgba(255, 255, 255, 0.055);
+      border-color: rgba(255, 255, 255, 0.34);
+      outline: none;
+    }
+
+    .cell.occupied {
+      background: rgba(255, 255, 255, 0.045);
+      border-color: rgba(255, 255, 255, 0.26);
+    }
+
+    .mini {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+      transition: left 150ms ease, top 150ms ease;
+    }
+
+    .mini-shadow {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 72px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.34);
+      filter: blur(5px);
+      transform: translate(-50%, -50%);
+    }
+
+    .mini-sprite {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 112px;
+      height: auto;
+      transform: translate(-43.15%, -83.95%);
+      filter: brightness(0.58) contrast(0.94) saturate(0.9);
+    }
+
+    .controls {
+      position: absolute;
+      right: 18px;
+      bottom: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, 38px);
+      grid-template-rows: repeat(3, 38px);
+      gap: 6px;
+      z-index: 200;
+    }
+
+    .controls button {
+      border: 1px solid rgba(224, 205, 145, 0.34);
+      background: rgba(24, 26, 23, 0.84);
+      color: #d9d2bd;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .controls button:hover,
+    .controls button:focus-visible {
+      border-color: rgba(235, 213, 151, 0.72);
+      background: rgba(51, 48, 38, 0.92);
+      outline: none;
+    }
+
+    .controls [data-move="up"] {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .controls [data-move="left"] {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    .controls [data-move="right"] {
+      grid-column: 3;
+      grid-row: 2;
+    }
+
+    .controls [data-move="down"] {
+      grid-column: 2;
+      grid-row: 3;
+    }
+  </style>
+</head>
+<body>
+  <main class="stage" aria-label="Empty isometric grid with Tara combat mini">
+    <div class="grid"></div>
+    <div class="actors">
+      <div class="mini" aria-label="Tara">
+        <div class="mini-shadow"></div>
+        <img class="mini-sprite" src="assets/tara_human_rapier_cropped.png" alt="">
+      </div>
+    </div>
+    <div class="controls" aria-label="Move Tara">
+      <button type="button" data-move="up" aria-label="Move up">↑</button>
+      <button type="button" data-move="left" aria-label="Move left">←</button>
+      <button type="button" data-move="right" aria-label="Move right">→</button>
+      <button type="button" data-move="down" aria-label="Move down">↓</button>
+    </div>
+  </main>
+
+  <script>
+    const grid = document.querySelector(".grid");
+    const mini = document.querySelector(".mini");
+    const width = 10;
+    const height = 7;
+    const origin = { x: 560, y: 120 };
+    const tile = { w: 128, h: 64 };
+    const baseYOffsetPx = -6;
+    const actor = { x: 6, y: 3 };
+    const cells = new Map();
+
+    function keyOf(x, y) {
+      return `${x},${y}`;
+    }
+
+    function projectCell(x, y) {
+      return {
+        x: origin.x + (x - y) * tile.w / 2,
+        y: origin.y + (x + y) * tile.h / 2,
+      };
+    }
+
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        const cell = document.createElement("button");
+        const projected = projectCell(x, y);
+        cell.className = "cell";
+        cell.type = "button";
+        cell.dataset.x = String(x);
+        cell.dataset.y = String(y);
+        cell.ariaLabel = `Cell ${x}, ${y}`;
+        cell.style.left = `${projected.x}px`;
+        cell.style.top = `${projected.y}px`;
+        cell.style.zIndex = String(10 + x + y);
+        cell.addEventListener("click", () => moveTo(x, y));
+        cells.set(keyOf(x, y), cell);
+        grid.appendChild(cell);
+      }
+    }
+
+    function moveTo(x, y) {
+      if (x < 0 || y < 0 || x >= width || y >= height) return;
+      actor.x = x;
+      actor.y = y;
+      renderActor();
+    }
+
+    function moveBy(dx, dy) {
+      moveTo(actor.x + dx, actor.y + dy);
+    }
+
+    function renderActor() {
+      for (const cell of cells.values()) cell.classList.remove("occupied");
+      const occupied = cells.get(keyOf(actor.x, actor.y));
+      if (occupied) occupied.classList.add("occupied");
+      const projected = projectCell(actor.x, actor.y);
+      mini.style.left = `${projected.x}px`;
+      mini.style.top = `${projected.y + baseYOffsetPx}px`;
+      mini.style.zIndex = String(100 + actor.x + actor.y);
+    }
+
+    document.querySelector(".controls").addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-move]");
+      if (!button) return;
+      const moves = {
+        up: { dx: 0, dy: -1 },
+        down: { dx: 0, dy: 1 },
+        left: { dx: -1, dy: 0 },
+        right: { dx: 1, dy: 0 },
+      };
+      const delta = moves[button.dataset.move];
+      moveBy(delta.dx, delta.dy);
+    });
+
+    window.addEventListener("keydown", (event) => {
+      const moves = {
+        ArrowUp: { dx: 0, dy: -1 },
+        w: { dx: 0, dy: -1 },
+        W: { dx: 0, dy: -1 },
+        ArrowDown: { dx: 0, dy: 1 },
+        s: { dx: 0, dy: 1 },
+        S: { dx: 0, dy: 1 },
+        ArrowLeft: { dx: -1, dy: 0 },
+        a: { dx: -1, dy: 0 },
+        A: { dx: -1, dy: 0 },
+        ArrowRight: { dx: 1, dy: 0 },
+        d: { dx: 1, dy: 0 },
+        D: { dx: 1, dy: 0 },
+      };
+      const delta = moves[event.key];
+      if (!delta) return;
+      event.preventDefault();
+      moveBy(delta.dx, delta.dy);
+    });
+
+    renderActor();
+  </script>
+</body>
+</html>

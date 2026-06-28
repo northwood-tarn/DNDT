@@ -5,16 +5,32 @@ import {
   createEnemyCombatActor,
   createSnapshotFromScenario,
   fixedDice,
+  hasCondition,
   hasReaction,
   resolveAction,
   resolveCharacterSheet,
   resolvedSheetToCombatActor,
   scriptedDice,
+  startTurn,
 } from "./helpers.js";
 import { createHitPreventionAcPolicy } from "../../app/combat/reactionPolicy.js";
+import { canUseAction } from "../../app/combat/rules.js";
 
 export function runHighRiskFeatureCombatTests() {
   testWarlockAutomaticReactionConflictUsesOneReaction();
+  testWarpriestResolvesWeaponAttack();
+  testHarnessDivinePowerRestoresSpellSlot();
+  testSaboteurDoubleRigUnlocksFollowupDevice();
+  testBladeChannelAddsWeaponDamage();
+  testGrimoireRecallRestoresWarlockSlot();
+  testTokenOfPassageTeleportsAndSpendsResource();
+  testFormOfDreadAppliesTempHpAndFearRider();
+  testBorrowedFlameRetaliatesWhileTempHpRemain();
+  testDoorInTheFloorTeleportsAndLeavesAfterglow();
+  testCataclysmicDebtMarksAndLinksDamage();
+  testForbiddenTranscriptionRepeatsWarlockSpellWithRetargeting();
+  testLastLightFieldBenefitsRevealsAndCollapses();
+  testLastLightOverloadsAtEightDice();
   testGuidedStrikeConvertsNearMiss();
   testUnyieldingStancePreventsZeroHp();
   testSentinelAtDeathsDoorSuppressesAllyCritical();
@@ -22,6 +38,234 @@ export function runHighRiskFeatureCombatTests() {
   testSurprisedTargetCriticalAndRiders();
   testDefeatTriggerGrantsContextualAttack();
   testPromptedShieldPreventsEffectiveHit();
+}
+
+function testBladeChannelAddsWeaponDamage() {
+  const warlock = warlockActor({ pactId: "pact_of_the_blade", level: 7, id: "blade_warlock" });
+  const target = createEnemyCombatActor("goblin", { id: "target", hp: 20, maxHp: 20, ac: 12, position: { x: 2, y: 1 } });
+  const snapshot = createSnapshotFromScenario(testScenario("blade-channel-test", [warlock, target]));
+  const actor = snapshot.actors.find((item) => item.id === "blade_warlock");
+  actor.actions.push(meleeAttack({ id: "test_blade", attackBonus: 20, damage: "1d6", tags: { harmful: true, attackRoll: true, weapon: true, melee: true } }));
+  actor.resources.find((item) => item.id === "fiend_patrons_spear").current = 0;
+
+  assert.equal(resolveAction(snapshot, actor, "blade_channel", { choices: { damageType: "fire" } }, fixedDice(), createCombatLog()), true);
+  actor.economy.actionAvailable = true;
+  assert.equal(resolveAction(snapshot, actor, "test_blade", "target", scriptedDice({ d20: [10], damage: [4, 3] }), createCombatLog()), true);
+  assert.equal(snapshot.actors.find((item) => item.id === "target").hp, 13, "Blade Channel should add its weapon damage rider");
+  assert.equal(actor.resources.find((item) => item.id === "blade_channel").current, 0, "Blade Channel should spend its resource");
+}
+
+function testGrimoireRecallRestoresWarlockSlot() {
+  const warlock = warlockActor({ pactId: "pact_of_the_tome", level: 11, id: "tome_warlock" });
+  warlock.spellSlots[5].current = 0;
+  const snapshot = createSnapshotFromScenario(testScenario("grimoire-recall-test", [warlock]));
+  const actor = snapshot.actors.find((item) => item.id === "tome_warlock");
+
+  assert.equal(resolveAction(snapshot, actor, "grimoire_recall", null, fixedDice(), createCombatLog()), true);
+  assert.equal(actor.spellSlots[5].current, 1, "Grimoire Recall should restore an expended pact slot");
+  assert.equal(actor.resources.find((item) => item.id === "grimoire_recall").current, 0, "Grimoire Recall should spend its resource");
+}
+
+function testTokenOfPassageTeleportsAndSpendsResource() {
+  const warlock = warlockActor({ pactId: "pact_of_the_tessera", level: 7, id: "tessera_warlock" });
+  const snapshot = createSnapshotFromScenario(testScenario("token-of-passage-test", [warlock]));
+  const actor = snapshot.actors.find((item) => item.id === "tessera_warlock");
+
+  assert.equal(resolveAction(snapshot, actor, "token_of_passage", { x: 4, y: 1 }, fixedDice(), createCombatLog()), true);
+  assert.deepEqual(actor.position, { x: 4, y: 1 }, "Token of Passage should teleport the warlock");
+  assert.equal(actor.resources.find((item) => item.id === "token_of_passage").current, 0, "Token of Passage should spend its resource");
+}
+
+function testFormOfDreadAppliesTempHpAndFearRider() {
+  const warlock = warlockActor({ subclassId: "the_undead", level: 3, id: "undead_warlock" });
+  const target = createEnemyCombatActor("goblin", { id: "target", hp: 20, maxHp: 20, ac: 12, position: { x: 2, y: 1 } });
+  const snapshot = createSnapshotFromScenario(testScenario("form-of-dread-test", [warlock, target]));
+  const actor = snapshot.actors.find((item) => item.id === "undead_warlock");
+  actor.actions.push(meleeAttack({ id: "test_claw", attackBonus: 20, damage: "1d6" }));
+
+  assert.equal(resolveAction(snapshot, actor, "form_of_dread", null, scriptedDice({ damage: [8] }), createCombatLog()), true);
+  assert.equal(actor.tempHp, 8, "Form of Dread should apply temporary HP");
+  assert.equal(hasCondition(actor, "form_of_dread_active"), true, "Form of Dread should mark the active form");
+  actor.economy.actionAvailable = true;
+  assert.equal(resolveAction(snapshot, actor, "test_claw", "target", scriptedDice({ d20: [10, 1], damage: [4] }), createCombatLog()), true);
+  assert.equal(hasCondition(snapshot.actors.find((item) => item.id === "target"), "frightened"), true, "Form of Dread hit rider should frighten on failed save");
+}
+
+function testBorrowedFlameRetaliatesWhileTempHpRemain() {
+  const warlock = warlockActor({ subclassId: "the_lantern", level: 3, id: "lantern_warlock" });
+  const attacker = createEnemyCombatActor("goblin", { id: "attacker", hp: 12, maxHp: 12, ac: 12, position: { x: 2, y: 1 } });
+  attacker.actions = [meleeAttack({ id: "club", attackBonus: 20, damage: "1d6" })];
+  const snapshot = createSnapshotFromScenario(testScenario("borrowed-flame-test", [warlock, attacker]));
+  const actor = snapshot.actors.find((item) => item.id === "lantern_warlock");
+
+  assert.equal(resolveAction(snapshot, actor, "borrowed_flame", null, scriptedDice({ damage: [6] }), createCombatLog()), true);
+  assert.equal(actor.tempHp, 6, "Borrowed Flame should apply temporary HP");
+  assert.equal(resolveAction(snapshot, snapshot.actors.find((item) => item.id === "attacker"), "club", "lantern_warlock", scriptedDice({ d20: [10], damage: [2, 3] }), createCombatLog()), true);
+  assert.equal(snapshot.actors.find((item) => item.id === "attacker").hp, 9, "Borrowed Flame should retaliate with radiant damage while temp HP remain");
+}
+
+function testDoorInTheFloorTeleportsAndLeavesAfterglow() {
+  const warlock = warlockActor({ subclassId: "the_lantern", level: 11, id: "lantern_warlock" });
+  const snapshot = createSnapshotFromScenario(testScenario("door-in-floor-test", [warlock]));
+  const actor = snapshot.actors.find((item) => item.id === "lantern_warlock");
+
+  assert.equal(resolveAction(snapshot, actor, "door_in_the_floor", { x: 4, y: 1 }, fixedDice(), createCombatLog()), true);
+  assert.deepEqual(actor.position, { x: 4, y: 1 }, "Door in the Floor should teleport the warlock");
+  assert.equal((snapshot.combatObjects || []).some((object) => object.sourceActionId === "door_in_the_floor"), true, "Door in the Floor should create its afterglow object");
+  assert.equal(actor.resources.find((item) => item.id === "door_in_the_floor").current, 0, "Door in the Floor should spend its resource");
+}
+
+function testCataclysmicDebtMarksAndLinksDamage() {
+  const warlock = warlockActor({ pactId: "pact_of_the_tessera", level: 13, id: "tessera_warlock" });
+  const first = createEnemyCombatActor("goblin", { id: "first", hp: 20, maxHp: 20, ac: 12, position: { x: 2, y: 1 } });
+  const second = createEnemyCombatActor("goblin", { id: "second", hp: 20, maxHp: 20, ac: 12, position: { x: 3, y: 1 } });
+  const snapshot = createSnapshotFromScenario(testScenario("cataclysmic-debt-test", [warlock, first, second]));
+  const actor = snapshot.actors.find((item) => item.id === "tessera_warlock");
+  actor.actions.push(meleeAttack({ id: "test_knife", attackBonus: 20, damage: "1d6" }));
+  actor.resources.find((item) => item.id === "fiend_patrons_spear").current = 0;
+
+  assert.equal(resolveAction(snapshot, actor, "cataclysmic_debt", null, fixedDice(), createCombatLog()), true);
+  assert.equal(hasCondition(snapshot.actors.find((item) => item.id === "first"), "cataclysmic_debt"), true, "Cataclysmic Debt should mark nearby enemies");
+  actor.economy.actionAvailable = true;
+  assert.equal(resolveAction(snapshot, actor, "test_knife", "first", scriptedDice({ d20: [10], damage: [4, 3] }), createCombatLog()), true);
+  assert.equal(snapshot.actors.find((item) => item.id === "first").hp, 13, "Cataclysmic Debt should damage the hit branded target");
+  assert.equal(snapshot.actors.find((item) => item.id === "second").hp, 17, "Cataclysmic Debt should echo damage to other branded targets");
+}
+
+function testForbiddenTranscriptionRepeatsWarlockSpellWithRetargeting() {
+  const warlock = warlockActor({ pactId: "pact_of_the_tome", level: 13, id: "tome_warlock" });
+  warlock.actions.push(testSpellAttack());
+  const first = createEnemyCombatActor("goblin", { id: "first", hp: 20, maxHp: 20, ac: 12, position: { x: 2, y: 1 } });
+  const second = createEnemyCombatActor("goblin", { id: "second", hp: 20, maxHp: 20, ac: 12, position: { x: 3, y: 1 } });
+  const snapshot = createSnapshotFromScenario(testScenario("forbidden-transcription-test", [warlock, first, second]));
+  const actor = snapshot.actors.find((item) => item.id === "tome_warlock");
+  actor.resources.find((item) => item.id === "fiend_patrons_spear").current = 0;
+  const log = createCombatLog();
+
+  assert.equal(resolveAction(snapshot, actor, "test_warlock_spell", "first", scriptedDice({ d20: [10], damage: [4] }), log), true);
+  assert.equal(actor.actions.some((action) => action.id === "forbidden_transcription_test_warlock_spell"), true, "Forbidden Transcription should grant an immediate repeat action");
+  actor.economy.actionAvailable = true;
+  assert.equal(resolveAction(snapshot, actor, "forbidden_transcription_test_warlock_spell", "second", scriptedDice({ d20: [10], damage: [5] }), log), true);
+  assert.equal(snapshot.actors.find((item) => item.id === "first").hp, 16, "original spell should hit its first target");
+  assert.equal(snapshot.actors.find((item) => item.id === "second").hp, 15, "repeat spell should allow retargeting");
+  assert.equal(actor.resources.find((item) => item.id === "forbidden_transcription").current, 0, "repeat should spend Forbidden Transcription");
+  assert.equal(actor.actions.some((action) => action.id === "forbidden_transcription_test_warlock_spell"), false, "repeat action should disappear after use");
+}
+
+function testLastLightFieldBenefitsRevealsAndCollapses() {
+  const warlock = warlockActor({ subclassId: "the_lantern", level: 13, id: "lantern_warlock" });
+  const ally = heroActor({ id: "ally", team: "heroes", hp: 20, maxHp: 20, position: { x: 2, y: 1 } });
+  ally.conditions = [{ id: "frightened", label: "Frightened" }];
+  const enemy = createEnemyCombatActor("goblin", { id: "enemy", hp: 30, maxHp: 30, ac: 12, position: { x: 3, y: 1 } });
+  enemy.conditions = [{ id: "hidden", label: "Hidden" }];
+  const snapshot = createSnapshotFromScenario(testScenario("last-light-test", [warlock, ally, enemy]));
+  const actor = snapshot.actors.find((item) => item.id === "lantern_warlock");
+  const activeAlly = snapshot.actors.find((item) => item.id === "ally");
+  const activeEnemy = snapshot.actors.find((item) => item.id === "enemy");
+  const log = createCombatLog();
+
+  assert.equal(resolveAction(snapshot, actor, "last_light", { x: 2, y: 1 }, scriptedDice(), log), true);
+  assert.equal(snapshot.combatObjects.length, 1, "Last Light should create a field");
+
+  startTurn(snapshot, actor, log, scriptedDice());
+  assert.equal(snapshot.combatObjects[0].timers.manual.currentDice, 5, "Last Light manual charge should escalate at the start of the caster turn");
+  assert.equal(snapshot.combatObjects[0].timers.overload.currentDice, 5, "Last Light overload should escalate at the start of the caster turn");
+  const collapse = actor.actions.find((action) => action.actionKind === "collapse_combat_object");
+  assert.ok(collapse, "Last Light should grant a collapse action while the field exists");
+
+  startTurn(snapshot, activeAlly, log, scriptedDice());
+  assert.equal(activeAlly.tempHp, 3, "Last Light should grant ally temporary HP");
+  assert.equal(hasCondition(activeAlly, "frightened"), false, "Last Light should clear frightened from allies inside");
+
+  startTurn(snapshot, activeEnemy, log, scriptedDice());
+  assert.equal(hasCondition(activeEnemy, "hidden"), false, "Last Light should reveal enemies inside");
+
+  actor.economy.bonusActionAvailable = true;
+  assert.equal(resolveAction(snapshot, actor, collapse.id, null, scriptedDice({ d20: [1], damage: [10] }), log), true);
+  assert.equal(activeEnemy.hp, 20, "Collapsing Last Light should damage enemies inside");
+  assert.equal(snapshot.combatObjects.length, 0, "Collapsed Last Light should remove the field");
+}
+
+function testLastLightOverloadsAtEightDice() {
+  const warlock = warlockActor({ subclassId: "the_lantern", level: 13, id: "lantern_warlock" });
+  const enemy = createEnemyCombatActor("goblin", { id: "enemy", hp: 30, maxHp: 30, ac: 12, position: { x: 3, y: 1 } });
+  const snapshot = createSnapshotFromScenario(testScenario("last-light-overload-test", [warlock, enemy]));
+  const actor = snapshot.actors.find((item) => item.id === "lantern_warlock");
+  const activeEnemy = snapshot.actors.find((item) => item.id === "enemy");
+  const log = createCombatLog();
+
+  assert.equal(resolveAction(snapshot, actor, "last_light", { x: 2, y: 1 }, scriptedDice(), log), true);
+  startTurn(snapshot, actor, log, scriptedDice());
+  startTurn(snapshot, actor, log, scriptedDice());
+  startTurn(snapshot, actor, log, scriptedDice());
+  assert.equal(snapshot.combatObjects[0].timers.manual.currentDice, 7, "Last Light should remain available below 8d8");
+
+  startTurn(snapshot, actor, log, scriptedDice({ d20: [1, 1], damage: [16, 16] }));
+  assert.equal(activeEnemy.hp, 14, "Last Light overload should damage creatures inside at 8d8");
+  assert.equal(snapshot.combatObjects.length, 0, "Last Light overload should remove the field");
+  assert.equal(actor.actions.some((action) => action.actionKind === "collapse_combat_object"), false, "Last Light collapse action should disappear after overload");
+}
+
+function testWarpriestResolvesWeaponAttack() {
+  const sheet = resolveCharacterSheet(createEmptyCharacterDraft({
+    identity: { characterName: "War Cleric", level: 3, classId: "cleric", subclassId: "war_domain" },
+    abilities: { strength: 14, dexterity: 10, constitution: 12, intelligence: 10, wisdom: 16, charisma: 8 },
+  }), {}, { allowNonCreationLevel: true });
+  const cleric = resolvedSheetToCombatActor(sheet, { id: "war_cleric", position: { x: 1, y: 1 } });
+  cleric.actions.push(meleeAttack({ id: "test_mace", attackBonus: 20, damage: "1d6" }));
+  const target = createEnemyCombatActor("goblin", { id: "target", hp: 12, maxHp: 12, ac: 12, position: { x: 2, y: 1 } });
+  const snapshot = createSnapshotFromScenario(testScenario("warpriest-test", [cleric, target]));
+  const actor = snapshot.actors.find((item) => item.id === "war_cleric");
+  const enemy = snapshot.actors.find((item) => item.id === "target");
+
+  assert.equal(resolveAction(snapshot, actor, "warpriest", "target", fixedDice({ d20: 10, damage: 4 }), createCombatLog()), true);
+  assert.equal(enemy.hp, 8, "Warpriest should resolve a weapon attack against the selected enemy");
+  assert.equal(actor.resources.find((item) => item.id === "channel_divinity").current, 1, "Warpriest should spend Channel Divinity");
+  assert.equal(actor.economy.bonusActionAvailable, false, "Warpriest should spend the bonus action");
+}
+
+function testHarnessDivinePowerRestoresSpellSlot() {
+  const sheet = resolveCharacterSheet(createEmptyCharacterDraft({
+    identity: { characterName: "Cleric", level: 3, classId: "cleric" },
+    abilities: { strength: 10, dexterity: 10, constitution: 12, intelligence: 10, wisdom: 16, charisma: 8 },
+  }), {}, { allowNonCreationLevel: true });
+  const cleric = resolvedSheetToCombatActor(sheet, { id: "cleric", position: { x: 1, y: 1 } });
+  cleric.spellSlots[1].current = 0;
+  const snapshot = createSnapshotFromScenario(testScenario("harness-divine-power-test", [cleric]));
+  const actor = snapshot.actors.find((item) => item.id === "cleric");
+
+  assert.equal(resolveAction(snapshot, actor, "harness_divine_power", null, fixedDice(), createCombatLog()), true);
+  assert.equal(actor.spellSlots[1].current, 1, "Harness Divine Power should restore an expended spell slot");
+  assert.equal(actor.resources.find((item) => item.id === "channel_divinity").current, 1, "Harness Divine Power should spend Channel Divinity");
+}
+
+function testSaboteurDoubleRigUnlocksFollowupDevice() {
+  const sheet = resolveCharacterSheet(createEmptyCharacterDraft({
+    identity: { characterName: "Saboteur", level: 11, classId: "rogue", subclassId: "saboteur", backgroundId: "criminal", speciesId: "halfling", lineageId: "lightfoot" },
+    abilities: { strength: 8, dexterity: 16, constitution: 14, intelligence: 14, wisdom: 10, charisma: 10 },
+    choices: {
+      backgroundAbilityScores: [{ ability: "dexterity", bonus: 2 }, { ability: "charisma", bonus: 1 }],
+      weaponMasteryIds: ["rapier", "dagger"],
+      classChoices: {
+        origin_device: "fire_paper",
+        saboteur_cookbook_recipes: ["poison_vial", "smoke_vial"],
+        saboteur_advanced_recipes: ["fire_grenado", "makeshift_fan"],
+      },
+    },
+    gear: { weaponIds: ["rapier", "dagger"], armorId: "studded_leather", inventory: [], attunedItemIds: [] },
+    devices: { preparedRecipeIds: ["fire_paper", "poison_vial", "smoke_vial", "fire_grenado"] },
+  }), {}, { allowNonCreationLevel: true });
+  const saboteur = resolvedSheetToCombatActor(sheet, { id: "saboteur", position: { x: 1, y: 1 } });
+  const snapshot = createSnapshotFromScenario(testScenario("saboteur-double-rig-test", [saboteur]));
+  const actor = snapshot.actors.find((item) => item.id === "saboteur");
+  const followup = actor.actions.find((action) => action.id === "double_rig_followup_fire_paper");
+
+  assert.equal(canUseAction(actor, followup).ok, false, "Double Rig follow-up should be locked before the opener resolves");
+  assert.equal(resolveAction(snapshot, actor, "double_rig_fire_paper", null, fixedDice(), createCombatLog()), true);
+  assert.equal(canUseAction(actor, followup).ok, true, "Double Rig opener should unlock a free follow-up device");
+  assert.equal(actor.resources.find((item) => item.id === "prepared_devices").current, 10, "Double Rig opener should spend one prepared device");
+  assert.equal(actor.resources.find((item) => item.id === "quick_rigging").current, 1, "Double Rig opener should spend Quick Rigging");
+  assert.equal(actor.resources.find((item) => item.id === "double_rig").current, 0, "Double Rig opener should spend Double Rig");
 }
 
 function testWarlockAutomaticReactionConflictUsesOneReaction() {
@@ -218,6 +462,39 @@ function heroActor(overrides = {}) {
     position: { x: 1, y: 1 },
     saves: {},
     actions: [],
+    ...overrides,
+  };
+}
+
+function warlockActor({ level = 11, subclassId = "the_fiend", pactId = "pact_of_the_blade", id = "warlock" } = {}) {
+  const sheet = resolveCharacterSheet(createEmptyCharacterDraft({
+    identity: { characterName: "Warlock", level, classId: "warlock", subclassId, pactId },
+    abilities: { strength: 8, dexterity: 14, constitution: 12, intelligence: 10, wisdom: 10, charisma: 16 },
+    choices: {
+      classChoices: {
+        pact: pactId,
+        book_of_shadows_cantrips: ["guidance", "sacred_flame"],
+        mystic_arcanum_spell: "mental_prison",
+      },
+    },
+  }), {}, { allowNonCreationLevel: true });
+  return resolvedSheetToCombatActor(sheet, { id, position: { x: 1, y: 1 } });
+}
+
+function testSpellAttack(overrides = {}) {
+  return {
+    id: "test_warlock_spell",
+    name: "Test Warlock Spell",
+    type: "spell_attack",
+    cost: "action",
+    requiresTarget: true,
+    range: 12,
+    attackBonus: 20,
+    damage: "1d10",
+    damageType: "force",
+    spellLevel: 1,
+    sourceSpellId: "test_warlock_spell",
+    tags: { spell: true, attackRoll: true, harmful: true, ranged: true },
     ...overrides,
   };
 }

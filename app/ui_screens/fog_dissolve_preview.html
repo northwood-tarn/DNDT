@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Green Fog Dissolve Preview</title>
+    <link rel="stylesheet" href="../styles/designViewport.css">
+    <link rel="stylesheet" href="./inventory_small.css">
+    <link rel="stylesheet" href="./fog_dissolve_preview.css">
+  </head>
+  <body>
+    <main class="inventory-screen fog-preview-screen design-viewport" aria-label="Green fog dissolve preview">
+      <div class="fog-layer fog-one" aria-hidden="true"></div>
+      <div class="fog-layer fog-two" aria-hidden="true"></div>
+      <div class="fog-layer fog-three" aria-hidden="true"></div>
+
+      <div class="lanterna-emblem" aria-hidden="true">
+        <div class="lanterna-flame">
+          <div class="lanterna-flame-fill"></div>
+          <div class="lanterna-flame-outline">
+            <svg viewBox="0 0 70 100" aria-hidden="true" focusable="false">
+              <defs>
+                <filter id="lanterna-flame-edge" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+                  <feMorphology in="SourceAlpha" operator="dilate" radius="1.1" result="outer" />
+                  <feMorphology in="SourceAlpha" operator="erode" radius="1.1" result="inner" />
+                  <feComposite in="outer" in2="inner" operator="out" result="edge" />
+                  <feFlood flood-color="#cdfcf4" flood-opacity="0.02" result="lineColor" />
+                  <feComposite in="lineColor" in2="edge" operator="in" />
+                </filter>
+              </defs>
+              <image href="../assets/images/effects/flame.png" width="70" height="100" filter="url(#lanterna-flame-edge)" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <section class="fog-preview-column" aria-label="Preview controls">
+        <header class="fog-preview-title">
+          <p class="screen-kicker">Green background</p>
+          <h1>Fog dissolve</h1>
+          <p>Reusable close animation for green-background screens and completed UI moments.</p>
+        </header>
+        <div class="fog-preview-actions">
+          <button id="dissolveButton" type="button">Dissipate fog</button>
+          <button id="resetButton" type="button">Reset</button>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="./fog_dissolve_preview.js"></script>
+  </body>
+</html>

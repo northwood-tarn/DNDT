@@ -1,0 +1,250 @@
+{
+  "panelNumbering": "For each 2x2 sheet, panels are numbered left-to-right, top row first: 1, 2, then bottom row: 3, 4.",
+  "sheets": [
+    {
+      "id": "act1_greyharbour_001",
+      "title": "Act 1 Greyharbour lighting and place test",
+      "path": "app/docs/style_refs/act1_greyharbour_2x2_sheet.png",
+      "status": "reviewed",
+      "notes": [
+        "Use full contact sheets only. Do not crop individual panels; refer to panels by sheet id and panel number.",
+        "Act 1 lighting should separate source colors: Lanterna is blue-aluminium bone white, beeswax candles are honey yellow, wood fires are yellow-orange."
+      ],
+      "panels": [
+        {
+          "number": 1,
+          "place": "Settlement quay under rock",
+          "value": "strong_target",
+          "notes": [
+            "Strong Greyharbour target: darkness, route readability, reflections from non-Lanterna sources, scale, and light-source separation work well.",
+            "Reflections from fixed non-Lanterna lights may be baked into the art when the reflective surface justifies them."
+          ]
+        },
+        {
+          "number": 2,
+          "place": "Candlelit guild workroom",
+          "value": "mixed_reference",
+          "notes": [
+            "Left-side navigation/readability is ambiguous at a glance.",
+            "Useful for lighting and inhabited clutter, but route direction needs clearer path grammar."
+          ]
+        },
+        {
+          "number": 3,
+          "place": "Greyharbour shrine threshold",
+          "value": "problem_reference",
+          "notes": [
+            "Direction of travel is unclear. At a glance, it is ambiguous whether the bottom-right stairs are traversable.",
+            "Interactive-button support is not enough; basic route affordance should read without UI."
+          ]
+        },
+        {
+          "number": 4,
+          "place": "Habitation alley",
+          "value": "mixed_reference",
+          "notes": [
+            "Source and effect of light are strong.",
+            "The lights in the windows are a good Act 1 Greyharbour reference: fixed beeswax/domestic light should read as inhabited warmth inside the dark structure, not as global ambient fill.",
+            "Detail is about 5% too busy for a poor, run-down area; reduce finicky marks while preserving the excellent light logic."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "act2_necropolis_001",
+      "title": "Act 2 Necropolis lighting and stone architecture test",
+      "path": "app/docs/style_refs/act2_necropolis_2x2_sheet.png",
+      "status": "reviewed",
+      "notes": [
+        "Act 2 Necropolis lighting should use deep desaturated teal-green / blue-green mineral fog light, with Lanterna as pale blue-aluminium bone white.",
+        "Stone should dominate; use sweeping circular architectural motifs and avoid wood-dominant structures.",
+        "Keep this sheet primarily as a component reference rather than a clean whole-scene target.",
+        "Act 2 should feel architectural and ritualized: cold, formal, stone, circular, recursive, symmetrical, and dead. It should not feel ruined-random.",
+        "Use round and square geometry. Avoid oval holes, asymmetrical almost-circles, lit unreachable clutter, and non-uniform circular platforms."
+      ],
+      "panels": [
+        {
+          "number": 1,
+          "place": "Circular necropolis gate",
+          "value": "mixed_reference",
+          "notes": [
+            "Keep the round monumental door concept, concentric threshold language, heavy stone monumentality, and Lanterna color.",
+            "Do not keep the asymmetry. Central round doors and circular motifs must be geometrically disciplined and symmetrical."
+          ]
+        },
+        {
+          "number": 2,
+          "place": "Ring ossuary corridor",
+          "value": "strong_component_reference",
+          "notes": [
+            "Best Act 2 green source-color reference on this sheet: deep desaturated teal-green / blue-green, cold and undead rather than neon.",
+            "Reject the oval hole in the ground. Necropolis voids, wells, and cuts should be round or square, not oval."
+          ]
+        },
+        {
+          "number": 3,
+          "place": "Crypt chamber",
+          "value": "light_reference",
+          "notes": [
+            "Useful for crypt layout, sarcophagi, and green funerary fixtures.",
+            "Less iconic than the other panels; avoid drifting into conventional evenly arranged crypt-room art."
+          ]
+        },
+        {
+          "number": 4,
+          "place": "Sunken rotunda bridge",
+          "value": "strong_component_reference",
+          "notes": [
+            "Best light diffusion reference on this sheet: the green lights down in the well are excellent, slightly foggy, and worth reusing.",
+            "The circular glass/stone implant on the upper platform is excellent and should become an Act 2 motif.",
+            "Reject the small lit platform on the left as clutter: if something is lit, it reads as important or reachable; do not light unreachable distractions.",
+            "The lower platform/ring should be uniform if it is meant to be formal circular Necropolis architecture."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "act3_beyond_necropolis_001",
+      "title": "Act 3 beyond the Necropolis darkness and colossal ruin test",
+      "path": "app/docs/style_refs/act3_beyond_necropolis_2x2_sheet.png",
+      "status": "unreviewed",
+      "notes": [
+        "Act 3 is beyond the walls of the Necropolis: ancient ruins, colossal landscape features, riven trees, dead roads, black ravines, and lethal darkness.",
+        "Light should be stricter than Acts 1 and 2: primarily pale blue-aluminium Lanterna light, with only rare campfire or fiery statue attack light.",
+        "No settlement candles, domestic warmth, normal Necropolis fixtures, or broad ambient fill."
+      ],
+      "panels": [
+        {
+          "number": 1,
+          "place": "Dead road beneath colossal broken statues",
+          "value": "unreviewed",
+          "notes": []
+        },
+        {
+          "number": 2,
+          "place": "Campfire under riven trees",
+          "value": "unreviewed",
+          "notes": []
+        },
+        {
+          "number": 3,
+          "place": "Ravine crossing through ancient ruins",
+          "value": "unreviewed",
+          "notes": []
+        },
+        {
+          "number": 4,
+          "place": "Giant stone statue attack site",
+          "value": "unreviewed",
+          "notes": []
+        }
+      ]
+    },
+    {
+      "id": "act3_backlands_proper_001",
+      "title": "Act 3 Backlands proper open underground landscape test",
+      "path": "app/docs/style_refs/act3_backlands_proper_2x2_sheet.png",
+      "status": "reviewed",
+      "notes": [
+        "Backlands proper are open-air underground landscapes inside an immense cavern whose ceiling has never been reached.",
+        "Do not conflate underground with tunnels, cave rooms, or dungeon interiors.",
+        "No squared-off stone, dressed masonry, formal Necropolis motifs, or carved corridor language.",
+        "Lighting should be extremely strict: mostly pale blue-aluminium Lanterna only, with rare campfire/fire as a concrete source.",
+        "This sheet is useful, but it is far too bright overall and behaves as if ambient exposure is present across the whole scene.",
+        "Distant features are over-visible; mountains and background forms should not be readable from a foreground Lanterna pool unless a concrete distant light source or rare path-finding cue justifies them.",
+        "The Backlands should not fill the whole frame with described landscape. Large areas should fall fully into blackness.",
+        "Reduce small mark-making in grass, reeds, branches, rocks, roots, and ground texture. The Backlands need to be more empty, darker, and less explained.",
+        "The map should show a small playable fragment, a major silhouette or landmark when needed, and then let the rest disappear."
+      ],
+      "panels": [
+        {
+          "number": 1,
+          "place": "Black field path",
+          "value": "mixed_reference",
+          "notes": [
+            "Preferred over panel 3 because it has clearer walkable paths and better game readability.",
+            "Too bright overall; distant mountains/background forms are too visible for a foreground Lanterna-lit scene."
+          ]
+        },
+        {
+          "number": 2,
+          "place": "Riven tree refuge",
+          "value": "strong_component_reference",
+          "notes": [
+            "Strong landscape feature reference. Major Backlands landmarks of this kind should appear roughly every 4-5 maps.",
+            "Still too bright and too descriptive overall."
+          ]
+        },
+        {
+          "number": 3,
+          "place": "Sinkhole marsh",
+          "value": "weak_duplicate_reference",
+          "notes": [
+            "Too similar in image type to panel 1, but less useful because the walkable path grammar is weaker.",
+            "Too bright and too busy with small marks."
+          ]
+        },
+        {
+          "number": 4,
+          "place": "Campfire in the Backlands",
+          "value": "strong_component_reference",
+          "notes": [
+            "Strong mixed-source light reference: good blending of yellow-orange campfire and pale blue-white Lanterna.",
+            "Still too bright and too descriptive for Backlands default darkness."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "act3_backlands_vast_dark_001",
+      "title": "Act 3 Backlands vast landscape darkness test",
+      "path": "app/docs/style_refs/act3_backlands_vast_dark_2x2_sheet.png",
+      "status": "reviewed",
+      "notes": [
+        "Generated after the Backlands brightness correction: use giant landscape scale without ambient exposure.",
+        "Most of the landscape should fall into blackness; only the Lanterna-lit playable fragment and critical silhouettes should read.",
+        "No squared-off stone, no formal Necropolis architecture, and no filled-frame landscape texture.",
+        "This sheet is much better on lighting conditions and should be used as the Backlands darkness baseline.",
+        "Main remaining problem: too much incidental grit and pointless ground clutter. Odd growths, speckles, grass strokes, rootlets, and busy ground texture reduce the sense of spooky endless space.",
+        "For the Backlands, delete incidental ground clutter before deleting darkness. Use fewer, larger marks; keep route shape, one landmark/silhouette, and terrain edges needed for play."
+      ],
+      "panels": [
+        {
+          "number": 1,
+          "place": "Mountain-side path",
+          "value": "mixed_reference",
+          "notes": [
+            "Looks good for darkness, scale, and mood.",
+            "Route fails: the path appears to run out at the top, so it does not clearly support traversal. Needs clearer continuation, destination, or threshold."
+          ]
+        },
+        {
+          "number": 2,
+          "place": "Vast black field",
+          "value": "strong_reference",
+          "notes": [
+            "The silhouetted tree works well. It proves a major Backlands landscape feature can read without explaining the whole space."
+          ]
+        },
+        {
+          "number": 3,
+          "place": "Root ravine",
+          "value": "strong_reference",
+          "notes": [
+            "Strong bridge/root crossing structure.",
+            "Useful map-language: lit near route, dark crossing, partial continuation. The right-hand path near the Lanterna could plausibly connect into the lower approach of panel 1."
+          ]
+        },
+        {
+          "number": 4,
+          "place": "Tiny campfire at a cliff hollow",
+          "value": "light_reference",
+          "notes": [
+            "Useful as a campfire/refuge reference if it keeps the same dark restraint.",
+            "Should not become the default Backlands mood."
+          ]
+        }
+      ]
+    }
+  ]
+}

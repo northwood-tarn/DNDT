@@ -40,11 +40,15 @@ let win;
 function createWindow() {
   const combatPreview = process.argv.includes("--combat-preview");
   const creatorPreview = process.argv.includes("--creator-preview");
-  const designPreview = combatPreview || creatorPreview;
+  const fogPreview = process.argv.includes("--fog-preview");
+  const inventorySmallPreview = process.argv.includes("--inventory-small-preview");
+  const restPrepareSmallPreview = process.argv.includes("--rest-prepare-small-preview");
+  const designPreview = combatPreview || creatorPreview || fogPreview || inventorySmallPreview || restPrepareSmallPreview;
   let windowButtonHideTimer = null;
   win = new BrowserWindow({
     width: DESIGN_VIEWPORT.width,
     height: DESIGN_VIEWPORT.height,
+    useContentSize: true,
     minWidth: DESIGN_VIEWPORT.minWidth,
     minHeight: DESIGN_VIEWPORT.minHeight,
     backgroundColor: designPreview ? '#050706' : '#0b0f14',
@@ -67,7 +71,11 @@ function createWindow() {
     ? resolveFromApp('app', 'combat_test', 'index.html')
     : creatorPreview
       ? resolveFromApp('app', 'character_creator', 'step_index.html')
-      : resolveFromApp('app', 'index.html');
+      : inventorySmallPreview
+        ? resolveFromApp('app', 'ui_screens', 'inventory_small.html')
+        : restPrepareSmallPreview
+          ? resolveFromApp('app', 'ui_screens', 'rest_prepare_small.html')
+          : resolveFromApp('app', 'index.html');
   win.loadFile(indexPath);
 
   if (designPreview && process.platform === 'darwin' && typeof win.setWindowButtonVisibility === 'function') {

@@ -1,0 +1,47 @@
+{
+  "stageId": "trench_ramp_test_01",
+  "source": "/Volumes/Lacuna/Projects/dndt/DNDT/app/visual_spike/assets/trench_ramp_test_01/trench_ramp_test_01.grid-sketch.source.json",
+  "generatedAt": "2026-06-25T08:18:40.694Z",
+  "purpose": "layered grid-locked map generation package",
+  "sequence": [
+    "author sketch",
+    "export grid-sketch json and sketch txt",
+    "build package with canonical grid metadata",
+    "generate base terrain control plate with reserved placed-item footprints",
+    "generate altitude control plate as the secondary constraint image",
+    "generate placed item contracts",
+    "generate base terrain prompt without placed items",
+    "generate one isolated asset prompt per placed item",
+    "generate deterministic composition metadata",
+    "generate or paint the base terrain image",
+    "generate placed assets in isolated canvases",
+    "composite placed assets over the base terrain by metadata",
+    "validate composite against grid and placed item contracts"
+  ],
+  "legacyAllInOneSequence": [
+    "generate placement control plate as the edit source image",
+    "generate altitude control plate as the secondary constraint image",
+    "generate combined SVG audit plate",
+    "generate edit prompt",
+    "edit the placement control plate into art while preserving region silhouettes",
+    "validate against placement control plate, checklist, and grid metadata",
+    "reject or approve for runtime validation overlay"
+  ],
+  "files": {
+    "grid": "trench_ramp_test_01.grid.json",
+    "placementControlPng": "trench_ramp_test_01.placement_control.png",
+    "baseTerrainControlPng": "trench_ramp_test_01.base_terrain_control.png",
+    "altitudeControlPng": "trench_ramp_test_01.altitude_control.png",
+    "combinedControlSvg": "trench_ramp_test_01.combined_control.svg",
+    "gridLockedArtPng": "trench_ramp_test_01.art_grid_locked_v1.png",
+    "artPrompt": "trench_ramp_test_01.art_prompt.txt",
+    "baseTerrainPrompt": "trench_ramp_test_01.base_terrain_prompt.txt",
+    "placedItems": "trench_ramp_test_01.placed_items.json",
+    "composition": "trench_ramp_test_01.composition.json",
+    "layeredReadme": "trench_ramp_test_01.layered_pipeline.md",
+    "assetPromptsDir": "placed_asset_prompts",
+    "placedAssetsDir": "placed_assets",
+    "validationChecklist": "trench_ramp_test_01.validation_checklist.md",
+    "manifest": "trench_ramp_test_01.generation_manifest.json"
+  }
+}

@@ -7,11 +7,27 @@ import { SPECIES_LIST } from "../data/species.js";
 import { listSpellsByClass } from "../data/spells.js";
 import { weapons } from "../data/weapons.js";
 
-const LEVEL_ONE_SPELL_CHOICES = {
-  cleric: { knownCantrips: 3, preparedSpells: 4, maxSpellLevel: 1 },
-  paladin: { knownCantrips: 0, preparedSpells: 2, maxSpellLevel: 1 },
-  warlock: { knownCantrips: 2, knownSpells: 2, maxSpellLevel: 1 },
-  wizard: { knownCantrips: 3, preparedSpells: 4, maxSpellLevel: 1 },
+const SPELL_CHOICE_PROGRESSION = {
+  cleric: {
+    knownCantrips: byLevel({ 1: 3, 5: 4, 10: 5 }),
+    preparedSpells: byLevel({ 1: 4, 5: 6, 8: 9, 10: 14, 12: 16 }),
+    maxSpellLevel: fullCasterSpellLevel,
+  },
+  paladin: {
+    knownCantrips: byLevel({ 1: 0 }),
+    preparedSpells: byLevel({ 1: 2, 4: 3, 8: 6, 10: 7, 12: 8 }),
+    maxSpellLevel: halfCasterSpellLevel,
+  },
+  warlock: {
+    knownCantrips: byLevel({ 1: 2, 4: 3, 10: 4 }),
+    knownSpells: byLevel({ 1: 2, 3: 2, 4: 3, 8: 7, 10: 10, 12: 11 }),
+    maxSpellLevel: warlockSpellLevel,
+  },
+  wizard: {
+    knownCantrips: byLevel({ 1: 3, 5: 4, 10: 5 }),
+    preparedSpells: byLevel({ 1: 4, 5: 6, 8: 9, 10: 14, 12: 16 }),
+    maxSpellLevel: fullCasterSpellLevel,
+  },
 };
 
 const SIMPLE_WEAPON_IDS = new Set(["dagger", "handaxe", "quarterstaff", "shortbow"]);
@@ -125,7 +141,7 @@ export function createSpellChoicePools(draft) {
   const startsAtLevel = classRecord.spellcasting.startsAtLevel || 1;
   if (level < startsAtLevel) return { required: false, pools: [] };
 
-  const config = LEVEL_ONE_SPELL_CHOICES[classRecord.id] || null;
+  const config = spellChoiceConfigFor(classRecord.id, level);
   if (!config) return { required: false, pools: [], warnings: [`missing_spell_choice_table:${classRecord.id}`] };
 
   const className = classRecord.name;
@@ -412,6 +428,97 @@ function classWeaponMasteryCount(classRecord, level) {
     }
   }
   return count;
+}
+
+function findSubclassById(classRecord, subclassId) {
+  if (!classRecord || !subclassId) return null;
+  const normalized = String(subclassId).trim().toLowerCase();
+  return Object.values(classRecord.subclasses || {}).find((subclass) => subclass.id === normalized) || null;
+}
+function subclassDeviceRecipeIds(subclass) {
+  return (subclass.deviceRecipes || []).map((recipe) => typeof recipe === "string" ? recipe : recipe.id).filter(Boolean);
+}
+function selectedDeviceRecipeIds(draft) {
+  return Object.values(draft.choices?.classChoices || {})
+    .flatMap((value) => Array.isArray(value) ? value : [value])
+    .filter((id) => getDeviceRecipeById(id));
+}
+function preparedDeviceCount(subclass, level) {
+  let count = 0;
+  for (const [levelText, features] of Object.entries(subclass.features || {})) {
+    const featureLevel = Number(levelText);
+    if (!Number.isInteger(featureLevel) || featureLevel > level) continue;
+    for (const feature of features || []) {
+      for (const resource of feature.effects?.resources || []) {
+        if (resource.id === "prepared_devices") count = Math.max(count, preparedDeviceResourceMax(resource.max, level));
+      }
+    }
+  }
+  return count;
+}
+
+function preparedDeviceResourceMax(max, level) {
+  if (max === "saboteur_level") return Math.max(3, level || 3);
+  if (Number.isFinite(max)) return max;
+  return 0;
+}
+
+function spellChoiceConfigFor(classId, level) {
+  const progression = SPELL_CHOICE_PROGRESSION[classId] || null;
+  if (!progression) return null;
+  return {
+    knownCantrips: resolveProgressionValue(progression.knownCantrips, level),
+    knownSpells: resolveProgressionValue(progression.knownSpells, level),
+    preparedSpells: resolveProgressionValue(progression.preparedSpells, level),
+    maxSpellLevel: typeof progression.maxSpellLevel === "function"
+      ? progression.maxSpellLevel(level)
+      : resolveProgressionValue(progression.maxSpellLevel, level),
+  };
+}
+
+function byLevel(entries) {
+  return Object.entries(entries)
+    .map(([level, value]) => [Number(level), value])
+    .sort(([a], [b]) => a - b);
+}
+
+function resolveProgressionValue(progression, level) {
+  if (!progression) return 0;
+  if (Number.isFinite(progression)) return progression;
+  let value = 0;
+  for (const [minimumLevel, nextValue] of progression) {
+    if (level < minimumLevel) break;
+    value = nextValue;
+  }
+  return value;
+}
+
+function fullCasterSpellLevel(level) {
+  if (level >= 17) return 9;
+  if (level >= 15) return 8;
+  if (level >= 13) return 7;
+  if (level >= 11) return 6;
+  if (level >= 9) return 5;
+  if (level >= 7) return 4;
+  if (level >= 5) return 3;
+  if (level >= 3) return 2;
+  return 1;
+}
+
+function halfCasterSpellLevel(level) {
+  if (level >= 17) return 5;
+  if (level >= 13) return 4;
+  if (level >= 9) return 3;
+  if (level >= 5) return 2;
+  return 1;
+}
+
+function warlockSpellLevel(level) {
+  if (level >= 9) return 5;
+  if (level >= 7) return 4;
+  if (level >= 5) return 3;
+  if (level >= 3) return 2;
+  return 1;
 }
 
 function equippedSort(equipped, a, b) {

@@ -71,6 +71,7 @@ html, body { height: 100%; margin: 0; background-color: var(--bg); color: var(--
 
 /* === Live game log (overlay, fixed ~4 lines, toggled by F12) === */
 #game-log.game-log {
+  display: none;
   position: fixed;
   left: 8px;
   right: 8px;

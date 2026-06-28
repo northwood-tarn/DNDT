@@ -83,9 +83,13 @@ export function validateCombatAction(action) {
     requireNumber(action, "range", errors);
     requireDamageOrEffects(action, errors);
   }
-  if (action.type === "self_heal" || action.type === "spell_self_heal") {
+  if (action.type === "self_heal") {
     requireString(action, "healing", errors);
     if (action.requiresTarget !== false) errors.push(`${action.id}.requiresTarget must be false`);
+  }
+  if (action.type === "spell_self_heal") {
+    requireString(action, "healing", errors);
+    if (typeof action.requiresTarget !== "boolean") errors.push(`${action.id}.requiresTarget must be boolean`);
   }
   if (action.type === "consumable") {
     requireString(action, "itemId", errors);

@@ -131,6 +131,117 @@ export const encounters = {
       ] }
     ],
   },
+
+  combat_pc_ability_raiders: {
+    id: "combat_pc_ability_raiders",
+    name: "Ability Raiders",
+    difficulty: "medium",
+    battlefield: defaultBattlefield({
+      heroPositions: [{ x: 1, y: 2 }, { x: 1, y: 3 }, { x: 1, y: 4 }],
+    }),
+    enemies: [
+      { enemyId: "goblin", count: 2, instances: [
+        { id: "raider_cutter", name: "Raider Cutter", position: { x: 6, y: 2 } },
+        { id: "raider_runner", name: "Raider Runner", position: { x: 7, y: 3 } },
+      ] },
+      { enemyId: "wolf", count: 1, instances: [
+        { id: "raider_hound", name: "Raider Hound", position: { x: 6, y: 4 } },
+      ] },
+    ],
+  },
+
+  combat_pc_ability_crypt: {
+    id: "combat_pc_ability_crypt",
+    name: "Crypt With Borrowed Tricks",
+    difficulty: "medium",
+    battlefield: defaultBattlefield({
+      heroPositions: [{ x: 1, y: 1 }, { x: 1, y: 2 }, { x: 1, y: 3 }],
+    }),
+    enemies: [
+      { enemyId: "skeleton", count: 2, instances: [
+        { id: "grave_spark_left", name: "Grave Spark Left", position: { x: 6, y: 1 } },
+        { id: "grave_spark_right", name: "Grave Spark Right", position: { x: 6, y: 3 } },
+      ] },
+      { enemyId: "shadow", count: 1, instances: [
+        { id: "marked_shadow", name: "Marked Shadow", position: { x: 7, y: 2 } },
+      ] },
+    ],
+  },
+
+  combat_pc_ability_vanguard: {
+    id: "combat_pc_ability_vanguard",
+    name: "Vanguard With Borrowed Tricks",
+    difficulty: "hard",
+    battlefield: defaultBattlefield({
+      heroPositions: [{ x: 1, y: 2 }, { x: 1, y: 3 }, { x: 1, y: 4 }],
+    }),
+    enemies: [
+      { enemyId: "knight", count: 1, instances: [
+        { id: "second_wind_knight", name: "Second Wind Knight", position: { x: 7, y: 3 } },
+      ] },
+      { enemyId: "goblin", count: 1, instances: [
+        { id: "vanguard_runner", name: "Vanguard Runner", position: { x: 6, y: 2 } },
+      ] },
+      { enemyId: "skeleton", count: 1, instances: [
+        { id: "vanguard_bones", name: "Vanguard Bones", position: { x: 6, y: 4 } },
+      ] },
+    ],
+  },
+
+  combat_full_smoke_low: {
+    id: "combat_full_smoke_low",
+    name: "Full Smoke Low",
+    difficulty: "easy",
+    battlefield: defaultBattlefield({
+      heroPositions: [{ x: 1, y: 2 }, { x: 1, y: 3 }, { x: 1, y: 4 }],
+    }),
+    enemies: [
+      { enemyId: "goblin", count: 1, instances: [{ id: "low_goblin", position: { x: 6, y: 2 } }] },
+      { enemyId: "wolf", count: 1, instances: [{ id: "low_wolf", position: { x: 6, y: 4 } }] },
+    ],
+  },
+
+  combat_full_smoke_mid: {
+    id: "combat_full_smoke_mid",
+    name: "Full Smoke Mid",
+    difficulty: "medium",
+    battlefield: defaultBattlefield({
+      heroPositions: [{ x: 1, y: 2 }, { x: 1, y: 3 }, { x: 1, y: 4 }],
+    }),
+    enemies: [
+      { enemyId: "bandit_archer", count: 1, instances: [{ id: "mid_archer", position: { x: 7, y: 2 } }] },
+      { enemyId: "skeleton", count: 1, instances: [{ id: "mid_skeleton", position: { x: 6, y: 3 } }] },
+      { enemyId: "wolf", count: 1, instances: [{ id: "mid_wolf", position: { x: 6, y: 4 } }] },
+    ],
+  },
+
+  combat_full_smoke_high: {
+    id: "combat_full_smoke_high",
+    name: "Full Smoke High",
+    difficulty: "hard",
+    battlefield: defaultBattlefield({
+      heroPositions: [{ x: 1, y: 2 }, { x: 1, y: 3 }, { x: 1, y: 4 }],
+    }),
+    enemies: [
+      { enemyId: "knight", count: 1, instances: [{ id: "high_knight", position: { x: 7, y: 3 } }] },
+      { enemyId: "cult_hexer", count: 1, instances: [{ id: "high_hexer", position: { x: 7, y: 2 } }] },
+      { enemyId: "bandit_archer", count: 1, instances: [{ id: "high_archer", position: { x: 6, y: 4 } }] },
+    ],
+  },
+
+  combat_full_smoke_elite: {
+    id: "combat_full_smoke_elite",
+    name: "Full Smoke Elite",
+    difficulty: "hard",
+    battlefield: defaultBattlefield({
+      heroPositions: [{ x: 1, y: 2 }, { x: 1, y: 3 }, { x: 1, y: 4 }],
+    }),
+    enemies: [
+      { enemyId: "grave_brute", count: 1, instances: [{ id: "elite_brute", position: { x: 7, y: 3 } }] },
+      { enemyId: "shadow", count: 1, instances: [{ id: "elite_shadow", position: { x: 6, y: 2 } }] },
+      { enemyId: "cult_hexer", count: 1, instances: [{ id: "elite_hexer", position: { x: 7, y: 4 } }] },
+    ],
+  },
 };
 
 function defaultBattlefield(overrides = {}) {

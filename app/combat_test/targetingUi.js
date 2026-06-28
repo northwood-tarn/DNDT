@@ -61,6 +61,7 @@ export function createTargetingUi({
     const visible = playerTurn && isAreaTargetingAction(action);
     panelEl.hidden = !visible;
     confirmButtonEl.disabled = !visible || !state.locked;
+    confirmButtonEl.textContent = "Confirm Target";
     shapeSelectEl.hidden = action?.type !== "target_test";
     shapeSelectEl.disabled = !visible || action?.type !== "target_test";
     shapeSelectEl.value = state.shape;
@@ -98,7 +99,7 @@ export function createTargetingUi({
     const actor = getCurrentActor(controller.snapshot);
     if (!canPlayerAct(controller.snapshot, actor?.id, getAiRunning()) || !state.active || !state.locked) return;
     const action = getActionById(actor, getSelectedActionId());
-    if (action?.type === "spell_area_save" || action?.type === "spell_object") {
+    if (action?.type !== "target_test" && action?.targeting?.shape) {
       const targetPayload = state.shape === "cell_path"
         ? { anchor: { ...state.pathCells[0] }, cells: state.pathCells.map((cell) => ({ ...cell })) }
         : { anchor: { ...state.locked } };
@@ -231,7 +232,7 @@ export function createTargetingUi({
 }
 
 export function isAreaTargetingAction(action) {
-  return action?.type === "target_test" || action?.type === "spell_area_save" || action?.type === "spell_object";
+  return action?.type === "target_test" || Boolean(action?.targeting?.shape);
 }
 
 function createEmptyTargetTest() {

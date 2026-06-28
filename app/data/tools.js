@@ -8,8 +8,8 @@ export const TOOL_CATEGORIES = {
   SPECIALIST_TOOL: "specialist_tool"
 };
 
-function tool({ id, name, category, tags = [] }) {
-  return { id, name, category, tags };
+function tool({ id, name, category, tags = [], description = "" }) {
+  return { id, name, category, tags, description };
 }
 
 export const TOOLS = {
@@ -53,6 +53,13 @@ export const TOOLS = {
   poisoners_kit: tool({ id: "poisoners_kit", name: "Poisoner's Kit", category: TOOL_CATEGORIES.KIT }),
 
   navigators_tools: tool({ id: "navigators_tools", name: "Navigator's Tools", category: TOOL_CATEGORIES.SPECIALIST_TOOL }),
+  strange_kit: tool({
+    id: "strange_kit",
+    name: "A Strange Kit",
+    category: TOOL_CATEGORIES.SPECIALIST_TOOL,
+    tags: ["saboteur"],
+    description: "Tucked in the corner of an already chaotic collection of sketches, wires and powders, this small tin looks to be filled will wax, small filings, coins of unusual metals, dried flower petals ... a hundred other things. To the untrained eye, it belongs in the garbage - but the Saboteur has their ways.",
+  }),
   thieves_tools: tool({ id: "thieves_tools", name: "Thieves' Tools", category: TOOL_CATEGORIES.SPECIALIST_TOOL })
 };
 

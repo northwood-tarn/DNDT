@@ -8,6 +8,7 @@ import { distance } from "./grid.js";
 import { resolveRiderDamageFormula } from "./damageRiders.js";
 import { addActiveEffect } from "./modifiers.js";
 import { isReactionPolicyRelevant, normalizeReactionPolicy } from "./reactionPolicy.js";
+import { lowestAvailableSpellSlot, spendSpellSlot } from "./spellSlots.js";
 
 const REACTION_PRIORITY = {
   survival: 100,
@@ -364,52 +365,6 @@ function spendPromptReactionCost(actor, cost) {
 function promptAcceptLabel(name, cost) {
   if (cost?.type === "spell_slot") return `${name} (${cost.level})`;
   return name;
-}
-
-function lowestAvailableSpellSlot(actor, minimumLevel = 1) {
-  const slots = actor.spellSlots || actor.spellcasting?.slots || {};
-  for (const key of Object.keys(slots).map(Number).filter(Number.isFinite).sort((a, b) => a - b)) {
-    if (key < minimumLevel) continue;
-    if (availableSlotUses(slots[key]) > 0) return key;
-  }
-  return null;
-}
-
-function availableSlotUses(slot) {
-  if (Number.isFinite(slot)) return slot;
-  if (!slot || typeof slot !== "object") return 0;
-  if (Number.isFinite(slot.current)) return slot.current;
-  if (Number.isFinite(slot.remaining)) return slot.remaining;
-  if (Number.isFinite(slot.max) && Number.isFinite(slot.used)) return Math.max(0, slot.max - slot.used);
-  if (Number.isFinite(slot.max)) return slot.max;
-  return 0;
-}
-
-function spendSpellSlot(actor, level) {
-  const slots = actor.spellSlots || actor.spellcasting?.slots || {};
-  const slot = slots[level] || slots[String(level)];
-  if (Number.isFinite(slot)) {
-    slots[level] = Math.max(0, slot - 1);
-    return true;
-  }
-  if (!slot || typeof slot !== "object") return false;
-  if (Number.isFinite(slot.current)) {
-    slot.current = Math.max(0, slot.current - 1);
-    return true;
-  }
-  if (Number.isFinite(slot.remaining)) {
-    slot.remaining = Math.max(0, slot.remaining - 1);
-    return true;
-  }
-  if (Number.isFinite(slot.used)) {
-    slot.used += 1;
-    return true;
-  }
-  if (Number.isFinite(slot.max)) {
-    slot.current = Math.max(0, slot.max - 1);
-    return true;
-  }
-  return false;
 }
 
 function reactionTarget(snapshot, reaction, context) {

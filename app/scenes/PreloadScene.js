@@ -1,5 +1,5 @@
 import { routeTo } from '../engine/sceneRouter.js';
-import { getApp } from '../engine/pixi.js';
+import { getApp, getAppReadyPromise } from '../engine/pixi.js';
 import { ensureFogLayer } from '../engine/foglayer.js';
 
 // PreloadScene.js.js
@@ -27,7 +27,8 @@ export default class PreloadScene {
     // Engine init point: ensure the shared PIXI app exists, then attach the global fog layer once.
     // This scene should not own any PIXI state beyond calling the engine modules.
     try {
-      const app = await getApp();
+      getApp();
+      const app = await getAppReadyPromise();
       await ensureFogLayer(app);
     } catch (e) {
       console.warn('[PreloadScene] Failed to init PIXI app and/or fog layer:', e);

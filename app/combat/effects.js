@@ -11,7 +11,7 @@ export const EFFECT_TRIGGERS = new Set([
   "leave_area",
   "damage_taken",
 ]);
-export const EFFECT_TYPES = new Set(["condition", "modifier", "damage", "grant_action", "temp_hp", "forced_movement"]);
+export const EFFECT_TYPES = new Set(["condition", "modifier", "damage", "grant_action", "temp_hp", "forced_movement", "remove_conditions"]);
 export const EFFECT_TIMINGS = new Set(["turn_start", "turn_end"]);
 export const MODIFIER_STATS = new Set([
   "ac",
@@ -19,6 +19,7 @@ export const MODIFIER_STATS = new Set([
   "incoming_attack_roll",
   "save",
   "ability_check",
+  "d20_test",
   "speed",
   "damage_reduction",
   "ac_formula",
@@ -44,7 +45,7 @@ export function validateActionEffects(effects, actionId = "action") {
     }
     if (effect.type === "damage" && !effect.damage) errors.push(`${actionId}.effects[${index}].damage is required`);
     if (effect.type === "grant_action" && !effect.action) errors.push(`${actionId}.effects[${index}].action is required`);
-    if (effect.type === "temp_hp" && !Number.isFinite(effect.amount)) errors.push(`${actionId}.effects[${index}].amount is required`);
+    if (effect.type === "temp_hp" && !Number.isFinite(effect.amount) && !effect.amountFormula) errors.push(`${actionId}.effects[${index}].amount is required`);
     if (effect.type === "forced_movement" && !Number.isFinite(effect.distanceSquares)) errors.push(`${actionId}.effects[${index}].distanceSquares is required`);
     if (effect.condition && !CONDITION_RULES[effect.condition]) errors.push(`${actionId}.effects[${index}].condition ${effect.condition} is not registered`);
     if (effect.repeatSave && !effect.repeatSave.ability) errors.push(`${actionId}.effects[${index}].repeatSave.ability is required`);
@@ -64,8 +65,10 @@ export function normalizeEffect(effect) {
     trigger,
     label: effect.label || null,
     condition: effect.condition || null,
+    conditions: Array.isArray(effect.conditions) ? [...effect.conditions] : [],
     stat: effect.stat || null,
     amount: Number.isFinite(effect.amount) ? effect.amount : 0,
+    amountFormula: effect.amountFormula || null,
     multiplier: Number.isFinite(effect.multiplier) ? effect.multiplier : 1,
     die: effect.die || null,
     ability: effect.ability ? String(effect.ability).toLowerCase() : null,

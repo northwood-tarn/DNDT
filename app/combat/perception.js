@@ -15,7 +15,17 @@ export function canSeeActor(snapshot, observer, target) {
 }
 
 function hasSense(actor, sense) {
-  return Array.isArray(actor?.senses) && actor.senses.includes(sense);
+  return senseEntries(actor).some((entry) => {
+    if (typeof entry === "string") return entry === sense;
+    return entry?.type === sense;
+  });
+}
+
+function senseEntries(actor) {
+  return [
+    ...(Array.isArray(actor?.senses) ? actor.senses : []),
+    ...(actor?.activeEffects || []).flatMap((effect) => effect.senses || []),
+  ];
 }
 
 function hasConditionMechanic(actor, mechanic) {

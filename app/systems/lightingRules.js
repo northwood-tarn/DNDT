@@ -2,11 +2,11 @@
 // Derives visibility (bright/dim tiles) from environment lighting and lanterna state.
 // Also exposes a simple stealth/detection modifier hook.
 const FEET_PER_TILE = 5;
-const LANTERNA_BRIGHT_FT = 30;
-const LANTERNA_DIM_FT = 30;
+const LANTERNA_BRIGHT_FT = 15;
+const LANTERNA_DIM_FT = 15;
 
-const LANTERNA_BRIGHT_TILES = Math.floor(LANTERNA_BRIGHT_FT / FEET_PER_TILE); // 6
-const LANTERNA_DIM_TILES = Math.floor(LANTERNA_DIM_FT / FEET_PER_TILE);       // +6
+const LANTERNA_BRIGHT_TILES = Math.floor(LANTERNA_BRIGHT_FT / FEET_PER_TILE); // 3
+const LANTERNA_DIM_TILES = Math.floor(LANTERNA_DIM_FT / FEET_PER_TILE);       // +3
 
 function maxVis(a, b){
   return {

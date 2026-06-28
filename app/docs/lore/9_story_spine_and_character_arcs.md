@@ -30,7 +30,7 @@ The final party is:
 - Duncan, Cleric.
 - Danica, Paladin.
 - Tahrone, Necromancer Wizard.
-- Kendric, Lantern Patron Warlock.
+- Kestrel, Lantern Patron Warlock.
 
 Brassica is not one of the seven. She remains a major Act I character and possible future protagonist.
 
@@ -69,7 +69,7 @@ The party should meet people who have survived by accepting the Court's terms. T
 Two later companions are introduced here:
 
 - Tahrone, Necromancer Wizard, former High Chair of the Pale.
-- Kendric, Lantern Patron Warlock, imprisoned by the Bone Court.
+- Kestrel, Lantern Patron Warlock, imprisoned by the Bone Court.
 
 These characters complicate the party's understanding of necromancy, light, faith, captivity, and power. They are not Act I harbour companions. They join after the party has entered the wider machinery of the Court.
 
@@ -118,7 +118,7 @@ The emotional turn should be slow. It is not a speech first. It is mutual recogn
 - Tara laughs once because she is alive.
 - Xavier sees that the beautiful thing was the company, not the road.
 - Tahrone understands that the Court can no longer name what they are.
-- Kendric counts the people near them and keeps the dark off the edges.
+- Kestrel counts the people near them and keeps the dark off the edges.
 - The PC sees all six, and all six see the PC.
 
 Then Greyharbour sees them.
@@ -260,7 +260,7 @@ When the surface is false, it breaks something important in him. Not his orphanh
 
 But his final turn is not cynicism. It is deeper belief.
 
-He realizes that the beautiful thing was never the road. It was the people who walked it without betraying one another. It was Tara's filthy courage, Danica's oath, Duncan's mercy, Kendric's protective light, Tahrone's terrible honesty, the PC's endurance.
+He realizes that the beautiful thing was never the road. It was the people who walked it without betraying one another. It was Tara's filthy courage, Danica's oath, Duncan's mercy, Kestrel's protective light, Tahrone's terrible honesty, the PC's endurance.
 
 The books were not wrong because the world failed to resemble them. The books were training him to recognize what must be done when the world refuses beauty.
 
@@ -292,11 +292,11 @@ With Duncan:
 
 - Duncan may be one of the first to see that Xavier's daydreaming is not stupidity. It is longing with an object: the conviction that kindness can be made real here and now.
 
-With Kendric:
+With Kestrel:
 
-- Xavier is tempted to romanticize Kendric's suffering because it resembles the beautiful tragic shapes he knows from books.
+- Xavier is tempted to romanticize Kestrel's suffering because it resembles the beautiful tragic shapes he knows from books.
 - His growth requires him to stop seeing their suffering as beautiful and start seeing their freedom as sacred.
-- Kendric may trust him more once he learns to look away at the right times.
+- Kestrel may trust him more once he learns to look away at the right times.
 
 #### Endgame Xavier
 
@@ -420,23 +420,23 @@ The false road can be survived.
 
 The seven are now evidence.
 
-#### Future-Use: The Kendric Scene
+#### Future-Use: The Kestrel Scene
 
-This material is preserved as future or alternate Brassica material. Brassica is not currently one of the seven, so this is not part of the main party spine unless she is brought back into direct contact with Kendric later.
+This material is preserved as future or alternate Brassica material. Brassica is not currently one of the seven, so this is not part of the main party spine unless she is brought back into direct contact with Kestrel later.
 
-If Brassica encounters Kendric after their torture by the Bone Court, her first instinct is diagnostic: restraints, wounds, ritual cuts, light extraction, nerve damage, magical residue, what was done, how long, for what purpose.
+If Brassica encounters Kestrel after their torture by the Bone Court, her first instinct is diagnostic: restraints, wounds, ritual cuts, light extraction, nerve damage, magical residue, what was done, how long, for what purpose.
 
 Then something breaks through. Not sentiment. Contact.
 
-Kendric is not a specimen of Court technique. They are a person in pain, right there, still alive, still looking back.
+Kestrel is not a specimen of Court technique. They are a person in pain, right there, still alive, still looking back.
 
 Brassica is shocked and troubled because her usual mode fails her for a second. She can understand the apparatus, but not the fact of suffering as an immediate demand. The question is no longer "what is this?" but "what must I do?"
 
 That is the beginning of her concrete turn.
 
-Brassica starts listing observations too fast. Someone snaps at her. A healer moves to Kendric. Someone else, maybe unusually quiet, watches Brassica realize she is not being precise. She is hiding in precision.
+Brassica starts listing observations too fast. Someone snaps at her. A healer moves to Kestrel. Someone else, maybe unusually quiet, watches Brassica realize she is not being precise. She is hiding in precision.
 
-Then Brassica acts. Awkwardly, abruptly, without the right words. She cuts a binding, burns a sigil, places her own robe under Kendric's head, ruins an irreplaceable note-sleeve to stop bleeding or interrupt a rite.
+Then Brassica acts. Awkwardly, abruptly, without the right words. She cuts a binding, burns a sigil, places her own robe under Kestrel's head, ruins an irreplaceable note-sleeve to stop bleeding or interrupt a rite.
 
 That action matters because she sacrifices abstraction materially. The notes on the robe are knowledge. Burning or tearing them to save someone means the knowledge has become concrete.
 
@@ -567,9 +567,9 @@ With Tahrone:
 - Tahrone treats death through form, obligation, and completion.
 - They may understand each other better than expected.
 
-With Kendric:
+With Kestrel:
 
-- Duncan's care is probably the first care that does not aestheticize Kendric.
+- Duncan's care is probably the first care that does not aestheticize Kestrel.
 - He feeds them, sews for them, lets them sit unseen.
 - This may be unbearable at first.
 
@@ -652,11 +652,11 @@ With Tahrone:
 - Tahrone understands Tara's disgust and does not try to charm her out of it.
 - Their arc should become one of the strongest: Tara learns death is entangled with life; Tahrone learns that procedure without love becomes permission for horror.
 
-With Kendric:
+With Kestrel:
 
-- Tara may treat Kendric most normally by swearing around them, offering a drink, and refusing to stare.
+- Tara may treat Kestrel most normally by swearing around them, offering a drink, and refusing to stare.
 - This may make Tara unexpectedly safe.
-- Tara's bluntness can protect Kendric from being turned into a precious symbol again.
+- Tara's bluntness can protect Kestrel from being turned into a precious symbol again.
 
 #### Endgame Tara
 
@@ -803,12 +803,12 @@ With Tahrone:
 - She simply states what she has done and accepts the moral danger of being judged.
 - Danica must learn that judgement is not the same as immediate execution.
 
-With Kendric:
+With Kestrel:
 
 - Danica wants to kill whoever did this.
-- Kendric might find that simple and comforting.
+- Kestrel might find that simple and comforting.
 - Or frightening.
-- Danica has to learn that protecting Kendric includes letting them decide what protection means.
+- Danica has to learn that protecting Kestrel includes letting them decide what protection means.
 
 Endgame Danica should be almost mythic: a huge ash-covered paladin standing at the prow or gangplank, not as the daughter who wants revenge, but as the shield that moves.
 
@@ -854,9 +854,9 @@ So her old belief was:
 
 What breaks her is discovering that the Court's order is not order at all. It is appetite wearing law.
 
-#### The Kendric Incident
+#### The Kestrel Incident
 
-A rival Court, more liberal, more unhinged, more hostile to light, captures Kendric and tortures them.
+A rival Court, more liberal, more unhinged, more hostile to light, captures Kestrel and tortures them.
 
 This is not merely "cruel," though it is cruel. To Tahrone it is a violation of form.
 
@@ -866,13 +866,13 @@ For Tahrone, this is obscene.
 
 If the Court turns persons into things, then it is not the guardian of death. It is death's desecrator.
 
-So she hides Kendric.
+So she hides Kestrel.
 
 Then, for a short time, she attempts the impossible: continuing as High Chair while concealing the evidence that has broken her faith. A week, maybe slightly more. Long enough to show that her first instinct is still procedural containment: document, conceal, stabilize, assess, prepare accusation.
 
 Then she denounces the other Court.
 
-The denunciation destroys her office. She is removed as High Chair, held under suspicion, watched, and politically isolated. No one can prove she hid Kendric, but everyone who matters suspects it.
+The denunciation destroys her office. She is removed as High Chair, held under suspicion, watched, and politically isolated. No one can prove she hid Kestrel, but everyone who matters suspects it.
 
 That is exactly when the party meets her: not as a comfortable insider, and not yet as an open rebel, but as someone whose whole metaphysical order has cracked.
 
@@ -961,16 +961,16 @@ With Danica:
 - Tahrone does not plead.
 - She simply states what she has done and accepts the moral danger of being judged.
 
-With Kendric:
+With Kestrel:
 
 - This is the central bond.
 - Tahrone saved them, but also remained inside the system for as long as she could.
-- Kendric may owe her life and still not forgive her.
+- Kestrel may owe her life and still not forgive her.
 - Tahrone may not ask forgiveness because asking would be another demand placed on someone already tortured.
 
 That last point is very important. Tahrone's restraint should be part of her moral seriousness.
 
-Possible line to Kendric:
+Possible line to Kestrel:
 
 > "You owe me nothing. Not gratitude. Not absolution. Not even accuracy, if accuracy is more than you can bear."
 
@@ -991,13 +991,13 @@ Or:
 > "This rite is not concluded. Stand aside."
 
 
-### Kendric, Lantern Patron Warlock
+### Kestrel, Lantern Patron Warlock
 
 Pronouns: they/them.
 
 Type: former Court pet, now gentle monster.
 
-Kendric is non-binary and should be written as non-binary as possible: not vague, not coy, not a puzzle to be solved. They are simply Kendric.
+Kestrel is non-binary and should be written as non-binary as possible: not vague, not coy, not a puzzle to be solved. They are simply Kestrel.
 
 Core wound:
 
@@ -1005,13 +1005,13 @@ Core wound:
 
 #### Class Group
 
-Kendric was raised inside the Court's communal child system, not a traditional family. The Court does not uphold family in the ordinary sense. Children are raised communally, sorted, educated, observed, and attached to class groups, cohorts, or houses.
+Kestrel was raised inside the Court's communal child system, not a traditional family. The Court does not uphold family in the ordinary sense. Children are raised communally, sorted, educated, observed, and attached to class groups, cohorts, or houses.
 
-Kendric's "family" was a class group: peers, tutors, attendants, and older wardens, the small social body that knew them intimately.
+Kestrel's "family" was a class group: peers, tutors, attendants, and older wardens, the small social body that knew them intimately.
 
-They were the people who knew how Kendric slept, when they were frightened, what made them laugh, how to hide their brightness, how to make them seem ordinary during inspections.
+They were the people who knew how Kestrel slept, when they were frightened, what made them laugh, how to hide their brightness, how to make them seem ordinary during inspections.
 
-They protected Kendric through small collective acts:
+They protected Kestrel through small collective acts:
 
 - Dimming lamps before inspectors arrived.
 - Misreporting symptoms.
@@ -1022,7 +1022,7 @@ They protected Kendric through small collective acts:
 - Giving them ordinary tasks so they looked less exceptional.
 - Lying badly but loyally.
 
-Then the institution reclassified Kendric out of that belonging.
+Then the institution reclassified Kestrel out of that belonging.
 
 Not kidnapped in a dramatic alley. Advanced. Transferred. Honoured.
 
@@ -1040,7 +1040,7 @@ That is the wound. Not "nobody loved me." Worse:
 
 #### Court Pet and School
 
-Kendric was taken into the care of a more liberal, aesthetically adventurous Court. Publicly, they were displayed as a living lantern: dressed beautifully, praised, protected, admired, called rare and precious.
+Kestrel was taken into the care of a more liberal, aesthetically adventurous Court. Publicly, they were displayed as a living lantern: dressed beautifully, praised, protected, admired, called rare and precious.
 
 They were not treated like a crude prisoner at first. They were admired into captivity.
 
@@ -1054,7 +1054,7 @@ The Court's language around them was probably full of affection:
 
 But the truth was ownership.
 
-When Kendric's Lantern patron, power, or inner self would not submit to Court theology, they were transferred to the School.
+When Kestrel's Lantern patron, power, or inner self would not submit to Court theology, they were transferred to the School.
 
 The School is where affection becomes experiment.
 
@@ -1064,7 +1064,7 @@ The Court wanted to know whether living light could be made obedient.
 
 #### Current Shape
 
-Kendric is gentle by temperament, monstrous by consequence.
+Kestrel is gentle by temperament, monstrous by consequence.
 
 The torture changed their pact or body. Their light does not merely illuminate. It burns, reveals, scars, unsettles dead matter, makes lies visible, causes old wounds to glow, perhaps makes people remember what they buried.
 
@@ -1086,25 +1086,25 @@ They are, unfortunately, necessary.
 
 #### Tahrone
 
-Tahrone discovers what has been done, hides Kendric, denounces the other Court, and loses the High Chair.
+Tahrone discovers what has been done, hides Kestrel, denounces the other Court, and loses the High Chair.
 
-Tahrone saved Kendric using the same administrative world that stole them. She knows the forms, seals, custodial phrases, and transfer protocols. She can hide Kendric because she understands exactly how persons are turned into cases.
+Tahrone saved Kestrel using the same administrative world that stole them. She knows the forms, seals, custodial phrases, and transfer protocols. She can hide Kestrel because she understands exactly how persons are turned into cases.
 
-Kendric may hate that they needed someone like Tahrone to survive.
+Kestrel may hate that they needed someone like Tahrone to survive.
 
 Their bond is debt without forgiveness, intimacy without ease.
 
-Kendric may trust Tahrone least and rely on her most.
+Kestrel may trust Tahrone least and rely on her most.
 
 #### Arc
 
-Kendric's final state is not messianic. They do not become a radiant answer everyone can stare at. That would repeat the Court's mistake: turning them into a symbol.
+Kestrel's final state is not messianic. They do not become a radiant answer everyone can stare at. That would repeat the Court's mistake: turning them into a symbol.
 
 Their final state is belonging.
 
 They begin as someone whose light made them exceptional, separated, displayed, extracted. The Court isolated them by making them precious. The School tortured them by making them useful. Even rescue risks making them special again.
 
-The party's gift is that Kendric becomes part of a group where their light matters, but does not define their whole personhood.
+The party's gift is that Kestrel becomes part of a group where their light matters, but does not define their whole personhood.
 
 That echoes childhood correctly. Their first belonging was the class group: imperfect, practical, protective, mutual. They lose that when the Court administratively removes them. In the party, they find a second cohort. Not a replacement family in a sentimental way, but a living group that keeps choosing them after law, fear, and usefulness say otherwise.
 
@@ -1132,7 +1132,7 @@ With Tahrone:
 
 - Tahrone hid them.
 - Tahrone may be the only Court figure who treated their personhood as procedurally real.
-- Kendric may trust her least and rely on her most.
+- Kestrel may trust her least and rely on her most.
 - Their bond is debt without forgiveness, intimacy without ease.
 
 With Duncan:
@@ -1144,7 +1144,7 @@ With Duncan:
 With Danica:
 
 - Danica wants to kill whoever did this.
-- Kendric might find that simple and comforting.
+- Kestrel might find that simple and comforting.
 - Or frightening.
 
 With Xavier:
@@ -1157,17 +1157,17 @@ With Tara:
 - Tara may treat them most normally by swearing around them, offering a drink, and refusing to stare.
 - This may make Tara unexpectedly safe.
 
-#### Endgame Kendric
+#### Endgame Kestrel
 
-Kendric's final ship should not be full of worshippers. It should be a cohort: children, stragglers, injured people, frightened apprentices, maybe people who would otherwise be administratively discarded.
+Kestrel's final ship should not be full of worshippers. It should be a cohort: children, stragglers, injured people, frightened apprentices, maybe people who would otherwise be administratively discarded.
 
-Kendric does not stand above them shining. They move among them, counting heads, touching shoulders only when welcome, keeping the dark off the edges.
+Kestrel does not stand above them shining. They move among them, counting heads, touching shoulders only when welcome, keeping the dark off the edges.
 
 The Court made them a living lantern to be looked at.
 
 The party lets them become someone who holds the light for others without disappearing into it.
 
-Final Kendric energy:
+Final Kestrel energy:
 
 > "You're safe with me."
 

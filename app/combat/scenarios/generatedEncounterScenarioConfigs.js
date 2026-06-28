@@ -25,6 +25,24 @@ export const GENERATED_ENCOUNTER_SCENARIOS = [
     diceSeed: "encounter-shadow-hounds-001",
     heroPosition: { x: 1, y: 2 },
   },
+  {
+    id: "generated-encounter-level-7-team-trial",
+    name: "Encounter: Level 7 Team Trial",
+    encounterId: "combat_full_smoke_high",
+    variantId: "fighter",
+    partyPreset: "level_7_team",
+    diceSeed: "encounter-level-7-team-trial-001",
+    heroPosition: { x: 1, y: 2 },
+  },
+  {
+    id: "generated-encounter-level-7-caster-trial",
+    name: "Encounter: Level 7 Caster Trial",
+    encounterId: "combat_full_smoke_high",
+    variantId: "wizard",
+    partyPreset: "level_7_casters",
+    diceSeed: "encounter-level-7-caster-trial-001",
+    heroPosition: { x: 1, y: 2 },
+  },
 ];
 
 export function getGeneratedEncounterScenarioConfig(id) {

@@ -1,0 +1,904 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  
+    <style>
+      text { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .label { fill: #dfe8df; font-size: 18px; font-weight: 700; }
+      .small { fill: #dfe8df; font-size: 14px; font-weight: 700; }
+      .coord { fill: #0b0d0e; font-size: 14px; font-weight: 900; text-anchor: middle; dominant-baseline: middle; }
+      .height { fill: #f8f2df; font-size: 16px; font-weight: 900; text-anchor: middle; dominant-baseline: middle; paint-order: stroke; stroke: #111; stroke-width: 3px; }
+    </style>
+  <rect width="1920" height="1080" fill="#090c0d"/>
+  <rect x="70" y="50" width="1780" height="980" fill="#101517" stroke="#41505a" stroke-width="2"/>
+  <text x="96" y="92" class="label">0 Plateau Assault - Grid Preview</text>
+  <text x="96" y="120" class="small">128x64 isometric grid, 16x11. Generated from grid-sketch export.</text>
+  
+    <polygon points="760,138 824,170 760,202 696,170" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="824,170 888,202 824,234 760,202" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="888,202 952,234 888,266 824,234" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="952,234 1016,266 952,298 888,266" fill="#6c8e66" stroke="#d7d084" stroke-width="3" opacity="0.92"/>
+    
+    <circle cx="952" cy="276" r="17" fill="#9bc276" stroke="#101517" stroke-width="3"/><text x="952" y="277" class="coord">R</text>
+  
+
+    <polygon points="1016,266 1080,298 1016,330 952,298" fill="#6c8e66" stroke="#d7d084" stroke-width="3" opacity="0.92"/>
+    <text x="1016" y="288" class="height">+1</text>
+    <circle cx="1016" cy="308" r="17" fill="#9bc276" stroke="#101517" stroke-width="3"/><text x="1016" y="309" class="coord">R</text>
+  
+
+    <polygon points="1080,298 1144,330 1080,362 1016,330" fill="#6c8e66" stroke="#d7d084" stroke-width="3" opacity="0.92"/>
+    <text x="1080" y="320" class="height">+1</text>
+    <circle cx="1080" cy="340" r="17" fill="#9bc276" stroke="#101517" stroke-width="3"/><text x="1080" y="341" class="coord">R</text>
+  
+
+    <polygon points="1144,330 1208,362 1144,394 1080,362" fill="#6c8e66" stroke="#d7d084" stroke-width="3" opacity="0.92"/>
+    <text x="1144" y="352" class="height">+1</text>
+    <circle cx="1144" cy="372" r="17" fill="#9bc276" stroke="#101517" stroke-width="3"/><text x="1144" y="373" class="coord">R</text>
+  
+
+    <polygon points="1208,362 1272,394 1208,426 1144,394" fill="#6c8e66" stroke="#d7d084" stroke-width="3" opacity="0.92"/>
+    <text x="1208" y="384" class="height">+2</text>
+    <circle cx="1208" cy="404" r="17" fill="#9bc276" stroke="#101517" stroke-width="3"/><text x="1208" y="405" class="coord">R</text>
+  
+
+    <polygon points="1272,394 1336,426 1272,458 1208,426" fill="#6c8e66" stroke="#d7d084" stroke-width="3" opacity="0.92"/>
+    <text x="1272" y="416" class="height">+2</text>
+    <circle cx="1272" cy="436" r="17" fill="#9bc276" stroke="#101517" stroke-width="3"/><text x="1272" y="437" class="coord">R</text>
+  
+
+    <polygon points="1336,426 1400,458 1336,490 1272,458" fill="#6c8e66" stroke="#d7d084" stroke-width="3" opacity="0.92"/>
+    <text x="1336" y="448" class="height">+2</text>
+    <circle cx="1336" cy="468" r="17" fill="#9bc276" stroke="#101517" stroke-width="3"/><text x="1336" y="469" class="coord">R</text>
+  
+
+    <polygon points="1400,458 1464,490 1400,522 1336,490" fill="#6c8e66" stroke="#d7d084" stroke-width="3" opacity="0.92"/>
+    <text x="1400" y="480" class="height">+3</text>
+    <circle cx="1400" cy="500" r="17" fill="#9bc276" stroke="#101517" stroke-width="3"/><text x="1400" y="501" class="coord">R</text>
+  
+
+    <polygon points="1464,490 1528,522 1464,554 1400,522" fill="#6c8e66" stroke="#d7d084" stroke-width="3" opacity="0.92"/>
+    <text x="1464" y="512" class="height">+3</text>
+    <circle cx="1464" cy="532" r="17" fill="#9bc276" stroke="#101517" stroke-width="3"/><text x="1464" y="533" class="coord">R</text>
+  
+
+    <polygon points="1528,522 1592,554 1528,586 1464,554" fill="#6c8e66" stroke="#d7d084" stroke-width="3" opacity="0.92"/>
+    <text x="1528" y="544" class="height">+4</text>
+    <circle cx="1528" cy="564" r="17" fill="#9bc276" stroke="#101517" stroke-width="3"/><text x="1528" y="565" class="coord">R</text>
+  
+
+    <polygon points="1592,554 1656,586 1592,618 1528,586" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1592" y="576" class="height">+4</text>
+    
+  
+
+    <polygon points="1656,586 1720,618 1656,650 1592,618" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1656" y="608" class="height">+4</text>
+    
+  
+
+    <polygon points="1720,618 1784,650 1720,682 1656,650" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1720" y="640" class="height">+4</text>
+    
+  
+
+    <polygon points="696,170 760,202 696,234 632,202" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="760,202 824,234 760,266 696,234" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="824,234 888,266 824,298 760,266" fill="#b4984d" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    <circle cx="824" cy="276" r="17" fill="#e0c56b" stroke="#101517" stroke-width="3"/><text x="824" y="277" class="coord">C</text>
+  
+
+    <polygon points="888,266 952,298 888,330 824,298" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="952,298 1016,330 952,362 888,330" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="1016,330 1080,362 1016,394 952,362" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="1080,362 1144,394 1080,426 1016,394" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="1144,394 1208,426 1144,458 1080,426" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="1208,426 1272,458 1208,490 1144,458" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="1272,458 1336,490 1272,522 1208,490" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="1336,490 1400,522 1336,554 1272,522" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="1400,522 1464,554 1400,586 1336,554" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="1464,554 1528,586 1464,618 1400,586" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1464" y="576" class="height">+4</text>
+    
+  
+
+    <polygon points="1528,586 1592,618 1528,650 1464,618" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1528" y="608" class="height">+4</text>
+    
+  
+
+    <polygon points="1592,618 1656,650 1592,682 1528,650" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1592" y="640" class="height">+4</text>
+    
+  
+
+    <polygon points="1656,650 1720,682 1656,714 1592,682" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1656" y="672" class="height">+4</text>
+    
+  
+
+    <polygon points="632,202 696,234 632,266 568,234" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="696,234 760,266 696,298 632,266" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="760,266 824,298 760,330 696,298" fill="#b4984d" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    <circle cx="760" cy="308" r="17" fill="#e0c56b" stroke="#101517" stroke-width="3"/><text x="760" y="309" class="coord">C</text>
+  
+
+    <polygon points="824,298 888,330 824,362 760,330" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="888,330 952,362 888,394 824,362" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="952,362 1016,394 952,426 888,394" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="1016,394 1080,426 1016,458 952,426" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="1080,426 1144,458 1080,490 1016,458" fill="#c06d37" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1080" y="448" class="height">+4</text>
+    <circle cx="1080" cy="468" r="17" fill="#d9a84f" stroke="#101517" stroke-width="3"/><text x="1080" y="469" class="coord">1</text>
+  
+
+    <polygon points="1144,458 1208,490 1144,522 1080,490" fill="#c06d37" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1144" y="480" class="height">+4</text>
+    <circle cx="1144" cy="500" r="17" fill="#d9a84f" stroke="#101517" stroke-width="3"/><text x="1144" y="501" class="coord">1</text>
+  
+
+    <polygon points="1208,490 1272,522 1208,554 1144,522" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1208" y="512" class="height">+4</text>
+    
+  
+
+    <polygon points="1272,522 1336,554 1272,586 1208,554" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1272" y="544" class="height">+4</text>
+    
+  
+
+    <polygon points="1336,554 1400,586 1336,618 1272,586" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1336" y="576" class="height">+4</text>
+    
+  
+
+    <polygon points="1400,586 1464,618 1400,650 1336,618" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1400" y="608" class="height">+4</text>
+    
+  
+
+    <polygon points="1464,618 1528,650 1464,682 1400,650" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1464" y="640" class="height">+4</text>
+    
+  
+
+    <polygon points="1528,650 1592,682 1528,714 1464,682" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1528" y="672" class="height">+4</text>
+    <circle cx="1528" cy="692" r="17" fill="#bd6b65" stroke="#101517" stroke-width="3"/><text x="1528" y="693" class="coord">M</text>
+  
+
+    <polygon points="1592,682 1656,714 1592,746 1528,714" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1592" y="704" class="height">+4</text>
+    
+  
+
+    <polygon points="568,234 632,266 568,298 504,266" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="632,266 696,298 632,330 568,298" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="696,298 760,330 696,362 632,330" fill="#b4984d" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    <circle cx="696" cy="340" r="17" fill="#e0c56b" stroke="#101517" stroke-width="3"/><text x="696" y="341" class="coord">C</text>
+  
+
+    <polygon points="760,330 824,362 760,394 696,362" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="824,362 888,394 824,426 760,394" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="888,394 952,426 888,458 824,426" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="952,426 1016,458 952,490 888,458" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="1016,458 1080,490 1016,522 952,490" fill="#c06d37" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1016" y="480" class="height">+4</text>
+    <circle cx="1016" cy="500" r="17" fill="#d9a84f" stroke="#101517" stroke-width="3"/><text x="1016" y="501" class="coord">1</text>
+  
+
+    <polygon points="1080,490 1144,522 1080,554 1016,522" fill="#c06d37" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1080" y="512" class="height">+4</text>
+    <circle cx="1080" cy="532" r="17" fill="#d9a84f" stroke="#101517" stroke-width="3"/><text x="1080" y="533" class="coord">1</text>
+  
+
+    <polygon points="1144,522 1208,554 1144,586 1080,554" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1144" y="544" class="height">+4</text>
+    <circle cx="1144" cy="564" r="17" fill="#bd6b65" stroke="#101517" stroke-width="3"/><text x="1144" y="565" class="coord">M</text>
+  
+
+    <polygon points="1208,554 1272,586 1208,618 1144,586" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1208" y="576" class="height">+4</text>
+    
+  
+
+    <polygon points="1272,586 1336,618 1272,650 1208,618" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1272" y="608" class="height">+4</text>
+    
+  
+
+    <polygon points="1336,618 1400,650 1336,682 1272,650" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1336" y="640" class="height">+4</text>
+    
+  
+
+    <polygon points="1400,650 1464,682 1400,714 1336,682" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1400" y="672" class="height">+4</text>
+    
+  
+
+    <polygon points="1464,682 1528,714 1464,746 1400,714" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1464" y="704" class="height">+4</text>
+    
+  
+
+    <polygon points="1528,714 1592,746 1528,778 1464,746" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1528" y="736" class="height">+4</text>
+    
+  
+
+    <polygon points="504,266 568,298 504,330 440,298" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="568,298 632,330 568,362 504,330" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="632,330 696,362 632,394 568,362" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="696,362 760,394 696,426 632,394" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="760,394 824,426 760,458 696,426" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="824,426 888,458 824,490 760,458" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="888,458 952,490 888,522 824,490" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="952,490 1016,522 952,554 888,522" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="952" y="512" class="height">+4</text>
+    
+  
+
+    <polygon points="1016,522 1080,554 1016,586 952,554" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1016" y="544" class="height">+4</text>
+    
+  
+
+    <polygon points="1080,554 1144,586 1080,618 1016,586" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1080" y="576" class="height">+4</text>
+    
+  
+
+    <polygon points="1144,586 1208,618 1144,650 1080,618" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1144" y="608" class="height">+4</text>
+    
+  
+
+    <polygon points="1208,618 1272,650 1208,682 1144,650" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1208" y="640" class="height">+4</text>
+    
+  
+
+    <polygon points="1272,650 1336,682 1272,714 1208,682" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1272" y="672" class="height">+4</text>
+    
+  
+
+    <polygon points="1336,682 1400,714 1336,746 1272,714" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1336" y="704" class="height">+4</text>
+    
+  
+
+    <polygon points="1400,714 1464,746 1400,778 1336,746" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1400" y="736" class="height">+4</text>
+    <circle cx="1400" cy="756" r="17" fill="#bd6b65" stroke="#101517" stroke-width="3"/><text x="1400" y="757" class="coord">M</text>
+  
+
+    <polygon points="1464,746 1528,778 1464,810 1400,778" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1464" y="768" class="height">+4</text>
+    
+  
+
+    <polygon points="440,298 504,330 440,362 376,330" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    <circle cx="440" cy="340" r="17" fill="#6da0d7" stroke="#101517" stroke-width="3"/><text x="440" y="341" class="coord">P</text>
+  
+
+    <polygon points="504,330 568,362 504,394 440,362" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="568,362 632,394 568,426 504,394" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="632,394 696,426 632,458 568,426" fill="#c6b371" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    <circle cx="632" cy="436" r="17" fill="#e0c56b" stroke="#101517" stroke-width="3"/><text x="632" y="437" class="coord">h</text>
+  
+
+    <polygon points="696,426 760,458 696,490 632,458" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="760,458 824,490 760,522 696,490" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="824,490 888,522 824,554 760,522" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="888,522 952,554 888,586 824,554" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="888" y="544" class="height">+4</text>
+    
+  
+
+    <polygon points="952,554 1016,586 952,618 888,586" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="952" y="576" class="height">+4</text>
+    
+  
+
+    <polygon points="1016,586 1080,618 1016,650 952,618" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1016" y="608" class="height">+4</text>
+    
+  
+
+    <polygon points="1080,618 1144,650 1080,682 1016,650" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1080" y="640" class="height">+4</text>
+    
+  
+
+    <polygon points="1144,650 1208,682 1144,714 1080,682" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1144" y="672" class="height">+4</text>
+    
+  
+
+    <polygon points="1208,682 1272,714 1208,746 1144,714" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1208" y="704" class="height">+4</text>
+    
+  
+
+    <polygon points="1272,714 1336,746 1272,778 1208,746" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1272" y="736" class="height">+4</text>
+    
+  
+
+    <polygon points="1336,746 1400,778 1336,810 1272,778" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1336" y="768" class="height">+4</text>
+    
+  
+
+    <polygon points="1400,778 1464,810 1400,842 1336,810" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1400" y="800" class="height">+4</text>
+    
+  
+
+    <polygon points="376,330 440,362 376,394 312,362" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    <circle cx="376" cy="372" r="17" fill="#6da0d7" stroke="#101517" stroke-width="3"/><text x="376" y="373" class="coord">P</text>
+  
+
+    <polygon points="440,362 504,394 440,426 376,394" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="504,394 568,426 504,458 440,426" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="568,426 632,458 568,490 504,458" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="632,458 696,490 632,522 568,490" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="696,490 760,522 696,554 632,522" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="760,522 824,554 760,586 696,554" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="824,554 888,586 824,618 760,586" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="824" y="576" class="height">+4</text>
+    
+  
+
+    <polygon points="888,586 952,618 888,650 824,618" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="888" y="608" class="height">+4</text>
+    
+  
+
+    <polygon points="952,618 1016,650 952,682 888,650" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="952" y="640" class="height">+4</text>
+    <circle cx="952" cy="660" r="17" fill="#bd6b65" stroke="#101517" stroke-width="3"/><text x="952" y="661" class="coord">M</text>
+  
+
+    <polygon points="1016,650 1080,682 1016,714 952,682" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1016" y="672" class="height">+4</text>
+    
+  
+
+    <polygon points="1080,682 1144,714 1080,746 1016,714" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1080" y="704" class="height">+4</text>
+    
+  
+
+    <polygon points="1144,714 1208,746 1144,778 1080,746" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1144" y="736" class="height">+4</text>
+    
+  
+
+    <polygon points="1208,746 1272,778 1208,810 1144,778" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1208" y="768" class="height">+4</text>
+    
+  
+
+    <polygon points="1272,778 1336,810 1272,842 1208,810" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1272" y="800" class="height">+4</text>
+    
+  
+
+    <polygon points="1336,810 1400,842 1336,874 1272,842" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1336" y="832" class="height">+4</text>
+    
+  
+
+    <polygon points="312,362 376,394 312,426 248,394" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    <circle cx="312" cy="404" r="17" fill="#6da0d7" stroke="#101517" stroke-width="3"/><text x="312" y="405" class="coord">P</text>
+  
+
+    <polygon points="376,394 440,426 376,458 312,426" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="440,426 504,458 440,490 376,458" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="504,458 568,490 504,522 440,490" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="568,490 632,522 568,554 504,522" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="632,522 696,554 632,586 568,554" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="696,554 760,586 696,618 632,586" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="760,586 824,618 760,650 696,618" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="760" y="608" class="height">+4</text>
+    
+  
+
+    <polygon points="824,618 888,650 824,682 760,650" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="824" y="640" class="height">+4</text>
+    
+  
+
+    <polygon points="888,650 952,682 888,714 824,682" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="888" y="672" class="height">+4</text>
+    
+  
+
+    <polygon points="952,682 1016,714 952,746 888,714" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="952" y="704" class="height">+4</text>
+    
+  
+
+    <polygon points="1016,714 1080,746 1016,778 952,746" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1016" y="736" class="height">+4</text>
+    
+  
+
+    <polygon points="1080,746 1144,778 1080,810 1016,778" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1080" y="768" class="height">+4</text>
+    
+  
+
+    <polygon points="1144,778 1208,810 1144,842 1080,810" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1144" y="800" class="height">+4</text>
+    
+  
+
+    <polygon points="1208,810 1272,842 1208,874 1144,842" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1208" y="832" class="height">+4</text>
+    
+  
+
+    <polygon points="1272,842 1336,874 1272,906 1208,874" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1272" y="864" class="height">+4</text>
+    
+  
+
+    <polygon points="248,394 312,426 248,458 184,426" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="312,426 376,458 312,490 248,458" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="376,458 440,490 376,522 312,490" fill="#c6b371" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    <circle cx="376" cy="500" r="17" fill="#e0c56b" stroke="#101517" stroke-width="3"/><text x="376" y="501" class="coord">h</text>
+  
+
+    <polygon points="440,490 504,522 440,554 376,522" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="504,522 568,554 504,586 440,554" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="568,554 632,586 568,618 504,586" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="632,586 696,618 632,650 568,618" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="696,618 760,650 696,682 632,650" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="696" y="640" class="height">+4</text>
+    
+  
+
+    <polygon points="760,650 824,682 760,714 696,682" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="760" y="672" class="height">+4</text>
+    
+  
+
+    <polygon points="824,682 888,714 824,746 760,714" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="824" y="704" class="height">+4</text>
+    
+  
+
+    <polygon points="888,714 952,746 888,778 824,746" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="888" y="736" class="height">+4</text>
+    
+  
+
+    <polygon points="952,746 1016,778 952,810 888,778" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="952" y="768" class="height">+4</text>
+    
+  
+
+    <polygon points="1016,778 1080,810 1016,842 952,810" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1016" y="800" class="height">+4</text>
+    
+  
+
+    <polygon points="1080,810 1144,842 1080,874 1016,842" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1080" y="832" class="height">+4</text>
+    
+  
+
+    <polygon points="1144,842 1208,874 1144,906 1080,874" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1144" y="864" class="height">+4</text>
+    
+  
+
+    <polygon points="1208,874 1272,906 1208,938 1144,906" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1208" y="896" class="height">+4</text>
+    
+  
+
+    <polygon points="184,426 248,458 184,490 120,458" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="248,458 312,490 248,522 184,490" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="312,490 376,522 312,554 248,522" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="376,522 440,554 376,586 312,554" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="440,554 504,586 440,618 376,586" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="504,586 568,618 504,650 440,618" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="568,618 632,650 568,682 504,650" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="632,650 696,682 632,714 568,682" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="696,682 760,714 696,746 632,714" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="760,714 824,746 760,778 696,746" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="824,746 888,778 824,810 760,778" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="888,778 952,810 888,842 824,810" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="952,810 1016,842 952,874 888,842" fill="#6c8e66" stroke="#d7d084" stroke-width="3" opacity="0.92"/>
+    <text x="952" y="832" class="height">+4</text>
+    <circle cx="952" cy="852" r="17" fill="#9bc276" stroke="#101517" stroke-width="3"/><text x="952" y="853" class="coord">R</text>
+  
+
+    <polygon points="1016,842 1080,874 1016,906 952,874" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1016" y="864" class="height">+4</text>
+    
+  
+
+    <polygon points="1080,874 1144,906 1080,938 1016,906" fill="#9f8650" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1080" y="896" class="height">+4</text>
+    
+  
+
+    <polygon points="1144,906 1208,938 1144,970 1080,938" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1144" y="928" class="height">+4</text>
+    
+  
+
+    <polygon points="120,458 184,490 120,522 56,490" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="184,490 248,522 184,554 120,522" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="248,522 312,554 248,586 184,554" fill="#b8c7b2" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    
+    
+  
+
+    <polygon points="312,554 376,586 312,618 248,586" fill="#6c8e66" stroke="#d7d084" stroke-width="3" opacity="0.92"/>
+    
+    <circle cx="312" cy="596" r="17" fill="#9bc276" stroke="#101517" stroke-width="3"/><text x="312" y="597" class="coord">R</text>
+  
+
+    <polygon points="376,586 440,618 376,650 312,618" fill="#6c8e66" stroke="#d7d084" stroke-width="3" opacity="0.92"/>
+    <text x="376" y="608" class="height">+1</text>
+    <circle cx="376" cy="628" r="17" fill="#9bc276" stroke="#101517" stroke-width="3"/><text x="376" y="629" class="coord">R</text>
+  
+
+    <polygon points="440,618 504,650 440,682 376,650" fill="#6c8e66" stroke="#d7d084" stroke-width="3" opacity="0.92"/>
+    <text x="440" y="640" class="height">+1</text>
+    <circle cx="440" cy="660" r="17" fill="#9bc276" stroke="#101517" stroke-width="3"/><text x="440" y="661" class="coord">R</text>
+  
+
+    <polygon points="504,650 568,682 504,714 440,682" fill="#6c8e66" stroke="#d7d084" stroke-width="3" opacity="0.92"/>
+    <text x="504" y="672" class="height">+1</text>
+    <circle cx="504" cy="692" r="17" fill="#9bc276" stroke="#101517" stroke-width="3"/><text x="504" y="693" class="coord">R</text>
+  
+
+    <polygon points="568,682 632,714 568,746 504,714" fill="#6c8e66" stroke="#d7d084" stroke-width="3" opacity="0.92"/>
+    <text x="568" y="704" class="height">+2</text>
+    <circle cx="568" cy="724" r="17" fill="#9bc276" stroke="#101517" stroke-width="3"/><text x="568" y="725" class="coord">R</text>
+  
+
+    <polygon points="632,714 696,746 632,778 568,746" fill="#6c8e66" stroke="#d7d084" stroke-width="3" opacity="0.92"/>
+    <text x="632" y="736" class="height">+3</text>
+    <circle cx="632" cy="756" r="17" fill="#9bc276" stroke="#101517" stroke-width="3"/><text x="632" y="757" class="coord">R</text>
+  
+
+    <polygon points="696,746 760,778 696,810 632,778" fill="#6c8e66" stroke="#d7d084" stroke-width="3" opacity="0.92"/>
+    <text x="696" y="768" class="height">+3</text>
+    <circle cx="696" cy="788" r="17" fill="#9bc276" stroke="#101517" stroke-width="3"/><text x="696" y="789" class="coord">R</text>
+  
+
+    <polygon points="760,778 824,810 760,842 696,810" fill="#6c8e66" stroke="#d7d084" stroke-width="3" opacity="0.92"/>
+    <text x="760" y="800" class="height">+3</text>
+    <circle cx="760" cy="820" r="17" fill="#9bc276" stroke="#101517" stroke-width="3"/><text x="760" y="821" class="coord">R</text>
+  
+
+    <polygon points="824,810 888,842 824,874 760,842" fill="#6c8e66" stroke="#d7d084" stroke-width="3" opacity="0.92"/>
+    <text x="824" y="832" class="height">+3</text>
+    <circle cx="824" cy="852" r="17" fill="#9bc276" stroke="#101517" stroke-width="3"/><text x="824" y="853" class="coord">R</text>
+  
+
+    <polygon points="888,842 952,874 888,906 824,874" fill="#6c8e66" stroke="#d7d084" stroke-width="3" opacity="0.92"/>
+    <text x="888" y="864" class="height">+3</text>
+    <circle cx="888" cy="884" r="17" fill="#9bc276" stroke="#101517" stroke-width="3"/><text x="888" y="885" class="coord">R</text>
+  
+
+    <polygon points="952,874 1016,906 952,938 888,906" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="952" y="896" class="height">+4</text>
+    
+  
+
+    <polygon points="1016,906 1080,938 1016,970 952,938" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1016" y="928" class="height">+4</text>
+    
+  
+
+    <polygon points="1080,938 1144,970 1080,1002 1016,970" fill="#1a1d20" stroke="#38464f" stroke-width="1.5" opacity="0.92"/>
+    <text x="1080" y="960" class="height">+4</text>
+    
+  
+  
+    <g transform="translate(1380 90)">
+      <text class="label">Grid legend</text>
+      <rect x="0" y="24" width="24" height="24" fill="#b8c7b2" stroke="#dfe8df"/><text x="36" y="43" class="small">walkable low ground</text>
+      <rect x="0" y="58" width="24" height="24" fill="#9f8650" stroke="#dfe8df"/><text x="36" y="77" class="small">upper plateau (+4)</text>
+      <rect x="0" y="92" width="24" height="24" fill="#6c8e66" stroke="#dfe8df"/><text x="36" y="111" class="small">slope / ramp route</text>
+      <rect x="0" y="126" width="24" height="24" fill="#1a1d20" stroke="#dfe8df"/><text x="36" y="145" class="small">blocked cliff / void</text>
+      <rect x="0" y="160" width="24" height="24" fill="#b4984d" stroke="#dfe8df"/><text x="36" y="179" class="small">3/4 cover blocks</text>
+      <rect x="0" y="194" width="24" height="24" fill="#c06d37" stroke="#dfe8df"/><text x="36" y="213" class="small">burning tree feature</text>
+    </g>
+</svg>

@@ -4,9 +4,10 @@ const DEFAULT_CLASSES_PATH = "app/data/classes.js";
 const VALID_FEATURE_TYPES = new Set(["Action", "Bonus Action", "Reaction", "Passive", "Special"]);
 const VALID_ABILITIES = new Set(["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]);
 const VALID_RESOURCE_USES = new Set(["channelDivinity"]);
-const VALID_EFFECT_KEYS = new Set(["resources", "expertise", "actionOptions", "choiceRequirements", "modifiers", "auras", "triggeredEffects", "reactions", "damageRiders", "conditionRiders", "modifierRiders", "healingRiders", "resistances", "narrativeTags", "narrativeOnly", "advancement", "attackAction", "weaponMastery"]);
+const VALID_EFFECT_KEYS = new Set(["resources", "expertise", "proficiencies", "actionOptions", "choiceRequirements", "modifiers", "auras", "triggeredEffects", "reactions", "damageRiders", "conditionRiders", "modifierRiders", "healingRiders", "resistances", "narrativeTags", "narrativeOnly", "advancement", "attackAction", "weaponMastery"]);
 const VALID_EFFECT_RECOVERY = new Set(["short_rest", "long_rest", "combat", "special"]);
 const VALID_CHOICE_KINDS = new Set(["subclass", "pact", "skill", "tool", "spell", "weapon", "device_recipe"]);
+const VALID_SCALING_RESOURCE_MAX = new Set(["proficiency_bonus", "saboteur_level"]);
 
 function validateString(errors, id, pathName, value) {
   if (typeof value !== "string" || !value.trim()) errors.push(`${id}: ${pathName} must be a non-empty string`);
@@ -25,6 +26,11 @@ function validateArray(errors, id, pathName, value) {
 
 function validatePositiveNumber(errors, id, pathName, value) {
   if (!Number.isFinite(value) || value <= 0) errors.push(`${id}: ${pathName} must be a positive number`);
+}
+
+function validatePositiveNumberOrScaling(errors, id, pathName, value) {
+  if (typeof value === "string" && VALID_SCALING_RESOURCE_MAX.has(value)) return;
+  validatePositiveNumber(errors, id, pathName, value);
 }
 
 function validateHp(errors, classId, hp) {
@@ -87,12 +93,13 @@ function validateEffects(errors, id, effects) {
   validateEffectArray(errors, id, "attackAction", effects.attackAction);
   if (effects.resistances !== undefined) validateStringArray(errors, id, "effects.resistances", effects.resistances);
   if (effects.narrativeTags !== undefined) validateStringArray(errors, id, "effects.narrativeTags", effects.narrativeTags);
+  if (effects.proficiencies !== undefined) validateProficiencies(errors, id, effects.proficiencies);
   if (effects.narrativeOnly !== undefined && effects.narrativeOnly !== true) errors.push(`${id}: effects.narrativeOnly must be true when present`);
   for (const [index, resource] of (effects.resources || []).entries()) {
     const pathName = `${id}.effects.resources[${index}]`;
     validateStableId(errors, pathName, "id", resource.id);
     validateString(errors, pathName, "name", resource.name);
-    validatePositiveNumber(errors, pathName, "max", resource.max);
+    validatePositiveNumberOrScaling(errors, pathName, "max", resource.max);
     validateString(errors, pathName, "recovery", resource.recovery);
     if (!VALID_EFFECT_RECOVERY.has(resource.recovery)) errors.push(`${pathName}: unknown recovery "${resource.recovery}"`);
   }
@@ -182,6 +189,19 @@ function validateStringArray(errors, id, pathName, value) {
     if (seen.has(item)) errors.push(`${id}: ${pathName} contains duplicate "${item}"`);
     seen.add(item);
   }
+}
+
+function validateProficiencies(errors, id, proficiencies) {
+  if (!proficiencies || typeof proficiencies !== "object" || Array.isArray(proficiencies)) {
+    errors.push(`${id}: effects.proficiencies must be an object`);
+    return;
+  }
+  for (const key of Object.keys(proficiencies)) {
+    if (!["skills", "tools", "weapons"].includes(key)) errors.push(`${id}: effects.proficiencies.${key} is not supported`);
+  }
+  if (proficiencies.skills !== undefined) validateStringArray(errors, id, "effects.proficiencies.skills", proficiencies.skills);
+  if (proficiencies.tools !== undefined) validateStringArray(errors, id, "effects.proficiencies.tools", proficiencies.tools);
+  if (proficiencies.weapons !== undefined) validateStringArray(errors, id, "effects.proficiencies.weapons", proficiencies.weapons);
 }
 
 function validateEffectArray(errors, id, key, value) {

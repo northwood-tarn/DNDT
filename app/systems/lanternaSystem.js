@@ -6,7 +6,8 @@
 // - Auto ON when entering DARK if off (log once). Auto OFF when entering BRIGHT if on (log once).
 // - Auto triggers only when lighting category changes; player can manually override via UI button.
 //   Manual override remains until the NEXT environment lighting change.
-// - Visibility when lit: 30 ft bright + 30 ft dim (tile conversion handled in lightingRules).
+// - Visibility when lit: 15 ft bright + 15 ft dim, plus a pale visual hem at the edge
+//   (tile conversion handled in lightingRules; pale hem is presentation-only).
 // - With Lanterna OFF in DARK: player sees self clearly and 1 tile dimly around (very risky).
 // - Oil is consumed only by exploration-time minutes (frozen during combat).
 //

@@ -6,7 +6,7 @@ const VALID_SOURCES = new Set(["2024_phb_reference", "dndt_homebrew"]);
 const VALID_SIZES = new Set(["Small", "Medium"]);
 const VALID_EFFECTS = new Set(["feature", "skill_choice", "feat_choice", "hp_bonus_per_level"]);
 const VALID_DAMAGE_TYPES = new Set(["acid", "cold", "fire", "lightning", "necrotic", "poison", "radiant", "thunder"]);
-const VALID_EFFECT_KEYS = new Set(["resources", "spells", "hitPointBonuses", "choiceRequirements", "actionOptions", "modifiers", "triggeredEffects", "narrativeOnly", "narrativeTags"]);
+const VALID_EFFECT_KEYS = new Set(["resources", "spells", "hitPointBonuses", "choiceRequirements", "actionOptions", "modifiers", "triggeredEffects", "damageRiders", "conditionRiders", "modifierRiders", "d20Rerolls", "narrativeOnly", "narrativeTags"]);
 const VALID_RECOVERY = new Set(["short_rest", "long_rest", "combat", "special"]);
 
 function validateString(errors, id, pathName, value) {
@@ -77,6 +77,10 @@ function validateEffects(errors, id, effects) {
   validateEffectArray(errors, id, "actionOptions", effects.actionOptions);
   validateEffectArray(errors, id, "modifiers", effects.modifiers);
   validateEffectArray(errors, id, "triggeredEffects", effects.triggeredEffects);
+  validateEffectArray(errors, id, "damageRiders", effects.damageRiders);
+  validateEffectArray(errors, id, "conditionRiders", effects.conditionRiders);
+  validateEffectArray(errors, id, "modifierRiders", effects.modifierRiders);
+  validateEffectArray(errors, id, "d20Rerolls", effects.d20Rerolls);
   validateEffectArray(errors, id, "narrativeTags", effects.narrativeTags);
   if (effects.narrativeOnly !== undefined && effects.narrativeOnly !== true) {
     errors.push(`${id}: effects.narrativeOnly must be true when present`);
@@ -119,7 +123,8 @@ function validateEffects(errors, id, effects) {
   for (const [index, modifier] of (effects.modifiers || []).entries()) {
     const pathName = `${id}.effects.modifiers[${index}]`;
     validateString(errors, pathName, "id", modifier.id);
-    validateString(errors, pathName, "target", modifier.target);
+    if (modifier.target !== undefined) validateString(errors, pathName, "target", modifier.target);
+    if (modifier.stat !== undefined) validateString(errors, pathName, "stat", modifier.stat);
   }
   for (const [index, triggered] of (effects.triggeredEffects || []).entries()) {
     const pathName = `${id}.effects.triggeredEffects[${index}]`;

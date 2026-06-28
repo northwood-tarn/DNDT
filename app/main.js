@@ -12,7 +12,7 @@ import { startExplorationSystem } from "./systems/explorationSystem.js";
   const levels = ["log", "info", "warn", "error"];
 
   // Toggle in-game log visibility with F12
-  let logVisible = true;
+  let logVisible = false;
   window.addEventListener("keydown", (e) => {
     if (e.key === "F12") {
       e.preventDefault();
@@ -147,15 +147,24 @@ async function startGame() {
     reason: "boot",
   });
 
+  const markIntroMusicFinished = () => {
+    if (window.__dndtIntroMusicFinished) return;
+    window.__dndtIntroMusicFinished = true;
+    window.dispatchEvent(new CustomEvent("dndt:intro-music-finished"));
+  };
+
   // Intro audio stays here so the music still kicks in on launch.
   const audio = new Audio("./assets/audio/intro_theme.mp3");
   audio.volume = 0.9;
+  audio.addEventListener("ended", markIntroMusicFinished, { once: true });
   try {
     await audio.play();
   } catch {
     const unlock = async () => {
       try {
         await audio.play();
+      } catch {
+        markIntroMusicFinished();
       } finally {
         window.removeEventListener("pointerdown", unlock);
       }

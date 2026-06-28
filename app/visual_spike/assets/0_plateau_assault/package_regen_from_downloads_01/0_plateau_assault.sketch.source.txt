@@ -1,0 +1,50 @@
+0 Plateau Assault (0_plateau_assault) - Large 16 x 11
+
+Legend:
+blank = terrain: blocked / dark / wall / void
+. = terrain: walkable
+h = terrain: half cover
+C = terrain: 3/4 cover stone
+H = terrain: hazard
+S = terrain: stairs
+R = terrain: slope / ramp
+L = marker: fixed light
+P = marker: hero spawn
+M = marker: enemy spawn
+T = marker: transition
+V = marker: conversation trigger
+N = marker: NPC / neutral
+1 = feature: A large tree, burning
+
+Image note:
+Cover is broken columns, strewn across the ground level. Thin and uneven stony paths run up the sides of the area to the top. Above, on top of a large rocky outcrop a large dry tree has been set alight to cast light in the area.
+
+
+y\x  00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+00   .  .  .  R  R  R  R  R  R  R  R  R  R  .  .  .
+01   .  .  C  .                          .  .  .  .
+02   .  .  C  .           1  1  .  .  .  .  .  M  .
+03   .  .  C  .           1  1  M  .  .  .  .  .  .
+04   .  .  .  .           .  .  .  .  .  .  .  M  .
+05   P  .  .  h           .  .  .  .  .  .         
+06   P  .  .  .           .  .  M  .  .            
+07   P  .  .  .           .  .  .  .  .  .  .  .   
+08   .  .  h  .           .  .  .  .  .  .  .  .   
+09   .  .  .  .                          R  .  .   
+10   .  .  .  R  R  R  R  R  R  R  R  R  R         
+
+Altitude layer:
+Height values are 5 ft bands. Adjacent height changes are treated as slope/ramp unless layout terrain marks S stairs or a blocking/non-walkable cell.
+
+y\x  00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+00    0  0  0  0 +1 +1 +1 +2 +2 +2 +3 +3 +4 +4 +4 +4
+01    0  0  0  0  0  0  0  0  0  0  0  0 +4 +4 +4 +4
+02    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+03    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+04    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+05    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+06    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+07    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+08    0  0  0  0  0  0  0 +4 +4 +4 +4 +4 +4 +4 +4 +4
+09    0  0  0  0  0  0  0  0  0  0  0  0 +4 +4 +4 +4
+10    0  0  0  0 +1 +1 +1 +2 +3 +3 +3 +3 +3 +4 +4 +4

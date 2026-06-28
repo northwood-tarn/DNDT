@@ -26,12 +26,33 @@ export function preflightAction(snapshot, actor, actionId, targetPayload) {
   const use = canUseAction(actor, action);
   if (!use.ok) return actionResult(false, "action_unavailable", use.reason, actionContext(actor, action, targetPayload));
 
-  if (isAreaAction(action)) {
+  if (isAreaAction(action) && action.requiresTarget !== false) {
     if (!hasAreaAnchor(targetPayload)) return actionResult(false, "target_area_missing", "target area is missing", actionContext(actor, action, targetPayload));
     return actionResult(true, "ready", "action can resolve", actionContext(actor, action, targetPayload));
   }
 
   if (action.requiresTarget === false) return actionResult(true, "ready", "action can resolve", actionContext(actor, action, targetPayload));
+  if (isIndividualMultiTargetAction(action)) {
+    const targetIds = targetActorIds(targetPayload).slice(0, action.maxTargets);
+    const targets = targetIds.map((id) => getActor(snapshot, id)).filter(Boolean);
+    const checkedTargets = action.allowRepeatedTargets ? targets : uniqueActors(targets);
+    if (isExplicitTargetList(targetPayload) && action.requireExactTargetCount && targetIds.length !== action.maxTargets) {
+      return actionResult(false, "target_invalid", `select ${action.maxTargets} targets`, actionContext(actor, action, targetPayload));
+    }
+    if (!checkedTargets.length) {
+      return actionResult(false, "target_invalid", "no valid targets selected", actionContext(actor, action, targetPayload));
+    }
+    const invalidTarget = checkedTargets.find((target) => !canTargetAction(snapshot, actor, action, target).ok);
+    if (invalidTarget) {
+      return actionResult(
+        false,
+        "target_invalid",
+        canTargetAction(snapshot, actor, action, invalidTarget).reason,
+        actionContext(actor, action, targetPayload, invalidTarget)
+      );
+    }
+    return actionResult(true, "ready", "action can resolve", actionContext(actor, action, targetPayload, checkedTargets[0]));
+  }
   const target = getActor(snapshot, targetActorId(targetPayload));
   const targetLegality = canTargetAction(snapshot, actor, action, target);
   if (!targetLegality.ok) {
@@ -78,6 +99,34 @@ function actionContext(actor, action, targetPayload, target = null) {
 function targetActorId(targetPayload) {
   if (typeof targetPayload === "string") return targetPayload;
   return targetPayload?.targetId || null;
+}
+
+function targetActorIds(targetPayload) {
+  if (Array.isArray(targetPayload)) return targetPayload;
+  if (Array.isArray(targetPayload?.targetIds)) return targetPayload.targetIds;
+  const single = targetActorId(targetPayload);
+  return single ? [single] : [];
+}
+
+function isIndividualMultiTargetAction(action) {
+  return action?.requiresTarget !== false &&
+    Number.isFinite(action.maxTargets) &&
+    action.maxTargets > 1 &&
+    !action.targeting?.shape &&
+    ["spell_effect", "spell_save", "spell_attack", "spell_auto_damage"].includes(action.type);
+}
+
+function isExplicitTargetList(targetPayload) {
+  return Array.isArray(targetPayload) || Array.isArray(targetPayload?.targetIds);
+}
+
+function uniqueActors(targets) {
+  const seen = new Set();
+  return targets.filter((target) => {
+    if (seen.has(target.id)) return false;
+    seen.add(target.id);
+    return true;
+  });
 }
 
 function isAreaAction(action) {

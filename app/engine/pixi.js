@@ -1,7 +1,7 @@
 // app/engine/pixi.js
 // Centralized Pixi v8 import and application manager.
 
-import * as PIXI from "https://cdnjs.cloudflare.com/ajax/libs/pixi.js/8.13.2/pixi.min.mjs";
+import * as PIXI from "../lib/pixi.mjs";
 
 let app = null;
 let appInitPromise = null;

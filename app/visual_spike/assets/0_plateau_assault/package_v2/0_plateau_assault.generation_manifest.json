@@ -1,0 +1,27 @@
+{
+  "stageId": "0_plateau_assault",
+  "source": "/Users/jon/Downloads/0_plateau_assault.grid-sketch.json",
+  "generatedAt": "2026-06-23T13:02:14.634Z",
+  "purpose": "grid-locked map generation package",
+  "sequence": [
+    "author sketch",
+    "export grid-sketch json and sketch txt",
+    "build package with canonical grid metadata",
+    "generate placement control plate",
+    "generate altitude control plate",
+    "generate combined SVG audit plate",
+    "generate art prompt",
+    "generate art using controls and prompt",
+    "validate against checklist and grid metadata",
+    "reject or approve for runtime validation overlay"
+  ],
+  "files": {
+    "grid": "0_plateau_assault.grid.json",
+    "placementControlPng": "0_plateau_assault.placement_control.png",
+    "altitudeControlPng": "0_plateau_assault.altitude_control.png",
+    "combinedControlSvg": "0_plateau_assault.combined_control.svg",
+    "artPrompt": "0_plateau_assault.art_prompt.txt",
+    "validationChecklist": "0_plateau_assault.validation_checklist.md",
+    "manifest": "0_plateau_assault.generation_manifest.json"
+  }
+}

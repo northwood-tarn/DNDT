@@ -1,0 +1,2417 @@
+{
+  "schemaVersion": 3,
+  "stageId": "0_plateau_assault",
+  "name": "0 Plateau Assault",
+  "status": "draft_layered_grid_validation",
+  "image": {
+    "width": 1920,
+    "height": 1080,
+    "placementControl": "0_plateau_assault.placement_control.png",
+    "baseTerrainControl": "0_plateau_assault.base_terrain_control.png",
+    "altitudeControl": "0_plateau_assault.altitude_control.png",
+    "combinedControl": "0_plateau_assault.combined_control.svg",
+    "artValidationOverlay": "0_plateau_assault.art_validation_overlay.png"
+  },
+  "grid": {
+    "projection": "isometric_square",
+    "tileWidth": 128,
+    "tileHeight": 64,
+    "origin": {
+      "x": 800,
+      "y": 140
+    },
+    "width": 16,
+    "height": 11,
+    "coordinateRule": "x increases down-right; y increases down-left"
+  },
+  "walkable": {
+    "cells": [
+      {
+        "x": 0,
+        "y": 0,
+        "altitude": 0
+      },
+      {
+        "x": 1,
+        "y": 0,
+        "altitude": 0
+      },
+      {
+        "x": 2,
+        "y": 0,
+        "altitude": 0
+      },
+      {
+        "x": 3,
+        "y": 0,
+        "altitude": 0
+      },
+      {
+        "x": 4,
+        "y": 0,
+        "altitude": 1
+      },
+      {
+        "x": 5,
+        "y": 0,
+        "altitude": 1
+      },
+      {
+        "x": 6,
+        "y": 0,
+        "altitude": 1
+      },
+      {
+        "x": 7,
+        "y": 0,
+        "altitude": 2
+      },
+      {
+        "x": 8,
+        "y": 0,
+        "altitude": 2
+      },
+      {
+        "x": 9,
+        "y": 0,
+        "altitude": 2
+      },
+      {
+        "x": 10,
+        "y": 0,
+        "altitude": 3
+      },
+      {
+        "x": 11,
+        "y": 0,
+        "altitude": 3
+      },
+      {
+        "x": 12,
+        "y": 0,
+        "altitude": 4
+      },
+      {
+        "x": 13,
+        "y": 0,
+        "altitude": 4
+      },
+      {
+        "x": 14,
+        "y": 0,
+        "altitude": 4
+      },
+      {
+        "x": 15,
+        "y": 0,
+        "altitude": 4
+      },
+      {
+        "x": 0,
+        "y": 1,
+        "altitude": 0
+      },
+      {
+        "x": 1,
+        "y": 1,
+        "altitude": 0
+      },
+      {
+        "x": 3,
+        "y": 1,
+        "altitude": 0
+      },
+      {
+        "x": 12,
+        "y": 1,
+        "altitude": 4
+      },
+      {
+        "x": 13,
+        "y": 1,
+        "altitude": 4
+      },
+      {
+        "x": 14,
+        "y": 1,
+        "altitude": 4
+      },
+      {
+        "x": 15,
+        "y": 1,
+        "altitude": 4
+      },
+      {
+        "x": 0,
+        "y": 2,
+        "altitude": 0
+      },
+      {
+        "x": 1,
+        "y": 2,
+        "altitude": 0
+      },
+      {
+        "x": 3,
+        "y": 2,
+        "altitude": 0
+      },
+      {
+        "x": 9,
+        "y": 2,
+        "altitude": 4
+      },
+      {
+        "x": 10,
+        "y": 2,
+        "altitude": 4
+      },
+      {
+        "x": 11,
+        "y": 2,
+        "altitude": 4
+      },
+      {
+        "x": 12,
+        "y": 2,
+        "altitude": 4
+      },
+      {
+        "x": 13,
+        "y": 2,
+        "altitude": 4
+      },
+      {
+        "x": 14,
+        "y": 2,
+        "altitude": 4
+      },
+      {
+        "x": 15,
+        "y": 2,
+        "altitude": 4
+      },
+      {
+        "x": 0,
+        "y": 3,
+        "altitude": 0
+      },
+      {
+        "x": 1,
+        "y": 3,
+        "altitude": 0
+      },
+      {
+        "x": 3,
+        "y": 3,
+        "altitude": 0
+      },
+      {
+        "x": 9,
+        "y": 3,
+        "altitude": 4
+      },
+      {
+        "x": 10,
+        "y": 3,
+        "altitude": 4
+      },
+      {
+        "x": 11,
+        "y": 3,
+        "altitude": 4
+      },
+      {
+        "x": 12,
+        "y": 3,
+        "altitude": 4
+      },
+      {
+        "x": 13,
+        "y": 3,
+        "altitude": 4
+      },
+      {
+        "x": 14,
+        "y": 3,
+        "altitude": 4
+      },
+      {
+        "x": 15,
+        "y": 3,
+        "altitude": 4
+      },
+      {
+        "x": 0,
+        "y": 4,
+        "altitude": 0
+      },
+      {
+        "x": 1,
+        "y": 4,
+        "altitude": 0
+      },
+      {
+        "x": 2,
+        "y": 4,
+        "altitude": 0
+      },
+      {
+        "x": 3,
+        "y": 4,
+        "altitude": 0
+      },
+      {
+        "x": 7,
+        "y": 4,
+        "altitude": 4
+      },
+      {
+        "x": 8,
+        "y": 4,
+        "altitude": 4
+      },
+      {
+        "x": 9,
+        "y": 4,
+        "altitude": 4
+      },
+      {
+        "x": 10,
+        "y": 4,
+        "altitude": 4
+      },
+      {
+        "x": 11,
+        "y": 4,
+        "altitude": 4
+      },
+      {
+        "x": 12,
+        "y": 4,
+        "altitude": 4
+      },
+      {
+        "x": 13,
+        "y": 4,
+        "altitude": 4
+      },
+      {
+        "x": 14,
+        "y": 4,
+        "altitude": 4
+      },
+      {
+        "x": 15,
+        "y": 4,
+        "altitude": 4
+      },
+      {
+        "x": 0,
+        "y": 5,
+        "altitude": 0
+      },
+      {
+        "x": 1,
+        "y": 5,
+        "altitude": 0
+      },
+      {
+        "x": 2,
+        "y": 5,
+        "altitude": 0
+      },
+      {
+        "x": 3,
+        "y": 5,
+        "altitude": 0
+      },
+      {
+        "x": 7,
+        "y": 5,
+        "altitude": 4
+      },
+      {
+        "x": 8,
+        "y": 5,
+        "altitude": 4
+      },
+      {
+        "x": 9,
+        "y": 5,
+        "altitude": 4
+      },
+      {
+        "x": 10,
+        "y": 5,
+        "altitude": 4
+      },
+      {
+        "x": 11,
+        "y": 5,
+        "altitude": 4
+      },
+      {
+        "x": 12,
+        "y": 5,
+        "altitude": 4
+      },
+      {
+        "x": 0,
+        "y": 6,
+        "altitude": 0
+      },
+      {
+        "x": 1,
+        "y": 6,
+        "altitude": 0
+      },
+      {
+        "x": 2,
+        "y": 6,
+        "altitude": 0
+      },
+      {
+        "x": 3,
+        "y": 6,
+        "altitude": 0
+      },
+      {
+        "x": 7,
+        "y": 6,
+        "altitude": 4
+      },
+      {
+        "x": 8,
+        "y": 6,
+        "altitude": 4
+      },
+      {
+        "x": 9,
+        "y": 6,
+        "altitude": 4
+      },
+      {
+        "x": 10,
+        "y": 6,
+        "altitude": 4
+      },
+      {
+        "x": 11,
+        "y": 6,
+        "altitude": 4
+      },
+      {
+        "x": 0,
+        "y": 7,
+        "altitude": 0
+      },
+      {
+        "x": 1,
+        "y": 7,
+        "altitude": 0
+      },
+      {
+        "x": 2,
+        "y": 7,
+        "altitude": 0
+      },
+      {
+        "x": 3,
+        "y": 7,
+        "altitude": 0
+      },
+      {
+        "x": 7,
+        "y": 7,
+        "altitude": 4
+      },
+      {
+        "x": 8,
+        "y": 7,
+        "altitude": 4
+      },
+      {
+        "x": 9,
+        "y": 7,
+        "altitude": 4
+      },
+      {
+        "x": 10,
+        "y": 7,
+        "altitude": 4
+      },
+      {
+        "x": 11,
+        "y": 7,
+        "altitude": 4
+      },
+      {
+        "x": 12,
+        "y": 7,
+        "altitude": 4
+      },
+      {
+        "x": 13,
+        "y": 7,
+        "altitude": 4
+      },
+      {
+        "x": 14,
+        "y": 7,
+        "altitude": 4
+      },
+      {
+        "x": 0,
+        "y": 8,
+        "altitude": 0
+      },
+      {
+        "x": 1,
+        "y": 8,
+        "altitude": 0
+      },
+      {
+        "x": 2,
+        "y": 8,
+        "altitude": 0
+      },
+      {
+        "x": 3,
+        "y": 8,
+        "altitude": 0
+      },
+      {
+        "x": 7,
+        "y": 8,
+        "altitude": 4
+      },
+      {
+        "x": 8,
+        "y": 8,
+        "altitude": 4
+      },
+      {
+        "x": 9,
+        "y": 8,
+        "altitude": 4
+      },
+      {
+        "x": 10,
+        "y": 8,
+        "altitude": 4
+      },
+      {
+        "x": 11,
+        "y": 8,
+        "altitude": 4
+      },
+      {
+        "x": 12,
+        "y": 8,
+        "altitude": 4
+      },
+      {
+        "x": 13,
+        "y": 8,
+        "altitude": 4
+      },
+      {
+        "x": 14,
+        "y": 8,
+        "altitude": 4
+      },
+      {
+        "x": 0,
+        "y": 9,
+        "altitude": 0
+      },
+      {
+        "x": 1,
+        "y": 9,
+        "altitude": 0
+      },
+      {
+        "x": 2,
+        "y": 9,
+        "altitude": 0
+      },
+      {
+        "x": 3,
+        "y": 9,
+        "altitude": 0
+      },
+      {
+        "x": 12,
+        "y": 9,
+        "altitude": 4
+      },
+      {
+        "x": 13,
+        "y": 9,
+        "altitude": 4
+      },
+      {
+        "x": 14,
+        "y": 9,
+        "altitude": 4
+      },
+      {
+        "x": 0,
+        "y": 10,
+        "altitude": 0
+      },
+      {
+        "x": 1,
+        "y": 10,
+        "altitude": 0
+      },
+      {
+        "x": 2,
+        "y": 10,
+        "altitude": 0
+      },
+      {
+        "x": 3,
+        "y": 10,
+        "altitude": 0
+      },
+      {
+        "x": 4,
+        "y": 10,
+        "altitude": 1
+      },
+      {
+        "x": 5,
+        "y": 10,
+        "altitude": 1
+      },
+      {
+        "x": 6,
+        "y": 10,
+        "altitude": 1
+      },
+      {
+        "x": 7,
+        "y": 10,
+        "altitude": 2
+      },
+      {
+        "x": 8,
+        "y": 10,
+        "altitude": 3
+      },
+      {
+        "x": 9,
+        "y": 10,
+        "altitude": 3
+      },
+      {
+        "x": 10,
+        "y": 10,
+        "altitude": 3
+      },
+      {
+        "x": 11,
+        "y": 10,
+        "altitude": 3
+      },
+      {
+        "x": 12,
+        "y": 10,
+        "altitude": 3
+      }
+    ]
+  },
+  "blocked": [
+    {
+      "x": 2,
+      "y": 1,
+      "altitude": 0,
+      "kind": "three_quarter_cover"
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 6,
+      "y": 1,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 7,
+      "y": 1,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 8,
+      "y": 1,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 9,
+      "y": 1,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 10,
+      "y": 1,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 11,
+      "y": 1,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "altitude": 0,
+      "kind": "three_quarter_cover"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 5,
+      "y": 2,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 6,
+      "y": 2,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 7,
+      "y": 2,
+      "altitude": 4,
+      "kind": "feature_1"
+    },
+    {
+      "x": 8,
+      "y": 2,
+      "altitude": 4,
+      "kind": "feature_1"
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "altitude": 0,
+      "kind": "three_quarter_cover"
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 6,
+      "y": 3,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 7,
+      "y": 3,
+      "altitude": 4,
+      "kind": "feature_1"
+    },
+    {
+      "x": 8,
+      "y": 3,
+      "altitude": 4,
+      "kind": "feature_1"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 5,
+      "y": 4,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 6,
+      "y": 4,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 6,
+      "y": 5,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 13,
+      "y": 5,
+      "altitude": 4,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 14,
+      "y": 5,
+      "altitude": 4,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 15,
+      "y": 5,
+      "altitude": 4,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 5,
+      "y": 6,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 6,
+      "y": 6,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 12,
+      "y": 6,
+      "altitude": 4,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 13,
+      "y": 6,
+      "altitude": 4,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 14,
+      "y": 6,
+      "altitude": 4,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 15,
+      "y": 6,
+      "altitude": 4,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 5,
+      "y": 7,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 6,
+      "y": 7,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 15,
+      "y": 7,
+      "altitude": 4,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 4,
+      "y": 8,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 5,
+      "y": 8,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 6,
+      "y": 8,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 15,
+      "y": 8,
+      "altitude": 4,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 4,
+      "y": 9,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 5,
+      "y": 9,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 6,
+      "y": 9,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 7,
+      "y": 9,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 8,
+      "y": 9,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 9,
+      "y": 9,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 10,
+      "y": 9,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 11,
+      "y": 9,
+      "altitude": 0,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 15,
+      "y": 9,
+      "altitude": 4,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 13,
+      "y": 10,
+      "altitude": 4,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 14,
+      "y": 10,
+      "altitude": 4,
+      "kind": "blocked_or_void"
+    },
+    {
+      "x": 15,
+      "y": 10,
+      "altitude": 4,
+      "kind": "blocked_or_void"
+    }
+  ],
+  "cover": [
+    {
+      "x": 2,
+      "y": 1,
+      "altitude": 0,
+      "kind": "three_quarter",
+      "blocksMovement": true
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "altitude": 0,
+      "kind": "three_quarter",
+      "blocksMovement": true
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "altitude": 0,
+      "kind": "three_quarter",
+      "blocksMovement": true
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "altitude": 0,
+      "kind": "half",
+      "blocksMovement": false
+    },
+    {
+      "x": 2,
+      "y": 8,
+      "altitude": 0,
+      "kind": "half",
+      "blocksMovement": false
+    }
+  ],
+  "slopes": [
+    {
+      "x": 3,
+      "y": 0,
+      "altitude": 0
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "altitude": 1
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "altitude": 1
+    },
+    {
+      "x": 6,
+      "y": 0,
+      "altitude": 1
+    },
+    {
+      "x": 7,
+      "y": 0,
+      "altitude": 2
+    },
+    {
+      "x": 8,
+      "y": 0,
+      "altitude": 2
+    },
+    {
+      "x": 9,
+      "y": 0,
+      "altitude": 2
+    },
+    {
+      "x": 10,
+      "y": 0,
+      "altitude": 3
+    },
+    {
+      "x": 11,
+      "y": 0,
+      "altitude": 3
+    },
+    {
+      "x": 12,
+      "y": 0,
+      "altitude": 4
+    },
+    {
+      "x": 12,
+      "y": 9,
+      "altitude": 4
+    },
+    {
+      "x": 3,
+      "y": 10,
+      "altitude": 0
+    },
+    {
+      "x": 4,
+      "y": 10,
+      "altitude": 1
+    },
+    {
+      "x": 5,
+      "y": 10,
+      "altitude": 1
+    },
+    {
+      "x": 6,
+      "y": 10,
+      "altitude": 1
+    },
+    {
+      "x": 7,
+      "y": 10,
+      "altitude": 2
+    },
+    {
+      "x": 8,
+      "y": 10,
+      "altitude": 3
+    },
+    {
+      "x": 9,
+      "y": 10,
+      "altitude": 3
+    },
+    {
+      "x": 10,
+      "y": 10,
+      "altitude": 3
+    },
+    {
+      "x": 11,
+      "y": 10,
+      "altitude": 3
+    },
+    {
+      "x": 12,
+      "y": 10,
+      "altitude": 3
+    }
+  ],
+  "stairs": [],
+  "hazards": [],
+  "features": [
+    {
+      "x": 7,
+      "y": 2,
+      "altitude": 4,
+      "feature": "1",
+      "label": "A large tree, burning",
+      "blocksMovement": true
+    },
+    {
+      "x": 8,
+      "y": 2,
+      "altitude": 4,
+      "feature": "1",
+      "label": "A large tree, burning",
+      "blocksMovement": true
+    },
+    {
+      "x": 7,
+      "y": 3,
+      "altitude": 4,
+      "feature": "1",
+      "label": "A large tree, burning",
+      "blocksMovement": true
+    },
+    {
+      "x": 8,
+      "y": 3,
+      "altitude": 4,
+      "feature": "1",
+      "label": "A large tree, burning",
+      "blocksMovement": true
+    }
+  ],
+  "lights": [],
+  "transitions": [],
+  "conversationTriggers": [],
+  "npcs": [],
+  "spawns": {
+    "defaultHeroSpawns": [
+      {
+        "x": 0,
+        "y": 5,
+        "altitude": 0,
+        "order": 1,
+        "role": "player_character"
+      },
+      {
+        "x": 0,
+        "y": 6,
+        "altitude": 0,
+        "order": 2,
+        "role": "chosen_npc_1"
+      },
+      {
+        "x": 0,
+        "y": 7,
+        "altitude": 0,
+        "order": 3,
+        "role": "chosen_npc_2"
+      }
+    ],
+    "defaultEnemySpawns": [
+      {
+        "x": 14,
+        "y": 2,
+        "altitude": 4
+      },
+      {
+        "x": 9,
+        "y": 3,
+        "altitude": 4
+      },
+      {
+        "x": 14,
+        "y": 4,
+        "altitude": 4
+      },
+      {
+        "x": 9,
+        "y": 6,
+        "altitude": 4
+      }
+    ]
+  },
+  "altitude": {
+    "unitFeet": 5,
+    "connectorRule": "Adjacent height changes are treated as slope/ramp unless layout terrain marks S stairs or a blocking/non-walkable cell.",
+    "cells": [
+      {
+        "x": 0,
+        "y": 0,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 0,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 0,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 0,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 0,
+        "height": 1
+      },
+      {
+        "x": 5,
+        "y": 0,
+        "height": 1
+      },
+      {
+        "x": 6,
+        "y": 0,
+        "height": 1
+      },
+      {
+        "x": 7,
+        "y": 0,
+        "height": 2
+      },
+      {
+        "x": 8,
+        "y": 0,
+        "height": 2
+      },
+      {
+        "x": 9,
+        "y": 0,
+        "height": 2
+      },
+      {
+        "x": 10,
+        "y": 0,
+        "height": 3
+      },
+      {
+        "x": 11,
+        "y": 0,
+        "height": 3
+      },
+      {
+        "x": 12,
+        "y": 0,
+        "height": 4
+      },
+      {
+        "x": 13,
+        "y": 0,
+        "height": 4
+      },
+      {
+        "x": 14,
+        "y": 0,
+        "height": 4
+      },
+      {
+        "x": 15,
+        "y": 0,
+        "height": 4
+      },
+      {
+        "x": 0,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 5,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 6,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 7,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 8,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 9,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 10,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 11,
+        "y": 1,
+        "height": 0
+      },
+      {
+        "x": 12,
+        "y": 1,
+        "height": 4
+      },
+      {
+        "x": 13,
+        "y": 1,
+        "height": 4
+      },
+      {
+        "x": 14,
+        "y": 1,
+        "height": 4
+      },
+      {
+        "x": 15,
+        "y": 1,
+        "height": 4
+      },
+      {
+        "x": 0,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 5,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 6,
+        "y": 2,
+        "height": 0
+      },
+      {
+        "x": 7,
+        "y": 2,
+        "height": 4
+      },
+      {
+        "x": 8,
+        "y": 2,
+        "height": 4
+      },
+      {
+        "x": 9,
+        "y": 2,
+        "height": 4
+      },
+      {
+        "x": 10,
+        "y": 2,
+        "height": 4
+      },
+      {
+        "x": 11,
+        "y": 2,
+        "height": 4
+      },
+      {
+        "x": 12,
+        "y": 2,
+        "height": 4
+      },
+      {
+        "x": 13,
+        "y": 2,
+        "height": 4
+      },
+      {
+        "x": 14,
+        "y": 2,
+        "height": 4
+      },
+      {
+        "x": 15,
+        "y": 2,
+        "height": 4
+      },
+      {
+        "x": 0,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 5,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 6,
+        "y": 3,
+        "height": 0
+      },
+      {
+        "x": 7,
+        "y": 3,
+        "height": 4
+      },
+      {
+        "x": 8,
+        "y": 3,
+        "height": 4
+      },
+      {
+        "x": 9,
+        "y": 3,
+        "height": 4
+      },
+      {
+        "x": 10,
+        "y": 3,
+        "height": 4
+      },
+      {
+        "x": 11,
+        "y": 3,
+        "height": 4
+      },
+      {
+        "x": 12,
+        "y": 3,
+        "height": 4
+      },
+      {
+        "x": 13,
+        "y": 3,
+        "height": 4
+      },
+      {
+        "x": 14,
+        "y": 3,
+        "height": 4
+      },
+      {
+        "x": 15,
+        "y": 3,
+        "height": 4
+      },
+      {
+        "x": 0,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 5,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 6,
+        "y": 4,
+        "height": 0
+      },
+      {
+        "x": 7,
+        "y": 4,
+        "height": 4
+      },
+      {
+        "x": 8,
+        "y": 4,
+        "height": 4
+      },
+      {
+        "x": 9,
+        "y": 4,
+        "height": 4
+      },
+      {
+        "x": 10,
+        "y": 4,
+        "height": 4
+      },
+      {
+        "x": 11,
+        "y": 4,
+        "height": 4
+      },
+      {
+        "x": 12,
+        "y": 4,
+        "height": 4
+      },
+      {
+        "x": 13,
+        "y": 4,
+        "height": 4
+      },
+      {
+        "x": 14,
+        "y": 4,
+        "height": 4
+      },
+      {
+        "x": 15,
+        "y": 4,
+        "height": 4
+      },
+      {
+        "x": 0,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 5,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 6,
+        "y": 5,
+        "height": 0
+      },
+      {
+        "x": 7,
+        "y": 5,
+        "height": 4
+      },
+      {
+        "x": 8,
+        "y": 5,
+        "height": 4
+      },
+      {
+        "x": 9,
+        "y": 5,
+        "height": 4
+      },
+      {
+        "x": 10,
+        "y": 5,
+        "height": 4
+      },
+      {
+        "x": 11,
+        "y": 5,
+        "height": 4
+      },
+      {
+        "x": 12,
+        "y": 5,
+        "height": 4
+      },
+      {
+        "x": 13,
+        "y": 5,
+        "height": 4
+      },
+      {
+        "x": 14,
+        "y": 5,
+        "height": 4
+      },
+      {
+        "x": 15,
+        "y": 5,
+        "height": 4
+      },
+      {
+        "x": 0,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 5,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 6,
+        "y": 6,
+        "height": 0
+      },
+      {
+        "x": 7,
+        "y": 6,
+        "height": 4
+      },
+      {
+        "x": 8,
+        "y": 6,
+        "height": 4
+      },
+      {
+        "x": 9,
+        "y": 6,
+        "height": 4
+      },
+      {
+        "x": 10,
+        "y": 6,
+        "height": 4
+      },
+      {
+        "x": 11,
+        "y": 6,
+        "height": 4
+      },
+      {
+        "x": 12,
+        "y": 6,
+        "height": 4
+      },
+      {
+        "x": 13,
+        "y": 6,
+        "height": 4
+      },
+      {
+        "x": 14,
+        "y": 6,
+        "height": 4
+      },
+      {
+        "x": 15,
+        "y": 6,
+        "height": 4
+      },
+      {
+        "x": 0,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 5,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 6,
+        "y": 7,
+        "height": 0
+      },
+      {
+        "x": 7,
+        "y": 7,
+        "height": 4
+      },
+      {
+        "x": 8,
+        "y": 7,
+        "height": 4
+      },
+      {
+        "x": 9,
+        "y": 7,
+        "height": 4
+      },
+      {
+        "x": 10,
+        "y": 7,
+        "height": 4
+      },
+      {
+        "x": 11,
+        "y": 7,
+        "height": 4
+      },
+      {
+        "x": 12,
+        "y": 7,
+        "height": 4
+      },
+      {
+        "x": 13,
+        "y": 7,
+        "height": 4
+      },
+      {
+        "x": 14,
+        "y": 7,
+        "height": 4
+      },
+      {
+        "x": 15,
+        "y": 7,
+        "height": 4
+      },
+      {
+        "x": 0,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 5,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 6,
+        "y": 8,
+        "height": 0
+      },
+      {
+        "x": 7,
+        "y": 8,
+        "height": 4
+      },
+      {
+        "x": 8,
+        "y": 8,
+        "height": 4
+      },
+      {
+        "x": 9,
+        "y": 8,
+        "height": 4
+      },
+      {
+        "x": 10,
+        "y": 8,
+        "height": 4
+      },
+      {
+        "x": 11,
+        "y": 8,
+        "height": 4
+      },
+      {
+        "x": 12,
+        "y": 8,
+        "height": 4
+      },
+      {
+        "x": 13,
+        "y": 8,
+        "height": 4
+      },
+      {
+        "x": 14,
+        "y": 8,
+        "height": 4
+      },
+      {
+        "x": 15,
+        "y": 8,
+        "height": 4
+      },
+      {
+        "x": 0,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 5,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 6,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 7,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 8,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 9,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 10,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 11,
+        "y": 9,
+        "height": 0
+      },
+      {
+        "x": 12,
+        "y": 9,
+        "height": 4
+      },
+      {
+        "x": 13,
+        "y": 9,
+        "height": 4
+      },
+      {
+        "x": 14,
+        "y": 9,
+        "height": 4
+      },
+      {
+        "x": 15,
+        "y": 9,
+        "height": 4
+      },
+      {
+        "x": 0,
+        "y": 10,
+        "height": 0
+      },
+      {
+        "x": 1,
+        "y": 10,
+        "height": 0
+      },
+      {
+        "x": 2,
+        "y": 10,
+        "height": 0
+      },
+      {
+        "x": 3,
+        "y": 10,
+        "height": 0
+      },
+      {
+        "x": 4,
+        "y": 10,
+        "height": 1
+      },
+      {
+        "x": 5,
+        "y": 10,
+        "height": 1
+      },
+      {
+        "x": 6,
+        "y": 10,
+        "height": 1
+      },
+      {
+        "x": 7,
+        "y": 10,
+        "height": 2
+      },
+      {
+        "x": 8,
+        "y": 10,
+        "height": 3
+      },
+      {
+        "x": 9,
+        "y": 10,
+        "height": 3
+      },
+      {
+        "x": 10,
+        "y": 10,
+        "height": 3
+      },
+      {
+        "x": 11,
+        "y": 10,
+        "height": 3
+      },
+      {
+        "x": 12,
+        "y": 10,
+        "height": 3
+      },
+      {
+        "x": 13,
+        "y": 10,
+        "height": 4
+      },
+      {
+        "x": 14,
+        "y": 10,
+        "height": 4
+      },
+      {
+        "x": 15,
+        "y": 10,
+        "height": 4
+      }
+    ]
+  },
+  "featureDefinitions": {
+    "1": "A large tree, burning",
+    "2": "",
+    "3": "",
+    "4": "",
+    "5": "",
+    "6": "",
+    "7": "",
+    "8": "",
+    "9": ""
+  },
+  "lighting": [],
+  "artDirection": {
+    "imageNote": "Cover is broken columns, strewn across the ground level. Thin and uneven stony paths run up the sides of the area to the top. Above, on top of a large rocky outcrop a large dry tree has been set alight to cast light in the area.",
+    "styleStatus": "draft; exact grid fidelity outranks style until the visual style is separately locked."
+  },
+  "validationRules": [
+    "Base terrain art must establish altitude, terrain masses, blocked voids, and slopes without drawing placed items.",
+    "Placed items are separate assets composed from exact grid footprints.",
+    "No placed item may move for composition.",
+    "No unlisted cover-like, blocker-like, ramp-like, stair-like, hazard-like, light-source-like, or interactable object may be added to the base terrain.",
+    "Walkable cells must look standable.",
+    "Blocked cells must look non-standable.",
+    "The final composite must be rejected if visual affordances disagree with metadata."
+  ],
+  "placedItems": [
+    {
+      "id": "cover_three_quarter_x02_y01",
+      "kind": "cover",
+      "assetRole": "three_quarter_cover",
+      "label": "three-quarter cover object",
+      "source": "terrain three_quarter cover",
+      "cells": [
+        {
+          "x": 2,
+          "y": 1,
+          "altitude": 0
+        }
+      ],
+      "footprint": {
+        "minX": 2,
+        "minY": 1,
+        "maxX": 2,
+        "maxY": 1,
+        "widthCells": 1,
+        "heightCells": 1
+      },
+      "pixelBounds": {
+        "minX": 800,
+        "minY": 204,
+        "maxX": 928,
+        "maxY": 268
+      },
+      "anchorPixel": {
+        "x": 864,
+        "y": 268
+      },
+      "assetRegistration": {
+        "required": true,
+        "localAnchorPixel": "required in asset source coordinates; this is the asset pixel that must land on anchorPixel",
+        "localFootprintBounds": "required in asset source coordinates; this is the contact/base footprint to scale against pixelBounds",
+        "rule": "Do not infer placement from the cropped bitmap bounds. The source asset must declare its own registration."
+      },
+      "zIndex": 3,
+      "blocksMovement": true,
+      "emitsLight": false,
+      "assetPrompt": "placed_asset_prompts/cover_three_quarter_x02_y01.prompt.txt",
+      "assetPath": "placed_assets/cover_three_quarter_x02_y01.png",
+      "validation": [
+        "Asset base must fit the listed cells exactly.",
+        "Asset may visually rise upward, but its gameplay footprint may not expand.",
+        "No extra props or ground affordances outside the footprint."
+      ]
+    },
+    {
+      "id": "cover_three_quarter_x02_y02",
+      "kind": "cover",
+      "assetRole": "three_quarter_cover",
+      "label": "three-quarter cover object",
+      "source": "terrain three_quarter cover",
+      "cells": [
+        {
+          "x": 2,
+          "y": 2,
+          "altitude": 0
+        }
+      ],
+      "footprint": {
+        "minX": 2,
+        "minY": 2,
+        "maxX": 2,
+        "maxY": 2,
+        "widthCells": 1,
+        "heightCells": 1
+      },
+      "pixelBounds": {
+        "minX": 736,
+        "minY": 236,
+        "maxX": 864,
+        "maxY": 300
+      },
+      "anchorPixel": {
+        "x": 800,
+        "y": 300
+      },
+      "assetRegistration": {
+        "required": true,
+        "localAnchorPixel": "required in asset source coordinates; this is the asset pixel that must land on anchorPixel",
+        "localFootprintBounds": "required in asset source coordinates; this is the contact/base footprint to scale against pixelBounds",
+        "rule": "Do not infer placement from the cropped bitmap bounds. The source asset must declare its own registration."
+      },
+      "zIndex": 4,
+      "blocksMovement": true,
+      "emitsLight": false,
+      "assetPrompt": "placed_asset_prompts/cover_three_quarter_x02_y02.prompt.txt",
+      "assetPath": "placed_assets/cover_three_quarter_x02_y02.png",
+      "validation": [
+        "Asset base must fit the listed cells exactly.",
+        "Asset may visually rise upward, but its gameplay footprint may not expand.",
+        "No extra props or ground affordances outside the footprint."
+      ]
+    },
+    {
+      "id": "cover_three_quarter_x02_y03",
+      "kind": "cover",
+      "assetRole": "three_quarter_cover",
+      "label": "three-quarter cover object",
+      "source": "terrain three_quarter cover",
+      "cells": [
+        {
+          "x": 2,
+          "y": 3,
+          "altitude": 0
+        }
+      ],
+      "footprint": {
+        "minX": 2,
+        "minY": 3,
+        "maxX": 2,
+        "maxY": 3,
+        "widthCells": 1,
+        "heightCells": 1
+      },
+      "pixelBounds": {
+        "minX": 672,
+        "minY": 268,
+        "maxX": 800,
+        "maxY": 332
+      },
+      "anchorPixel": {
+        "x": 736,
+        "y": 332
+      },
+      "assetRegistration": {
+        "required": true,
+        "localAnchorPixel": "required in asset source coordinates; this is the asset pixel that must land on anchorPixel",
+        "localFootprintBounds": "required in asset source coordinates; this is the contact/base footprint to scale against pixelBounds",
+        "rule": "Do not infer placement from the cropped bitmap bounds. The source asset must declare its own registration."
+      },
+      "zIndex": 5,
+      "blocksMovement": true,
+      "emitsLight": false,
+      "assetPrompt": "placed_asset_prompts/cover_three_quarter_x02_y03.prompt.txt",
+      "assetPath": "placed_assets/cover_three_quarter_x02_y03.png",
+      "validation": [
+        "Asset base must fit the listed cells exactly.",
+        "Asset may visually rise upward, but its gameplay footprint may not expand.",
+        "No extra props or ground affordances outside the footprint."
+      ]
+    },
+    {
+      "id": "cover_half_x03_y05",
+      "kind": "cover",
+      "assetRole": "half_cover",
+      "label": "half-cover object",
+      "source": "terrain half cover",
+      "cells": [
+        {
+          "x": 3,
+          "y": 5,
+          "altitude": 0
+        }
+      ],
+      "footprint": {
+        "minX": 3,
+        "minY": 5,
+        "maxX": 3,
+        "maxY": 5,
+        "widthCells": 1,
+        "heightCells": 1
+      },
+      "pixelBounds": {
+        "minX": 608,
+        "minY": 364,
+        "maxX": 736,
+        "maxY": 428
+      },
+      "anchorPixel": {
+        "x": 672,
+        "y": 428
+      },
+      "assetRegistration": {
+        "required": true,
+        "localAnchorPixel": "required in asset source coordinates; this is the asset pixel that must land on anchorPixel",
+        "localFootprintBounds": "required in asset source coordinates; this is the contact/base footprint to scale against pixelBounds",
+        "rule": "Do not infer placement from the cropped bitmap bounds. The source asset must declare its own registration."
+      },
+      "zIndex": 8,
+      "blocksMovement": false,
+      "emitsLight": false,
+      "assetPrompt": "placed_asset_prompts/cover_half_x03_y05.prompt.txt",
+      "assetPath": "placed_assets/cover_half_x03_y05.png",
+      "validation": [
+        "Asset base must fit the listed cells exactly.",
+        "Asset may visually rise upward, but its gameplay footprint may not expand.",
+        "No extra props or ground affordances outside the footprint."
+      ]
+    },
+    {
+      "id": "cover_half_x02_y08",
+      "kind": "cover",
+      "assetRole": "half_cover",
+      "label": "half-cover object",
+      "source": "terrain half cover",
+      "cells": [
+        {
+          "x": 2,
+          "y": 8,
+          "altitude": 0
+        }
+      ],
+      "footprint": {
+        "minX": 2,
+        "minY": 8,
+        "maxX": 2,
+        "maxY": 8,
+        "widthCells": 1,
+        "heightCells": 1
+      },
+      "pixelBounds": {
+        "minX": 352,
+        "minY": 428,
+        "maxX": 480,
+        "maxY": 492
+      },
+      "anchorPixel": {
+        "x": 416,
+        "y": 492
+      },
+      "assetRegistration": {
+        "required": true,
+        "localAnchorPixel": "required in asset source coordinates; this is the asset pixel that must land on anchorPixel",
+        "localFootprintBounds": "required in asset source coordinates; this is the contact/base footprint to scale against pixelBounds",
+        "rule": "Do not infer placement from the cropped bitmap bounds. The source asset must declare its own registration."
+      },
+      "zIndex": 10,
+      "blocksMovement": false,
+      "emitsLight": false,
+      "assetPrompt": "placed_asset_prompts/cover_half_x02_y08.prompt.txt",
+      "assetPath": "placed_assets/cover_half_x02_y08.png",
+      "validation": [
+        "Asset base must fit the listed cells exactly.",
+        "Asset may visually rise upward, but its gameplay footprint may not expand.",
+        "No extra props or ground affordances outside the footprint."
+      ]
+    },
+    {
+      "id": "feature_1",
+      "kind": "custom_feature",
+      "assetRole": "blocking_feature",
+      "label": "A large tree, burning",
+      "source": "numbered feature 1",
+      "cells": [
+        {
+          "x": 7,
+          "y": 2,
+          "altitude": 4
+        },
+        {
+          "x": 8,
+          "y": 2,
+          "altitude": 4
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "altitude": 4
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "altitude": 4
+        }
+      ],
+      "footprint": {
+        "minX": 7,
+        "minY": 2,
+        "maxX": 8,
+        "maxY": 3,
+        "widthCells": 2,
+        "heightCells": 2
+      },
+      "pixelBounds": {
+        "minX": 992,
+        "minY": 396,
+        "maxX": 1248,
+        "maxY": 524
+      },
+      "anchorPixel": {
+        "x": 1120,
+        "y": 524
+      },
+      "assetRegistration": {
+        "required": true,
+        "localAnchorPixel": "required in asset source coordinates; this is the asset pixel that must land on anchorPixel",
+        "localFootprintBounds": "required in asset source coordinates; this is the contact/base footprint to scale against pixelBounds",
+        "rule": "Do not infer placement from the cropped bitmap bounds. The source asset must declare its own registration."
+      },
+      "zIndex": 11,
+      "blocksMovement": true,
+      "emitsLight": true,
+      "assetPrompt": "placed_asset_prompts/feature_1.prompt.txt",
+      "assetPath": "placed_assets/feature_1.png",
+      "validation": [
+        "Asset base must fit the listed cells exactly.",
+        "Asset may visually rise upward, but its gameplay footprint may not expand.",
+        "No extra props or ground affordances outside the footprint."
+      ]
+    }
+  ]
+}

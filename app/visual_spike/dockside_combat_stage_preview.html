@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dockside Combat Stage Preview</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #111;
+      color: #f5f1e8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #171615;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 16px;
+      align-items: start;
+      width: min(100vw, 1640px);
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .stage-shell {
+      min-width: 0;
+      background: #090909;
+      border: 1px solid rgba(255, 255, 255, .12);
+      box-shadow: 0 18px 60px rgba(0, 0, 0, .45);
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      background: #050505;
+    }
+
+    aside {
+      display: grid;
+      gap: 12px;
+      position: sticky;
+      top: 16px;
+      padding: 14px;
+      background: #24211d;
+      border: 1px solid rgba(255, 255, 255, .13);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 760;
+    }
+
+    p {
+      margin: 0;
+      color: #d8d0c4;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    dl {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 6px 10px;
+      margin: 0;
+      font-size: 13px;
+    }
+
+    dt {
+      color: #b9ab98;
+    }
+
+    dd {
+      margin: 0;
+      color: #fff8ea;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #f2eadc;
+      font-size: 13px;
+      line-height: 1.2;
+    }
+
+    input {
+      width: 16px;
+      height: 16px;
+      accent-color: #8ee6a2;
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: 16px 1fr;
+      gap: 7px 9px;
+      align-items: center;
+      font-size: 13px;
+      color: #e6ddcf;
+    }
+
+    .swatch {
+      width: 16px;
+      height: 10px;
+      border: 1px solid rgba(255, 255, 255, .45);
+    }
+
+    .grid-line {
+      stroke: #7cff9b;
+      stroke-width: 1.5;
+      opacity: .72;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .cell-outline {
+      fill: transparent;
+      stroke: rgba(124, 255, 155, .46);
+      stroke-width: 1.2;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .blocked {
+      fill: rgba(255, 65, 54, .38);
+      stroke: rgba(255, 65, 54, .94);
+      stroke-width: 2;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .cover {
+      fill: rgba(255, 209, 102, .32);
+      stroke: rgba(255, 209, 102, .96);
+      stroke-width: 2;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .stairs {
+      fill: rgba(90, 200, 250, .33);
+      stroke: rgba(90, 200, 250, .96);
+      stroke-width: 2;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .spawn-hero {
+      fill: rgba(76, 217, 100, .28);
+      stroke: rgba(76, 217, 100, .9);
+      stroke-width: 2.2;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .spawn-enemy {
+      fill: rgba(255, 149, 0, .28);
+      stroke: rgba(255, 149, 0, .9);
+      stroke-width: 2.2;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .actor-base {
+      fill: rgba(255, 225, 120, .42);
+      stroke: rgba(255, 249, 219, .88);
+      stroke-width: 2.5;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .actor-anchor {
+      fill: #fff9db;
+      stroke: rgba(0, 0, 0, .8);
+      stroke-width: 3;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .actor-shadow {
+      fill: rgba(0, 0, 0, .36);
+    }
+
+    .cell-label {
+      font: 700 18px ui-sans-serif, system-ui, sans-serif;
+      fill: #fffdf7;
+      text-anchor: middle;
+      paint-order: stroke;
+      stroke: rgba(0, 0, 0, .85);
+      stroke-width: 4px;
+      pointer-events: none;
+    }
+
+    .actor-label {
+      font: 760 16px ui-sans-serif, system-ui, sans-serif;
+      fill: #fffdf7;
+      text-anchor: middle;
+      paint-order: stroke;
+      stroke: rgba(0, 0, 0, .9);
+      stroke-width: 4px;
+      pointer-events: none;
+    }
+
+    [data-hidden="true"] {
+      display: none;
+    }
+
+    @media (max-width: 980px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      aside {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="stage-shell" aria-label="Dockside combat stage preview">
+      <svg id="stage" viewBox="0 0 1920 1080" role="img" aria-label="1920 by 1080 dockside stage with fixed isometric grid and actor placement preview">
+        <image href="./assets/dockside_gridfirst_stage_v1_grid_preview.png" width="1920" height="1080" preserveAspectRatio="xMidYMid meet" />
+        <g id="spawn-layer"></g>
+        <g id="metadata-layer"></g>
+        <g id="grid-layer"></g>
+        <g id="actor-layer"></g>
+      </svg>
+    </section>
+    <aside>
+      <h1>Dockside Stage Geometry Check</h1>
+      <dl>
+        <dt>Stage</dt>
+        <dd>1920 x 1080</dd>
+        <dt>Grid</dt>
+        <dd>128 x 64 diamonds</dd>
+        <dt>Origin</dt>
+        <dd>900, 250</dd>
+        <dt>Cells</dt>
+        <dd>11 x 8</dd>
+        <dt>Actor</dt>
+        <dd>160 x 267px</dd>
+      </dl>
+      <label><input id="toggle-grid" type="checkbox" checked />Absolute grid</label>
+      <label><input id="toggle-metadata" type="checkbox" checked />Blockers, cover, stairs</label>
+      <label><input id="toggle-spawns" type="checkbox" checked />Default spawn cells</label>
+      <label><input id="toggle-actors" type="checkbox" checked />Medium actor mockups</label>
+      <div class="legend">
+        <span class="swatch" style="background: rgba(76,217,100,.42)"></span><span>hero spawn</span>
+        <span class="swatch" style="background: rgba(255,149,0,.42)"></span><span>enemy spawn</span>
+        <span class="swatch" style="background: rgba(255,65,54,.50)"></span><span>blocked</span>
+        <span class="swatch" style="background: rgba(255,209,102,.42)"></span><span>half cover</span>
+        <span class="swatch" style="background: rgba(90,200,250,.42)"></span><span>stairs</span>
+      </div>
+      <p>Actor image bottom-center is aligned to the tile center plus a small base offset. The bright ellipse shows the intended footprint read, independent of the mockup cutout quality.</p>
+      <p>The visible stage plate already includes a grid preview. The green SVG grid here is the deterministic absolute grid drawn again from metadata.</p>
+    </aside>
+  </main>
+
+  <script>
+    const stage = {
+      grid: {
+        origin: { x: 900, y: 250 },
+        tileWidth: 128,
+        tileHeight: 64,
+        width: 11,
+        height: 8
+      },
+      blocked: [
+        { x: 5, y: 0, kind: "shrine_base" },
+        { x: 6, y: 0, kind: "shrine_base" },
+        { x: 0, y: 1, kind: "rail_or_post" },
+        { x: 10, y: 1, kind: "upper_wall" },
+        { x: 9, y: 2, kind: "candle_blocker" },
+        { x: 0, y: 5, kind: "dock_post" },
+        { x: 10, y: 6, kind: "broken_edge" }
+      ],
+      cover: [
+        { x: 2, y: 2, kind: "half" },
+        { x: 7, y: 3, kind: "half" },
+        { x: 3, y: 5, kind: "half" },
+        { x: 8, y: 5, kind: "half" }
+      ],
+      stairs: [
+        { x: 7, y: 2 },
+        { x: 8, y: 2 }
+      ],
+      spawns: {
+        defaultHeroSpawns: [
+          { x: 1, y: 6 },
+          { x: 2, y: 6 },
+          { x: 1, y: 7 },
+          { x: 2, y: 7 }
+        ],
+        defaultEnemySpawns: [
+          { x: 8, y: 1 },
+          { x: 9, y: 1 },
+          { x: 8, y: 3 },
+          { x: 9, y: 3 }
+        ]
+      }
+    };
+
+    const actorImage = "./assets/protagonist_staff_guard_miniature_base_gold_runtime_192x320.png";
+    const actorSize = { width: 160, height: 267 };
+    const actorBaseOffset = 22;
+    const placedActors = [
+      { id: "H1", cell: { x: 1, y: 6 }, flip: false },
+      { id: "H2", cell: { x: 2, y: 6 }, flip: false },
+      { id: "E1", cell: { x: 8, y: 3 }, flip: true },
+      { id: "E2", cell: { x: 9, y: 3 }, flip: true }
+    ];
+
+    const ns = "http://www.w3.org/2000/svg";
+
+    function make(tag, attrs = {}) {
+      const el = document.createElementNS(ns, tag);
+      Object.entries(attrs).forEach(([key, value]) => el.setAttribute(key, value));
+      return el;
+    }
+
+    function topVertex(cell) {
+      const halfW = stage.grid.tileWidth / 2;
+      const halfH = stage.grid.tileHeight / 2;
+      return {
+        x: stage.grid.origin.x + (cell.x - cell.y) * halfW,
+        y: stage.grid.origin.y + (cell.x + cell.y) * halfH
+      };
+    }
+
+    function center(cell) {
+      const top = topVertex(cell);
+      return { x: top.x, y: top.y + stage.grid.tileHeight / 2 };
+    }
+
+    function diamond(cell) {
+      const top = topVertex(cell);
+      const halfW = stage.grid.tileWidth / 2;
+      const halfH = stage.grid.tileHeight / 2;
+      return [
+        [top.x, top.y],
+        [top.x + halfW, top.y + halfH],
+        [top.x, top.y + stage.grid.tileHeight],
+        [top.x - halfW, top.y + halfH]
+      ].map((point) => point.join(",")).join(" ");
+    }
+
+    function drawCell(layer, cell, className, label) {
+      layer.appendChild(make("polygon", {
+        points: diamond(cell),
+        class: className
+      }));
+
+      if (label) {
+        const c = center(cell);
+        const text = make("text", {
+          x: c.x,
+          y: c.y + 6,
+          class: "cell-label"
+        });
+        text.textContent = label;
+        layer.appendChild(text);
+      }
+    }
+
+    function drawGrid() {
+      const layer = document.getElementById("grid-layer");
+      const { width, height } = stage.grid;
+
+      for (let x = 0; x <= width; x += 1) {
+        const start = topVertex({ x, y: 0 });
+        const end = topVertex({ x, y: height });
+        layer.appendChild(make("line", {
+          x1: start.x,
+          y1: start.y,
+          x2: end.x,
+          y2: end.y,
+          class: "grid-line"
+        }));
+      }
+
+      for (let y = 0; y <= height; y += 1) {
+        const start = topVertex({ x: 0, y });
+        const end = topVertex({ x: width, y });
+        layer.appendChild(make("line", {
+          x1: start.x,
+          y1: start.y,
+          x2: end.x,
+          y2: end.y,
+          class: "grid-line"
+        }));
+      }
+
+      for (let x = 0; x < width; x += 1) {
+        for (let y = 0; y < height; y += 1) {
+          drawCell(layer, { x, y }, "cell-outline");
+        }
+      }
+    }
+
+    function drawMetadata() {
+      const layer = document.getElementById("metadata-layer");
+      stage.blocked.forEach((cell) => drawCell(layer, cell, "blocked", "B"));
+      stage.cover.forEach((cell) => drawCell(layer, cell, "cover", "C"));
+      stage.stairs.forEach((cell) => drawCell(layer, cell, "stairs", "S"));
+    }
+
+    function drawSpawns() {
+      const layer = document.getElementById("spawn-layer");
+      stage.spawns.defaultHeroSpawns.forEach((cell) => drawCell(layer, cell, "spawn-hero"));
+      stage.spawns.defaultEnemySpawns.forEach((cell) => drawCell(layer, cell, "spawn-enemy"));
+    }
+
+    function drawActors() {
+      const layer = document.getElementById("actor-layer");
+      const orderedActors = [...placedActors].sort((a, b) => center(a.cell).y - center(b.cell).y);
+
+      orderedActors.forEach((actor) => {
+        const c = center(actor.cell);
+        const anchorY = c.y + actorBaseOffset;
+        const group = make("g");
+
+        group.appendChild(make("ellipse", {
+          cx: c.x,
+          cy: anchorY - 3,
+          rx: 58,
+          ry: 20,
+          class: "actor-shadow"
+        }));
+        group.appendChild(make("ellipse", {
+          cx: c.x,
+          cy: anchorY,
+          rx: 48,
+          ry: 18,
+          class: "actor-base"
+        }));
+        group.appendChild(make("circle", {
+          cx: c.x,
+          cy: c.y,
+          r: 5,
+          class: "actor-anchor"
+        }));
+
+        const image = make("image", {
+          href: actorImage,
+          x: c.x - actorSize.width / 2,
+          y: anchorY - actorSize.height,
+          width: actorSize.width,
+          height: actorSize.height,
+          opacity: actor.id.startsWith("E") ? .86 : .95
+        });
+
+        if (actor.flip) {
+          image.setAttribute("transform", `translate(${c.x * 2} 0) scale(-1 1)`);
+        }
+
+        group.appendChild(image);
+
+        const text = make("text", {
+          x: c.x,
+          y: anchorY + 38,
+          class: "actor-label"
+        });
+        text.textContent = `${actor.id} ${actor.cell.x},${actor.cell.y}`;
+        group.appendChild(text);
+
+        layer.appendChild(group);
+      });
+    }
+
+    function bindToggle(inputId, layerId) {
+      const input = document.getElementById(inputId);
+      const layer = document.getElementById(layerId);
+      input.addEventListener("change", () => {
+        layer.dataset.hidden = String(!input.checked);
+      });
+    }
+
+    drawSpawns();
+    drawMetadata();
+    drawGrid();
+    drawActors();
+
+    bindToggle("toggle-grid", "grid-layer");
+    bindToggle("toggle-metadata", "metadata-layer");
+    bindToggle("toggle-spawns", "spawn-layer");
+    bindToggle("toggle-actors", "actor-layer");
+  </script>
+</body>
+</html>

@@ -17,7 +17,7 @@ export function runGeneratedVariantTests() {
 function validatesEveryStarterCharacterVariant() {
   assert.deepEqual(
     STARTER_CHARACTER_VARIANTS.map((variant) => variant.id),
-    ["fighter", "wizard", "cleric", "rogue"],
+    ["fighter", "wizard", "warlock", "cleric", "rogue"],
     "starter variants should cover the initial generated party archetypes"
   );
 

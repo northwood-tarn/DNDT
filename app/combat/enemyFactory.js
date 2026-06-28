@@ -1,10 +1,6 @@
 import { enemies, getEnemyStats } from "../data/enemies.js";
 import { expandEncounterEnemyRefs, getEncounterById } from "../data/encounters.js";
-import { weapons } from "../data/weapons.js";
-import { createNaturalWeaponAction, createWeaponAction, indexRecordsById } from "./actionFactory.js";
-import { createFeatureActionsFromFeatures } from "./featureActionFactory.js";
-
-const WEAPONS = indexRecordsById(weapons);
+import { compileEnemyActions } from "./enemyActionCompiler.js";
 
 export function createEnemyCombatActor(enemyRef, options = {}) {
   const source = resolveEnemySource(enemyRef);
@@ -16,7 +12,6 @@ export function createEnemyCombatActor(enemyRef, options = {}) {
     enableWeaponMastery: options.enableWeaponMastery ?? source.enableWeaponMastery,
     masteredWeaponIds: options.masteredWeaponIds || source.masteredWeaponIds,
   };
-  const action = createEnemyAttackAction(actionSource, options);
   const resources = structuredClone(options.resources || source.resources || []);
   const features = structuredClone(options.features || source.features || []);
 
@@ -61,14 +56,7 @@ export function createEnemyCombatActor(enemyRef, options = {}) {
     equipment: createEnemyEquipment(source, options),
     xpValue: source.xpValue,
     loot: structuredClone(source.loot || {}),
-    actions: [
-      action,
-      ...createFeatureActionsFromFeatures(features, {
-        resources,
-        resolveFormula: (formula) => resolveEnemyFormula(formula, source, options),
-        resolveSaveDc: (option) => option.save?.dc || option.spellSaveDC || source.saveDC || null,
-      }),
-    ].filter(Boolean),
+    actions: compileEnemyActions(actionSource, { ...options, resources, features }).filter(Boolean),
   };
 }
 
@@ -110,39 +98,6 @@ function resolveEnemySource(enemyRef) {
   return enemyRef || null;
 }
 
-function createEnemyAttackAction(source, options) {
-  if (source.weaponId) {
-    const weapon = WEAPONS[source.weaponId];
-    if (!weapon) return null;
-    return createWeaponAction(weapon, {
-      id: options.actionId || source.weaponId,
-      name: options.actionName || weapon.name,
-      attackBonus: options.attackBonus ?? source.attackBonus,
-      damage: options.damage || source.damage,
-      damageType: options.damageType || source.damageType,
-      enableWeaponMastery: isEnemyWeaponMastered(source, weapon.id),
-    });
-  }
-
-  if (source.naturalAttack) {
-    return createNaturalWeaponAction(source.naturalAttack, {
-      id: options.actionId,
-      name: options.actionName,
-      range: options.range,
-      attackBonus: options.attackBonus ?? source.attackBonus,
-      damage: options.damage,
-      damageType: options.damageType,
-    });
-  }
-
-  return null;
-}
-
-function isEnemyWeaponMastered(source, weaponId) {
-  if (source.enableWeaponMastery === true) return true;
-  return Array.isArray(source.masteredWeaponIds) && source.masteredWeaponIds.includes(weaponId);
-}
-
 function defaultEnemyToken(source) {
   return String(source.name || source.id || "E").slice(0, 1).toUpperCase();
 }
@@ -158,16 +113,4 @@ function createEnemyEquipment(source, options) {
     ].filter(Boolean),
     naturalAttackIds: source.naturalAttack?.id ? [source.naturalAttack.id] : [],
   };
-}
-
-function resolveEnemyFormula(formula, source, options) {
-  return String(formula || "")
-    .replace(/\blevel\b/g, String(options.level ?? source.level ?? 1))
-    .replace(/\bstr(?:ength)?_modifier\b/g, String(source.abilityMods?.str ?? source.saves?.str ?? 0))
-    .replace(/\bdex(?:terity)?_modifier\b/g, String(source.abilityMods?.dex ?? source.saves?.dex ?? 0))
-    .replace(/\bcon(?:stitution)?_modifier\b/g, String(source.abilityMods?.con ?? source.saves?.con ?? 0))
-    .replace(/\bint(?:elligence)?_modifier\b/g, String(source.abilityMods?.int ?? source.saves?.int ?? 0))
-    .replace(/\bwis(?:dom)?_modifier\b/g, String(source.abilityMods?.wis ?? source.saves?.wis ?? 0))
-    .replace(/\bcha(?:risma)?_modifier\b/g, String(source.abilityMods?.cha ?? source.saves?.cha ?? 0))
-    .replace(/\s+/g, "");
 }

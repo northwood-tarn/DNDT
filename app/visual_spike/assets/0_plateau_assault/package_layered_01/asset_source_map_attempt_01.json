@@ -1,0 +1,86 @@
+{
+  "feature_1": {
+    "path": "/Volumes/Lacuna/Projects/dndt/DNDT/app/visual_spike/assets/0_plateau_assault/package_layered_01/placed_assets/feature_1_source_chroma.png",
+    "localAnchorPixel": {
+      "x": 740,
+      "y": 990
+    },
+    "localFootprintBounds": {
+      "minX": 430,
+      "minY": 720,
+      "maxX": 1050,
+      "maxY": 990
+    },
+    "registrationNote": "Manual approximate registration: bottom center of visible rock/fire contact base."
+  },
+  "cover_three_quarter_x02_y01": {
+    "path": "/Volumes/Lacuna/Projects/dndt/DNDT/app/visual_spike/assets/0_plateau_assault/package_layered_01/placed_assets/cover_three_quarter_source_chroma.png",
+    "localAnchorPixel": {
+      "x": 885,
+      "y": 829
+    },
+    "localFootprintBounds": {
+      "minX": 620,
+      "minY": 538,
+      "maxX": 1151,
+      "maxY": 829
+    },
+    "registrationNote": "Manual approximate registration: bottom center of column base/rubble contact."
+  },
+  "cover_three_quarter_x02_y02": {
+    "path": "/Volumes/Lacuna/Projects/dndt/DNDT/app/visual_spike/assets/0_plateau_assault/package_layered_01/placed_assets/cover_three_quarter_source_chroma.png",
+    "localAnchorPixel": {
+      "x": 885,
+      "y": 829
+    },
+    "localFootprintBounds": {
+      "minX": 620,
+      "minY": 538,
+      "maxX": 1151,
+      "maxY": 829
+    },
+    "registrationNote": "Manual approximate registration: reused column asset."
+  },
+  "cover_three_quarter_x02_y03": {
+    "path": "/Volumes/Lacuna/Projects/dndt/DNDT/app/visual_spike/assets/0_plateau_assault/package_layered_01/placed_assets/cover_three_quarter_source_chroma.png",
+    "localAnchorPixel": {
+      "x": 885,
+      "y": 829
+    },
+    "localFootprintBounds": {
+      "minX": 620,
+      "minY": 538,
+      "maxX": 1151,
+      "maxY": 829
+    },
+    "registrationNote": "Manual approximate registration: reused column asset."
+  },
+  "cover_half_x03_y05": {
+    "path": "/Volumes/Lacuna/Projects/dndt/DNDT/app/visual_spike/assets/0_plateau_assault/package_layered_01/placed_assets/cover_half_source_chroma.png",
+    "localAnchorPixel": {
+      "x": 880,
+      "y": 791
+    },
+    "localFootprintBounds": {
+      "minX": 441,
+      "minY": 500,
+      "maxX": 1319,
+      "maxY": 791
+    },
+    "registrationNote": "Manual approximate registration: bottom center of fallen-column rubble contact."
+  },
+  "cover_half_x02_y08": {
+    "path": "/Volumes/Lacuna/Projects/dndt/DNDT/app/visual_spike/assets/0_plateau_assault/package_layered_01/placed_assets/cover_half_source_chroma.png",
+    "localAnchorPixel": {
+      "x": 880,
+      "y": 791
+    },
+    "localFootprintBounds": {
+      "minX": 441,
+      "minY": 500,
+      "maxX": 1319,
+      "maxY": 791
+    },
+    "registrationNote": "Manual approximate registration: reused fallen-column asset."
+  }
+}

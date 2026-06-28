@@ -56,7 +56,15 @@ export default {
         description:
           "Spend a Channel Divinity use to restore divine spell power (engine-defined). Typically restores an expended spell slot up to a level allowed by your Cleric level.",
         effects: {
-          actionOptions: [{ id: "harness_divine_power", name: "Harness Divine Power", actionType: "action", resourceId: "channel_divinity", description: "Spend Channel Divinity to restore divine spell power." }]
+          actionOptions: [{
+            id: "harness_divine_power",
+            name: "Harness Divine Power",
+            actionType: "action",
+            resourceId: "channel_divinity",
+            restoresResource: "spell_slot",
+            amount: 1,
+            description: "Spend Channel Divinity to restore one expended spell slot."
+          }]
         }
       }
     ],
@@ -322,7 +330,17 @@ export default {
           { name: "Warpriest (Channel Divinity)", type: "Bonus Action", uses: "channelDivinity",
             description: "Spend a Channel Divinity use to make one weapon attack as a bonus action this turn. Until the end of your next turn, you can’t cast spells of 1st level or higher.",
             effects: {
-              actionOptions: [{ id: "warpriest", name: "Warpriest", actionType: "bonus_action", resourceId: "channel_divinity", description: "Spend Channel Divinity to make one weapon attack as a bonus action this turn." }]
+              actionOptions: [{
+                id: "warpriest",
+                name: "Warpriest",
+                actionType: "bonus_action",
+                actionKind: "basic_weapon_attack",
+                resourceId: "channel_divinity",
+                requiresTarget: true,
+                rangeFt: 5,
+                targetFilter: { team: "enemies" },
+                description: "Spend Channel Divinity to make one weapon attack as a bonus action this turn."
+              }]
             } }
         ],
         7: [

@@ -3,6 +3,7 @@ import { createCombatScenario } from "../../app/combat/scenario.js";
 import {
   createStepCreatorCharacterRecord,
   createStepCreatorLevelOneSmokeDrafts,
+  createStepCreatorSaboteurSmokeDrafts,
 } from "../../app/character_creator/stepCreatorPipeline.js";
 import {
   validateResolvedCharacterSheet,
@@ -32,5 +33,25 @@ export function runStepCreatorPipelineTests() {
     assert.equal(hero.name, draft.identity.characterName, `${label}: generated hero should preserve creator name`);
     assert.equal(hero.role, draft.identity.classId, `${label}: generated hero should preserve class role`);
     assert.ok(hero.actions.length > 0, `${label}: generated combat hero should keep actions`);
+  }
+
+  for (const draft of createStepCreatorSaboteurSmokeDrafts()) {
+    const label = `saboteur level-${draft.identity.level} step creator draft`;
+    const record = createStepCreatorCharacterRecord(draft, {
+      id: `test_saboteur_${draft.identity.level}`,
+      savedAt: "2026-05-29T00:00:00.000Z",
+      resolveOptions: { allowNonCreationLevel: true },
+    });
+
+    assert.equal(record.status, "ready", `${label}: should create a combat-ready character record`);
+    assert.deepEqual(validateResolvedCharacterSheet(record.resolvedCharacterSheet), [], `${label}: resolved sheet should validate`);
+    assert.deepEqual(validateResolvedSheetCombatActor(record.resolvedCharacterSheet), [], `${label}: combat actor should validate`);
+    assert.equal(record.resolvedCharacterSheet.metadata.unresolved.length, 0, `${label}: should not leave unresolved creator choices`);
+    assert.ok(record.resolvedCharacterSheet.proficiencies.tools.includes("strange_kit"), `${label}: should grant A Strange Kit proficiency`);
+    assert.ok(record.resolvedCharacterSheet.devices.knownRecipeIds.length >= 3, `${label}: should resolve known device recipes`);
+    assert.equal(record.resolvedCharacterSheet.devices.preparedRecipeIds.length, 3, `${label}: should prepare three devices`);
+    assert.ok(record.combatActor.resources.some((resource) => resource.id === "prepared_devices"), `${label}: should expose prepared device resource`);
+    assert.ok(record.combatActor.resources.some((resource) => resource.id === "quick_rigging"), `${label}: should expose quick rigging resource`);
+    assert.ok(record.combatActor.actions.some((action) => action.tags?.device), `${label}: should expose device combat actions`);
   }
 }

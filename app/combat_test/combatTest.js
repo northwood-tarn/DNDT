@@ -1,6 +1,5 @@
 import {
   canPlayerAct,
-  createCombatGame,
   getActionById,
   getActorEconomyView,
   getCurrentActor,
@@ -17,6 +16,7 @@ import {
   actionRequiresTarget,
   getCombatScenarioOptions,
 } from "../combat/api.js";
+import { createCombatInitiator } from "../combat/combatInitiator.js";
 import { collectModifierDetails, getEffectiveAc } from "../combat/modifiers.js";
 import { getCondition } from "../data/conditions.js";
 import { createCombatLifecycleUi } from "./combatLifecycleUi.js";
@@ -26,17 +26,24 @@ import { createReactionPromptUi } from "./reactionPromptUi.js";
 import { populateScenarioSelect } from "./scenarioSelectUi.js";
 import { createSummaryUi } from "./summaryUi.js";
 import { createTargetingUi, isAreaTargetingAction } from "./targetingUi.js";
+import { isMultiTargetAction, multiTargetConfirmState, toggleTargetAssignment } from "./targetAssignmentModel.js";
 
 const lifecycleUi = createCombatLifecycleUi();
 await lifecycleUi.hydrate();
-const controller = createCombatGame({
+const combatInitiator = createCombatInitiator({
   scenarioOptions: lifecycleUi.scenarioOptions,
 });
+const controller = combatInitiator.game;
+let presentationSettings = combatInitiator.presentationSettings;
 lifecycleUi.setController(controller);
+const initialScenarioId = new URLSearchParams(window.location.search).get("scenario");
+if (initialScenarioId) controller.setScenario(initialScenarioId);
 
 const gridEl = document.querySelector("#grid");
 const logEl = document.querySelector("#combatLog");
 const turnTitleEl = document.querySelector("#turnTitle");
+const rotateBoardLeftEl = document.querySelector("#rotateBoardLeft");
+const rotateBoardRightEl = document.querySelector("#rotateBoardRight");
 const economyStripEl = document.querySelector("#economyStrip");
 const actionButtonsEl = document.querySelector("#actionButtons");
 const endTurnButtonEl = document.querySelector("#endTurnButton");
@@ -47,6 +54,7 @@ const targetShapeSelectEl = document.querySelector("#targetShapeSelect");
 const resetButtonEl = document.querySelector("#resetButton");
 const diceToggleEl = document.querySelector("#diceToggle");
 const scenarioSelectEl = document.querySelector("#scenarioSelect");
+const tiltShiftToggleEl = document.querySelector("#tiltShiftToggle");
 const summaryDialogEl = document.querySelector("#summaryDialog");
 const summaryBodyEl = document.querySelector("#summaryBody");
 const summaryResetEl = document.querySelector("#summaryReset");
@@ -58,10 +66,15 @@ const reactionDeclineEl = document.querySelector("#reactionDecline");
 
 let selectedActionId = null;
 let selectedTargetId = null;
+let selectedTargetIds = [];
 let selectedDamageType = null;
 let aiRunning = false;
+let openingHandoffDone = false;
 let animation = null;
 let targetPulseUntil = 0;
+let tabInspectActive = false;
+const DEFAULT_BOARD_ROTATION_QUARTER_TURNS = 3;
+let boardRotationQuarterTurns = DEFAULT_BOARD_ROTATION_QUARTER_TURNS;
 const targetingUi = createTargetingUi({
   controller,
   gridEl,
@@ -104,7 +117,26 @@ function render({ skipAi = false } = {}) {
   renderControls();
   reactionPromptUi.renderPrompt();
   renderLog();
+  if (!skipAi && !openingHandoffDone) {
+    openingHandoffDone = true;
+    advanceOpeningEnemyTurns();
+    return;
+  }
   if (!skipAi) maybeRunAi();
+}
+
+async function advanceOpeningEnemyTurns() {
+  for (let attempts = 0; attempts < controller.snapshot.initiative.length; attempts += 1) {
+    const actor = getCurrentActor(controller.snapshot);
+    if (!actor || actor.team !== "enemies" || controller.snapshot.outcome || controller.pendingReaction) break;
+    try {
+      await controller.runEnemyTurnIfNeeded();
+    } catch (error) {
+      console.error("Opening enemy AI turn failed", error);
+      break;
+    }
+  }
+  render({ skipAi: true });
 }
 
 function syncSelection() {
@@ -113,6 +145,8 @@ function syncSelection() {
 
   if (selectedActionId && !getActionById(actor, selectedActionId)) {
     selectedActionId = null;
+    selectedTargetId = null;
+    selectedTargetIds = [];
     selectedDamageType = null;
     targetingUi.reset();
   }
@@ -126,6 +160,7 @@ function syncSelection() {
   if (selectedTargetId && !valid.some((target) => target.id === selectedTargetId)) {
     selectedTargetId = null;
   }
+  selectedTargetIds = selectedTargetIds.filter((id) => valid.some((target) => target.id === id));
 }
 
 function renderHeader() {
@@ -139,8 +174,10 @@ function renderHeader() {
 
 function renderGrid() {
   const snapshot = controller.snapshot;
+  syncScenarioPresentation(snapshot);
   const actor = getCurrentActor(snapshot);
-  const reachable = canPlayerAct(snapshot, actor?.id, aiRunning)
+  const revealMovementGrid = tabInspectActive;
+  const reachable = revealMovementGrid && canPlayerAct(snapshot, actor?.id, aiRunning)
     ? getReachableSquareKeys(snapshot, actor.id)
     : new Set();
   const targets = canPlayerAct(snapshot, actor?.id, aiRunning) && selectedActionId
@@ -156,35 +193,69 @@ function renderGrid() {
     targets,
     shouldPulseTargets,
     selectedTargetId,
+    selectedTargetIds,
     animation,
+    tabInspectActive,
+    presentationSettings,
+    boardRotationQuarterTurns,
     getCoverAtSquare,
     getOccupantForDisplay,
     getConditionLabels,
     getActorHoverLines,
+    getActorArmorClass: (item) => getEffectiveAc(snapshot, item),
     classIconClass,
     onCellClick,
   });
+}
+
+function syncScenarioPresentation(snapshot) {
+  presentationSettings = {
+    ...presentationSettings,
+    camera: {
+      ...presentationSettings.camera,
+      ...(snapshot.metadata?.presentation?.camera || {}),
+    },
+    scenarioPresentation: structuredClone(snapshot.metadata?.presentation || {}),
+  };
 }
 
 function renderControls() {
   const actor = getCurrentActor(controller.snapshot);
   const playerTurn = canPlayerAct(controller.snapshot, actor?.id, aiRunning);
   const reactionPending = Boolean(controller.pendingReaction);
-  endTurnButtonEl.disabled = !playerTurn || reactionPending;
-  endTurnButtonEl.classList.toggle("glow", playerTurn && actor && !hasAnyUsefulOption(controller.snapshot, actor.id));
-  diceToggleEl.disabled = aiRunning || reactionPending;
-  resetButtonEl.disabled = aiRunning;
-  scenarioSelectEl.disabled = aiRunning || reactionPending;
-
-  renderEconomy(actor, playerTurn && !reactionPending);
-  targetingUi.renderPanel(actor, playerTurn && !reactionPending);
+  const fixedStageProjection = isFixedStageProjection(controller.snapshot);
   actionButtonsEl.innerHTML = "";
+  targetTestPanelEl.hidden = true;
+  confirmTargetButtonEl.textContent = "Confirm Target";
 
-  if (!actor || reactionPending) return;
+  try {
+    endTurnButtonEl.disabled = !playerTurn || reactionPending;
+    endTurnButtonEl.classList.toggle("glow", playerTurn && actor && !hasAnyUsefulOption(controller.snapshot, actor.id));
+    diceToggleEl.disabled = aiRunning || reactionPending;
+    resetButtonEl.disabled = aiRunning;
+    scenarioSelectEl.disabled = aiRunning || reactionPending;
+    tiltShiftToggleEl.disabled = aiRunning || reactionPending;
+    rotateBoardLeftEl.disabled = aiRunning || reactionPending || fixedStageProjection;
+    rotateBoardRightEl.disabled = aiRunning || reactionPending || fixedStageProjection;
+  } catch (error) {
+    console.error("Combat control state failed", error);
+  }
 
-  renderActionGroup(actor, playerTurn, "action", "Action");
-  renderActionGroup(actor, playerTurn, "bonus", "Bonus Action");
-  renderActionGroup(actor, playerTurn, "reaction", "Reaction");
+  if (actor && !reactionPending && playerTurn) {
+    renderActionGroup(actor, playerTurn, "action", "Action");
+    renderActionGroup(actor, playerTurn, "bonus", "Bonus Action");
+    renderActionGroup(actor, playerTurn, "free", "Free");
+    renderActionGroup(actor, playerTurn, "reaction", "Reaction");
+    renderSelectedActionHelp(actor);
+  }
+
+  try {
+    renderEconomy(actor, playerTurn && !reactionPending);
+    targetingUi.renderPanel(actor, playerTurn && !reactionPending);
+    renderMultiTargetPanel(actor, playerTurn && !reactionPending);
+  } catch (error) {
+    console.error("Combat auxiliary controls failed", error);
+  }
 }
 
 function renderActionGroup(actor, playerTurn, cost, label) {
@@ -227,7 +298,8 @@ function createActionButton(actor, action, playerTurn) {
   if (action.id === selectedActionId) button.classList.add("active");
   button.disabled = !playerTurn || !canSelectCombatAction(controller.snapshot, actor.id, action.id);
   button.textContent = getActionLabel(controller.snapshot, actor.id, action.id);
-  button.title = action.description || action.name;
+  button.title = describeAction(action);
+  button.setAttribute("aria-label", `${action.name}: ${describeAction(action)}`);
   button.addEventListener("click", () => chooseAction(actor, action));
   return button;
 }
@@ -246,12 +318,13 @@ function createSpellSelect(actor, spellActions, playerTurn, label) {
     const option = document.createElement("option");
     option.value = action.id;
     option.textContent = getActionLabel(controller.snapshot, actor.id, action.id);
-    option.title = action.description || action.name;
+    option.title = describeAction(action);
     option.disabled = !canSelectCombatAction(controller.snapshot, actor.id, action.id);
     select.appendChild(option);
   }
+  const selectedSpell = spellActions.find((action) => action.id === selectedActionId);
   select.title = selectedActionId
-    ? spellActions.find((action) => action.id === selectedActionId)?.description || label
+    ? describeAction(selectedSpell) || label
     : label;
 
   select.value = selectedActionId && spellActions.some((action) => action.id === selectedActionId)
@@ -263,6 +336,7 @@ function createSpellSelect(actor, spellActions, playerTurn, label) {
     if (!action) {
       selectedActionId = null;
       selectedTargetId = null;
+      selectedTargetIds = [];
       render();
       return;
     }
@@ -285,8 +359,15 @@ function createDamageTypeSelect(action, playerTurn) {
 }
 
 function chooseAction(actor, action) {
+  if (selectedActionId === action.id) {
+    clearSelections();
+    targetingUi.reset();
+    render();
+    return;
+  }
   selectedActionId = action.id;
   selectedTargetId = null;
+  selectedTargetIds = [];
   selectedDamageType = action.damageTypeChoices?.[0] || null;
   targetingUi.start(action);
   if (!actionRequiresTarget(controller.snapshot, actor.id, action.id)) {
@@ -301,9 +382,44 @@ function chooseAction(actor, action) {
   render();
 }
 
+function renderMultiTargetPanel(actor, playerTurn) {
+  const action = getActionById(actor, selectedActionId);
+  if (!playerTurn || !isMultiTargetAction(action)) return;
+  targetTestPanelEl.hidden = false;
+  targetShapeSelectEl.hidden = true;
+  const state = multiTargetConfirmState(action, selectedTargetIds);
+  confirmTargetButtonEl.disabled = state.disabled;
+  confirmTargetButtonEl.textContent = state.text;
+  statusElForMulti().textContent = state.status;
+}
+
+function statusElForMulti() {
+  return targetTestStatusEl;
+}
+
+function renderSelectedActionHelp(actor) {
+  const action = getActionById(actor, selectedActionId);
+  const node = document.createElement("div");
+  node.className = "action-help";
+  node.textContent = action ? describeAction(action) : "Hover over an ability name for details. Click a selected ability again to cancel it.";
+  node.title = node.textContent;
+  actionButtonsEl.appendChild(node);
+}
+
 function renderEconomy(actor, playerTurn) {
   economyStripEl.innerHTML = "";
   if (!actor || actor.team !== "heroes") return;
+
+  const summary = document.createElement("div");
+  summary.className = "actor-turn-summary";
+  const title = buildActorSummaryTitle(actor);
+  summary.title = title;
+  summary.innerHTML = `
+    <strong>${actor.name}</strong>
+    <span>${buildActorClassLine(actor)}</span>
+    <span>${buildAbilityLine(actor)}</span>
+  `;
+  economyStripEl.appendChild(summary);
 
   for (const item of getActorEconomyView(controller.snapshot, actor.id)) {
     const node = document.createElement("div");
@@ -313,6 +429,45 @@ function renderEconomy(actor, playerTurn) {
     node.innerHTML = `<span>${item.label}</span><strong>${item.value}</strong>`;
     economyStripEl.appendChild(node);
   }
+}
+
+function describeAction(action) {
+  if (!action) return "";
+  return action.description || action.text || action.summary || action.name;
+}
+
+function buildActorSummaryTitle(actor) {
+  const actions = (actor.actions || [])
+    .map((action) => `${action.name}: ${describeAction(action)}`)
+    .join("\n");
+  return [buildActorClassLine(actor), buildAbilityLine(actor), actions].filter(Boolean).join("\n\n");
+}
+
+function buildActorClassLine(actor) {
+  const className = actor.className || actor.class || actor.classId || actor.role || "Combatant";
+  const level = actor.level ? `Level ${actor.level}` : null;
+  return [level, titleCase(String(className).replaceAll("_", " ")), `AC ${getEffectiveAc(controller.snapshot, actor)}`, `HP ${actor.hp}/${actor.maxHp}`]
+    .filter(Boolean)
+    .join(" • ");
+}
+
+function buildAbilityLine(actor) {
+  const mods = actor.abilityMods || actor.abilities || actor.saves || {};
+  const pairs = [
+    ["STR", "str", "strength"],
+    ["DEX", "dex", "dexterity"],
+    ["CON", "con", "constitution"],
+    ["INT", "int", "intelligence"],
+    ["WIS", "wis", "wisdom"],
+    ["CHA", "cha", "charisma"],
+  ];
+  return pairs
+    .map(([label, shortKey, longKey]) => {
+      const value = mods[shortKey] ?? mods[longKey];
+      return Number.isFinite(value) ? `${label} ${formatSigned(value)}` : null;
+    })
+    .filter(Boolean)
+    .join("  ");
 }
 
 function renderLog() {
@@ -331,24 +486,32 @@ async function maybeRunAi() {
 
   aiRunning = true;
   setControlsBusy(true);
-  await sleep(320);
-  await controller.runEnemyTurnIfNeeded({
-    afterStep: async (step) => {
-      animation = { kind: step.kind, actorId: step.actorId, targetId: step.targetId || null };
-      render({ skipAi: true });
-      await sleep(step.kind === "attack" ? 620 : 260);
-    },
-  });
-  animation = null;
-  aiRunning = false;
-  setControlsBusy(false);
-  render();
+  try {
+    await sleep(320);
+    await controller.runEnemyTurnIfNeeded({
+      afterStep: async (step) => {
+        animation = { kind: step.kind, actorId: step.actorId, targetId: step.targetId || null };
+        render({ skipAi: true });
+        await sleep(step.kind === "attack" ? 620 : 260);
+      },
+    });
+  } catch (error) {
+    console.error("Enemy AI turn failed", error);
+  } finally {
+    animation = null;
+    aiRunning = false;
+    setControlsBusy(false);
+    render();
+  }
 }
 
 function setControlsBusy(busy) {
   endTurnButtonEl.disabled = busy || Boolean(controller.pendingReaction);
   resetButtonEl.disabled = busy;
   diceToggleEl.disabled = busy;
+  tiltShiftToggleEl.disabled = busy;
+  rotateBoardLeftEl.disabled = busy;
+  rotateBoardRightEl.disabled = busy;
 }
 
 function onCellClick(pos) {
@@ -362,6 +525,12 @@ function onCellClick(pos) {
   if (selectedActionId) {
     const occupant = getLivingOccupant(controller.snapshot, pos);
     if (!occupant || !isValidTarget(controller.snapshot, actor.id, selectedActionId, occupant.id)) return;
+    const selectedAction = getActionById(actor, selectedActionId);
+    if (isMultiTargetAction(selectedAction)) {
+      selectedTargetIds = toggleTargetAssignment(selectedTargetIds, occupant.id, selectedAction);
+      render();
+      return;
+    }
     selectedTargetId = occupant.id;
     confirmAction();
     return;
@@ -377,18 +546,41 @@ function samePosition(a, b) {
 
 function confirmAction() {
   const actor = getCurrentActor(controller.snapshot);
-  if (!canPlayerAct(controller.snapshot, actor?.id, aiRunning) || !selectedActionId || !selectedTargetId) return;
-  controller.action(actor.id, selectedActionId, actionPayload(selectedTargetId));
-  clearSelections();
-  targetingUi.reset();
+  const selectedAction = getActionById(actor, selectedActionId);
+  const targetPayload = isMultiTargetAction(selectedAction) ? selectedTargetIds : selectedTargetId;
+  if (!canPlayerAct(controller.snapshot, actor?.id, aiRunning) || !selectedActionId || isMissingTargetPayload(targetPayload)) return;
+  const resolved = controller.resolveAction(actor.id, selectedActionId, actionPayload(targetPayload));
+  if (resolved?.ok) {
+    clearSelections();
+    targetingUi.reset();
+  }
   render();
+}
+
+function confirmTargetSelection() {
+  const actor = getCurrentActor(controller.snapshot);
+  const action = getActionById(actor, selectedActionId);
+  if (isMultiTargetAction(action)) {
+    confirmAction();
+    return;
+  }
+  targetingUi.confirm();
 }
 
 function actionPayload(targetId) {
   const choices = {};
   if (selectedDamageType) choices.damageType = selectedDamageType;
+  if (Array.isArray(targetId)) {
+    const payload = { targetIds: [...targetId] };
+    if (Object.keys(choices).length) payload.choices = choices;
+    return payload;
+  }
   if (!Object.keys(choices).length) return targetId;
   return { targetId, choices };
+}
+
+function isMissingTargetPayload(payload) {
+  return Array.isArray(payload) ? payload.length < 1 : !payload;
 }
 
 function endTurn() {
@@ -426,8 +618,11 @@ async function switchScenarioFromLatestSave() {
 function clearTransientUi() {
   selectedActionId = null;
   selectedTargetId = null;
+  selectedTargetIds = [];
   selectedDamageType = null;
   animation = null;
+  openingHandoffDone = false;
+  boardRotationQuarterTurns = DEFAULT_BOARD_ROTATION_QUARTER_TURNS;
   lifecycleUi.reset();
   targetPulseUntil = 0;
   targetingUi.reset();
@@ -440,6 +635,14 @@ function initializeScenarioSelect() {
 }
 
 function handleKey(event) {
+  if (event.key === presentationSettings.tabOverlay.holdKey) {
+    event.preventDefault();
+    if (!tabInspectActive) {
+      tabInspectActive = true;
+      render({ skipAi: true });
+    }
+    return;
+  }
   if (controller.pendingReaction) {
     if (event.key === "Enter") {
       event.preventDefault();
@@ -473,13 +676,17 @@ function handleKey(event) {
   } else if (key === "enter") {
     event.preventDefault();
     if (selectedTargetId) confirmAction();
+    else if (selectedTargetIds.length) confirmAction();
     else endTurn();
-  } else if (key === "tab") {
-    event.preventDefault();
-    cycleTarget(event.shiftKey ? -1 : 1);
   } else if (key === "escape") {
     event.preventDefault();
-    endTurn();
+    if (selectedActionId) {
+      clearSelections();
+      targetingUi.reset();
+      render();
+    } else {
+      endTurn();
+    }
   } else if (/^[1-9]$/.test(key)) {
     const index = Number(key) - 1;
     if (actor.actions[index]) {
@@ -488,15 +695,38 @@ function handleKey(event) {
   }
 }
 
-function cycleTarget(delta) {
-  const actor = getCurrentActor(controller.snapshot);
-  if (!actor) return;
-  const targets = selectedActionId ? getValidTargets(controller.snapshot, actor.id, selectedActionId) : [];
-  if (!targets.length) return;
-  const current = targets.findIndex((target) => target.id === selectedTargetId);
-  const next = (current + delta + targets.length) % targets.length;
-  selectedTargetId = targets[next]?.id || null;
-  render();
+function handleKeyUp(event) {
+  if (event.key !== presentationSettings.tabOverlay.holdKey) return;
+  event.preventDefault();
+  clearTabInspect();
+}
+
+function clearTabInspect() {
+  if (!tabInspectActive) return;
+  tabInspectActive = false;
+  render({ skipAi: true });
+}
+
+function syncPresentationSettings() {
+  presentationSettings = {
+    ...presentationSettings,
+    tiltShift: {
+      ...presentationSettings.tiltShift,
+      enabled: tiltShiftToggleEl.checked,
+    },
+  };
+  render({ skipAi: true });
+}
+
+function rotateBoard(delta) {
+  if (isFixedStageProjection(controller.snapshot)) return;
+  boardRotationQuarterTurns = (boardRotationQuarterTurns + delta + 4) % 4;
+  render({ skipAi: true });
+}
+
+function isFixedStageProjection(snapshot) {
+  const projection = snapshot?.metadata?.presentation?.gridProjection;
+  return projection?.fixedStage === true || projection?.kind === "stage_metadata";
 }
 
 function sleep(ms) {
@@ -506,6 +736,7 @@ function sleep(ms) {
 function clearSelections() {
   selectedActionId = null;
   selectedTargetId = null;
+  selectedTargetIds = [];
   selectedDamageType = null;
 }
 
@@ -584,7 +815,7 @@ function conditionSourceText(snapshot, condition) {
 }
 
 endTurnButtonEl.addEventListener("click", endTurn);
-confirmTargetButtonEl.addEventListener("click", targetingUi.confirm);
+confirmTargetButtonEl.addEventListener("click", confirmTargetSelection);
 targetShapeSelectEl.addEventListener("change", targetingUi.onShapeChange);
 gridEl.addEventListener("pointermove", targetingUi.onPointerMove);
 gridEl.addEventListener("dblclick", targetingUi.onGridDoubleClick);
@@ -595,6 +826,11 @@ diceToggleEl.addEventListener("click", () => {
   render();
 });
 scenarioSelectEl.addEventListener("change", switchScenario);
+tiltShiftToggleEl.addEventListener("change", syncPresentationSettings);
+rotateBoardLeftEl.addEventListener("click", () => rotateBoard(-1));
+rotateBoardRightEl.addEventListener("click", () => rotateBoard(1));
 window.addEventListener("keydown", handleKey);
+window.addEventListener("keyup", handleKeyUp);
+window.addEventListener("blur", clearTabInspect);
 
 render();

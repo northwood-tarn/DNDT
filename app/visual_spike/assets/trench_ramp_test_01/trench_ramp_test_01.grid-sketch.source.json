@@ -1,0 +1,2173 @@
+{
+  "schemaVersion": 2,
+  "id": "trench_ramp_test_01",
+  "name": "Trench Ramp Test 01",
+  "mode": "combat",
+  "size": "large_16x11",
+  "grid": {
+    "projection": "isometric_square",
+    "tileWidth": 128,
+    "tileHeight": 64,
+    "origin": {
+      "x": 960,
+      "y": 260
+    },
+    "width": 16,
+    "height": 11,
+    "coordinateRule": "x increases down-right; y increases down-left"
+  },
+  "cells": [
+    {
+      "x": 0,
+      "y": 0,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 4,
+      "y": 0,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 5,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 7,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 11,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 13,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 14,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 15,
+      "y": 0,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 2,
+      "y": 1,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 4,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 5,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 7,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 11,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 13,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 14,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 15,
+      "y": 1,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 0,
+      "y": 2,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 2,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 5,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 7,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 11,
+      "y": 2,
+      "display": "C",
+      "terrain": {
+        "symbol": "C",
+        "state": "three_quarter_cover",
+        "label": "blocking three-quarter cover"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 13,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": [
+        {
+          "symbol": "M"
+        }
+      ]
+    },
+    {
+      "x": 14,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": [
+        {
+          "symbol": "M"
+        }
+      ]
+    },
+    {
+      "x": 15,
+      "y": 2,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 3,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 3,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 4,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 5,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 7,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 11,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 13,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 14,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 15,
+      "y": 3,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 5,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 7,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 4,
+      "display": "h",
+      "terrain": {
+        "symbol": "h",
+        "state": "half_cover",
+        "label": "low half-cover terrain"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 11,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 13,
+      "y": 4,
+      "display": "C",
+      "terrain": {
+        "symbol": "C",
+        "state": "three_quarter_cover",
+        "label": "blocking three-quarter cover"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 14,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 15,
+      "y": 4,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 7,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 11,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": [
+        {
+          "symbol": "M"
+        }
+      ]
+    },
+    {
+      "x": 13,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 14,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 15,
+      "y": 5,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 0,
+      "y": 6,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 6,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 2,
+      "y": 6,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 3,
+      "y": 6,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 5,
+      "y": 6,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 6,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 7,
+      "y": 6,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 6,
+      "display": "R",
+      "terrain": {
+        "symbol": "R",
+        "state": "slope",
+        "label": "wide ramp / slope"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 6,
+      "display": "R",
+      "terrain": {
+        "symbol": "R",
+        "state": "slope",
+        "label": "wide ramp / slope"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 6,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 11,
+      "y": 6,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 6,
+      "display": "h",
+      "terrain": {
+        "symbol": "h",
+        "state": "half_cover",
+        "label": "low half-cover terrain"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 13,
+      "y": 6,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 14,
+      "y": 6,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 15,
+      "y": 6,
+      "display": "C",
+      "terrain": {
+        "symbol": "C",
+        "state": "three_quarter_cover",
+        "label": "blocking three-quarter cover"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 0,
+      "y": 7,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 7,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 2,
+      "y": 7,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 3,
+      "y": 7,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 4,
+      "y": 7,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 5,
+      "y": 7,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 7,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 7,
+      "y": 7,
+      "display": "R",
+      "terrain": {
+        "symbol": "R",
+        "state": "slope",
+        "label": "wide ramp / slope"
+      },
+      "altitude": -1,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 7,
+      "display": "R",
+      "terrain": {
+        "symbol": "R",
+        "state": "slope",
+        "label": "wide ramp / slope"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 7,
+      "display": "R",
+      "terrain": {
+        "symbol": "R",
+        "state": "slope",
+        "label": "wide ramp / slope"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 7,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 11,
+      "y": 7,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 7,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 13,
+      "y": 7,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 14,
+      "y": 7,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": [
+        {
+          "symbol": "M"
+        }
+      ]
+    },
+    {
+      "x": 15,
+      "y": 7,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 0,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": -2,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": -2,
+      "markers": [
+        {
+          "symbol": "P"
+        }
+      ]
+    },
+    {
+      "x": 2,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": -2,
+      "markers": [
+        {
+          "symbol": "P"
+        }
+      ]
+    },
+    {
+      "x": 3,
+      "y": 8,
+      "display": "h",
+      "terrain": {
+        "symbol": "h",
+        "state": "half_cover",
+        "label": "low half-cover terrain"
+      },
+      "altitude": -2,
+      "markers": []
+    },
+    {
+      "x": 4,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": -2,
+      "markers": []
+    },
+    {
+      "x": 5,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": -2,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 8,
+      "display": "R",
+      "terrain": {
+        "symbol": "R",
+        "state": "slope",
+        "label": "wide ramp / slope"
+      },
+      "altitude": -1,
+      "markers": []
+    },
+    {
+      "x": 7,
+      "y": 8,
+      "display": "R",
+      "terrain": {
+        "symbol": "R",
+        "state": "slope",
+        "label": "wide ramp / slope"
+      },
+      "altitude": -1,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 8,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 11,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 13,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 14,
+      "y": 8,
+      "display": "h",
+      "terrain": {
+        "symbol": "h",
+        "state": "half_cover",
+        "label": "low half-cover terrain"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 15,
+      "y": 8,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 0,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": -2,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": -2,
+      "markers": [
+        {
+          "symbol": "P"
+        }
+      ]
+    },
+    {
+      "x": 2,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": -2,
+      "markers": []
+    },
+    {
+      "x": 3,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": -2,
+      "markers": []
+    },
+    {
+      "x": 4,
+      "y": 9,
+      "display": "h",
+      "terrain": {
+        "symbol": "h",
+        "state": "half_cover",
+        "label": "low half-cover terrain"
+      },
+      "altitude": -2,
+      "markers": []
+    },
+    {
+      "x": 5,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": -2,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 9,
+      "display": "R",
+      "terrain": {
+        "symbol": "R",
+        "state": "slope",
+        "label": "wide ramp / slope"
+      },
+      "altitude": -1,
+      "markers": []
+    },
+    {
+      "x": 7,
+      "y": 9,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 9,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": [
+        {
+          "symbol": "M"
+        }
+      ]
+    },
+    {
+      "x": 11,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 13,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 14,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 15,
+      "y": 9,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 0,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": -2,
+      "markers": []
+    },
+    {
+      "x": 1,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": -2,
+      "markers": []
+    },
+    {
+      "x": 2,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": -2,
+      "markers": []
+    },
+    {
+      "x": 3,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": -2,
+      "markers": []
+    },
+    {
+      "x": 4,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": -2,
+      "markers": []
+    },
+    {
+      "x": 5,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": -2,
+      "markers": []
+    },
+    {
+      "x": 6,
+      "y": 10,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 7,
+      "y": 10,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 8,
+      "y": 10,
+      "display": " ",
+      "terrain": {
+        "symbol": " ",
+        "state": "blocked",
+        "label": "blocked / void / trench wall"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 9,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 10,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 11,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 12,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 13,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 14,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    },
+    {
+      "x": 15,
+      "y": 10,
+      "display": ".",
+      "terrain": {
+        "symbol": ".",
+        "state": "walkable",
+        "label": "walkable floor"
+      },
+      "altitude": 0,
+      "markers": []
+    }
+  ],
+  "featureDefinitions": {},
+  "lighting": [],
+  "altitude": {
+    "layer": 3,
+    "unitFeet": 5,
+    "connectorRule": "Only R terrain cells connect the -2 trench floor through -1 ramp cells to altitude 0 regular ground. Other adjacent altitude changes are trench walls / ledges and not traversable unless explicitly allowed by combat rules."
+  },
+  "imageNote": "Large Backlands-adjacent combat plate: a deep, dark trench enters from the lower-left and opens onto regular stony ground through one broad ramp. The trench floor and ramp must both support two grid-square-wide movement paths. The upper/right regular ground should be broad and readable enough for a fight with sparse cover. No visible grid, no actors, no labels, no UI, and no decorative objects that imply unmarked cover or blocked cells."
+}

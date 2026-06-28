@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Screen Small: Rest Preparation</title>
+    <link rel="stylesheet" href="../styles/designViewport.css">
+    <link rel="stylesheet" href="./inventory_small.css">
+    <link rel="stylesheet" href="./rest_prepare_small.css">
+  </head>
+  <body>
+    <main class="inventory-screen design-viewport" aria-label="Rest preparation preview">
+      <div class="fog-layer fog-one" aria-hidden="true"></div>
+      <div class="fog-layer fog-two" aria-hidden="true"></div>
+      <div class="fog-layer fog-three" aria-hidden="true"></div>
+
+      <div class="lanterna-emblem" aria-hidden="true">
+        <div class="lanterna-flame">
+          <div class="lanterna-flame-fill"></div>
+          <div class="lanterna-flame-outline">
+            <svg viewBox="0 0 70 100" aria-hidden="true" focusable="false">
+              <defs>
+                <filter id="lanterna-flame-edge" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+                  <feMorphology in="SourceAlpha" operator="dilate" radius="1.1" result="outer" />
+                  <feMorphology in="SourceAlpha" operator="erode" radius="1.1" result="inner" />
+                  <feComposite in="outer" in2="inner" operator="out" result="edge" />
+                  <feFlood flood-color="#cdfcf4" flood-opacity="0.02" result="lineColor" />
+                  <feComposite in="lineColor" in2="edge" operator="in" />
+                </filter>
+              </defs>
+              <image href="../assets/images/effects/flame.png" width="70" height="100" filter="url(#lanterna-flame-edge)" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <section class="inventory-column prepare-column" aria-label="Prepare spells">
+        <header class="inventory-head">
+          <h1>Spells</h1>
+          <div class="inventory-resources" aria-label="Preparation counts">
+            <div class="resource-row">
+              <span>Wizard</span>
+              <span>Level 10</span>
+            </div>
+            <div class="resource-row" data-spell-total data-max="14">
+              <span>Prepared spells</span>
+              <span>10 / 14</span>
+            </div>
+            <div class="resource-row is-overflow-only" data-spell-count="level-1" hidden>
+              <span>Level 1</span>
+              <span>4</span>
+            </div>
+            <div class="resource-row is-overflow-only" data-spell-count="level-2" hidden>
+              <span>Level 2</span>
+              <span>4</span>
+            </div>
+            <div class="resource-row is-overflow-only" data-spell-count="level-3" hidden>
+              <span>Level 3</span>
+              <span>3</span>
+            </div>
+            <div class="resource-row is-overflow-only" data-spell-count="level-4" hidden>
+              <span>Level 4</span>
+              <span>2</span>
+            </div>
+            <div class="resource-row is-overflow-only" data-spell-count="level-5" hidden>
+              <span>Level 5</span>
+              <span>1</span>
+            </div>
+          </div>
+        </header>
+
+        <div class="inventory-scroll">
+          <section class="inventory-group spell-choice-group" aria-label="Level one spells" data-spell-group="level-1" data-max="4">
+            <h2><span>Level 1</span><span data-spell-group-count>4</span></h2>
+            <button class="inventory-row spell-choice-row is-prepared" type="button" data-title="Mage Armor" data-description="A pale pressure of force settles over the body. Protective magic without the weight of armor.">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span>Mage Armor</span>
+            </button>
+            <button class="inventory-row spell-choice-row is-prepared" type="button" data-title="Magic Missile" data-description="Certain force, divided as needed. A reliable answer when accuracy matters less than inevitability.">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span>Magic Missile</span>
+            </button>
+            <button class="inventory-row spell-choice-row is-prepared" type="button" data-title="Shield" data-description="A sudden pane of force between you and harm. Brief, sharp, and usually enough.">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span>Shield</span>
+            </button>
+            <button class="inventory-row spell-choice-row" type="button" data-title="Detect Magic" data-description="Let the hidden structure of enchantment, curse, and working show itself for a time.">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span>Detect Magic <span class="spell-marker">Requires concentration</span></span>
+            </button>
+            <button class="inventory-row spell-choice-row" type="button" data-title="Burning Hands" data-description="A fan of heat and panic from open fingers. Crude, immediate, effective.">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span>Burning Hands</span>
+            </button>
+          </section>
+
+          <section class="inventory-group spell-choice-group" aria-label="Level two spells" data-spell-group="level-2" data-max="4">
+            <h2><span>Level 2</span><span data-spell-group-count>4</span></h2>
+            <button class="inventory-row spell-choice-row is-prepared" type="button" data-title="Misty Step" data-description="A short fold through silver vapour. Movement without crossing the dangerous part between.">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span>Misty Step</span>
+            </button>
+            <button class="inventory-row spell-choice-row is-prepared" type="button" data-title="Mirror Image" data-description="Several almost-yous step out of alignment. Blades and bolts choose poorly.">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span>Mirror Image</span>
+            </button>
+            <button class="inventory-row spell-choice-row is-prepared" type="button" data-title="Web" data-description="A space becomes sticky, visible, and difficult to argue with.">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span>Web <span class="spell-marker">Requires concentration</span></span>
+            </button>
+            <button class="inventory-row spell-choice-row" type="button" data-title="Invisibility" data-description="Sight fails to keep its appointment. The spell breaks when violence or casting gives you away.">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span>Invisibility <span class="spell-marker">Requires concentration</span></span>
+            </button>
+            <button class="inventory-row spell-choice-row" type="button" data-title="Scorching Ray" data-description="Three bright lines of heat. Divide them, focus them, or miss with style.">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span>Scorching Ray</span>
+            </button>
+          </section>
+
+          <section class="inventory-group spell-choice-group" aria-label="Level three spells" data-spell-group="level-3" data-max="3">
+            <h2><span>Level 3</span><span data-spell-group-count>3</span></h2>
+            <button class="inventory-row spell-choice-row is-prepared" type="button" data-title="Counterspell" data-description="An interruption shaped like expertise. Stop another spell as it is being born.">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span>Counterspell</span>
+            </button>
+            <button class="inventory-row spell-choice-row is-prepared" type="button" data-title="Fireball" data-description="A point becomes a terrible sun. The old solution, still persuasive.">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span>Fireball</span>
+            </button>
+            <button class="inventory-row spell-choice-row" type="button" data-title="Haste" data-description="Borrow time badly. A chosen creature moves and strikes faster while the spell holds.">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span>Haste <span class="spell-marker">Requires concentration</span></span>
+            </button>
+            <button class="inventory-row spell-choice-row" type="button" data-title="Hypnotic Pattern" data-description="A beautiful mistake in the air. Those who fail to look away stop mattering for a while.">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span>Hypnotic Pattern <span class="spell-marker">Requires concentration</span></span>
+            </button>
+          </section>
+
+          <section class="inventory-group spell-choice-group" aria-label="Level four spells" data-spell-group="level-4" data-max="2">
+            <h2><span>Level 4</span><span data-spell-group-count>2</span></h2>
+            <button class="inventory-row spell-choice-row is-prepared" type="button" data-title="Greater Invisibility" data-description="A better kind of absence. Fighting does not immediately return you to sight.">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span>Greater Invisibility <span class="spell-marker">Requires concentration</span></span>
+            </button>
+            <button class="inventory-row spell-choice-row" type="button" data-title="Dimension Door" data-description="Open distance like a door and take someone with you, provided you can name where you are going.">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span>Dimension Door</span>
+            </button>
+            <button class="inventory-row spell-choice-row" type="button" data-title="Ice Storm" data-description="A hard weather arrives at once. Bludgeoning hail, cold air, and ruined footing.">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span>Ice Storm</span>
+            </button>
+          </section>
+
+          <section class="inventory-group spell-choice-group" aria-label="Level five spells" data-spell-group="level-5" data-max="1">
+            <h2><span>Level 5</span><span data-spell-group-count>1</span></h2>
+            <button class="inventory-row spell-choice-row is-prepared" type="button" data-title="Wall of Force" data-description="A boundary that refuses negotiation. Invisible force shaped into a wall, dome, or cage.">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span>Wall of Force <span class="spell-marker">Requires concentration</span></span>
+            </button>
+            <button class="inventory-row spell-choice-row" type="button" data-title="Cone of Cold" data-description="Winter discharged in a widening breath. Direct, large, and difficult to forgive.">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span>Cone of Cold</span>
+            </button>
+            <button class="inventory-row spell-choice-row" type="button" data-title="Teleportation Circle" data-description="A formal exit for those who know the signs and have somewhere marked to go.">
+              <span class="choice-box" aria-hidden="true"></span>
+              <span>Teleportation Circle</span>
+            </button>
+          </section>
+        </div>
+
+        <footer class="item-summary is-empty" aria-live="polite">
+          <p class="screen-kicker">Selected</p>
+          <h2 id="itemSummaryTitle"></h2>
+          <p id="itemSummaryDescription"></p>
+        </footer>
+      </section>
+    </main>
+    <script type="module" src="./rest_prepare_small.js"></script>
+  </body>
+</html>

@@ -66,6 +66,15 @@ function normalizeLuck(actor) {
       points: actor.luck.points,
       max: actor.luck.max ?? actor.luck.points,
       usedThisCombat: actor.luck.usedThisCombat === true,
+      naturalRolls: Array.isArray(actor.luck.naturalRolls) ? [...actor.luck.naturalRolls] : [],
+    };
+  }
+  if (actor.luck && Array.isArray(actor.luck.naturalRolls) && actor.luck.naturalRolls.length) {
+    return {
+      points: Number.POSITIVE_INFINITY,
+      max: Number.POSITIVE_INFINITY,
+      usedThisCombat: actor.luck.usedThisCombat === true,
+      naturalRolls: [...actor.luck.naturalRolls],
     };
   }
   const luckResource = Array.isArray(actor.resources)
@@ -249,9 +258,19 @@ export function syncContextualActions(actor) {
   if (!actor) return [];
   if (!Array.isArray(actor.actions)) actor.actions = [];
   actor.actions = actor.actions.filter((action) => !action.contextual);
-  const contextual = createContextualEndActions(actor);
+  const contextual = [
+    ...createContextualEndActions(actor),
+    ...createTurnContextualActions(actor),
+  ];
   actor.actions.push(...contextual);
   return contextual;
+}
+
+function createTurnContextualActions(actor) {
+  return (actor.turnFlags?.contextualActions || []).map((action) => ({
+    ...structuredClone(action),
+    contextual: true,
+  }));
 }
 
 function createContextualEndActions(actor) {

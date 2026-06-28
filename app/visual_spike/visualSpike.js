@@ -21,11 +21,13 @@ const AREA_KEYS = {
   SHRINE: "shrine",
   DOCK: "dock",
   RITUAL_ROAD: "ritual-road",
+  ESCARPMENT: "escarpment",
 };
 const BACKGROUND_IMAGES = {
   [AREA_KEYS.SHRINE]: "./assets/dockside_stage_uncluttered_v2_1920x1080.png",
   [AREA_KEYS.DOCK]: "./assets/dock_transition_dock_1920x1080.png",
   [AREA_KEYS.RITUAL_ROAD]: "./assets/ritual_road_ink_negative_space_1920x1080.png",
+  [AREA_KEYS.ESCARPMENT]: "./assets/escarpment_cliff_negative_ink_v2_1920x1080.png",
 };
 const AREA_DATA_FILES = {
   [AREA_KEYS.SHRINE]: {
@@ -290,6 +292,8 @@ let npcActors = [];
 let hostileActors = [];
 let activeNpcActor;
 let navOverlay;
+let navLightLayer;
+let navLightTexture;
 let gridOverlay;
 let darknessOverlay;
 let waterReflections = [];
@@ -962,6 +966,58 @@ function createStaticLightGlowTexture() {
   return PIXI.Texture.from(canvas);
 }
 
+function createNavigationLightTexture() {
+  const size = 96;
+  const center = size / 2;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+
+  const halo = ctx.createRadialGradient(center, center, 1, center, center, center);
+  halo.addColorStop(0, "rgba(255,248,202,0.62)");
+  halo.addColorStop(0.18, "rgba(226,230,183,0.34)");
+  halo.addColorStop(0.48, "rgba(174,205,161,0.12)");
+  halo.addColorStop(1, "rgba(174,205,161,0)");
+  ctx.fillStyle = halo;
+  ctx.fillRect(0, 0, size, size);
+
+  ctx.save();
+  ctx.translate(center, center);
+  ctx.rotate(-0.34);
+  ctx.shadowColor = "rgba(255,248,202,0.62)";
+  ctx.shadowBlur = 11;
+  ctx.fillStyle = "rgba(255,247,202,0.86)";
+  ctx.beginPath();
+  ctx.moveTo(-4, -19);
+  ctx.lineTo(9, -7);
+  ctx.lineTo(3, 18);
+  ctx.lineTo(-11, 6);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(center, center);
+  ctx.lineCap = "round";
+  ctx.strokeStyle = "rgba(255,252,224,0.72)";
+  ctx.lineWidth = 2.2;
+  ctx.shadowColor = "rgba(255,248,202,0.45)";
+  ctx.shadowBlur = 8;
+  ctx.beginPath();
+  ctx.moveTo(-18, -6);
+  ctx.lineTo(-5, -1);
+  ctx.moveTo(8, -13);
+  ctx.lineTo(18, -19);
+  ctx.moveTo(7, 11);
+  ctx.lineTo(17, 17);
+  ctx.stroke();
+  ctx.restore();
+
+  softenCanvas(ctx, size, size, 1);
+  return PIXI.Texture.from(canvas);
+}
+
 function createWaterReflectionTexture() {
   const width = 96;
   const height = 220;
@@ -1061,9 +1117,11 @@ function renderNavigationOverlay() {
   if (!navLayer) return;
   navLayer.removeChildren();
   navOverlay = new PIXI.Graphics();
-  navLayer.addChild(navOverlay);
+  navLightLayer = new PIXI.Container();
+  navLayer.addChild(navOverlay, navLightLayer);
   navOverlay.clear();
   navOverlay.visible = currentAreaKey === AREA_KEYS.RITUAL_ROAD;
+  navLightLayer.visible = navOverlay.visible;
   if (!navOverlay.visible) return;
 
   for (const edge of navigationEdges) {
@@ -1109,6 +1167,11 @@ function renderNavigationOverlay() {
     const isCurrent = node.id === state.currentNodeId;
     const isReachable = reachable.has(node.id);
     const isSelected = node.id === state.selectedNodeId;
+    if (!state.navEdit) {
+      addNavigationLightNode(node, { isSelected, isCurrent, isReachable });
+      if (shouldShowNodeLabel(node, { isSelected, isCurrent })) addNodeLabel(node, { isSelected, isCurrent });
+      continue;
+    }
     const radius = isSelected ? 13 : isCurrent ? 11 : isReachable ? 9 : 8;
     navOverlay.circle(node.x, node.y, radius + 5);
     navOverlay.fill({
@@ -1131,10 +1194,60 @@ function renderNavigationOverlay() {
   }
 }
 
+function addNavigationLightNode(node, { isSelected, isCurrent, isReachable }) {
+  if (!navLightTexture) navLightTexture = createNavigationLightTexture();
+  const isRevealed = isNodeRevealed(node);
+  const marker = new PIXI.Sprite(navLightTexture);
+  marker.anchor.set(0.5);
+  marker.x = node.x;
+  marker.y = node.y;
+  marker.blendMode = "screen";
+  marker.tint = nodeLightColor(node, { isSelected, isCurrent, isReachable });
+  marker.alpha = isRevealed ? (isCurrent ? 0.92 : 0.74) : 0.5;
+  marker.scale.set(isCurrent ? 0.58 : isReachable ? 0.5 : 0.43);
+  marker.parts = {
+    nodeId: node.id,
+    revealed: isRevealed,
+    baseAlpha: marker.alpha,
+    baseScale: marker.scale.x,
+    phase: lightPhaseForId(node.id),
+  };
+  navLightLayer.addChild(marker);
+}
+
+function updateNavigationLightNodes(timeMS) {
+  if (!navLightLayer?.visible || state.navEdit) return;
+  const t = timeMS * 0.001;
+  for (const marker of navLightLayer.children) {
+    const parts = marker.parts;
+    if (!parts || parts.revealed) {
+      if (parts) {
+        marker.alpha = parts.baseAlpha;
+        marker.scale.set(parts.baseScale);
+      }
+      continue;
+    }
+    const pulse = 0.5 + Math.sin(t * 2.25 + parts.phase) * 0.5;
+    const ember = 0.5 + Math.sin(t * 5.4 + parts.phase * 1.7) * 0.5;
+    marker.alpha = parts.baseAlpha + pulse * 0.16 + ember * 0.05;
+    marker.scale.set(parts.baseScale * (0.92 + pulse * 0.16));
+  }
+}
+
 function shouldShowNodeLabel(node, { isSelected, isCurrent }) {
   if (state.navEdit || isSelected) return true;
-  return (node.discovery?.state === "discovered" || discoveredNodeIds.has(node.id)) &&
+  return isNodeRevealed(node) &&
     node.discovery?.showLabelWhenDiscovered !== false;
+}
+
+function isNodeRevealed(node) {
+  return node.discovery?.state === "discovered" || discoveredNodeIds.has(node.id);
+}
+
+function lightPhaseForId(id) {
+  let hash = 0;
+  for (const char of String(id)) hash = (hash * 31 + char.charCodeAt(0)) % 997;
+  return hash * 0.037;
 }
 
 function nodeColor(node, { isSelected, isCurrent, isReachable }) {
@@ -1146,6 +1259,16 @@ function nodeColor(node, { isSelected, isCurrent, isReachable }) {
   if (node.trigger?.type === "combat") return 0xd69048;
   if (isReachable) return 0xc5d994;
   return 0x6d7f5b;
+}
+
+function nodeLightColor(node, { isSelected, isCurrent, isReachable }) {
+  if (isSelected) return 0xfff1c8;
+  if (isCurrent) return 0xfff4ce;
+  if (node.trigger?.type === "area_transition") return 0xffc3a6;
+  if (node.trigger?.type === "conversation") return 0xcdeef2;
+  if (node.trigger?.type === "combat") return 0xffc06f;
+  if (isReachable) return 0xf2efbd;
+  return 0xc8d8a8;
 }
 
 function addNodeLabel(node, { isSelected, isCurrent }) {
@@ -3067,6 +3190,7 @@ function tick(ticker) {
   moveHeldPlayer(deltaMS);
   updateWaterReflections(elapsedMS);
   renderStaticLighting(elapsedMS);
+  updateNavigationLightNodes(elapsedMS);
   updateLanternaGlow(playerActor);
   updateActorDepth(playerActor);
   updateActorDepth(npcActor);

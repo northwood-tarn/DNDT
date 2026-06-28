@@ -7,6 +7,7 @@
   "scripts": {
     "validate": "node tools/validate.js",
     "validate:spells": "node tools/validate-spells.js",
+    "audit:level-up": "node tools/audit-level-up-choices.mjs",
     "audit:spell-actions": "node tools/audit-spell-actions.js",
     "report:class-features": "node tools/report-class-feature-implementation.js",
     "report:high-level-readiness": "node tools/report-high-level-readiness.js",
@@ -17,6 +18,10 @@
     "creator:harness": "node tools/no-cache-static-server.mjs app",
     "preview:combat": "env -u ELECTRON_RUN_AS_NODE electron . --combat-preview",
     "preview:creator": "env -u ELECTRON_RUN_AS_NODE electron . --creator-preview",
+    "preview:fog": "env -u ELECTRON_RUN_AS_NODE electron . --fog-preview",
+    "preview:inventory-small": "env -u ELECTRON_RUN_AS_NODE electron . --inventory-small-preview",
+    "preview:rest-prepare-small": "env -u ELECTRON_RUN_AS_NODE electron . --rest-prepare-small-preview",
+    "sketcher": "node tools/no-cache-static-server.mjs app",
     "dev": "npm run validate || true && electron .",
     "play": "electron .",
     "start": "electron .",

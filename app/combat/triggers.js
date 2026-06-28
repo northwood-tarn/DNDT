@@ -1,4 +1,4 @@
-import { addCondition } from "./actor.js";
+import { addCondition, removeCondition } from "./actor.js";
 import { combatAuraEffectsAffectingActor, hasAuraConditionPrevention } from "./auras.js";
 import { combatObjectsAffectingActor } from "./combatObjects.js";
 import { applyDamageAmount, rollSaveD20 } from "./combatEffectsResolution.js";
@@ -68,6 +68,40 @@ function applyTriggeredEffect(snapshot, source, actor, effect, dice, log, contex
       trigger: "passive",
     });
     log.add("trigger.fired", triggerDetail(snapshot, source, actor, effect, context));
+    return;
+  }
+
+  if (effect.type === "temp_hp") {
+    const before = actor.tempHp || 0;
+    actor.tempHp = Math.max(before, effect.amount || 0);
+    log.add("temp_hp.applied", {
+      round: snapshot.round,
+      sourceId: source.id,
+      sourceName: source.name,
+      targetId: actor.id,
+      targetName: actor.name,
+      actionName: source.name,
+      amount: actor.tempHp,
+      before,
+    });
+    log.add("trigger.fired", triggerDetail(snapshot, source, actor, effect, context));
+    return;
+  }
+
+  if (effect.type === "remove_conditions") {
+    const removed = [];
+    for (const conditionId of effect.conditions || []) {
+      if (!removeCondition(actor, conditionId)) continue;
+      removed.push(conditionId);
+      log.add("condition.removed", {
+        round: snapshot.round,
+        actorId: actor.id,
+        actorName: actor.name,
+        condition: conditionId,
+        reason: source.name,
+      });
+    }
+    if (removed.length) log.add("trigger.fired", triggerDetail(snapshot, source, actor, effect, { ...context, removed }));
     return;
   }
 
