@@ -41,6 +41,5 @@ Large working files such as PSDs. These are not runtime assets.
 Area authoring imports and exports are kept separately:
 
 ```text
-app/area_author_tool/imports/
-app/area_author_tool/exports/
+Retired area-author imports/exports are no longer part of the active asset workflow.
 ```

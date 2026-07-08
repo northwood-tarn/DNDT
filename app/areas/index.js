@@ -12,7 +12,7 @@
 
 import { AREAS, getArea as _getArea } from "./registry.js";
 
-export const DEFAULT_AREA_ID = "dockside";
+export const DEFAULT_AREA_ID = null;
 
 function applyAreaDefaults(area) {
   if (!area) return area;
@@ -59,7 +59,7 @@ export function GetArea(id) {
 
 // Legacy helper kept for older callers; prefer getArea() directly.
 export function loadArea(areaId){
-  return applyAreaDefaults(_getArea(areaId) || _getArea(DEFAULT_AREA_ID));
+  return applyAreaDefaults(_getArea(areaId) || (DEFAULT_AREA_ID ? _getArea(DEFAULT_AREA_ID) : null));
 }
 
 export { AREAS };

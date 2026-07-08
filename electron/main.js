@@ -15,7 +15,7 @@ function resolveFromApp(...segments) {
 }
 
 function resolveSafeRelPath(relPath) {
-  // Accept paths like "./app/areas/00_docks/dockside.ink.json" and resolve against app root.
+  // Accept app-relative content paths and resolve them against the app root.
   // Reject absolute paths and any attempt to escape via "..".
   const base = app.getAppPath();
   const raw = String(relPath ?? "").trim();

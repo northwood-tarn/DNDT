@@ -1,6 +1,6 @@
 // LootScene.js — Loot overlay UI (NOT a scene)
 //
-// Usage from ExplorationScene / reward flows, etc.:
+// Usage from reward flows, etc.:
 //   import LootScene from "./LootScene.js";
 //   LootScene.open({
 //     gold: { min: 5, max: 20 }, // or a fixed number, or omit for none

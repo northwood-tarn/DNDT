@@ -20,7 +20,6 @@
  *   // All external resources live here — no top-level shortcuts.
  *   assets: {
  *     ink?: string;                     // Dialogue scenes
- *     tmj?: string;                     // Tiled exploration maps
  *     map?: string;                     // Future non-Tiled maps
  *     image?: string;                   // Static backgrounds / cutscenes
  *   };
@@ -32,34 +31,14 @@
  * RULES:
  * - Scenes and systems MUST access assets via area.assets.*
  * - No scene may assume a field exists outside this contract
- * - exploration_map areas MUST define assets.tmj
+ * - exploration_map areas MUST define assets.map or assets.image
  * - dialogue areas MUST define assets.ink
  * - This contract is enforced conceptually here and programmatically elsewhere
  */
 
-import GENERATED_AREAS from "./registry.generated.js";
-
-// Hand-authored areas that are NOT generated from Ink
-// (e.g. exploration maps, special scenes).
-const STATIC_AREAS = {
-  fields: {
-    id: "fields",
-    title: "Fields",
-    kind: "exploration_map",
-    assets: {
-      tmj: "areas/00_docks/fields.tmj",
-      image: "areas/00_docks/map.png",
-    },
-  },
-};
-
-// Merge order:
-// - Generated dialogue areas first (canonical narrative source)
-// - Static areas override or extend if needed
-export const AREAS = {
-  ...GENERATED_AREAS,
-  ...STATIC_AREAS,
-};
+// No legacy area records are registered here. The old Tiled/compiled-Ink
+// dockside prototype has been archived under app/docs/archive for reference.
+export const AREAS = {};
 
 export function getArea(id) {
   return AREAS[id] || null;

@@ -10,8 +10,6 @@
 //
 // This module is UI-only. It does not mutate state.
 
-import { getMiniMapLayout } from "./MiniMapLayouts.js";
-
 const SVG_NS = "http://www.w3.org/2000/svg";
 
 function _el(tag, attrs = {}, children = []) {
@@ -160,8 +158,7 @@ export function renderMiniMap(opts) {
   const cy = size / 2;
   const step = Math.round(size * 0.40); // 25% larger spacing within 150px
 
-  // Layout: prefer generated layouts.
-  const layout = getMiniMapLayout(currentAreaId) || _defaultLayoutFor(currentAreaId, nextAreas);
+  const layout = _defaultLayoutFor(currentAreaId, nextAreas);
 
   // Choose a label position for the *current* node that avoids link directions.
   const _curGrid = layout[currentAreaId] || [0, 0];

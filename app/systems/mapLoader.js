@@ -226,9 +226,7 @@ export function makeInMemoryLoader(rawById){
 // This is a small compatibility wrapper used by explorationSystem.
 // It supports:
 //  - area.map / area.mapJson: already-parsed ExplorationMap JSON
-//  - tmj: a TMJ path; delegates to tmjLoader when available
-//
-// NOTE: this module itself remains IO-free; TMJ loading is delegated.
+//  - area.map / area.mapJson: already-parsed ExplorationMap JSON
 export async function loadMapFromArea({ areaId, area, tmj } = {}) {
   // 1) If the area already carries a map JSON blob, just normalize it.
   const raw = (area && (area.mapJson || area.map)) ? (area.mapJson || area.map) : null;
@@ -236,50 +234,9 @@ export async function loadMapFromArea({ areaId, area, tmj } = {}) {
     return fromJSON(raw);
   }
 
-  // 2) If we were given a TMJ path, delegate to tmjLoader.
-  if (tmj) {
-    // Lazy import to avoid circular deps and to keep this module mostly pure.
-    const mod = await import("./tmjLoader.js");
+  if (tmj) throw new Error("loadMapFromArea: TMJ loading has been retired.");
 
-    // Try a few plausible export names (project drift compatibility).
-    const candidates = [
-      "loadTMJAsExplorationMap",
-      "loadTMJToExplorationMap",
-      "loadTMJMap",
-      "loadTMJ",
-      "fromTMJ",
-      "parseTMJ",
-      "load",
-    ];
-
-    for (const name of candidates) {
-      const fn = mod && typeof mod[name] === "function" ? mod[name] : null;
-      if (!fn) continue;
-
-      const result = await fn({ areaId, area, tmj });
-
-      // If tmjLoader already returns an ExplorationMap-shaped object, accept it.
-      // If it returns raw JSON, normalize it.
-      if (result && result.profile === PROFILE) return result;
-      if (result && typeof result === "object" && (result.profile === PROFILE || result.width)) {
-        // Best-effort: if it looks like map JSON, validate/normalize.
-        try {
-          return fromJSON(result);
-        } catch (_) {
-          return result;
-        }
-      }
-
-      return result;
-    }
-
-    const keys = mod ? Object.keys(mod).sort().join(", ") : "(no module)";
-    throw new Error(
-      `tmjLoader does not export a known TMJ load function. Looked for: ${candidates.join(", ")}. Available exports: ${keys}`
-    );
-  }
-
-  throw new Error(`loadMapFromArea: no map data for area "${areaId || (area && area.id) || "(unknown)"}" (expected area.mapJson/area.map or tmj path)`);
+  throw new Error(`loadMapFromArea: no map data for area "${areaId || (area && area.id) || "(unknown)"}" (expected area.mapJson/area.map)`);
 }
 
 export default {

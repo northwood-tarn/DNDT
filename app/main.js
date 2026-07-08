@@ -1,10 +1,6 @@
 // app/main.js (ESM)
 import { attachExitListener, routeTo } from "./engine/sceneRouter.js";
-import { emit } from "./engine/events.js";
 import "./scenes/index.js";
-
-import { startExplorationRenderer } from "./renderers/explorationRenderer.js";
-import { startExplorationSystem } from "./systems/explorationSystem.js";
 
 // === Dev console mirror -> in-game log (bottom pane) ===
 (function attachInGameLogMirror() {
@@ -61,82 +57,6 @@ async function startGame() {
     attachExitListener();
   } catch (e) {
     console.warn("sceneRouter attachExitListener failed:", e);
-  }
-
-  // Start the exploration domain system early.
-  // It subscribes to exploration:* events and emits exploration:ready / exploration:moved.
-  try {
-    startExplorationSystem();
-  } catch (e) {
-    console.warn("explorationSystem start failed:", e);
-  }
-
-  // Start the exploration renderer event bindings early.
-  // It should subscribe to exploration:* events and render once PIXI is ready.
-  try {
-    startExplorationRenderer();
-  } catch (e) {
-    console.warn("explorationRenderer start failed:", e);
-  }
-
-  // TEMP: Input bypass for exploration movement.
-  // If your engine/inputManager is swallowing keys due to focus/DOM capture, this will still drive exploration.
-  // Safe: explorationSystem ignores moveIntent unless exploration is active.
-  try {
-    window.addEventListener(
-      "keydown",
-      (e) => {
-        // Don’t interfere with typing into inputs.
-        const tag =
-          e.target && e.target.tagName ? String(e.target.tagName).toLowerCase() : "";
-        if (tag === "input" || tag === "textarea" || e.target?.isContentEditable) return;
-
-        let dir = null;
-
-        switch (e.key) {
-          case "ArrowUp":
-            dir = "up";
-            break;
-          case "ArrowDown":
-            dir = "down";
-            break;
-          case "ArrowLeft":
-            dir = "left";
-            break;
-          case "ArrowRight":
-            dir = "right";
-            break;
-
-          case "w":
-          case "W":
-            dir = "up";
-            break;
-          case "s":
-          case "S":
-            dir = "down";
-            break;
-          case "a":
-          case "A":
-            dir = "left";
-            break;
-          case "d":
-          case "D":
-            dir = "right";
-            break;
-        }
-
-        if (!dir) return;
-
-        e.preventDefault();
-        emit("exploration:moveIntent", dir);
-        console.info("[main.js] emitted exploration:moveIntent", dir);
-      },
-      { passive: false }
-    );
-
-    console.info("[main.js] TEMP exploration key-bypass active (WASD/Arrows -> exploration:moveIntent)");
-  } catch (e) {
-    console.warn("[main.js] failed to attach TEMP exploration key-bypass:", e);
   }
 
   // Hand off to BootScene; Boot/Preload will initialise Pixi and then

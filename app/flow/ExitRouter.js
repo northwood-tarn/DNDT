@@ -1,5 +1,5 @@
 // app/flow/ExitRouter.js
-// Registry-aware routing for exits: exploration_map, dialogue_area, combat_map.
+// Registry-aware routing for exits: dialogue_area and combat_map.
 
 import { sceneManager } from "../engine/sceneManager.js";
 import { getArea } from "../areas/registry.js";
@@ -20,13 +20,7 @@ export function initExitRouter() {
   window.addEventListener('game:postCombatOutcome', async (ev) => {
     const { outcome, returnAreaId } = ev.detail || {};
     if (outcome === "victory" && returnAreaId) {
-      try {
-        const modExp = await import("../scenes/ExplorationScene.js");
-        const ExplorationScene = modExp.default || modExp.ExplorationScene || modExp;
-        sceneManager.replace(ExplorationScene, { areaId: returnAreaId });
-      } catch (e) {
-        console.warn("ExitRouter: failed to return to exploration after combat:", e);
-      }
+      console.warn("ExitRouter: exploration return requested after combat, but the legacy exploration scene has been retired.", returnAreaId);
     }
   });
 
@@ -75,10 +69,7 @@ export async function routeExit(exit) {
     try {
       switch (area.kind) {
         case "exploration_map": {
-          const modExp = await import("../scenes/ExplorationScene.js");
-          const ExplorationScene = modExp.default || modExp.ExplorationScene || modExp;
-          const tmj = area.tmj || area.assets?.tmj;
-          sceneManager.replace(ExplorationScene, { areaId: exit.toArea, tmj, entry });
+          console.warn("ExitRouter: exploration_map routing is retired.", { areaId: exit.toArea, entry });
           return;
         }
         case "dialogue_area": {
@@ -95,9 +86,7 @@ export async function routeExit(exit) {
           return;
         }
         default: {
-          const modExp = await import("../scenes/ExplorationScene.js");
-          const ExplorationScene = modExp.default || modExp.ExplorationScene || modExp;
-          sceneManager.replace(ExplorationScene, { areaId: exit.toArea, entry });
+          console.warn("ExitRouter: unsupported area kind:", area.kind, area);
           return;
         }
       }

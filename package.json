@@ -26,7 +26,6 @@
     "play": "electron .",
     "start": "electron .",
     "spike:author": "node app/visual_spike/authoringServer.mjs",
-    "area:author": "node app/area_author_tool/server.mjs",
     "verify:events": "node tools/verify-events.js --root . --registry app/docs/EVENTS_REGISTRY.md"
   },
   "dependencies": {

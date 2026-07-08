@@ -35,7 +35,7 @@ import { getState, setState, derivePlayerStats } from "../state/stateStore.js";
 window.__DNDT_getState = getState;
 
 import restCounters from "../state/rest_counters.js";
-import { getArea } from "../areas/registry.generated.js";
+import { getArea } from "../areas/registry.js";
 
 // Session-only cache (survives scene re-entry because it lives at module scope)
 const SESSION_SEEN_DESC = new Set();
@@ -233,7 +233,7 @@ export default class DialogueScene {
     // We support three cases:
     //  1) script is already a compiled Ink JSON object
     //  2) script is a JSON string
-    //  3) script is a relative path to a .json file (e.g. "./areas/00_pier/dockside.ink.json")
+    //  3) script is a relative path to a .json file
     let storySource = resolvedScript;
 
     try {

@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "preview:combat": "npm --prefix DNDT run preview:combat",
+    "preview:creator": "npm --prefix DNDT run preview:creator"
+  },
+  "dependencies": {
+    "inkjs": "^2.3.2"
+  }
+}

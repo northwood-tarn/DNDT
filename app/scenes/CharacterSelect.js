@@ -1,7 +1,6 @@
 // app/scenes/CharacterSelect.js — panes with blue headings, Lucky fallback, 2‑col abilities, Skilled picker (refined)
 
 import { sceneManager } from "../engine/sceneManager.js";
-import ExplorationScene from "./ExplorationScene.js";
 import { state } from "../state/stateStore.js";
 import { classes } from "../data/classes.js";
 import { backgrounds } from "../data/backgrounds.js";

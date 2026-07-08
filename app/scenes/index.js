@@ -4,7 +4,6 @@ import MainMenuScene from "./MainMenuScene.js";
 import CharacterSelectScene from "./CharacterSelectScene.js";
 import LoadGameScene from "./LoadGameScene.js";
 import DialogueScene from "./DialogueScene.js";
-import ExplorationScene from "./ExplorationScene.js";
 import GameOverScene from "./GameOverScene.js";
 import SettingsScene from "./SettingsScene.js";
 import IntroScene from "./IntroScene.js";
@@ -19,7 +18,6 @@ export const SCENES = {
   boot: "boot",
   preload: "preload",
   dialogue: "dialogue",
-  exploration: "exploration",
   combat: "combat",
   gameOver: "gameOver",
   settings: "settings",
@@ -36,7 +34,6 @@ registerScene("preload", PreloadScene);
 
 // Core gameplay loops
 registerScene("dialogue", DialogueScene);
-registerScene("exploration", ExplorationScene);
 
 // Edge scenes
 registerScene("gameOver", GameOverScene);

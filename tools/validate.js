@@ -240,8 +240,13 @@ async function checkRegistry() {
       printErr(`[registry] Dialogue area "${key}" missing required "assets.ink" property`);
       errors++;
     }
-    if (entry.kind === 'exploration_map' && typeof entry.assets.tmj !== 'string') {
-      printErr(`[registry] Exploration area "${key}" missing required "assets.tmj" property`);
+    if (
+      entry.kind === 'exploration_map'
+      && typeof entry.assets.tmj !== 'string'
+      && typeof entry.assets.map !== 'string'
+      && typeof entry.assets.image !== 'string'
+    ) {
+      printErr(`[registry] Exploration area "${key}" missing required map asset property`);
       errors++;
     }
   }

@@ -2,14 +2,13 @@
 //
 // Exploration domain system.
 // Owns exploration state, movement rules, visibility hooks, and encounter triggers.
-// Consumes intent events from ExplorationScene and emits domain outcomes.
+// Consumes exploration intent events and emits domain outcomes.
 //
 // This module has NO rendering code and NO direct DOM access.
 
 import { on, off, emit } from "../engine/events.js";
 import { getState } from "../state/stateStore.js";
 import { loadMapFromArea } from "./mapLoader.js";
-import { loadTMJ } from "../loaders/pixiMapAdapter.js";
 import { createMapSystem } from "./mapSystem.js";
 import { createVisibilitySystem } from "./visibilitySystem.js";
 import { createEnemyAwarenessSystem } from "./enemyAwareness.js";
@@ -73,42 +72,7 @@ async function onEnterExploration({ areaId, area: areaDef, tmj } = {}) {
   area = areaDef;
   active = true;
 
-  // Load map (canonical: system decides how area assets are interpreted)
-  // Prefer TMJ pipeline when provided by the scene/router.
-  if (typeof tmj === "string" && tmj.trim()) {
-    try {
-      const tmjData = await loadTMJ(tmj);
-      const tileSize = tmjData?.world?.tiles?.size || 48;
-
-      map = {
-        id: area?.id || areaId,
-        title: area?.title,
-        profile: "ExplorationMap",
-        width: tmjData.world.tiles.w,
-        height: tmjData.world.tiles.h,
-        tileSize,
-        image: tmjData.imageURL,
-        pixelWidth: tmjData.world.native.w,
-        pixelHeight: tmjData.world.native.h,
-        start: tmjData.spawnCell || { x: 0, y: 0 },
-        minimap: true,
-        labels: [],
-        triggers: [],
-        triggersByKey: {},
-
-        // Collision (grid canonical)
-        blocked: tmjData.blocked,
-        isBlocked: tmjData.isBlocked
-      };
-    } catch (e) {
-      console.error("[explorationSystem] Failed to load TMJ:", tmj, e);
-      teardown();
-      return;
-    }
-  } else {
-    // Legacy JSON map path (kept for compatibility while content migrates)
-    map = loadMapFromArea(area);
-  }
+  map = await loadMapFromArea({ areaId, area });
 
   // Build systems
   mapSystem = createMapSystem({ map, stateStore: getState() });
