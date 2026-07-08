@@ -9,7 +9,6 @@
 import { getArea } from "../areas/index.js";
 import { setState } from "../state/stateStore.js";
 import { emit } from "./events.js";
-import { attachExplorationMovement } from "./inputManager.js";
 
 /**
  * @typedef {"mainMenu" | "dialogue" | "exploration" | "combat" | "gameOver" | "systemCutscene"} SceneName
@@ -39,36 +38,6 @@ import { attachExplorationMovement } from "./inputManager.js";
 let currentScene = null;
 let currentSceneName = null;
 const registry = new Map();
-
-// ---------------------------------------------------------------------------
-// Exploration input bridge (WASD/Arrows -> exploration:moveIntent)
-// ---------------------------------------------------------------------------
-
-let detachExplorationInput = null;
-
-function detachExplorationMovementBridge() {
-  if (typeof detachExplorationInput === "function") {
-    try {
-      detachExplorationInput();
-    } catch (e) {
-      console.warn("[sceneRouter] Failed detaching exploration input bridge:", e);
-    }
-  }
-  detachExplorationInput = null;
-}
-
-function attachExplorationMovementBridge() {
-  // Attach a tick-driven movement bridge. Actual movement legality is handled in explorationSystem.
-  detachExplorationMovementBridge();
-
-  detachExplorationInput = attachExplorationMovement({
-    emit,
-    isEnabled: () => currentSceneName === "exploration",
-    stepMs: 120,
-    tickEventName: "game:tick",
-    target: typeof window !== "undefined" ? window : null,
-  });
-}
 
 /**
  * Register a scene instance or factory under a logical name.
@@ -153,10 +122,6 @@ export function changeScene(nameOrObj, data) {
   console.info("[sceneRouter] Starting scene:", currentSceneName, "with payload:", data || {});
 
   emit("scene:enter", { sceneId: currentSceneName });
-
-  if (currentSceneName === "exploration") {
-    attachExplorationMovementBridge();
-  }
 
   if (currentScene && typeof currentScene.start === "function") {
     try {

@@ -5,7 +5,7 @@
 **Location:** docs/enemy_awareness_stub.md  
 **Role:** Systems spec (`systems/enemyAwareness.js`)  
 **Calls:** `data/enemies.js`, `utils/visionUtils.js`  
-**Called By:** `systems/combatSystem.js`, `scenes/ExplorationScene.js` (events)  
+**Called By:** combat systems/tests and any future area runtime that needs detection events  
 **Side Effects:** Emits events like `enemy:spotted`, `enemy:alerted`  
 **Routing:** no  
 **Notes:** Awareness must not route scenes; only emits state/events.

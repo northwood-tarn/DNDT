@@ -9,8 +9,8 @@
 - `flow/` — **only place that changes scenes** and routes between areas; listens to game events and calls `sceneManager.replace(...)`.
 - `engine/` — deterministic rules & math (no DOM, no Pixi, no file I/O). Examples: action economy, movement math, spell execution, log utilities, `sceneManager` host/ticker.
 - `systems/` — gameplay glue that wires data + engine + renderer. Examples: map pipeline, dialogue runtime, encounters, lighting/perception, save/load.
-- `scenes/` — screen controllers (Title, Exploration, Combat). Scenes call systems; they do not decide global navigation.
-- `renderer/` — Pixi/DOM rendering layers, world view, FX, minimap, filters.
+- `scenes/` — screen controllers (Title, Dialogue, system cutscenes). Scenes call systems; they do not decide global navigation.
+- `renderer/` — Pixi/DOM rendering layers, world view, FX, minimap, filters. Retired exploration renderers should not be reintroduced without a new area-runtime plan.
 - `state/` — state store and slices (player, combat, rest counters).
 - `data/` — content: enemies, items, classes, spells, areas, dialogue JSON.
 - `ui/` — UI widgets and overlays (top bar, modals, SFX hooks).
@@ -57,7 +57,7 @@ ui       → renderer, systems (for events), state
 
 ## Naming Conventions
 
-- Modules export a single default if they represent a Scene: `export default class ExplorationScene {}`
+- Modules export a single default if they represent a Scene: `export default class DialogueScene {}`
 - Systems export functions/objects: `export function buildEncounter(...)`
 - Events use `namespace:eventName` (e.g., `game:exit`, `ui:loadGame`).
 

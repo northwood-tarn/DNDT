@@ -1,383 +1,141 @@
 {
-  "version": "1.0.0",
+  "version": "2.0.0",
+  "updated": "2026-07-08",
+  "notes": [
+    "ExplorationScene and the old Tiled area graph were retired.",
+    "This file describes currently registered scene ids, not planned future scene shells."
+  ],
   "nodes": [
     {
-      "id": "Boot",
+      "id": "boot",
       "type": "scene",
       "filePath": "app/scenes/BootScene.js",
-      "description": "Initialize environment and router"
+      "description": "Initial boot route"
     },
     {
-      "id": "Preload",
+      "id": "preload",
       "type": "scene",
       "filePath": "app/scenes/PreloadScene.js",
-      "description": "Load core assets/settings"
+      "description": "Load core app prerequisites"
     },
     {
-      "id": "Splash",
-      "type": "scene",
-      "filePath": "app/scenes/SplashScene.js",
-      "description": "Logos, skip allowed"
-    },
-    {
-      "id": "MainMenu",
+      "id": "mainMenu",
       "type": "scene",
       "filePath": "app/scenes/MainMenuScene.js",
       "description": "Root menu"
     },
     {
-      "id": "ProfileSelect",
-      "type": "scene",
-      "filePath": "app/scenes/ProfileSelectScene.js",
-      "description": "Create/select/delete profile"
-    },
-    {
-      "id": "CharacterSelect",
+      "id": "characterSelect",
       "type": "scene",
       "filePath": "app/scenes/CharacterSelectScene.js",
-      "description": "Choose pre-made character"
+      "description": "Choose or create a character"
     },
     {
-      "id": "LoadGame",
+      "id": "loadGame",
       "type": "scene",
       "filePath": "app/scenes/LoadGameScene.js",
-      "description": "Select save; validate"
+      "description": "Select and validate saves"
     },
     {
-      "id": "Settings",
-      "type": "scene",
-      "filePath": "app/scenes/SettingsScene.js",
-      "description": "Settings tabs"
-    },
-    {
-      "id": "Credits",
-      "type": "scene",
-      "filePath": "app/scenes/CreditsScene.js",
-      "description": "Credits scroll"
-    },
-    {
-      "id": "SaveError",
-      "type": "scene",
-      "filePath": "app/scenes/SaveErrorScene.js",
-      "description": "Save invalid/corrupt"
-    },
-    {
-      "id": "Intro",
-      "type": "scene",
-      "filePath": "app/scenes/IntroScene.js",
-      "description": "Basic onboarding"
-    },
-    {
-      "id": "Exploration",
-      "type": "scene",
-      "filePath": "app/scenes/ExplorationScene.js",
-      "description": "Grid movement & interaction"
-    },
-    {
-      "id": "Dialogue",
+      "id": "dialogue",
       "type": "scene",
       "filePath": "app/scenes/DialogueScene.js",
-      "description": "Branching dialogue"
+      "description": "Branching dialogue and current story-area host"
     },
     {
-      "id": "Battle",
-      "type": "scene",
-      "filePath": "app/scenes/BattleScene.js",
-      "description": "Turn-based combat"
+      "id": "combat",
+      "type": "external",
+      "filePath": "app/combat_test/index.html",
+      "description": "Combat harness/runtime route target"
     },
     {
-      "id": "PostBattleRewards",
-      "type": "scene",
-      "filePath": "app/scenes/PostBattleRewardsScene.js",
-      "description": "Rewards screen"
-    },
-    {
-      "id": "Loot",
-      "type": "scene",
-      "filePath": "app/scenes/LootScene.js",
-      "description": "Pickup/container"
-    },
-    {
-      "id": "Rest",
-      "type": "scene",
-      "filePath": "app/scenes/RestScene.js",
-      "description": "Ember menu (heal/save/fast travel)"
-    },
-    {
-      "id": "Merchant",
-      "type": "scene",
-      "filePath": "app/scenes/MerchantScene.js",
-      "description": "Shop UI"
-    },
-    {
-      "id": "AreaTransition",
-      "type": "scene",
-      "filePath": "app/scenes/AreaTransitionScene.js",
-      "description": "Load/unload areas"
-    },
-    {
-      "id": "SystemCutscene",
-      "type": "scene",
-      "filePath": "app/scenes/SystemCutsceneScene.js",
-      "description": "Non-narrative cut-ins"
-    },
-    {
-      "id": "FinalBoss",
-      "type": "scene",
-      "filePath": "app/scenes/FinalBossScene.js",
-      "description": "Final battle"
-    },
-    {
-      "id": "Ending",
-      "type": "scene",
-      "filePath": "app/scenes/EndingScene.js",
-      "description": "Epilogue/credits handoff"
-    },
-    {
-      "id": "GameOver",
+      "id": "gameOver",
       "type": "scene",
       "filePath": "app/scenes/GameOverScene.js",
       "description": "Retry or menu"
     },
     {
-      "id": "PauseOverlay",
-      "type": "overlay",
-      "filePath": "app/overlays/PauseOverlay.js",
-      "description": "Pause menu"
+      "id": "saveError",
+      "type": "scene",
+      "filePath": "app/scenes/SaveErrorScene.js",
+      "description": "Save invalid or corrupt"
     },
     {
-      "id": "LanternaHUDOverlay",
-      "type": "overlay",
-      "filePath": "app/overlays/LanternaHUDOverlay.js",
-      "description": "Lantern/oil HUD"
+      "id": "settings",
+      "type": "scene",
+      "filePath": "app/scenes/SettingsScene.js",
+      "description": "Settings UI"
     },
     {
-      "id": "NotificationOverlay",
-      "type": "overlay",
-      "filePath": "app/overlays/NotificationOverlay.js",
-      "description": "Toast notifications"
+      "id": "intro",
+      "type": "scene",
+      "filePath": "app/scenes/IntroScene.js",
+      "description": "Introductory flow"
     },
     {
-      "id": "StatusEffectsOverlay",
-      "type": "overlay",
-      "filePath": "app/overlays/StatusEffectsOverlay.js",
-      "description": "Active effects"
-    },
-    {
-      "id": "TargetInfoOverlay",
-      "type": "overlay",
-      "filePath": "app/overlays/TargetInfoOverlay.js",
-      "description": "Inspect/hover info"
-    },
-    {
-      "id": "SkillCheckOverlay",
-      "type": "overlay",
-      "filePath": "app/overlays/SkillCheckOverlay.js",
-      "description": "Roll breakdown"
-    },
-    {
-      "id": "PromptOverlay",
-      "type": "overlay",
-      "filePath": "app/overlays/PromptOverlay.js",
-      "description": "Confirmation prompts"
-    },
-    {
-      "id": "JournalOverlay",
-      "type": "overlay",
-      "filePath": "app/overlays/JournalOverlay.js",
-      "description": "Tabs: Quests/Notes/Codex"
-    },
-    {
-      "id": "InventoryOverlay",
-      "type": "overlay",
-      "filePath": "app/overlays/InventoryOverlay.js",
-      "description": "Equipment/inventory"
-    },
-    {
-      "id": "CharacterOverlay",
-      "type": "overlay",
-      "filePath": "app/overlays/CharacterOverlay.js",
-      "description": "Character sheet"
-    },
-    {
-      "id": "MapOverlay",
-      "type": "overlay",
-      "filePath": "app/overlays/MapOverlay.js",
-      "description": "Fast travel between Embers"
+      "id": "systemCutscene",
+      "type": "scene",
+      "filePath": "app/scenes/SystemCutsceneScene.js",
+      "description": "Non-narrative cut-ins"
     }
   ],
   "edges": [
     {
-      "from": "Boot",
-      "to": "Preload"
+      "from": "boot",
+      "to": "preload"
     },
     {
-      "from": "Preload",
-      "to": "Splash"
-    },
-    {
-      "from": "Splash",
-      "to": "MainMenu"
-    },
-    {
-      "from": "MainMenu",
-      "to": "ProfileSelect",
+      "from": "mainMenu",
+      "to": "characterSelect",
       "condition": "New Game"
     },
     {
-      "from": "ProfileSelect",
-      "to": "CharacterSelect"
-    },
-    {
-      "from": "ProfileSelect",
-      "to": "MainMenu",
-      "condition": "Back"
-    },
-    {
-      "from": "MainMenu",
-      "to": "LoadGame",
+      "from": "mainMenu",
+      "to": "loadGame",
       "condition": "Load"
     },
     {
-      "from": "MainMenu",
-      "to": "Settings",
+      "from": "mainMenu",
+      "to": "settings",
       "condition": "Settings"
     },
     {
-      "from": "MainMenu",
-      "to": "Credits",
-      "condition": "Credits"
+      "from": "characterSelect",
+      "to": "intro"
     },
     {
-      "from": "CharacterSelect",
-      "to": "Intro"
+      "from": "intro",
+      "to": "dialogue"
     },
     {
-      "from": "LoadGame",
-      "to": "SaveError",
-      "condition": "Invalid save"
-    },
-    {
-      "from": "Credits",
-      "to": "MainMenu"
-    },
-    {
-      "from": "SaveError",
-      "to": "LoadGame"
-    },
-    {
-      "from": "SaveError",
-      "to": "MainMenu"
-    },
-    {
-      "from": "Intro",
-      "to": "Exploration"
-    },
-    {
-      "from": "Exploration",
-      "to": "Dialogue"
-    },
-    {
-      "from": "Exploration",
-      "to": "Battle"
-    },
-    {
-      "from": "Exploration",
-      "to": "Loot"
-    },
-    {
-      "from": "Exploration",
-      "to": "Rest"
-    },
-    {
-      "from": "Exploration",
-      "to": "AreaTransition"
-    },
-    {
-      "from": "Exploration",
-      "to": "Merchant"
-    },
-    {
-      "from": "Exploration",
-      "to": "SystemCutscene"
-    },
-    {
-      "from": "Dialogue",
-      "to": "Exploration",
-      "condition": "End"
-    },
-    {
-      "from": "Dialogue",
-      "to": "Battle",
+      "from": "dialogue",
+      "to": "combat",
       "condition": "Escalate"
     },
     {
-      "from": "Battle",
-      "to": "PostBattleRewards",
-      "condition": "Victory"
+      "from": "dialogue",
+      "to": "systemCutscene",
+      "condition": "Cutscene"
     },
     {
-      "from": "Battle",
-      "to": "GameOver",
-      "condition": "Defeat"
+      "from": "loadGame",
+      "to": "saveError",
+      "condition": "Invalid save"
     },
     {
-      "from": "PostBattleRewards",
-      "to": "Exploration"
-    },
-    {
-      "from": "Loot",
-      "to": "Exploration"
-    },
-    {
-      "from": "Rest",
-      "to": "Exploration",
-      "condition": "Exit"
-    },
-    {
-      "from": "Rest",
-      "to": "MapOverlay",
-      "condition": "Fast Travel"
-    },
-    {
-      "from": "MapOverlay",
-      "to": "AreaTransition",
-      "condition": "Destination selected"
-    },
-    {
-      "from": "AreaTransition",
-      "to": "Exploration"
-    },
-    {
-      "from": "Merchant",
-      "to": "Exploration"
-    },
-    {
-      "from": "SystemCutscene",
-      "to": "Exploration"
-    },
-    {
-      "from": "Exploration",
-      "to": "FinalBoss",
-      "condition": "Final Gate"
-    },
-    {
-      "from": "FinalBoss",
-      "to": "Ending",
-      "condition": "Victory"
-    },
-    {
-      "from": "FinalBoss",
-      "to": "GameOver",
-      "condition": "Defeat"
-    },
-    {
-      "from": "Ending",
-      "to": "Credits"
-    },
-    {
-      "from": "Credits",
-      "to": "MainMenu"
+      "from": "gameOver",
+      "to": "mainMenu"
     }
+  ],
+  "retired": [
+    "ExplorationScene",
+    "PostBattleRewardsScene",
+    "LootScene",
+    "RestScene",
+    "MerchantScene",
+    "AreaTransitionScene",
+    "FinalBossScene",
+    "EndingScene",
+    "CreditsScene"
   ]
 }

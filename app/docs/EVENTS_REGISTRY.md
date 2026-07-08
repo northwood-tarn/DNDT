@@ -42,16 +42,19 @@
 
 ---
 
-## Exploration
+## Retired Exploration Events
+
+The old Tiled exploration runtime was retired on 2026-07-08. These events are kept here only as historical names until a replacement area runtime defines its own contract.
+
 - **`explore:enteredArea`**  
   Payload: `{ areaId: string }`  
-  Emitted by: `scenes/ExplorationScene` when map is live  
-  Listeners: music controller, ambient FX, quest triggers
+  Emitted by: retired `scenes/ExplorationScene` when map was live  
+  Listeners: retired/prototype music controller, ambient FX, quest triggers
 
 - **`explore:interact`**  
   Payload: `{ targetId: string, action: string, pos?: {x:number,y:number} }`  
-  Emitted by: input handlers / interaction raycasts  
-  Listeners: dialogue/loot systems
+  Emitted by: retired input handlers / interaction raycasts  
+  Listeners: retired/prototype dialogue/loot systems
 
 ---
 
@@ -82,7 +85,7 @@
 - **`enemy:spotted`**  
   Payload: `{ enemyId: string, playerPos: {x,y}, reason: "vision"|"sound" }`  
   Emitted by: `systems/enemyAwareness`  
-  Listeners: exploration/combat triggers (may emit `game:exit` to combat)
+  Listeners: future area/combat triggers (may emit `game:exit` to combat)
 
 - **`enemy:alerted`**  
   Payload: `{ enemyId: string, level: "low"|"high", cause: string }`  

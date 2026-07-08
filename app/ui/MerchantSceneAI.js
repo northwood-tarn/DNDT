@@ -1,5 +1,5 @@
 // app/ui/MerchantSceneAI.js
-// Merchant UI Overlay (NOT a scene). Opens on top of DialogueScene or ExplorationScene.
+// Merchant UI Overlay (NOT a scene). Opens on top of the active story scene.
 // Handles buy/sell, gold adjustments, inventory updates.
 // Emits `merchant:closed` on exit.
 
