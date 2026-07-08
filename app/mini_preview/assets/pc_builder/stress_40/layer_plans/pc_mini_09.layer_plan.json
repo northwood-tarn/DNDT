@@ -1,0 +1,131 @@
+{
+  "ok": true,
+  "cacheKey": "classId-warlock__speciesId-tiefling__lineageId-infernal__bodyTypeId-masculine__skinToneId-none__postureId-posture_3__outfitId-outfit_1__cloakId-hood_up__headId-humanlike_soft_round__hairId-long_loose__facialHairId-moustache__weaponDisplayId-warlock_1_short_blade__lanternaAttachmentId-neck_chain__base-disc-ember-warmed-steel_rim-dull-silver",
+  "selection": {
+    "facialHairId": "moustache",
+    "base": {
+      "useUniqueBase": false,
+      "disc": "ember-warmed-steel",
+      "rim": "dull-silver"
+    },
+    "classId": "warlock",
+    "speciesId": "tiefling",
+    "lineageId": "infernal",
+    "bodyTypeId": "masculine",
+    "speciesFeatureIds": [],
+    "postureId": "posture_3",
+    "outfitId": "outfit_1",
+    "cloakId": "hood_up",
+    "headId": "humanlike_soft_round",
+    "hairId": "long_loose",
+    "weaponSlotId": "main",
+    "weaponDisplayId": "warlock_1_short_blade",
+    "lanternaAttachmentId": "neck_chain"
+  },
+  "render": {
+    "baseSeparated": true,
+    "baseRuntimeFootprint": {
+      "gridDiamond": {
+        "width": 128,
+        "height": 64
+      },
+      "displayWidth": 115,
+      "sourceCanvas": {
+        "width": 192,
+        "height": 128
+      },
+      "visibleBounds": {
+        "left": 16,
+        "top": 21,
+        "right": 176,
+        "bottom": 106
+      },
+      "placement": "center visible base bounds inside the occupied 128x64 grid diamond"
+    },
+    "speciesScale": 1,
+    "zOrder": [
+      "base",
+      "posture",
+      "outfit",
+      "head",
+      "facialHair",
+      "hair",
+      "speciesFeature",
+      "cloak",
+      "weapon",
+      "lanterna"
+    ]
+  },
+  "output": {
+    "canvas": {
+      "width": 256,
+      "height": 360
+    },
+    "baseCenter": {
+      "x": 128,
+      "y": 306
+    }
+  },
+  "layers": [
+    {
+      "kind": "base",
+      "id": "disc-ember-warmed-steel_rim-dull-silver",
+      "asset": "assets/base_combinations/base_disc-ember-warmed-steel_rim-dull-silver.png",
+      "baseSeparated": true
+    },
+    {
+      "kind": "posture",
+      "id": "tiefling_masculine_posture_3",
+      "asset": "assets/pc_builder/body/tiefling_masculine_posture_3.png",
+      "tint": [
+        139,
+        54,
+        56
+      ]
+    },
+    {
+      "kind": "outfit",
+      "id": "warlock_outfit_1",
+      "asset": "assets/pc_builder/outfit/warlock_outfit_1.png",
+      "tint": null
+    },
+    {
+      "kind": "head",
+      "id": "humanlike_soft_round",
+      "asset": "assets/pc_builder/head/humanlike_soft_round.png",
+      "tint": [
+        139,
+        54,
+        56
+      ]
+    },
+    {
+      "kind": "facialHair",
+      "id": "moustache",
+      "hidden": true
+    },
+    {
+      "kind": "hair",
+      "id": "long_loose",
+      "hidden": true
+    },
+    {
+      "kind": "cloak",
+      "id": "hood_up",
+      "asset": "assets/pc_builder/cloak/hood_up.png",
+      "tint": null
+    },
+    {
+      "kind": "weapon",
+      "id": "warlock_1_short_blade",
+      "asset": "assets/pc_builder/weapon/warlock_1_short_blade.png",
+      "tint": null
+    },
+    {
+      "kind": "lanterna",
+      "id": "neck_chain",
+      "asset": "assets/pc_builder/lanterna/neck_chain.png",
+      "tint": null
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "classId": "warlock",
+  "speciesId": "gnome",
+  "lineageId": "forest",
+  "bodyTypeId": "masculine",
+  "skinToneId": "human_brown",
+  "speciesFeatureIds": [],
+  "postureId": "posture_2",
+  "outfitId": "outfit_1",
+  "cloakId": "cloak",
+  "headId": "humanlike_broad_solid",
+  "hairId": "bald_or_shaved",
+  "facialHairId": "moustache",
+  "weaponSlotId": "main",
+  "weaponDisplayId": "warlock_1_short_blade",
+  "lanternaAttachmentId": "side_affixed",
+  "base": {
+    "useUniqueBase": false,
+    "disc": "metallic-green",
+    "rim": "tarnished-brass"
+  }
+}

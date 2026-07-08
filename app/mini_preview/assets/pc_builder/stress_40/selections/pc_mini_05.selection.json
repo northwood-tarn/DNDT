@@ -1,0 +1,22 @@
+{
+  "classId": "cleric",
+  "speciesId": "gnome",
+  "lineageId": "forest",
+  "bodyTypeId": "masculine",
+  "skinToneId": "human_pale",
+  "speciesFeatureIds": [],
+  "postureId": "posture_2",
+  "outfitId": "outfit_1",
+  "cloakId": "cloak",
+  "headId": "humanlike_broad_solid",
+  "hairId": "short_messy",
+  "facialHairId": "full_beard",
+  "weaponSlotId": "main",
+  "weaponDisplayId": "cleric_1_mace_and_shield",
+  "lanternaAttachmentId": "side_affixed",
+  "base": {
+    "useUniqueBase": false,
+    "disc": "dull-silver",
+    "rim": "tarnished-brass"
+  }
+}

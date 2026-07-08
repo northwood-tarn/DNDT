@@ -1,0 +1,93 @@
+{
+  "id": "rogue_1_single_dagger",
+  "classId": "rogue",
+  "postureId": "posture_1",
+  "status": "generated_pending_review",
+  "sourceKind": "image_generated_chroma_key",
+  "layerKind": "weapon",
+  "file": "assets/pc_builder_production/weapon_posture1/cutout/rogue_1_single_dagger.png",
+  "sourceSheet": "assets/pc_builder_production/weapon_posture1/sheets/source/rogue_posture1_weapons_chroma.png",
+  "canvas": {
+    "width": 350,
+    "height": 382
+  },
+  "renderBounds": {
+    "left": 24,
+    "top": 24,
+    "right": 325,
+    "bottom": 357,
+    "width": 302,
+    "height": 334,
+    "visible": 31503,
+    "partial": 1266
+  },
+  "anchors": {
+    "weaponHand": {
+      "x": 218,
+      "y": 184
+    },
+    "offhand": {
+      "x": 149,
+      "y": 192
+    },
+    "staffBottom": {
+      "x": 240,
+      "y": 365
+    },
+    "bodyRoot": {
+      "x": 218,
+      "y": 237
+    },
+    "baseCenter": {
+      "x": 218,
+      "y": 383
+    },
+    "groundContactLeft": {
+      "x": 192,
+      "y": 383
+    },
+    "groundContactRight": {
+      "x": 253,
+      "y": 383
+    },
+    "head": {
+      "x": 227,
+      "y": 69
+    },
+    "hair": {
+      "x": 227,
+      "y": 57
+    },
+    "cloak": {
+      "x": 197,
+      "y": 134
+    },
+    "lanternaDangling": {
+      "x": 166,
+      "y": 241
+    },
+    "lanternaSideAffixed": {
+      "x": 153,
+      "y": 214
+    },
+    "lanternaNeckChain": {
+      "x": 227,
+      "y": 134
+    }
+  },
+  "zOrder": 80,
+  "validation": {
+    "png": true,
+    "alpha": true,
+    "transparentBackground": true,
+    "noSvg": true,
+    "noBase": true,
+    "noLanterna": true,
+    "noWandText": true,
+    "notes": "Generated for human posture_1 weapon chart. Pending visual fit against posture_1 body."
+  },
+  "segmentation": {
+    "method": "alpha_connected_components_nearest_chart_slot_filtered",
+    "componentCount": 1
+  }
+}

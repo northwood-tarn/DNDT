@@ -1,0 +1,33 @@
+{
+  "source": "app/mini_preview/assets/pc_vertical_slices/aasimar_female_p2_warlock2_mace_necklanterna_green_gold_v1_cutout.png",
+  "trimmed": "app/mini_preview/assets/pc_vertical_slices/aasimar_female_p2_warlock2_mace_necklanterna_green_gold_v1_trimmed.png",
+  "sourceSize": [
+    1024,
+    1536
+  ],
+  "trimmedSize": [
+    773,
+    1257
+  ],
+  "sourceAlphaBounds": [
+    146,
+    102,
+    895,
+    1335
+  ],
+  "crop": [
+    134,
+    90,
+    907,
+    1347
+  ],
+  "estimatedBaseBounds": [
+    43,
+    980,
+    726,
+    1245
+  ],
+  "lockedRuntimeBaseWidth": 115,
+  "estimatedBaseVisibleWidth": 683,
+  "runtimeScale": 0.1683748169838946
+}

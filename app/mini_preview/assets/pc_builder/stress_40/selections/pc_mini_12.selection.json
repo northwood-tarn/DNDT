@@ -1,0 +1,21 @@
+{
+  "classId": "paladin",
+  "speciesId": "dwarf",
+  "bodyTypeId": "feminine",
+  "skinToneId": "human_brown",
+  "speciesFeatureIds": [],
+  "postureId": "posture_3",
+  "outfitId": "outfit_2",
+  "cloakId": "hood_up",
+  "headId": "humanlike_narrow_severe",
+  "hairId": "long_loose",
+  "facialHairId": "moustache",
+  "weaponSlotId": "ranged_sidearm_focus",
+  "weaponDisplayId": "paladin_4_grounded_spear",
+  "lanternaAttachmentId": "neck_chain",
+  "base": {
+    "useUniqueBase": false,
+    "disc": "aged-gold",
+    "rim": "gunmetal"
+  }
+}

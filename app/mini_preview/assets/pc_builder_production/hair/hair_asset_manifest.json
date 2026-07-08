@@ -1,0 +1,2396 @@
+{
+  "status": "production",
+  "assetCount": 32,
+  "styles": [
+    "short_messy",
+    "short_severe",
+    "long_loose",
+    "scruffy_shoulder_length",
+    "long_tied_back",
+    "topknot_bun",
+    "bald_or_shaved",
+    "scruffy_short"
+  ],
+  "colors": [
+    "black",
+    "blonde",
+    "red",
+    "white"
+  ],
+  "assets": [
+    {
+      "id": "short_messy_black",
+      "styleId": "short_messy",
+      "colorId": "black",
+      "label": "short messy / Black",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/black/short_messy.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/short_messy_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/short_messy.prompt.txt",
+      "canvas": {
+        "width": 1536,
+        "height": 1024
+      },
+      "renderBounds": {
+        "left": 411,
+        "top": 130,
+        "right": 1146,
+        "bottom": 784,
+        "width": 736,
+        "height": 655,
+        "visible": 249115,
+        "transparent": 1323749,
+        "partial": 3611
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 778,
+          "y": 510
+        },
+        "scalpCrown": {
+          "x": 778,
+          "y": 248
+        },
+        "faceOpening": {
+          "x": 926,
+          "y": 510
+        },
+        "neckBack": {
+          "x": 676,
+          "y": 667
+        },
+        "cloakOcclusionAnchor": {
+          "x": 778,
+          "y": 602
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "short_messy_blonde",
+      "styleId": "short_messy",
+      "colorId": "blonde",
+      "label": "short messy / Blonde",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/blonde/short_messy.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/short_messy_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/short_messy.prompt.txt",
+      "canvas": {
+        "width": 1536,
+        "height": 1024
+      },
+      "renderBounds": {
+        "left": 411,
+        "top": 130,
+        "right": 1146,
+        "bottom": 784,
+        "width": 736,
+        "height": 655,
+        "visible": 249115,
+        "transparent": 1323749,
+        "partial": 3611
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 778,
+          "y": 510
+        },
+        "scalpCrown": {
+          "x": 778,
+          "y": 248
+        },
+        "faceOpening": {
+          "x": 926,
+          "y": 510
+        },
+        "neckBack": {
+          "x": 676,
+          "y": 667
+        },
+        "cloakOcclusionAnchor": {
+          "x": 778,
+          "y": 602
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "short_messy_red",
+      "styleId": "short_messy",
+      "colorId": "red",
+      "label": "short messy / Red",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/red/short_messy.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/short_messy_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/short_messy.prompt.txt",
+      "canvas": {
+        "width": 1536,
+        "height": 1024
+      },
+      "renderBounds": {
+        "left": 411,
+        "top": 130,
+        "right": 1146,
+        "bottom": 784,
+        "width": 736,
+        "height": 655,
+        "visible": 249115,
+        "transparent": 1323749,
+        "partial": 3611
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 778,
+          "y": 510
+        },
+        "scalpCrown": {
+          "x": 778,
+          "y": 248
+        },
+        "faceOpening": {
+          "x": 926,
+          "y": 510
+        },
+        "neckBack": {
+          "x": 676,
+          "y": 667
+        },
+        "cloakOcclusionAnchor": {
+          "x": 778,
+          "y": 602
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "short_messy_white",
+      "styleId": "short_messy",
+      "colorId": "white",
+      "label": "short messy / White",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/white/short_messy.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/short_messy_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/short_messy.prompt.txt",
+      "canvas": {
+        "width": 1536,
+        "height": 1024
+      },
+      "renderBounds": {
+        "left": 411,
+        "top": 130,
+        "right": 1146,
+        "bottom": 784,
+        "width": 736,
+        "height": 655,
+        "visible": 249115,
+        "transparent": 1323749,
+        "partial": 3611
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 778,
+          "y": 510
+        },
+        "scalpCrown": {
+          "x": 778,
+          "y": 248
+        },
+        "faceOpening": {
+          "x": 926,
+          "y": 510
+        },
+        "neckBack": {
+          "x": 676,
+          "y": 667
+        },
+        "cloakOcclusionAnchor": {
+          "x": 778,
+          "y": 602
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "short_severe_black",
+      "styleId": "short_severe",
+      "colorId": "black",
+      "label": "short severe / Black",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/black/short_severe.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/short_severe_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/short_severe.prompt.txt",
+      "canvas": {
+        "width": 1536,
+        "height": 1024
+      },
+      "renderBounds": {
+        "left": 456,
+        "top": 164,
+        "right": 1098,
+        "bottom": 700,
+        "width": 643,
+        "height": 537,
+        "visible": 184077,
+        "transparent": 1388787,
+        "partial": 2123
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 777,
+          "y": 475
+        },
+        "scalpCrown": {
+          "x": 777,
+          "y": 261
+        },
+        "faceOpening": {
+          "x": 906,
+          "y": 475
+        },
+        "neckBack": {
+          "x": 687,
+          "y": 604
+        },
+        "cloakOcclusionAnchor": {
+          "x": 777,
+          "y": 551
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "short_severe_blonde",
+      "styleId": "short_severe",
+      "colorId": "blonde",
+      "label": "short severe / Blonde",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/blonde/short_severe.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/short_severe_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/short_severe.prompt.txt",
+      "canvas": {
+        "width": 1536,
+        "height": 1024
+      },
+      "renderBounds": {
+        "left": 456,
+        "top": 164,
+        "right": 1098,
+        "bottom": 700,
+        "width": 643,
+        "height": 537,
+        "visible": 184077,
+        "transparent": 1388787,
+        "partial": 2123
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 777,
+          "y": 475
+        },
+        "scalpCrown": {
+          "x": 777,
+          "y": 261
+        },
+        "faceOpening": {
+          "x": 906,
+          "y": 475
+        },
+        "neckBack": {
+          "x": 687,
+          "y": 604
+        },
+        "cloakOcclusionAnchor": {
+          "x": 777,
+          "y": 551
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "short_severe_red",
+      "styleId": "short_severe",
+      "colorId": "red",
+      "label": "short severe / Red",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/red/short_severe.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/short_severe_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/short_severe.prompt.txt",
+      "canvas": {
+        "width": 1536,
+        "height": 1024
+      },
+      "renderBounds": {
+        "left": 456,
+        "top": 164,
+        "right": 1098,
+        "bottom": 700,
+        "width": 643,
+        "height": 537,
+        "visible": 184077,
+        "transparent": 1388787,
+        "partial": 2123
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 777,
+          "y": 475
+        },
+        "scalpCrown": {
+          "x": 777,
+          "y": 261
+        },
+        "faceOpening": {
+          "x": 906,
+          "y": 475
+        },
+        "neckBack": {
+          "x": 687,
+          "y": 604
+        },
+        "cloakOcclusionAnchor": {
+          "x": 777,
+          "y": 551
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "short_severe_white",
+      "styleId": "short_severe",
+      "colorId": "white",
+      "label": "short severe / White",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/white/short_severe.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/short_severe_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/short_severe.prompt.txt",
+      "canvas": {
+        "width": 1536,
+        "height": 1024
+      },
+      "renderBounds": {
+        "left": 456,
+        "top": 164,
+        "right": 1098,
+        "bottom": 700,
+        "width": 643,
+        "height": 537,
+        "visible": 184077,
+        "transparent": 1388787,
+        "partial": 2123
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 777,
+          "y": 475
+        },
+        "scalpCrown": {
+          "x": 777,
+          "y": 261
+        },
+        "faceOpening": {
+          "x": 906,
+          "y": 475
+        },
+        "neckBack": {
+          "x": 687,
+          "y": 604
+        },
+        "cloakOcclusionAnchor": {
+          "x": 777,
+          "y": 551
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "long_loose_black",
+      "styleId": "long_loose",
+      "colorId": "black",
+      "label": "long loose / Black",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/black/long_loose.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/long_loose_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/long_loose.prompt.txt",
+      "canvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "renderBounds": {
+        "left": 166,
+        "top": 88,
+        "right": 1081,
+        "bottom": 1167,
+        "width": 916,
+        "height": 1080,
+        "visible": 448580,
+        "transparent": 1123936,
+        "partial": 10701
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 624,
+          "y": 714
+        },
+        "scalpCrown": {
+          "x": 624,
+          "y": 282
+        },
+        "faceOpening": {
+          "x": 807,
+          "y": 714
+        },
+        "neckBack": {
+          "x": 496,
+          "y": 974
+        },
+        "cloakOcclusionAnchor": {
+          "x": 624,
+          "y": 866
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "long_loose_blonde",
+      "styleId": "long_loose",
+      "colorId": "blonde",
+      "label": "long loose / Blonde",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/blonde/long_loose.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/long_loose_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/long_loose.prompt.txt",
+      "canvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "renderBounds": {
+        "left": 166,
+        "top": 88,
+        "right": 1081,
+        "bottom": 1167,
+        "width": 916,
+        "height": 1080,
+        "visible": 448580,
+        "transparent": 1123936,
+        "partial": 10701
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 624,
+          "y": 714
+        },
+        "scalpCrown": {
+          "x": 624,
+          "y": 282
+        },
+        "faceOpening": {
+          "x": 807,
+          "y": 714
+        },
+        "neckBack": {
+          "x": 496,
+          "y": 974
+        },
+        "cloakOcclusionAnchor": {
+          "x": 624,
+          "y": 866
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "long_loose_red",
+      "styleId": "long_loose",
+      "colorId": "red",
+      "label": "long loose / Red",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/red/long_loose.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/long_loose_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/long_loose.prompt.txt",
+      "canvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "renderBounds": {
+        "left": 166,
+        "top": 88,
+        "right": 1081,
+        "bottom": 1167,
+        "width": 916,
+        "height": 1080,
+        "visible": 448580,
+        "transparent": 1123936,
+        "partial": 10701
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 624,
+          "y": 714
+        },
+        "scalpCrown": {
+          "x": 624,
+          "y": 282
+        },
+        "faceOpening": {
+          "x": 807,
+          "y": 714
+        },
+        "neckBack": {
+          "x": 496,
+          "y": 974
+        },
+        "cloakOcclusionAnchor": {
+          "x": 624,
+          "y": 866
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "long_loose_white",
+      "styleId": "long_loose",
+      "colorId": "white",
+      "label": "long loose / White",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/white/long_loose.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/long_loose_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/long_loose.prompt.txt",
+      "canvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "renderBounds": {
+        "left": 166,
+        "top": 88,
+        "right": 1081,
+        "bottom": 1167,
+        "width": 916,
+        "height": 1080,
+        "visible": 448580,
+        "transparent": 1123936,
+        "partial": 10701
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 624,
+          "y": 714
+        },
+        "scalpCrown": {
+          "x": 624,
+          "y": 282
+        },
+        "faceOpening": {
+          "x": 807,
+          "y": 714
+        },
+        "neckBack": {
+          "x": 496,
+          "y": 974
+        },
+        "cloakOcclusionAnchor": {
+          "x": 624,
+          "y": 866
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "scruffy_shoulder_length_black",
+      "styleId": "scruffy_shoulder_length",
+      "colorId": "black",
+      "label": "scruffy shoulder length / Black",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/black/scruffy_shoulder_length.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/scruffy_shoulder_length_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/scruffy_shoulder_length.prompt.txt",
+      "canvas": {
+        "width": 1536,
+        "height": 1024
+      },
+      "renderBounds": {
+        "left": 392,
+        "top": 122,
+        "right": 1127,
+        "bottom": 852,
+        "width": 736,
+        "height": 731,
+        "visible": 326746,
+        "transparent": 1246118,
+        "partial": 10423
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 760,
+          "y": 546
+        },
+        "scalpCrown": {
+          "x": 760,
+          "y": 254
+        },
+        "faceOpening": {
+          "x": 907,
+          "y": 546
+        },
+        "neckBack": {
+          "x": 657,
+          "y": 721
+        },
+        "cloakOcclusionAnchor": {
+          "x": 760,
+          "y": 648
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "scruffy_shoulder_length_blonde",
+      "styleId": "scruffy_shoulder_length",
+      "colorId": "blonde",
+      "label": "scruffy shoulder length / Blonde",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/blonde/scruffy_shoulder_length.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/scruffy_shoulder_length_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/scruffy_shoulder_length.prompt.txt",
+      "canvas": {
+        "width": 1536,
+        "height": 1024
+      },
+      "renderBounds": {
+        "left": 392,
+        "top": 122,
+        "right": 1127,
+        "bottom": 852,
+        "width": 736,
+        "height": 731,
+        "visible": 326746,
+        "transparent": 1246118,
+        "partial": 10423
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 760,
+          "y": 546
+        },
+        "scalpCrown": {
+          "x": 760,
+          "y": 254
+        },
+        "faceOpening": {
+          "x": 907,
+          "y": 546
+        },
+        "neckBack": {
+          "x": 657,
+          "y": 721
+        },
+        "cloakOcclusionAnchor": {
+          "x": 760,
+          "y": 648
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "scruffy_shoulder_length_red",
+      "styleId": "scruffy_shoulder_length",
+      "colorId": "red",
+      "label": "scruffy shoulder length / Red",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/red/scruffy_shoulder_length.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/scruffy_shoulder_length_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/scruffy_shoulder_length.prompt.txt",
+      "canvas": {
+        "width": 1536,
+        "height": 1024
+      },
+      "renderBounds": {
+        "left": 392,
+        "top": 122,
+        "right": 1127,
+        "bottom": 852,
+        "width": 736,
+        "height": 731,
+        "visible": 326746,
+        "transparent": 1246118,
+        "partial": 10423
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 760,
+          "y": 546
+        },
+        "scalpCrown": {
+          "x": 760,
+          "y": 254
+        },
+        "faceOpening": {
+          "x": 907,
+          "y": 546
+        },
+        "neckBack": {
+          "x": 657,
+          "y": 721
+        },
+        "cloakOcclusionAnchor": {
+          "x": 760,
+          "y": 648
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "scruffy_shoulder_length_white",
+      "styleId": "scruffy_shoulder_length",
+      "colorId": "white",
+      "label": "scruffy shoulder length / White",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/white/scruffy_shoulder_length.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/scruffy_shoulder_length_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/scruffy_shoulder_length.prompt.txt",
+      "canvas": {
+        "width": 1536,
+        "height": 1024
+      },
+      "renderBounds": {
+        "left": 392,
+        "top": 122,
+        "right": 1127,
+        "bottom": 852,
+        "width": 736,
+        "height": 731,
+        "visible": 326746,
+        "transparent": 1246118,
+        "partial": 10423
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 760,
+          "y": 546
+        },
+        "scalpCrown": {
+          "x": 760,
+          "y": 254
+        },
+        "faceOpening": {
+          "x": 907,
+          "y": 546
+        },
+        "neckBack": {
+          "x": 657,
+          "y": 721
+        },
+        "cloakOcclusionAnchor": {
+          "x": 760,
+          "y": 648
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "long_tied_back_black",
+      "styleId": "long_tied_back",
+      "colorId": "black",
+      "label": "long tied back / Black",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/black/long_tied_back.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/long_tied_back_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/long_tied_back.prompt.txt",
+      "canvas": {
+        "width": 1402,
+        "height": 1122
+      },
+      "renderBounds": {
+        "left": 157,
+        "top": 98,
+        "right": 1189,
+        "bottom": 1024,
+        "width": 1033,
+        "height": 927,
+        "visible": 336282,
+        "transparent": 1236762,
+        "partial": 10864
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 673,
+          "y": 636
+        },
+        "scalpCrown": {
+          "x": 673,
+          "y": 265
+        },
+        "faceOpening": {
+          "x": 880,
+          "y": 636
+        },
+        "neckBack": {
+          "x": 529,
+          "y": 858
+        },
+        "cloakOcclusionAnchor": {
+          "x": 673,
+          "y": 765
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "long_tied_back_blonde",
+      "styleId": "long_tied_back",
+      "colorId": "blonde",
+      "label": "long tied back / Blonde",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/blonde/long_tied_back.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/long_tied_back_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/long_tied_back.prompt.txt",
+      "canvas": {
+        "width": 1402,
+        "height": 1122
+      },
+      "renderBounds": {
+        "left": 157,
+        "top": 98,
+        "right": 1189,
+        "bottom": 1024,
+        "width": 1033,
+        "height": 927,
+        "visible": 336282,
+        "transparent": 1236762,
+        "partial": 10864
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 673,
+          "y": 636
+        },
+        "scalpCrown": {
+          "x": 673,
+          "y": 265
+        },
+        "faceOpening": {
+          "x": 880,
+          "y": 636
+        },
+        "neckBack": {
+          "x": 529,
+          "y": 858
+        },
+        "cloakOcclusionAnchor": {
+          "x": 673,
+          "y": 765
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "long_tied_back_red",
+      "styleId": "long_tied_back",
+      "colorId": "red",
+      "label": "long tied back / Red",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/red/long_tied_back.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/long_tied_back_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/long_tied_back.prompt.txt",
+      "canvas": {
+        "width": 1402,
+        "height": 1122
+      },
+      "renderBounds": {
+        "left": 157,
+        "top": 98,
+        "right": 1189,
+        "bottom": 1024,
+        "width": 1033,
+        "height": 927,
+        "visible": 336282,
+        "transparent": 1236762,
+        "partial": 10864
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 673,
+          "y": 636
+        },
+        "scalpCrown": {
+          "x": 673,
+          "y": 265
+        },
+        "faceOpening": {
+          "x": 880,
+          "y": 636
+        },
+        "neckBack": {
+          "x": 529,
+          "y": 858
+        },
+        "cloakOcclusionAnchor": {
+          "x": 673,
+          "y": 765
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "long_tied_back_white",
+      "styleId": "long_tied_back",
+      "colorId": "white",
+      "label": "long tied back / White",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/white/long_tied_back.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/long_tied_back_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/long_tied_back.prompt.txt",
+      "canvas": {
+        "width": 1402,
+        "height": 1122
+      },
+      "renderBounds": {
+        "left": 157,
+        "top": 98,
+        "right": 1189,
+        "bottom": 1024,
+        "width": 1033,
+        "height": 927,
+        "visible": 336282,
+        "transparent": 1236762,
+        "partial": 10864
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 673,
+          "y": 636
+        },
+        "scalpCrown": {
+          "x": 673,
+          "y": 265
+        },
+        "faceOpening": {
+          "x": 880,
+          "y": 636
+        },
+        "neckBack": {
+          "x": 529,
+          "y": 858
+        },
+        "cloakOcclusionAnchor": {
+          "x": 673,
+          "y": 765
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "topknot_bun_black",
+      "styleId": "topknot_bun",
+      "colorId": "black",
+      "label": "topknot bun / Black",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/black/topknot_bun.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/topknot_bun_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/topknot_bun.prompt.txt",
+      "canvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "renderBounds": {
+        "left": 269,
+        "top": 203,
+        "right": 1010,
+        "bottom": 949,
+        "width": 742,
+        "height": 747,
+        "visible": 291091,
+        "transparent": 1281425,
+        "partial": 7296
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 640,
+          "y": 636
+        },
+        "scalpCrown": {
+          "x": 640,
+          "y": 337
+        },
+        "faceOpening": {
+          "x": 788,
+          "y": 636
+        },
+        "neckBack": {
+          "x": 536,
+          "y": 816
+        },
+        "cloakOcclusionAnchor": {
+          "x": 640,
+          "y": 741
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "topknot_bun_blonde",
+      "styleId": "topknot_bun",
+      "colorId": "blonde",
+      "label": "topknot bun / Blonde",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/blonde/topknot_bun.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/topknot_bun_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/topknot_bun.prompt.txt",
+      "canvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "renderBounds": {
+        "left": 269,
+        "top": 203,
+        "right": 1010,
+        "bottom": 949,
+        "width": 742,
+        "height": 747,
+        "visible": 291091,
+        "transparent": 1281425,
+        "partial": 7296
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 640,
+          "y": 636
+        },
+        "scalpCrown": {
+          "x": 640,
+          "y": 337
+        },
+        "faceOpening": {
+          "x": 788,
+          "y": 636
+        },
+        "neckBack": {
+          "x": 536,
+          "y": 816
+        },
+        "cloakOcclusionAnchor": {
+          "x": 640,
+          "y": 741
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "topknot_bun_red",
+      "styleId": "topknot_bun",
+      "colorId": "red",
+      "label": "topknot bun / Red",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/red/topknot_bun.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/topknot_bun_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/topknot_bun.prompt.txt",
+      "canvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "renderBounds": {
+        "left": 269,
+        "top": 203,
+        "right": 1010,
+        "bottom": 949,
+        "width": 742,
+        "height": 747,
+        "visible": 291091,
+        "transparent": 1281425,
+        "partial": 7296
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 640,
+          "y": 636
+        },
+        "scalpCrown": {
+          "x": 640,
+          "y": 337
+        },
+        "faceOpening": {
+          "x": 788,
+          "y": 636
+        },
+        "neckBack": {
+          "x": 536,
+          "y": 816
+        },
+        "cloakOcclusionAnchor": {
+          "x": 640,
+          "y": 741
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "topknot_bun_white",
+      "styleId": "topknot_bun",
+      "colorId": "white",
+      "label": "topknot bun / White",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/white/topknot_bun.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/topknot_bun_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/topknot_bun.prompt.txt",
+      "canvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "renderBounds": {
+        "left": 269,
+        "top": 203,
+        "right": 1010,
+        "bottom": 949,
+        "width": 742,
+        "height": 747,
+        "visible": 291091,
+        "transparent": 1281425,
+        "partial": 7296
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 640,
+          "y": 636
+        },
+        "scalpCrown": {
+          "x": 640,
+          "y": 337
+        },
+        "faceOpening": {
+          "x": 788,
+          "y": 636
+        },
+        "neckBack": {
+          "x": 536,
+          "y": 816
+        },
+        "cloakOcclusionAnchor": {
+          "x": 640,
+          "y": 741
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "bald_or_shaved_black",
+      "styleId": "bald_or_shaved",
+      "colorId": "black",
+      "label": "bald or shaved / Black",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/black/bald_or_shaved.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/bald_or_shaved_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/bald_or_shaved.prompt.txt",
+      "canvas": {
+        "width": 1536,
+        "height": 1024
+      },
+      "renderBounds": {
+        "left": 388,
+        "top": 164,
+        "right": 1173,
+        "bottom": 863,
+        "width": 786,
+        "height": 700,
+        "visible": 265543,
+        "transparent": 1307321,
+        "partial": 4302
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 780,
+          "y": 570
+        },
+        "scalpCrown": {
+          "x": 780,
+          "y": 290
+        },
+        "faceOpening": {
+          "x": 938,
+          "y": 570
+        },
+        "neckBack": {
+          "x": 671,
+          "y": 738
+        },
+        "cloakOcclusionAnchor": {
+          "x": 780,
+          "y": 668
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "bald_or_shaved_blonde",
+      "styleId": "bald_or_shaved",
+      "colorId": "blonde",
+      "label": "bald or shaved / Blonde",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/blonde/bald_or_shaved.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/bald_or_shaved_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/bald_or_shaved.prompt.txt",
+      "canvas": {
+        "width": 1536,
+        "height": 1024
+      },
+      "renderBounds": {
+        "left": 388,
+        "top": 164,
+        "right": 1173,
+        "bottom": 863,
+        "width": 786,
+        "height": 700,
+        "visible": 265543,
+        "transparent": 1307321,
+        "partial": 4302
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 780,
+          "y": 570
+        },
+        "scalpCrown": {
+          "x": 780,
+          "y": 290
+        },
+        "faceOpening": {
+          "x": 938,
+          "y": 570
+        },
+        "neckBack": {
+          "x": 671,
+          "y": 738
+        },
+        "cloakOcclusionAnchor": {
+          "x": 780,
+          "y": 668
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "bald_or_shaved_red",
+      "styleId": "bald_or_shaved",
+      "colorId": "red",
+      "label": "bald or shaved / Red",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/red/bald_or_shaved.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/bald_or_shaved_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/bald_or_shaved.prompt.txt",
+      "canvas": {
+        "width": 1536,
+        "height": 1024
+      },
+      "renderBounds": {
+        "left": 388,
+        "top": 164,
+        "right": 1173,
+        "bottom": 863,
+        "width": 786,
+        "height": 700,
+        "visible": 265543,
+        "transparent": 1307321,
+        "partial": 4302
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 780,
+          "y": 570
+        },
+        "scalpCrown": {
+          "x": 780,
+          "y": 290
+        },
+        "faceOpening": {
+          "x": 938,
+          "y": 570
+        },
+        "neckBack": {
+          "x": 671,
+          "y": 738
+        },
+        "cloakOcclusionAnchor": {
+          "x": 780,
+          "y": 668
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "bald_or_shaved_white",
+      "styleId": "bald_or_shaved",
+      "colorId": "white",
+      "label": "bald or shaved / White",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/white/bald_or_shaved.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/bald_or_shaved_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/bald_or_shaved.prompt.txt",
+      "canvas": {
+        "width": 1536,
+        "height": 1024
+      },
+      "renderBounds": {
+        "left": 388,
+        "top": 164,
+        "right": 1173,
+        "bottom": 863,
+        "width": 786,
+        "height": 700,
+        "visible": 265543,
+        "transparent": 1307321,
+        "partial": 4302
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 780,
+          "y": 570
+        },
+        "scalpCrown": {
+          "x": 780,
+          "y": 290
+        },
+        "faceOpening": {
+          "x": 938,
+          "y": 570
+        },
+        "neckBack": {
+          "x": 671,
+          "y": 738
+        },
+        "cloakOcclusionAnchor": {
+          "x": 780,
+          "y": 668
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "scruffy_short_black",
+      "styleId": "scruffy_short",
+      "colorId": "black",
+      "label": "Scruffy short / Black",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/black/scruffy_short.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/scruffy_short_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/scruffy_short.prompt.txt",
+      "sourceGeneratedImage": "/Users/jon/.codex/generated_images/019f137e-c16f-7730-ad49-dc9579587249/ig_0098abcaca437477016a4309a96b1081918d56b50d27cb9944.png",
+      "canvas": {
+        "width": 1536,
+        "height": 1024
+      },
+      "renderBounds": {
+        "left": 371,
+        "top": 97,
+        "right": 1155,
+        "bottom": 823,
+        "width": 785,
+        "height": 727,
+        "visible": 325223,
+        "transparent": 1247641,
+        "partial": 3818
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 763,
+          "y": 519
+        },
+        "scalpCrown": {
+          "x": 763,
+          "y": 228
+        },
+        "faceOpening": {
+          "x": 920,
+          "y": 519
+        },
+        "neckBack": {
+          "x": 654,
+          "y": 693
+        },
+        "cloakOcclusionAnchor": {
+          "x": 763,
+          "y": 620
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "scruffy_short_blonde",
+      "styleId": "scruffy_short",
+      "colorId": "blonde",
+      "label": "Scruffy short / Blonde",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/blonde/scruffy_short.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/scruffy_short_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/scruffy_short.prompt.txt",
+      "sourceGeneratedImage": "/Users/jon/.codex/generated_images/019f137e-c16f-7730-ad49-dc9579587249/ig_0098abcaca437477016a4309a96b1081918d56b50d27cb9944.png",
+      "canvas": {
+        "width": 1536,
+        "height": 1024
+      },
+      "renderBounds": {
+        "left": 371,
+        "top": 97,
+        "right": 1155,
+        "bottom": 823,
+        "width": 785,
+        "height": 727,
+        "visible": 325223,
+        "transparent": 1247641,
+        "partial": 3818
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 763,
+          "y": 519
+        },
+        "scalpCrown": {
+          "x": 763,
+          "y": 228
+        },
+        "faceOpening": {
+          "x": 920,
+          "y": 519
+        },
+        "neckBack": {
+          "x": 654,
+          "y": 693
+        },
+        "cloakOcclusionAnchor": {
+          "x": 763,
+          "y": 620
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "scruffy_short_red",
+      "styleId": "scruffy_short",
+      "colorId": "red",
+      "label": "Scruffy short / Red",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/red/scruffy_short.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/scruffy_short_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/scruffy_short.prompt.txt",
+      "sourceGeneratedImage": "/Users/jon/.codex/generated_images/019f137e-c16f-7730-ad49-dc9579587249/ig_0098abcaca437477016a4309a96b1081918d56b50d27cb9944.png",
+      "canvas": {
+        "width": 1536,
+        "height": 1024
+      },
+      "renderBounds": {
+        "left": 371,
+        "top": 97,
+        "right": 1155,
+        "bottom": 823,
+        "width": 785,
+        "height": 727,
+        "visible": 325223,
+        "transparent": 1247641,
+        "partial": 3818
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 763,
+          "y": 519
+        },
+        "scalpCrown": {
+          "x": 763,
+          "y": 228
+        },
+        "faceOpening": {
+          "x": 920,
+          "y": 519
+        },
+        "neckBack": {
+          "x": 654,
+          "y": 693
+        },
+        "cloakOcclusionAnchor": {
+          "x": 763,
+          "y": 620
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    },
+    {
+      "id": "scruffy_short_white",
+      "styleId": "scruffy_short",
+      "colorId": "white",
+      "label": "Scruffy short / White",
+      "status": "production",
+      "sourceKind": "image_generated_chroma_key_recolored_raster",
+      "layerKind": "hair",
+      "file": "assets/pc_builder_production/hair/assets/white/scruffy_short.png",
+      "sourceFile": "assets/pc_builder_production/hair/source/scruffy_short_chroma.png",
+      "promptFile": "assets/pc_builder_production/hair/prompts/scruffy_short.prompt.txt",
+      "sourceGeneratedImage": "/Users/jon/.codex/generated_images/019f137e-c16f-7730-ad49-dc9579587249/ig_0098abcaca437477016a4309a96b1081918d56b50d27cb9944.png",
+      "canvas": {
+        "width": 1536,
+        "height": 1024
+      },
+      "renderBounds": {
+        "left": 371,
+        "top": 97,
+        "right": 1155,
+        "bottom": 823,
+        "width": 785,
+        "height": 727,
+        "visible": 325223,
+        "transparent": 1247641,
+        "partial": 3818
+      },
+      "anchors": {
+        "headAnchor": {
+          "x": 763,
+          "y": 519
+        },
+        "scalpCrown": {
+          "x": 763,
+          "y": 228
+        },
+        "faceOpening": {
+          "x": 920,
+          "y": 519
+        },
+        "neckBack": {
+          "x": 654,
+          "y": 693
+        },
+        "cloakOcclusionAnchor": {
+          "x": 763,
+          "y": 620
+        }
+      },
+      "zOrder": 38,
+      "compositing": {
+        "hiddenWhenCloakId": [
+          "hood_up"
+        ],
+        "incompatibleSpecies": [
+          "dragonborn"
+        ],
+        "compatibleHeadKinds": [
+          "humanlike_narrow_severe",
+          "humanlike_broad_solid",
+          "humanlike_soft_round"
+        ]
+      },
+      "validation": {
+        "png": true,
+        "alpha": true,
+        "transparentBackground": true,
+        "noSvg": true,
+        "noBase": true,
+        "noLanterna": true,
+        "noWeapon": true,
+        "noWandText": true,
+        "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+      }
+    }
+  ],
+  "signedOffAt": "2026-06-30T00:21:19.290Z",
+  "signOffNotes": "User reviewed the 8-style x 4-color hair matrix and approved the hair set."
+}

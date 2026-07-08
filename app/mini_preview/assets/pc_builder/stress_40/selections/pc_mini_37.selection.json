@@ -1,0 +1,26 @@
+{
+  "classId": "cleric",
+  "speciesId": "gnome",
+  "lineageId": "forest",
+  "bodyTypeId": "masculine",
+  "skinToneId": "human_black",
+  "speciesFeatureIds": [],
+  "postureId": "posture_1",
+  "outfitId": "outfit_1",
+  "cloakId": "none",
+  "headId": "humanlike_broad_solid",
+  "hairId": "long_loose",
+  "facialHairId": "none",
+  "weaponSlotId": "main",
+  "weaponDisplayId": "cleric_1_mace_and_shield",
+  "lanternaAttachmentId": "dangling",
+  "base": {
+    "useUniqueBase": true,
+    "uniqueBaseId": "betrayers-coin",
+    "fallbackCustomBase": {
+      "disc": "aged-gold",
+      "rim": "blackened-iron",
+      "asset": "assets/base_combinations/base_disc-aged-gold_rim-blackened-iron.png"
+    }
+  }
+}

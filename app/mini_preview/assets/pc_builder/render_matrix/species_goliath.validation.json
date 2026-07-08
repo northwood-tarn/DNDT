@@ -1,0 +1,7 @@
+{
+  "name": "species_goliath",
+  "ok": true,
+  "errors": [],
+  "png": "app/mini_preview/assets/pc_builder/render_matrix/species_goliath.png",
+  "layerPlan": "app/mini_preview/assets/pc_builder/render_matrix/species_goliath.layer_plan.json"
+}

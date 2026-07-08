@@ -1,0 +1,93 @@
+{
+  "id": "paladin_1_primary_sword",
+  "classId": "paladin",
+  "postureId": "posture_1",
+  "status": "generated_pending_review",
+  "sourceKind": "image_generated_chroma_key",
+  "layerKind": "weapon",
+  "file": "assets/pc_builder_production/weapon_posture1/cutout/paladin_1_primary_sword.png",
+  "sourceSheet": "assets/pc_builder_production/weapon_posture1/sheets/source/paladin_posture1_weapons_chroma.png",
+  "canvas": {
+    "width": 512,
+    "height": 579
+  },
+  "renderBounds": {
+    "left": 24,
+    "top": 24,
+    "right": 487,
+    "bottom": 554,
+    "width": 464,
+    "height": 531,
+    "visible": 51575,
+    "partial": 2845
+  },
+  "anchors": {
+    "weaponHand": {
+      "x": 200,
+      "y": 257
+    },
+    "offhand": {
+      "x": 136,
+      "y": 268
+    },
+    "staffBottom": {
+      "x": 221,
+      "y": 517
+    },
+    "bodyRoot": {
+      "x": 200,
+      "y": 332
+    },
+    "baseCenter": {
+      "x": 200,
+      "y": 535
+    },
+    "groundContactLeft": {
+      "x": 176,
+      "y": 535
+    },
+    "groundContactRight": {
+      "x": 233,
+      "y": 535
+    },
+    "head": {
+      "x": 209,
+      "y": 96
+    },
+    "hair": {
+      "x": 209,
+      "y": 80
+    },
+    "cloak": {
+      "x": 180,
+      "y": 187
+    },
+    "lanternaDangling": {
+      "x": 152,
+      "y": 337
+    },
+    "lanternaSideAffixed": {
+      "x": 140,
+      "y": 300
+    },
+    "lanternaNeckChain": {
+      "x": 209,
+      "y": 187
+    }
+  },
+  "zOrder": 80,
+  "validation": {
+    "png": true,
+    "alpha": true,
+    "transparentBackground": true,
+    "noSvg": true,
+    "noBase": true,
+    "noLanterna": true,
+    "noWandText": true,
+    "notes": "Generated for human posture_1 weapon chart. Pending visual fit against posture_1 body."
+  },
+  "segmentation": {
+    "method": "alpha_connected_components_nearest_chart_slot_filtered",
+    "componentCount": 1
+  }
+}

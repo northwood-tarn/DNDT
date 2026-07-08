@@ -1,0 +1,93 @@
+{
+  "id": "paladin_4_grounded_spear",
+  "classId": "paladin",
+  "postureId": "posture_1",
+  "status": "generated_pending_review",
+  "sourceKind": "image_generated_chroma_key",
+  "layerKind": "weapon",
+  "file": "assets/pc_builder_production/weapon_posture1/cutout/paladin_4_grounded_spear.png",
+  "sourceSheet": "assets/pc_builder_production/weapon_posture1/sheets/source/paladin_posture1_weapons_chroma.png",
+  "canvas": {
+    "width": 272,
+    "height": 877
+  },
+  "renderBounds": {
+    "left": 24,
+    "top": 24,
+    "right": 247,
+    "bottom": 852,
+    "width": 224,
+    "height": 829,
+    "visible": 45308,
+    "partial": 2928
+  },
+  "anchors": {
+    "weaponHand": {
+      "x": 136,
+      "y": 421
+    },
+    "offhand": {
+      "x": 92,
+      "y": 438
+    },
+    "staffBottom": {
+      "x": 150,
+      "y": 859
+    },
+    "bodyRoot": {
+      "x": 136,
+      "y": 544
+    },
+    "baseCenter": {
+      "x": 136,
+      "y": 877
+    },
+    "groundContactLeft": {
+      "x": 120,
+      "y": 877
+    },
+    "groundContactRight": {
+      "x": 158,
+      "y": 877
+    },
+    "head": {
+      "x": 141,
+      "y": 158
+    },
+    "hair": {
+      "x": 141,
+      "y": 132
+    },
+    "cloak": {
+      "x": 122,
+      "y": 307
+    },
+    "lanternaDangling": {
+      "x": 103,
+      "y": 553
+    },
+    "lanternaSideAffixed": {
+      "x": 95,
+      "y": 491
+    },
+    "lanternaNeckChain": {
+      "x": 141,
+      "y": 307
+    }
+  },
+  "zOrder": 80,
+  "validation": {
+    "png": true,
+    "alpha": true,
+    "transparentBackground": true,
+    "noSvg": true,
+    "noBase": true,
+    "noLanterna": true,
+    "noWandText": true,
+    "notes": "Generated for human posture_1 weapon chart. Pending visual fit against posture_1 body."
+  },
+  "segmentation": {
+    "method": "alpha_connected_components_nearest_chart_slot_filtered",
+    "componentCount": 1
+  }
+}

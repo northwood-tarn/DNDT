@@ -1,0 +1,7 @@
+{
+  "name": "species_gnome",
+  "ok": true,
+  "errors": [],
+  "png": "app/mini_preview/assets/pc_builder/render_matrix/species_gnome.png",
+  "layerPlan": "app/mini_preview/assets/pc_builder/render_matrix/species_gnome.layer_plan.json"
+}

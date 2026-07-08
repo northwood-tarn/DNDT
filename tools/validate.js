@@ -19,6 +19,8 @@ import { validateConsumables } from './validate-consumables.js';
 import { validateEnemies } from './validate-enemies.js';
 import { validateEncounters } from './validate-encounters.js';
 import { validateFeats } from './validate-feats.js';
+import { validatePcMiniAssets } from './validate-pc-mini-assets.js';
+import { validatePcMiniRules } from './validate-pc-mini-selection.js';
 import { validateSpells } from './validate-spells.js';
 import { validateSpecies } from './validate-species.js';
 import { validateTools } from './validate-tools.js';
@@ -373,6 +375,24 @@ async function main() {
     for (const err of speciesErrors) console.error('  -', err);
   } else {
     printOk('[species] Validation OK');
+  }
+
+  const pcMiniErrors = await validatePcMiniRules();
+  if (pcMiniErrors.length) {
+    jsonErrors += pcMiniErrors.length;
+    printErr(`[pc-mini-selection] Validation failed with ${pcMiniErrors.length} error(s):`);
+    for (const err of pcMiniErrors) console.error('  -', err);
+  } else {
+    printOk('[pc-mini-selection] Validation OK');
+  }
+
+  const pcMiniAssetErrors = await validatePcMiniAssets();
+  if (pcMiniAssetErrors.length) {
+    jsonErrors += pcMiniAssetErrors.length;
+    printErr(`[pc-mini-assets] Validation failed with ${pcMiniAssetErrors.length} error(s):`);
+    for (const err of pcMiniAssetErrors) console.error('  -', err);
+  } else {
+    printOk('[pc-mini-assets] Validation OK');
   }
 
   const featErrors = await validateFeats();

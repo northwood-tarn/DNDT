@@ -1,0 +1,93 @@
+{
+  "id": "fighter_3_halberd",
+  "classId": "fighter",
+  "postureId": "posture_1",
+  "status": "generated_pending_review",
+  "sourceKind": "image_generated_chroma_key",
+  "layerKind": "weapon",
+  "file": "assets/pc_builder_production/weapon_posture1/cutout/fighter_3_halberd.png",
+  "sourceSheet": "assets/pc_builder_production/weapon_posture1/sheets/source/fighter_posture1_weapons_chroma.png",
+  "canvas": {
+    "width": 640,
+    "height": 757
+  },
+  "renderBounds": {
+    "left": 24,
+    "top": 24,
+    "right": 615,
+    "bottom": 732,
+    "width": 592,
+    "height": 709,
+    "visible": 60411,
+    "partial": 3325
+  },
+  "anchors": {
+    "weaponHand": {
+      "x": 240,
+      "y": 251
+    },
+    "offhand": {
+      "x": 164,
+      "y": 261
+    },
+    "staffBottom": {
+      "x": 265,
+      "y": 504
+    },
+    "bodyRoot": {
+      "x": 240,
+      "y": 324
+    },
+    "baseCenter": {
+      "x": 240,
+      "y": 522
+    },
+    "groundContactLeft": {
+      "x": 212,
+      "y": 522
+    },
+    "groundContactRight": {
+      "x": 279,
+      "y": 522
+    },
+    "head": {
+      "x": 250,
+      "y": 94
+    },
+    "hair": {
+      "x": 250,
+      "y": 78
+    },
+    "cloak": {
+      "x": 216,
+      "y": 183
+    },
+    "lanternaDangling": {
+      "x": 183,
+      "y": 329
+    },
+    "lanternaSideAffixed": {
+      "x": 168,
+      "y": 292
+    },
+    "lanternaNeckChain": {
+      "x": 250,
+      "y": 183
+    }
+  },
+  "zOrder": 80,
+  "validation": {
+    "png": true,
+    "alpha": true,
+    "transparentBackground": true,
+    "noSvg": true,
+    "noBase": true,
+    "noLanterna": true,
+    "noWandText": true,
+    "notes": "Generated for human posture_1 weapon chart. Pending visual fit against posture_1 body."
+  },
+  "segmentation": {
+    "method": "alpha_connected_components_nearest_chart_slot_filtered",
+    "componentCount": 1
+  }
+}

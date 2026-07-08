@@ -1,0 +1,134 @@
+{
+  "ok": true,
+  "cacheKey": "classId-rogue__speciesId-goliath__lineageId-fire__bodyTypeId-feminine__skinToneId-human_black__postureId-posture_2__outfitId-outfit_2__cloakId-cloak__headId-humanlike_narrow_severe__hairId-topknot_bun__facialHairId-full_beard__weaponDisplayId-rogue_5_empty_hand__lanternaAttachmentId-side_affixed__base-disc-gunmetal_rim-gunmetal",
+  "selection": {
+    "facialHairId": "full_beard",
+    "base": {
+      "useUniqueBase": false,
+      "disc": "gunmetal",
+      "rim": "gunmetal"
+    },
+    "classId": "rogue",
+    "speciesId": "goliath",
+    "lineageId": "fire",
+    "bodyTypeId": "feminine",
+    "skinToneId": "human_black",
+    "speciesFeatureIds": [],
+    "postureId": "posture_2",
+    "outfitId": "outfit_2",
+    "cloakId": "cloak",
+    "headId": "humanlike_narrow_severe",
+    "hairId": "topknot_bun",
+    "weaponSlotId": "empty_gesture",
+    "weaponDisplayId": "rogue_5_empty_hand",
+    "lanternaAttachmentId": "side_affixed"
+  },
+  "render": {
+    "baseSeparated": true,
+    "baseRuntimeFootprint": {
+      "gridDiamond": {
+        "width": 128,
+        "height": 64
+      },
+      "displayWidth": 115,
+      "sourceCanvas": {
+        "width": 192,
+        "height": 128
+      },
+      "visibleBounds": {
+        "left": 16,
+        "top": 21,
+        "right": 176,
+        "bottom": 106
+      },
+      "placement": "center visible base bounds inside the occupied 128x64 grid diamond"
+    },
+    "speciesScale": 1.5,
+    "zOrder": [
+      "base",
+      "posture",
+      "outfit",
+      "head",
+      "facialHair",
+      "hair",
+      "speciesFeature",
+      "cloak",
+      "weapon",
+      "lanterna"
+    ]
+  },
+  "output": {
+    "canvas": {
+      "width": 256,
+      "height": 360
+    },
+    "baseCenter": {
+      "x": 128,
+      "y": 306
+    }
+  },
+  "layers": [
+    {
+      "kind": "base",
+      "id": "disc-gunmetal_rim-gunmetal",
+      "asset": "assets/base_combinations/base_disc-gunmetal_rim-gunmetal.png",
+      "baseSeparated": true
+    },
+    {
+      "kind": "posture",
+      "id": "goliath_feminine_posture_2",
+      "asset": "assets/pc_builder/body/goliath_feminine_posture_2.png",
+      "tint": [
+        74,
+        48,
+        36
+      ]
+    },
+    {
+      "kind": "outfit",
+      "id": "rogue_outfit_2",
+      "asset": "assets/pc_builder/outfit/rogue_outfit_2.png",
+      "tint": null
+    },
+    {
+      "kind": "head",
+      "id": "humanlike_narrow_severe",
+      "asset": "assets/pc_builder/head/humanlike_narrow_severe.png",
+      "tint": [
+        74,
+        48,
+        36
+      ]
+    },
+    {
+      "kind": "facialHair",
+      "id": "full_beard",
+      "asset": "assets/pc_builder/facial_hair/full_beard.png",
+      "tint": null
+    },
+    {
+      "kind": "hair",
+      "id": "topknot_bun",
+      "asset": "assets/pc_builder/hair/topknot_bun.png",
+      "tint": null
+    },
+    {
+      "kind": "cloak",
+      "id": "cloak",
+      "asset": "assets/pc_builder/cloak/cloak.png",
+      "tint": null
+    },
+    {
+      "kind": "weapon",
+      "id": "rogue_5_empty_hand",
+      "asset": "assets/pc_builder/weapon/rogue_5_empty_hand.png",
+      "tint": null
+    },
+    {
+      "kind": "lanterna",
+      "id": "side_affixed",
+      "asset": "assets/pc_builder/lanterna/side_affixed.png",
+      "tint": null
+    }
+  ]
+}

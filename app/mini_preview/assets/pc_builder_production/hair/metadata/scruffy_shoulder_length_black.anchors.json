@@ -1,0 +1,75 @@
+{
+  "id": "scruffy_shoulder_length_black",
+  "styleId": "scruffy_shoulder_length",
+  "colorId": "black",
+  "label": "scruffy shoulder length / Black",
+  "status": "production",
+  "sourceKind": "image_generated_chroma_key",
+  "layerKind": "hair",
+  "file": "assets/pc_builder_production/hair/assets/black/scruffy_shoulder_length.png",
+  "sourceFile": "assets/pc_builder_production/hair/source/scruffy_shoulder_length_chroma.png",
+  "promptFile": "assets/pc_builder_production/hair/prompts/scruffy_shoulder_length.prompt.txt",
+  "canvas": {
+    "width": 1536,
+    "height": 1024
+  },
+  "renderBounds": {
+    "left": 392,
+    "top": 122,
+    "right": 1127,
+    "bottom": 852,
+    "width": 736,
+    "height": 731,
+    "visible": 326746,
+    "transparent": 1246118,
+    "partial": 10423
+  },
+  "anchors": {
+    "headAnchor": {
+      "x": 760,
+      "y": 546
+    },
+    "scalpCrown": {
+      "x": 760,
+      "y": 254
+    },
+    "faceOpening": {
+      "x": 907,
+      "y": 546
+    },
+    "neckBack": {
+      "x": 657,
+      "y": 721
+    },
+    "cloakOcclusionAnchor": {
+      "x": 760,
+      "y": 648
+    }
+  },
+  "zOrder": 38,
+  "compositing": {
+    "hiddenWhenCloakId": [
+      "hood_up"
+    ],
+    "incompatibleSpecies": [
+      "dragonborn"
+    ],
+    "compatibleHeadKinds": [
+      "humanlike_narrow_severe",
+      "humanlike_broad_solid",
+      "humanlike_soft_round"
+    ]
+  },
+  "validation": {
+    "png": true,
+    "alpha": true,
+    "transparentBackground": true,
+    "noSvg": true,
+    "noBase": true,
+    "noLanterna": true,
+    "noWeapon": true,
+    "noWandText": true,
+    "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+  },
+  "signedOffAt": "2026-06-30T00:21:19.290Z"
+}

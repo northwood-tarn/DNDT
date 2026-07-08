@@ -1,0 +1,24 @@
+{
+  "status": "review_generation",
+  "productionArt": false,
+  "output": "human_feminine_cleric_weapon_matrix_3x3_attempt_01.png",
+  "sourceGeneratedImage": "/Users/jon/.codex/generated_images/019f1d93-6e4a-78d1-9093-5d182efe4ed4/ig_077048f9b02c116a016a450b0cb0e0819192563f9b8c436f32.png",
+  "baseBody": "human female, three posture families from human_feminine_all_postures_rogue_weapons_v1.png",
+  "matrix": {
+    "1.1": "balanced posture, greatshield and mace",
+    "1.2": "balanced posture, mace and cleric holy symbol",
+    "1.3": "balanced posture, Danica-like grounded greatsword",
+    "2.1": "aggressive posture, greatshield and longsword",
+    "2.2": "aggressive posture, square shield and mace",
+    "2.3": "aggressive posture, holy symbol and empty hand",
+    "3.1": "defensive posture, mace and holy symbol",
+    "3.2": "defensive posture, greatshield and mace",
+    "3.3": "defensive posture, grounded greatsword"
+  },
+  "holySymbolSpec": "one full circle with half of a second circle on top; generation attempt 01 is close but should be checked for crescent/over-stylization",
+  "notes": [
+    "Generated as a 3x3 chroma-key review sheet, not production cutouts.",
+    "No gender or species variation tested in this pass.",
+    "Use this sheet to choose best cells before any cutout/anchor work."
+  ]
+}

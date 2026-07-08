@@ -1,0 +1,25 @@
+{
+  "classId": "fighter",
+  "speciesId": "human",
+  "bodyTypeId": "masculine",
+  "skinToneId": "human_black",
+  "speciesFeatureIds": [],
+  "postureId": "posture_1",
+  "outfitId": "outfit_1",
+  "cloakId": "none",
+  "headId": "humanlike_soft_round",
+  "hairId": "short_messy",
+  "facialHairId": "full_beard",
+  "weaponSlotId": "main",
+  "weaponDisplayId": "fighter_1_primary_sword",
+  "lanternaAttachmentId": "dangling",
+  "base": {
+    "useUniqueBase": true,
+    "uniqueBaseId": "betrayers-coin",
+    "fallbackCustomBase": {
+      "disc": "aged-gold",
+      "rim": "blackened-iron",
+      "asset": "assets/base_combinations/base_disc-aged-gold_rim-blackened-iron.png"
+    }
+  }
+}

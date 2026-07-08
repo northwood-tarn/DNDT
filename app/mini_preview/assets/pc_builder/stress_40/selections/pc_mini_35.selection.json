@@ -1,0 +1,21 @@
+{
+  "classId": "cleric",
+  "speciesId": "human",
+  "bodyTypeId": "masculine",
+  "skinToneId": "human_pale",
+  "speciesFeatureIds": [],
+  "postureId": "posture_2",
+  "outfitId": "outfit_1",
+  "cloakId": "cloak",
+  "headId": "humanlike_broad_solid",
+  "hairId": "topknot_bun",
+  "facialHairId": "moustache",
+  "weaponSlotId": "heavy_reach_two_handed",
+  "weaponDisplayId": "cleric_3_staff",
+  "lanternaAttachmentId": "side_affixed",
+  "base": {
+    "useUniqueBase": false,
+    "disc": "ember-warmed-steel",
+    "rim": "metallic-green"
+  }
+}

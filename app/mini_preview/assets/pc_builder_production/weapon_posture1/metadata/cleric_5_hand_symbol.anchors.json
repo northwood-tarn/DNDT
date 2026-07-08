@@ -1,0 +1,93 @@
+{
+  "id": "cleric_5_hand_symbol",
+  "classId": "cleric",
+  "postureId": "posture_1",
+  "status": "generated_pending_review",
+  "sourceKind": "image_generated_chroma_key",
+  "layerKind": "weapon",
+  "file": "assets/pc_builder_production/weapon_posture1/cutout/cleric_5_hand_symbol.png",
+  "sourceSheet": "assets/pc_builder_production/weapon_posture1/sheets/source/cleric_posture1_weapons_chroma.png",
+  "canvas": {
+    "width": 365,
+    "height": 349
+  },
+  "renderBounds": {
+    "left": 24,
+    "top": 24,
+    "right": 340,
+    "bottom": 324,
+    "width": 317,
+    "height": 301,
+    "visible": 38299,
+    "partial": 2178
+  },
+  "anchors": {
+    "weaponHand": {
+      "x": 183,
+      "y": 168
+    },
+    "offhand": {
+      "x": 124,
+      "y": 174
+    },
+    "staffBottom": {
+      "x": 201,
+      "y": 331
+    },
+    "bodyRoot": {
+      "x": 183,
+      "y": 216
+    },
+    "baseCenter": {
+      "x": 183,
+      "y": 349
+    },
+    "groundContactLeft": {
+      "x": 161,
+      "y": 349
+    },
+    "groundContactRight": {
+      "x": 212,
+      "y": 349
+    },
+    "head": {
+      "x": 190,
+      "y": 63
+    },
+    "hair": {
+      "x": 190,
+      "y": 52
+    },
+    "cloak": {
+      "x": 165,
+      "y": 122
+    },
+    "lanternaDangling": {
+      "x": 139,
+      "y": 220
+    },
+    "lanternaSideAffixed": {
+      "x": 128,
+      "y": 195
+    },
+    "lanternaNeckChain": {
+      "x": 190,
+      "y": 122
+    }
+  },
+  "zOrder": 80,
+  "validation": {
+    "png": true,
+    "alpha": true,
+    "transparentBackground": true,
+    "noSvg": true,
+    "noBase": true,
+    "noLanterna": true,
+    "noWandText": true,
+    "notes": "Generated for human posture_1 weapon chart. Pending visual fit against posture_1 body."
+  },
+  "segmentation": {
+    "method": "alpha_connected_components_nearest_chart_slot_filtered",
+    "componentCount": 1
+  }
+}

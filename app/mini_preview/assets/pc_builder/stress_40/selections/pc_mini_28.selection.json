@@ -1,0 +1,27 @@
+{
+  "classId": "fighter",
+  "speciesId": "tiefling",
+  "lineageId": "abyssal",
+  "bodyTypeId": "feminine",
+  "speciesFeatureIds": [
+    "horns_tail"
+  ],
+  "postureId": "posture_1",
+  "outfitId": "outfit_2",
+  "cloakId": "none",
+  "headId": "humanlike_soft_round",
+  "hairId": "short_severe",
+  "facialHairId": "full_beard",
+  "weaponSlotId": "ranged_sidearm_focus",
+  "weaponDisplayId": "fighter_4_spear",
+  "lanternaAttachmentId": "dangling",
+  "base": {
+    "useUniqueBase": true,
+    "uniqueBaseId": "betrayers-coin",
+    "fallbackCustomBase": {
+      "disc": "aged-gold",
+      "rim": "blackened-iron",
+      "asset": "assets/base_combinations/base_disc-aged-gold_rim-blackened-iron.png"
+    }
+  }
+}

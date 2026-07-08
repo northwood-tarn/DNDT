@@ -1,0 +1,73 @@
+{
+  "id": "topknot_bun",
+  "label": "Topknot / bun",
+  "status": "production",
+  "sourceKind": "image_generated_chroma_key",
+  "layerKind": "hair",
+  "file": "assets/pc_builder_production/hair/cutout/topknot_bun.png",
+  "sourceFile": "assets/pc_builder_production/hair/source/topknot_bun_chroma.png",
+  "promptFile": "assets/pc_builder_production/hair/prompts/topknot_bun.prompt.txt",
+  "sourceGeneratedImage": "/Users/jon/.codex/generated_images/019f137e-c16f-7730-ad49-dc9579587249/ig_063c180e3361fb51016a42fdcd4b2081919e2cce5e0a37b9df.png",
+  "canvas": {
+    "width": 1254,
+    "height": 1254
+  },
+  "renderBounds": {
+    "left": 269,
+    "top": 204,
+    "right": 1010,
+    "bottom": 949,
+    "width": 742,
+    "height": 746,
+    "visible": 290391,
+    "transparent": 1282125
+  },
+  "anchors": {
+    "headAnchor": {
+      "x": 640,
+      "y": 637
+    },
+    "scalpCrown": {
+      "x": 640,
+      "y": 338
+    },
+    "faceOpening": {
+      "x": 788,
+      "y": 637
+    },
+    "neckBack": {
+      "x": 536,
+      "y": 816
+    },
+    "cloakOcclusionAnchor": {
+      "x": 640,
+      "y": 741
+    }
+  },
+  "zOrder": 38,
+  "compositing": {
+    "hiddenWhenCloakId": [
+      "hood_up"
+    ],
+    "incompatibleSpecies": [
+      "dragonborn"
+    ],
+    "compatibleHeadKinds": [
+      "humanlike_narrow_severe",
+      "humanlike_broad_solid",
+      "humanlike_soft_round"
+    ]
+  },
+  "validation": {
+    "png": true,
+    "alpha": true,
+    "transparentBackground": true,
+    "noSvg": true,
+    "noBase": true,
+    "noLanterna": true,
+    "noWeapon": true,
+    "noWandText": true,
+    "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+  },
+  "signedOffAt": "2026-06-30T00:21:19.290Z"
+}

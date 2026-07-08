@@ -1,0 +1,22 @@
+{
+  "classId": "rogue",
+  "speciesId": "goliath",
+  "lineageId": "fire",
+  "bodyTypeId": "feminine",
+  "skinToneId": "human_black",
+  "speciesFeatureIds": [],
+  "postureId": "posture_2",
+  "outfitId": "outfit_2",
+  "cloakId": "cloak",
+  "headId": "humanlike_narrow_severe",
+  "hairId": "topknot_bun",
+  "facialHairId": "full_beard",
+  "weaponSlotId": "empty_gesture",
+  "weaponDisplayId": "rogue_5_empty_hand",
+  "lanternaAttachmentId": "side_affixed",
+  "base": {
+    "useUniqueBase": false,
+    "disc": "gunmetal",
+    "rim": "gunmetal"
+  }
+}

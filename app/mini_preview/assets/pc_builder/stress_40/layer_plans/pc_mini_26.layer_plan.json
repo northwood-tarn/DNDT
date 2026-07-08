@@ -1,0 +1,131 @@
+{
+  "ok": true,
+  "cacheKey": "classId-paladin__speciesId-dragonborn__lineageId-gold__bodyTypeId-feminine__skinToneId-none__postureId-posture_2__outfitId-outfit_2__cloakId-cloak__headId-dragonborn_head__hairId-none__facialHairId-none__weaponDisplayId-paladin_2_sword_and_shield__lanternaAttachmentId-side_affixed__base-disc-blackened-iron_rim-tarnished-brass",
+  "selection": {
+    "facialHairId": "none",
+    "base": {
+      "useUniqueBase": false,
+      "disc": "blackened-iron",
+      "rim": "tarnished-brass"
+    },
+    "classId": "paladin",
+    "speciesId": "dragonborn",
+    "lineageId": "gold",
+    "bodyTypeId": "feminine",
+    "speciesFeatureIds": [],
+    "postureId": "posture_2",
+    "outfitId": "outfit_2",
+    "cloakId": "cloak",
+    "headId": "dragonborn_head",
+    "hairId": null,
+    "weaponSlotId": "offhand_or_shield",
+    "weaponDisplayId": "paladin_2_sword_and_shield",
+    "lanternaAttachmentId": "side_affixed"
+  },
+  "render": {
+    "baseSeparated": true,
+    "baseRuntimeFootprint": {
+      "gridDiamond": {
+        "width": 128,
+        "height": 64
+      },
+      "displayWidth": 115,
+      "sourceCanvas": {
+        "width": 192,
+        "height": 128
+      },
+      "visibleBounds": {
+        "left": 16,
+        "top": 21,
+        "right": 176,
+        "bottom": 106
+      },
+      "placement": "center visible base bounds inside the occupied 128x64 grid diamond"
+    },
+    "speciesScale": 1,
+    "zOrder": [
+      "base",
+      "posture",
+      "outfit",
+      "head",
+      "facialHair",
+      "hair",
+      "speciesFeature",
+      "cloak",
+      "weapon",
+      "lanterna"
+    ]
+  },
+  "output": {
+    "canvas": {
+      "width": 256,
+      "height": 360
+    },
+    "baseCenter": {
+      "x": 128,
+      "y": 306
+    }
+  },
+  "layers": [
+    {
+      "kind": "base",
+      "id": "disc-blackened-iron_rim-tarnished-brass",
+      "asset": "assets/base_combinations/base_disc-blackened-iron_rim-tarnished-brass.png",
+      "baseSeparated": true
+    },
+    {
+      "kind": "posture",
+      "id": "dragonborn_feminine_posture_2",
+      "asset": "assets/pc_builder/body/dragonborn_feminine_posture_2.png",
+      "tint": [
+        190,
+        153,
+        70
+      ]
+    },
+    {
+      "kind": "outfit",
+      "id": "paladin_outfit_2",
+      "asset": "assets/pc_builder/outfit/paladin_outfit_2.png",
+      "tint": null
+    },
+    {
+      "kind": "head",
+      "id": "dragonborn_head",
+      "asset": "assets/pc_builder/head/dragonborn_head.png",
+      "tint": [
+        190,
+        153,
+        70
+      ]
+    },
+    {
+      "kind": "facialHair",
+      "id": "none",
+      "hidden": true
+    },
+    {
+      "kind": "hair",
+      "id": null,
+      "hidden": true
+    },
+    {
+      "kind": "cloak",
+      "id": "cloak",
+      "asset": "assets/pc_builder/cloak/cloak.png",
+      "tint": null
+    },
+    {
+      "kind": "weapon",
+      "id": "paladin_2_sword_and_shield",
+      "asset": "assets/pc_builder/weapon/paladin_2_sword_and_shield.png",
+      "tint": null
+    },
+    {
+      "kind": "lanterna",
+      "id": "side_affixed",
+      "asset": "assets/pc_builder/lanterna/side_affixed.png",
+      "tint": null
+    }
+  ]
+}

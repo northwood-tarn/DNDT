@@ -1,0 +1,22 @@
+{
+  "classId": "warlock",
+  "speciesId": "goliath",
+  "lineageId": "fire",
+  "bodyTypeId": "feminine",
+  "skinToneId": "human_pale",
+  "speciesFeatureIds": [],
+  "postureId": "posture_2",
+  "outfitId": "outfit_2",
+  "cloakId": "cloak",
+  "headId": "humanlike_broad_solid",
+  "hairId": "long_tied_back",
+  "facialHairId": "full_beard",
+  "weaponSlotId": "empty_gesture",
+  "weaponDisplayId": "warlock_5_empty_casting_hand",
+  "lanternaAttachmentId": "side_affixed",
+  "base": {
+    "useUniqueBase": false,
+    "disc": "gunmetal",
+    "rim": "ember-warmed-steel"
+  }
+}

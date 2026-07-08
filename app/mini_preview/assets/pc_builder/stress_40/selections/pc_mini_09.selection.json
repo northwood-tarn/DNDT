@@ -1,0 +1,21 @@
+{
+  "classId": "warlock",
+  "speciesId": "tiefling",
+  "lineageId": "infernal",
+  "bodyTypeId": "masculine",
+  "speciesFeatureIds": [],
+  "postureId": "posture_3",
+  "outfitId": "outfit_1",
+  "cloakId": "hood_up",
+  "headId": "humanlike_soft_round",
+  "hairId": "long_loose",
+  "facialHairId": "moustache",
+  "weaponSlotId": "main",
+  "weaponDisplayId": "warlock_1_short_blade",
+  "lanternaAttachmentId": "neck_chain",
+  "base": {
+    "useUniqueBase": false,
+    "disc": "ember-warmed-steel",
+    "rim": "dull-silver"
+  }
+}

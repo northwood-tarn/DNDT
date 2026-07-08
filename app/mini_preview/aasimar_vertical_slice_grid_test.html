@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aasimar Warlock Vertical Slice</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --plate-w: 1920px;
+      --plate-h: 1080px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #050605;
+    }
+
+    .viewport {
+      width: min(100vw, calc(100vh * 16 / 9));
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #101412;
+    }
+
+    .plate {
+      position: relative;
+      width: var(--plate-w);
+      height: var(--plate-h);
+      transform-origin: top left;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 46%, rgba(184, 171, 125, 0.08), transparent 32%),
+        linear-gradient(180deg, #1b211d 0%, #111512 100%);
+    }
+
+    .grid-svg,
+    .mini-layer {
+      position: absolute;
+      inset: 0;
+    }
+
+    .grid-line {
+      fill: none;
+      stroke: rgba(183, 205, 178, 0.44);
+      stroke-width: 2;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .cell-outline {
+      fill: rgba(117, 139, 113, 0.055);
+      stroke: rgba(221, 207, 154, 0.7);
+      stroke-width: 2;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .base,
+    .mini {
+      position: absolute;
+      transform-origin: 0 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <main class="viewport" aria-label="Aasimar warlock vertical slice on locked combat grid">
+    <div class="plate">
+      <svg class="grid-svg" viewBox="0 0 1920 1080" aria-hidden="true"></svg>
+      <div class="mini-layer">
+        <img class="base" src="assets/base_combinations/base_disc-metallic-green_rim-aged-gold.png" alt="">
+        <img class="mini" src="assets/pc_vertical_slices/aasimar_female_p2_warlock2_mace_necklanterna_green_gold_v1_body_no_base.png" alt="">
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { projectGridPoint } from "../combat/isometricGrid.js";
+    import { createGridProjectionFromStage } from "../combat/stageMetadata.js";
+
+    const stage = {
+      image: {
+        width: 1920,
+        height: 1080,
+      },
+      grid: {
+        projection: "isometric_square",
+        tileWidth: 128,
+        tileHeight: 64,
+        origin: { x: 960, y: 120 },
+        width: 14,
+        height: 10,
+        coordinateRule: "x increases down-right; y increases down-left",
+      },
+    };
+
+    const selectedCell = { x: 7, y: 5 };
+    const runtimeBase = {
+      visibleWidth: 105,
+      visibleHeight: 42.6,
+      sourceWidth: 192,
+      sourceHeight: 128,
+      visibleBounds: { left: 41, top: 21, right: 151, bottom: 106 },
+    };
+    const stackNudge = { x: 0, y: -3 };
+    const sourceMini = {
+      width: 773,
+      height: 1257,
+      estimatedBaseBounds: { left: 43, top: 980, right: 726, bottom: 1245 },
+    };
+
+    const projection = createGridProjectionFromStage(stage);
+    const svg = document.querySelector(".grid-svg");
+    const base = document.querySelector(".base");
+    const mini = document.querySelector(".mini");
+    const plate = document.querySelector(".plate");
+    const viewport = document.querySelector(".viewport");
+
+    function fitPlate() {
+      const rect = viewport.getBoundingClientRect();
+      plate.style.transform = `scale(${rect.width / 1920})`;
+    }
+
+    function pathFromPoints(points) {
+      return points.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`).join(" ");
+    }
+
+    function drawGrid() {
+      svg.innerHTML = "";
+      for (let x = 0; x <= stage.grid.width; x += 1) {
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        line.setAttribute("d", pathFromPoints([
+          projectGridPoint(projection, { x, y: 0 }),
+          projectGridPoint(projection, { x, y: stage.grid.height }),
+        ]));
+        line.setAttribute("class", "grid-line");
+        svg.appendChild(line);
+      }
+      for (let y = 0; y <= stage.grid.height; y += 1) {
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        line.setAttribute("d", pathFromPoints([
+          projectGridPoint(projection, { x: 0, y }),
+          projectGridPoint(projection, { x: stage.grid.width, y }),
+        ]));
+        line.setAttribute("class", "grid-line");
+        svg.appendChild(line);
+      }
+
+      const x = selectedCell.x;
+      const y = selectedCell.y;
+      const outline = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+      outline.setAttribute("points", [
+        projectGridPoint(projection, { x, y }),
+        projectGridPoint(projection, { x: x + 1, y }),
+        projectGridPoint(projection, { x: x + 1, y: y + 1 }),
+        projectGridPoint(projection, { x, y: y + 1 }),
+      ].map((point) => `${point.x},${point.y}`).join(" "));
+      outline.setAttribute("class", "cell-outline");
+      svg.appendChild(outline);
+    }
+
+    function placeMini() {
+      const anchor = projectGridPoint(projection, {
+        x: selectedCell.x + 0.5,
+        y: selectedCell.y + 0.5,
+      });
+      const visibleBaseCenter = {
+        x: (runtimeBase.visibleBounds.left + runtimeBase.visibleBounds.right) / 2 * baseScale.x,
+        y: (runtimeBase.visibleBounds.top + runtimeBase.visibleBounds.bottom) / 2 * baseScale.y,
+      };
+      base.style.width = `${runtimeBase.sourceWidth * baseScale.x}px`;
+      base.style.height = `${runtimeBase.sourceHeight * baseScale.y}px`;
+      base.style.left = `${anchor.x - visibleBaseCenter.x + stackNudge.x}px`;
+      base.style.top = `${anchor.y - visibleBaseCenter.y + stackNudge.y}px`;
+      base.style.zIndex = String(Math.round(anchor.y * 10));
+
+      const sourceBaseWidth = sourceMini.estimatedBaseBounds.right - sourceMini.estimatedBaseBounds.left;
+      const scale = runtimeBase.visibleWidth / sourceBaseWidth;
+      const sourceBaseCenter = {
+        x: (sourceMini.estimatedBaseBounds.left + sourceMini.estimatedBaseBounds.right) / 2 * scale,
+        y: (sourceMini.estimatedBaseBounds.top + sourceMini.estimatedBaseBounds.bottom) / 2 * scale,
+      };
+      mini.style.width = `${sourceMini.width * scale}px`;
+      mini.style.height = "auto";
+      mini.style.left = `${anchor.x - sourceBaseCenter.x + stackNudge.x}px`;
+      mini.style.top = `${anchor.y - sourceBaseCenter.y + stackNudge.y}px`;
+      mini.style.zIndex = String(Math.round(anchor.y * 10) + 1);
+    }
+
+    window.addEventListener("resize", fitPlate);
+    drawGrid();
+    placeMini();
+    fitPlate();
+  </script>
+</body>
+</html>

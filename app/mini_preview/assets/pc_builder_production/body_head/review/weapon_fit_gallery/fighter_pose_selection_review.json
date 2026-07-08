@@ -1,0 +1,135 @@
+{
+  "status": "review_selection",
+  "productionArt": false,
+  "notes": [
+    "These are visual review decisions for the human masculine fighter weapon proof pass.",
+    "Do not treat these gallery PNGs as final production layer assets.",
+    "Two-handed weapon failures showed that generic body poses cannot reliably accept weapon-only overlays; two-handed displays need authored arms/hands/weapon geometry."
+  ],
+  "accepted": [
+    {
+      "selection": {
+        "species": "human",
+        "bodyType": "masculine",
+        "posture": "posture_1",
+        "weaponDisplay": "fighter_1_primary_sword"
+      },
+      "sourceGallery": "human_masculine_posture1_fighter_weapons_v2.png",
+      "panel": 1
+    },
+    {
+      "selection": {
+        "species": "human",
+        "bodyType": "masculine",
+        "posture": "posture_1",
+        "weaponDisplay": "fighter_2_sword_and_shield"
+      },
+      "sourceGallery": "human_masculine_posture1_fighter_weapons_v2.png",
+      "panel": 2
+    },
+    {
+      "selection": {
+        "species": "human",
+        "bodyType": "masculine",
+        "posture": "posture_1",
+        "weaponDisplay": "fighter_3_halberd"
+      },
+      "sourceGallery": "human_masculine_posture1_fighter_weapons_v2.png",
+      "panel": 3,
+      "note": "Keep the non-stretched first-posture halberd direction; do not use the later arm-stretch attempt."
+    },
+    {
+      "selection": {
+        "species": "human",
+        "bodyType": "masculine",
+        "posture": "posture_1",
+        "weaponDisplay": "fighter_4_spear"
+      },
+      "sourceGallery": "human_masculine_posture1_fighter_weapons_v2.png",
+      "panel": 4
+    },
+    {
+      "selection": {
+        "species": "human",
+        "bodyType": "masculine",
+        "posture": "posture_2",
+        "weaponDisplay": "fighter_1_primary_sword"
+      },
+      "sourceGallery": "human_masculine_posture2_fighter_weapons_v3.png",
+      "panel": 1
+    },
+    {
+      "selection": {
+        "species": "human",
+        "bodyType": "masculine",
+        "posture": "posture_2",
+        "weaponDisplay": "fighter_2_sword_and_shield"
+      },
+      "sourceGallery": "human_masculine_posture2_fighter_weapons_v3.png",
+      "panel": 2,
+      "note": "Uses the isometric rectangular/heater shield direction, not the front-on square shield."
+    },
+    {
+      "selection": {
+        "species": "human",
+        "bodyType": "masculine",
+        "posture": "posture_3",
+        "weaponDisplay": "fighter_4_spear"
+      },
+      "sourceGallery": "human_masculine_posture3_fighter_weapons_v2.png",
+      "panel": 4,
+      "note": "Use this as the current staff-compatible/polearm posture direction."
+    }
+  ],
+  "dropped": [
+    {
+      "selection": {
+        "species": "human",
+        "bodyType": "masculine",
+        "posture": "posture_2",
+        "weaponDisplay": "fighter_3_halberd"
+      },
+      "reason": "The second-posture two-handed weapon attempts did not produce believable lower-hand contact."
+    },
+    {
+      "selection": {
+        "species": "human",
+        "bodyType": "masculine",
+        "posture": "posture_2",
+        "weaponDisplay": "two_handed_mace_study"
+      },
+      "reason": "Rejected alignment study; lower hand still did not convincingly hold the shaft."
+    },
+    {
+      "selection": {
+        "species": "human",
+        "bodyType": "masculine",
+        "posture": "posture_2",
+        "weaponDisplay": "fighter_4_spear"
+      },
+      "sourceGallery": "human_masculine_posture2_fighter_weapons_v3.png",
+      "panel": 4,
+      "reason": "Dropped per review: second spear is not part of the currently selected fighter proof set."
+    },
+    {
+      "selection": {
+        "species": "human",
+        "bodyType": "masculine",
+        "posture": "posture_1",
+        "weaponDisplay": "fighter_3_halberd_arm_stretch_attempt"
+      },
+      "reason": "Rejected because the hand contact was achieved by unnaturally stretching the arm. This attempt was not copied into the repo."
+    },
+    {
+      "selection": {
+        "species": "human",
+        "bodyType": "masculine",
+        "posture": "posture_3",
+        "weaponDisplay": "fighter_3_halberd"
+      },
+      "sourceGallery": "human_masculine_posture3_fighter_weapons_v2.png",
+      "panel": 3,
+      "reason": "Dropped from the selected fighter proof set; posture 3 works better as a planted spear/staff-compatible direction."
+    }
+  ]
+}

@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Figure 3 Grid Test</title>
+  <style>
+    :root {
+      --tile-w: 128px;
+      --tile-h: 64px;
+      --stage-w: 1120px;
+      --stage-h: 720px;
+      --origin-x: 560px;
+      --origin-y: 116px;
+      --sprite-width: 132px;
+      --base-half-height: 11px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #101412;
+      color: #e6deca;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .stage {
+      position: relative;
+      width: min(100vw, var(--stage-w));
+      aspect-ratio: 14 / 9;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 38%, rgba(119, 105, 74, 0.16), transparent 42%),
+        linear-gradient(180deg, #20231f 0%, #111412 100%);
+      border: 1px solid rgba(214, 196, 140, 0.22);
+      user-select: none;
+      touch-action: none;
+    }
+
+    .grid,
+    .actors {
+      position: absolute;
+      inset: 0;
+    }
+
+    .cell {
+      position: absolute;
+      width: var(--tile-w);
+      height: var(--tile-h);
+      padding: 0;
+      transform: translate(-50%, -50%);
+      clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+      background: rgba(255, 255, 255, 0.018);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      cursor: pointer;
+    }
+
+    .cell:nth-child(odd) {
+      background: rgba(255, 255, 255, 0.026);
+    }
+
+    .cell:hover,
+    .cell:focus-visible {
+      background: rgba(255, 255, 255, 0.055);
+      border-color: rgba(255, 255, 255, 0.34);
+      outline: none;
+    }
+
+    .cell.occupied {
+      background: rgba(230, 198, 111, 0.075);
+      border-color: rgba(230, 198, 111, 0.42);
+    }
+
+    .mini {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 0;
+      height: 0;
+      z-index: 120;
+      touch-action: none;
+    }
+
+    .mini-shadow {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 82px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.38);
+      filter: blur(5px);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .mini-sprite {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: var(--sprite-width);
+      height: auto;
+      transform: translate(-50%, calc(-100% + var(--base-half-height)));
+      filter: brightness(0.74) contrast(0.96) saturate(0.94);
+      cursor: grab;
+      -webkit-user-drag: none;
+      user-drag: none;
+    }
+
+    .mini.dragging .mini-sprite {
+      cursor: grabbing;
+    }
+
+    .controls {
+      position: absolute;
+      left: 18px;
+      bottom: 18px;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid rgba(224, 205, 145, 0.24);
+      background: rgba(17, 20, 18, 0.82);
+    }
+
+    .variant-control {
+      display: inline-flex;
+      gap: 4px;
+    }
+
+    .variant-control button {
+      min-height: 28px;
+      border: 1px solid rgba(224, 205, 145, 0.24);
+      background: rgba(28, 31, 27, 0.86);
+      color: #d8d0bc;
+      padding: 0 8px;
+      cursor: pointer;
+    }
+
+    .variant-control button[aria-pressed="true"] {
+      border-color: rgba(224, 205, 145, 0.68);
+      background: rgba(86, 72, 42, 0.74);
+      color: #f1e6c8;
+    }
+
+    .controls label {
+      font-size: 12px;
+      color: #cfc5ad;
+    }
+
+    .controls input {
+      width: 180px;
+      accent-color: #c9a55d;
+    }
+
+    .controls output {
+      min-width: 44px;
+      font-size: 12px;
+      color: #d8d0bc;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <main class="stage" aria-label="Isometric grid with figure 3 test miniature">
+    <div class="grid"></div>
+    <div class="actors">
+      <div class="mini" aria-label="Figure 3 test miniature">
+        <div class="mini-shadow"></div>
+        <img class="mini-sprite" src="assets/pc_tests/figure3_guarded_lanterna_base_corrected_v3_trimmed.png?v=3" alt="">
+      </div>
+    </div>
+    <div class="controls">
+      <div class="variant-control" aria-label="Mini variant">
+        <button type="button" data-variant="original" aria-pressed="false">Original</button>
+        <button type="button" data-variant="corrected" aria-pressed="true">Corrected base</button>
+      </div>
+      <label for="scale">Scale</label>
+      <input id="scale" type="range" min="104" max="168" value="132" step="2">
+      <output id="scaleValue" for="scale">132px</output>
+    </div>
+  </main>
+
+  <script>
+    const stage = document.querySelector(".stage");
+    const grid = document.querySelector(".grid");
+    const mini = document.querySelector(".mini");
+    const sprite = document.querySelector(".mini-sprite");
+    const scale = document.querySelector("#scale");
+    const scaleValue = document.querySelector("#scaleValue");
+    const variantButtons = Array.from(document.querySelectorAll("[data-variant]"));
+    const variants = {
+      original: "assets/pc_tests/figure3_guarded_lanterna_trimmed.png",
+      corrected: "assets/pc_tests/figure3_guarded_lanterna_base_corrected_v3_trimmed.png?v=3",
+    };
+    const width = 10;
+    const height = 7;
+    const origin = { x: 560, y: 116 };
+    const tile = { w: 128, h: 64 };
+    const actor = { x: 5, y: 3 };
+    const cells = new Map();
+    let dragOffset = null;
+
+    function keyOf(x, y) {
+      return `${x},${y}`;
+    }
+
+    function projectCell(x, y) {
+      return {
+        x: origin.x + (x - y) * tile.w / 2,
+        y: origin.y + (x + y) * tile.h / 2,
+      };
+    }
+
+    function nearestCell(clientX, clientY) {
+      const rect = stage.getBoundingClientRect();
+      const scaleX = 1120 / rect.width;
+      const scaleY = 720 / rect.height;
+      const px = (clientX - rect.left) * scaleX;
+      const py = (clientY - rect.top) * scaleY;
+      let best = { x: actor.x, y: actor.y, d: Infinity };
+      for (let y = 0; y < height; y += 1) {
+        for (let x = 0; x < width; x += 1) {
+          const projected = projectCell(x, y);
+          const dx = projected.x - px;
+          const dy = projected.y - py;
+          const d = dx * dx + dy * dy;
+          if (d < best.d) best = { x, y, d };
+        }
+      }
+      return best;
+    }
+
+    function moveTo(x, y) {
+      if (x < 0 || y < 0 || x >= width || y >= height) return;
+      actor.x = x;
+      actor.y = y;
+      renderActor();
+    }
+
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        const cell = document.createElement("button");
+        const projected = projectCell(x, y);
+        cell.className = "cell";
+        cell.type = "button";
+        cell.dataset.x = String(x);
+        cell.dataset.y = String(y);
+        cell.ariaLabel = `Cell ${x}, ${y}`;
+        cell.style.left = `${projected.x}px`;
+        cell.style.top = `${projected.y}px`;
+        cell.style.zIndex = String(10 + x + y);
+        cell.addEventListener("click", () => moveTo(x, y));
+        cells.set(keyOf(x, y), cell);
+        grid.appendChild(cell);
+      }
+    }
+
+    function renderActor() {
+      for (const cell of cells.values()) cell.classList.remove("occupied");
+      const occupied = cells.get(keyOf(actor.x, actor.y));
+      if (occupied) occupied.classList.add("occupied");
+      const projected = projectCell(actor.x, actor.y);
+      mini.style.left = `${projected.x}px`;
+      mini.style.top = `${projected.y}px`;
+      mini.style.zIndex = String(100 + actor.x + actor.y);
+    }
+
+    sprite.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+      mini.classList.add("dragging");
+      sprite.setPointerCapture(event.pointerId);
+      dragOffset = { x: event.clientX, y: event.clientY };
+    });
+
+    sprite.addEventListener("pointermove", (event) => {
+      if (!dragOffset) return;
+      const target = nearestCell(event.clientX, event.clientY);
+      moveTo(target.x, target.y);
+    });
+
+    sprite.addEventListener("pointerup", (event) => {
+      mini.classList.remove("dragging");
+      sprite.releasePointerCapture(event.pointerId);
+      dragOffset = null;
+    });
+
+    scale.addEventListener("input", () => {
+      document.documentElement.style.setProperty("--sprite-width", `${scale.value}px`);
+      scaleValue.textContent = `${scale.value}px`;
+    });
+
+    for (const button of variantButtons) {
+      button.addEventListener("click", () => {
+        const variant = button.dataset.variant;
+        sprite.src = variants[variant];
+        for (const candidate of variantButtons) {
+          candidate.setAttribute("aria-pressed", String(candidate === button));
+        }
+      });
+    }
+
+    renderActor();
+  </script>
+</body>
+</html>

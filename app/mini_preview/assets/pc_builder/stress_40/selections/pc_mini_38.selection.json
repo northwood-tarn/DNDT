@@ -1,0 +1,23 @@
+{
+  "classId": "wizard",
+  "speciesId": "tiefling",
+  "lineageId": "chthonic",
+  "bodyTypeId": "feminine",
+  "speciesFeatureIds": [
+    "horns_tail"
+  ],
+  "postureId": "posture_2",
+  "outfitId": "outfit_2",
+  "cloakId": "cloak",
+  "headId": "humanlike_broad_solid",
+  "hairId": "bald_or_shaved",
+  "facialHairId": "full_beard",
+  "weaponSlotId": "heavy_reach_two_handed",
+  "weaponDisplayId": "wizard_3_back_strapped_staff",
+  "lanternaAttachmentId": "side_affixed",
+  "base": {
+    "useUniqueBase": false,
+    "disc": "dark-bronze",
+    "rim": "deep-copper"
+  }
+}

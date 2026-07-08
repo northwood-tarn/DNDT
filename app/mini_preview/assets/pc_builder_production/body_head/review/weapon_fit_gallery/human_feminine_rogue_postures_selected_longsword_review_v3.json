@@ -1,0 +1,32 @@
+{
+  "status": "review_composite",
+  "productionArt": false,
+  "sourceSheet": "human_feminine_all_postures_rogue_weapons_v1.png",
+  "output": "human_feminine_rogue_postures_selected_longsword_review_v3.png",
+  "weaponDonors": {
+    "longsword": "human_masculine_posture1_fighter_weapons_v2.png",
+    "mace": "/Users/jon/.codex/generated_images/019f137e-c16f-7730-ad49-dc9579587249/ig_042f51e90c563b00016a43924133808191b36fc66d361b3769.png"
+  },
+  "layout": {
+    "row1": [
+      "single_dagger",
+      "dual_daggers",
+      "crossbow",
+      "longsword_raster_composite"
+    ],
+    "row2": [
+      "single_dagger",
+      "dual_daggers",
+      "crossbow"
+    ],
+    "row3": [
+      "single_dagger",
+      "mace_raster_composite",
+      "crossbow"
+    ]
+  },
+  "notes": [
+    "Uses raster weapon donors rather than code-drawn weapons.",
+    "Still a review composite only; do not register as production art."
+  ]
+}

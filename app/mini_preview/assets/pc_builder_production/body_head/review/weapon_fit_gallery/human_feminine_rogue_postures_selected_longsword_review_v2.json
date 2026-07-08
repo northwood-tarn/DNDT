@@ -1,0 +1,34 @@
+{
+  "status": "review_composite",
+  "productionArt": false,
+  "sourceSheet": "human_feminine_all_postures_rogue_weapons_v1.png",
+  "output": "human_feminine_rogue_postures_selected_longsword_review_v2.png",
+  "layout": {
+    "row1": [
+      "single_dagger",
+      "dual_daggers",
+      "crossbow",
+      "longsword_review_composite"
+    ],
+    "row2": [
+      "single_dagger",
+      "dual_daggers",
+      "crossbow"
+    ],
+    "row3": [
+      "single_dagger",
+      "dual_daggers",
+      "crossbow"
+    ]
+  },
+  "dropped": [
+    "row1_empty_hand",
+    "row2_empty_hand",
+    "row3_empty_hand"
+  ],
+  "notes": [
+    "Existing rogue figures are cropped from the prior generated review sheet.",
+    "The row 1 longsword figure is a local review composite over a duplicate of row 1 figure 1.",
+    "This is not production art and must not be registered as a production asset."
+  ]
+}

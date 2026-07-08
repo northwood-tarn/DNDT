@@ -1,0 +1,55 @@
+{
+  "stageId": "figure3_combat_grid_test",
+  "status": "draft_grid_validation",
+  "image": {
+    "runtimePlate": "figure3_combat_grid_test.art.png",
+    "width": 1920,
+    "height": 1080,
+    "validationOverlay": "figure3_combat_grid_test.art_validation_overlay.png"
+  },
+  "grid": {
+    "projection": "isometric_square",
+    "tileWidth": 128,
+    "tileHeight": 64,
+    "origin": { "x": 800, "y": 140 },
+    "width": 14,
+    "height": 10,
+    "coordinateRule": "x increases down-right; y increases down-left"
+  },
+  "walkable": {
+    "bounds": [{ "x": 0, "y": 0, "width": 14, "height": 10 }]
+  },
+  "collision": {
+    "cells": [],
+    "outOfBounds": [],
+    "difficult": [],
+    "lineOfSightBlockers": []
+  },
+  "blocked": [],
+  "cover": [],
+  "elevation": [],
+  "stairs": [],
+  "interactables": [],
+  "hazards": [],
+  "transitions": [],
+  "lighting": {
+    "runtimeDarkness": true,
+    "lanternaAppliedAtRuntime": true,
+    "fixedSources": [],
+    "notes": ["Neutral fixed-stage miniature base placement test."]
+  },
+  "spawns": {
+    "defaultHeroSpawns": [{ "x": 7, "y": 5 }],
+    "defaultEnemySpawns": [],
+    "neutralSpawns": [],
+    "namedZones": {}
+  },
+  "validation": {
+    "notes": [
+      "Fixed 1920 x 1080 runtime plate.",
+      "128 x 64 isometric square diamonds.",
+      "Explicit stage metadata origin.",
+      "Authored raster base is placed independently on cell 7,5; figure body is layered over it."
+    ]
+  }
+}

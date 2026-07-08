@@ -1,0 +1,27 @@
+{
+  "status": "review_generation",
+  "productionArt": false,
+  "output": "human_feminine_cleric_weapon_matrix_3x3_attempt_02.png",
+  "sourceGeneratedImage": "/Users/jon/.codex/generated_images/019f1d93-6e4a-78d1-9093-5d182efe4ed4/ig_0071d9e094300176016a450d41ed7c8191af4e820563dd93b9.png",
+  "baseBody": "human female, three posture families from human_feminine_all_postures_rogue_weapons_v1.png",
+  "changesFromAttempt01": [
+    "Holy symbol handle specified as straight vertical stem.",
+    "Greatsword specified as Danica-world double-ended weapon: central grip with blade extending both upward and downward."
+  ],
+  "matrix": {
+    "1.1": "balanced posture, greatshield and mace",
+    "1.2": "balanced posture, mace and cleric holy symbol with straight handle",
+    "1.3": "balanced posture, Danica-style double-ended greatsword",
+    "2.1": "aggressive posture, greatshield and longsword",
+    "2.2": "aggressive posture, square shield and mace",
+    "2.3": "aggressive posture, holy symbol with straight handle and empty hand",
+    "3.1": "defensive posture, mace and holy symbol with straight handle",
+    "3.2": "defensive posture, greatshield and mace",
+    "3.3": "defensive posture, Danica-style double-ended greatsword"
+  },
+  "notes": [
+    "Generated as a 3x3 chroma-key review sheet, not production cutouts.",
+    "Check whether greatsword cells preserve enough central-handle readability before cutting apart.",
+    "Use this sheet to choose best cells before any cutout/anchor work."
+  ]
+}

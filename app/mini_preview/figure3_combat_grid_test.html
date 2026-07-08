@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Betrayer's Coin Locked Runtime Fit</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --plate-w: 1920px;
+      --plate-h: 1080px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #050605;
+    }
+
+    .viewport {
+      width: min(100vw, calc(100vh * 16 / 9));
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #101412;
+    }
+
+    .plate {
+      position: relative;
+      width: var(--plate-w);
+      height: var(--plate-h);
+      transform-origin: top left;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 46%, rgba(184, 171, 125, 0.08), transparent 32%),
+        linear-gradient(180deg, #1b211d 0%, #111512 100%);
+    }
+
+    .grid-svg,
+    .coin-layer {
+      position: absolute;
+      inset: 0;
+    }
+
+    .grid-line {
+      fill: none;
+      stroke: rgba(183, 205, 178, 0.44);
+      stroke-width: 2;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .cell-outline {
+      fill: rgba(117, 139, 113, 0.055);
+      stroke: rgba(221, 207, 154, 0.7);
+      stroke-width: 2;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .cell-outline.reference {
+      stroke: rgba(221, 207, 154, 0.28);
+    }
+
+    .coin {
+      position: absolute;
+      width: auto;
+      height: auto;
+      transform-origin: 0 0;
+      pointer-events: none;
+    }
+
+    .size-label {
+      position: absolute;
+      transform: translate(-50%, 22px);
+      color: rgba(232, 222, 190, 0.74);
+      font: 22px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      pointer-events: none;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.76);
+    }
+  </style>
+</head>
+<body>
+  <main class="viewport" aria-label="Blank 1920 by 1080 combat grid with locked 115 pixel Betrayer's Coin">
+    <div class="plate">
+      <svg class="grid-svg" viewBox="0 0 1920 1080" aria-hidden="true"></svg>
+      <div class="coin-layer"></div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { projectGridPoint } from "../combat/isometricGrid.js";
+    import { createGridProjectionFromStage } from "../combat/stageMetadata.js";
+
+    const stage = {
+      image: {
+        width: 1920,
+        height: 1080,
+      },
+      grid: {
+        projection: "isometric_square",
+        tileWidth: 128,
+        tileHeight: 64,
+        origin: { x: 960, y: 120 },
+        width: 14,
+        height: 10,
+        coordinateRule: "x increases down-right; y increases down-left",
+      },
+    };
+
+    const candidates = [
+      { width: 115, cell: { x: 7, y: 5 } },
+    ];
+    const sourceBase = {
+      width: 192,
+      visibleBounds: { left: 16, top: 21, right: 176, bottom: 106 },
+    };
+    const projection = createGridProjectionFromStage(stage);
+    const svg = document.querySelector(".grid-svg");
+    const coinLayer = document.querySelector(".coin-layer");
+    const plate = document.querySelector(".plate");
+    const viewport = document.querySelector(".viewport");
+
+    function fitPlate() {
+      const rect = viewport.getBoundingClientRect();
+      plate.style.transform = `scale(${rect.width / 1920})`;
+    }
+
+    function pathFromPoints(points) {
+      return points.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`).join(" ");
+    }
+
+    function drawGrid() {
+      svg.innerHTML = "";
+      for (let x = 0; x <= stage.grid.width; x += 1) {
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        line.setAttribute("d", pathFromPoints([
+          projectGridPoint(projection, { x, y: 0 }),
+          projectGridPoint(projection, { x, y: stage.grid.height }),
+        ]));
+        line.setAttribute("class", "grid-line");
+        svg.appendChild(line);
+      }
+      for (let y = 0; y <= stage.grid.height; y += 1) {
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        line.setAttribute("d", pathFromPoints([
+          projectGridPoint(projection, { x: 0, y }),
+          projectGridPoint(projection, { x: stage.grid.width, y }),
+        ]));
+        line.setAttribute("class", "grid-line");
+        svg.appendChild(line);
+      }
+
+      for (const candidate of candidates) {
+        const x = candidate.cell.x;
+        const y = candidate.cell.y;
+        const outline = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        outline.setAttribute("points", [
+          projectGridPoint(projection, { x, y }),
+          projectGridPoint(projection, { x: x + 1, y }),
+          projectGridPoint(projection, { x: x + 1, y: y + 1 }),
+          projectGridPoint(projection, { x, y: y + 1 }),
+        ].map((point) => `${point.x},${point.y}`).join(" "));
+        outline.setAttribute("class", "cell-outline");
+        svg.appendChild(outline);
+      }
+    }
+
+    function placeCoins() {
+      coinLayer.innerHTML = "";
+      for (const candidate of candidates) {
+        const anchor = projectGridPoint(projection, {
+          x: candidate.cell.x + 0.5,
+          y: candidate.cell.y + 0.5,
+        });
+        const scale = candidate.width / 192;
+        const coin = document.createElement("img");
+        coin.className = "coin";
+        coin.src = "assets/base_combinations/betrayers_coin.png";
+        coin.alt = "";
+        coin.style.width = `${candidate.width}px`;
+        const visibleCenter = {
+          x: (sourceBase.visibleBounds.left + sourceBase.visibleBounds.right) / 2 * scale,
+          y: (sourceBase.visibleBounds.top + sourceBase.visibleBounds.bottom) / 2 * scale,
+        };
+        coin.style.left = `${anchor.x - visibleCenter.x}px`;
+        coin.style.top = `${anchor.y - visibleCenter.y}px`;
+        coin.style.zIndex = String(Math.round(anchor.y * 10));
+        coinLayer.appendChild(coin);
+
+        const label = document.createElement("div");
+        label.className = "size-label";
+        label.textContent = `${candidate.width}`;
+        label.style.left = `${anchor.x}px`;
+        label.style.top = `${anchor.y}px`;
+        label.style.zIndex = String(Math.round(anchor.y * 10) + 1);
+        coinLayer.appendChild(label);
+      }
+    }
+
+    window.addEventListener("resize", fitPlate);
+    drawGrid();
+    placeCoins();
+    fitPlate();
+  </script>
+</body>
+</html>

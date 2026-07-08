@@ -1,0 +1,93 @@
+{
+  "id": "wizard_4_sidearm_dagger",
+  "classId": "wizard",
+  "postureId": "posture_1",
+  "status": "generated_pending_review",
+  "sourceKind": "image_generated_chroma_key",
+  "layerKind": "weapon",
+  "file": "assets/pc_builder_production/weapon_posture1/cutout/wizard_4_sidearm_dagger.png",
+  "sourceSheet": "assets/pc_builder_production/weapon_posture1/sheets/source/wizard_posture1_weapons_chroma.png",
+  "canvas": {
+    "width": 282,
+    "height": 362
+  },
+  "renderBounds": {
+    "left": 24,
+    "top": 24,
+    "right": 257,
+    "bottom": 337,
+    "width": 234,
+    "height": 314,
+    "visible": 25480,
+    "partial": 1337
+  },
+  "anchors": {
+    "weaponHand": {
+      "x": 141,
+      "y": 174
+    },
+    "offhand": {
+      "x": 96,
+      "y": 181
+    },
+    "staffBottom": {
+      "x": 155,
+      "y": 344
+    },
+    "bodyRoot": {
+      "x": 141,
+      "y": 224
+    },
+    "baseCenter": {
+      "x": 141,
+      "y": 362
+    },
+    "groundContactLeft": {
+      "x": 124,
+      "y": 362
+    },
+    "groundContactRight": {
+      "x": 164,
+      "y": 362
+    },
+    "head": {
+      "x": 147,
+      "y": 65
+    },
+    "hair": {
+      "x": 147,
+      "y": 54
+    },
+    "cloak": {
+      "x": 127,
+      "y": 127
+    },
+    "lanternaDangling": {
+      "x": 107,
+      "y": 228
+    },
+    "lanternaSideAffixed": {
+      "x": 99,
+      "y": 203
+    },
+    "lanternaNeckChain": {
+      "x": 147,
+      "y": 127
+    }
+  },
+  "zOrder": 80,
+  "validation": {
+    "png": true,
+    "alpha": true,
+    "transparentBackground": true,
+    "noSvg": true,
+    "noBase": true,
+    "noLanterna": true,
+    "noWandText": true,
+    "notes": "Generated for human posture_1 weapon chart. Pending visual fit against posture_1 body."
+  },
+  "segmentation": {
+    "method": "alpha_connected_components_nearest_chart_slot_filtered",
+    "componentCount": 1
+  }
+}

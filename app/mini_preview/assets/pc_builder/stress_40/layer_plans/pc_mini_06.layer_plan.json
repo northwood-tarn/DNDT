@@ -1,0 +1,132 @@
+{
+  "ok": true,
+  "cacheKey": "classId-paladin__speciesId-halfling__lineageId-stout__bodyTypeId-feminine__skinToneId-human_brown__postureId-posture_3__outfitId-outfit_2__cloakId-hood_up__headId-humanlike_broad_solid__hairId-long_tied_back__facialHairId-none__weaponDisplayId-paladin_2_sword_and_shield__lanternaAttachmentId-neck_chain__base-disc-dark-bronze_rim-blackened-iron",
+  "selection": {
+    "facialHairId": "none",
+    "base": {
+      "useUniqueBase": false,
+      "disc": "dark-bronze",
+      "rim": "blackened-iron"
+    },
+    "classId": "paladin",
+    "speciesId": "halfling",
+    "lineageId": "stout",
+    "bodyTypeId": "feminine",
+    "skinToneId": "human_brown",
+    "speciesFeatureIds": [],
+    "postureId": "posture_3",
+    "outfitId": "outfit_2",
+    "cloakId": "hood_up",
+    "headId": "humanlike_broad_solid",
+    "hairId": "long_tied_back",
+    "weaponSlotId": "offhand_or_shield",
+    "weaponDisplayId": "paladin_2_sword_and_shield",
+    "lanternaAttachmentId": "neck_chain"
+  },
+  "render": {
+    "baseSeparated": true,
+    "baseRuntimeFootprint": {
+      "gridDiamond": {
+        "width": 128,
+        "height": 64
+      },
+      "displayWidth": 115,
+      "sourceCanvas": {
+        "width": 192,
+        "height": 128
+      },
+      "visibleBounds": {
+        "left": 16,
+        "top": 21,
+        "right": 176,
+        "bottom": 106
+      },
+      "placement": "center visible base bounds inside the occupied 128x64 grid diamond"
+    },
+    "speciesScale": 0.5,
+    "zOrder": [
+      "base",
+      "posture",
+      "outfit",
+      "head",
+      "facialHair",
+      "hair",
+      "speciesFeature",
+      "cloak",
+      "weapon",
+      "lanterna"
+    ]
+  },
+  "output": {
+    "canvas": {
+      "width": 256,
+      "height": 360
+    },
+    "baseCenter": {
+      "x": 128,
+      "y": 306
+    }
+  },
+  "layers": [
+    {
+      "kind": "base",
+      "id": "disc-dark-bronze_rim-blackened-iron",
+      "asset": "assets/base_combinations/base_disc-dark-bronze_rim-blackened-iron.png",
+      "baseSeparated": true
+    },
+    {
+      "kind": "posture",
+      "id": "halfling_feminine_posture_3",
+      "asset": "assets/pc_builder/body/halfling_feminine_posture_3.png",
+      "tint": [
+        156,
+        96,
+        58
+      ]
+    },
+    {
+      "kind": "outfit",
+      "id": "paladin_outfit_2",
+      "asset": "assets/pc_builder/outfit/paladin_outfit_2.png",
+      "tint": null
+    },
+    {
+      "kind": "head",
+      "id": "humanlike_broad_solid",
+      "asset": "assets/pc_builder/head/humanlike_broad_solid.png",
+      "tint": [
+        156,
+        96,
+        58
+      ]
+    },
+    {
+      "kind": "facialHair",
+      "id": "none",
+      "hidden": true
+    },
+    {
+      "kind": "hair",
+      "id": "long_tied_back",
+      "hidden": true
+    },
+    {
+      "kind": "cloak",
+      "id": "hood_up",
+      "asset": "assets/pc_builder/cloak/hood_up.png",
+      "tint": null
+    },
+    {
+      "kind": "weapon",
+      "id": "paladin_2_sword_and_shield",
+      "asset": "assets/pc_builder/weapon/paladin_2_sword_and_shield.png",
+      "tint": null
+    },
+    {
+      "kind": "lanterna",
+      "id": "neck_chain",
+      "asset": "assets/pc_builder/lanterna/neck_chain.png",
+      "tint": null
+    }
+  ]
+}

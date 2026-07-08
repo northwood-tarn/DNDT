@@ -1,0 +1,92 @@
+[
+  {
+    "id": "short_messy",
+    "width": 1536,
+    "height": 1024,
+    "bounds": {
+      "left": 411,
+      "top": 130,
+      "right": 1146,
+      "bottom": 784,
+      "width": 736,
+      "height": 655,
+      "visible": 248802,
+      "transparent": 1324062
+    }
+  },
+  {
+    "id": "short_severe",
+    "width": 1536,
+    "height": 1024,
+    "bounds": {
+      "left": 457,
+      "top": 164,
+      "right": 1098,
+      "bottom": 700,
+      "width": 642,
+      "height": 537,
+      "visible": 183918,
+      "transparent": 1388946
+    }
+  },
+  {
+    "id": "long_loose",
+    "width": 1254,
+    "height": 1254,
+    "bounds": {
+      "left": 166,
+      "top": 87,
+      "right": 1081,
+      "bottom": 1167,
+      "width": 916,
+      "height": 1081,
+      "visible": 448513,
+      "transparent": 1124003
+    }
+  },
+  {
+    "id": "long_tied_back",
+    "width": 1402,
+    "height": 1122,
+    "bounds": {
+      "left": 157,
+      "top": 98,
+      "right": 1189,
+      "bottom": 1024,
+      "width": 1033,
+      "height": 927,
+      "visible": 335216,
+      "transparent": 1237828
+    }
+  },
+  {
+    "id": "topknot_bun",
+    "width": 1254,
+    "height": 1254,
+    "bounds": {
+      "left": 269,
+      "top": 204,
+      "right": 1010,
+      "bottom": 949,
+      "width": 742,
+      "height": 746,
+      "visible": 290391,
+      "transparent": 1282125
+    }
+  },
+  {
+    "id": "bald_or_shaved",
+    "width": 1536,
+    "height": 1024,
+    "bounds": {
+      "left": 388,
+      "top": 164,
+      "right": 1173,
+      "bottom": 862,
+      "width": 786,
+      "height": 699,
+      "visible": 265250,
+      "transparent": 1307614
+    }
+  }
+]

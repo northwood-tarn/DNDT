@@ -1,0 +1,21 @@
+{
+  "classId": "warlock",
+  "speciesId": "tiefling",
+  "lineageId": "chthonic",
+  "bodyTypeId": "masculine",
+  "speciesFeatureIds": [],
+  "postureId": "posture_2",
+  "outfitId": "outfit_1",
+  "cloakId": "cloak",
+  "headId": "humanlike_narrow_severe",
+  "hairId": "topknot_bun",
+  "facialHairId": "full_beard",
+  "weaponSlotId": "main",
+  "weaponDisplayId": "warlock_1_short_blade",
+  "lanternaAttachmentId": "side_affixed",
+  "base": {
+    "useUniqueBase": false,
+    "disc": "ember-warmed-steel",
+    "rim": "dark-bronze"
+  }
+}

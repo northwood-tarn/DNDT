@@ -1,0 +1,16 @@
+{
+  "status": "review_generation",
+  "productionArt": false,
+  "output": "human_feminine_cleric_weapon_matrix_2x3_attempt_05.png",
+  "sourceGeneratedImage": "/Users/jon/.codex/generated_images/019f1d93-6e4a-78d1-9093-5d182efe4ed4/ig_05ce14a55ee1483a016a451117cff88191b94bbdc4316f6ff8.png",
+  "sourceAttempt": "human_feminine_cleric_weapon_matrix_2x3_attempt_04_crop_from_02.png",
+  "requestedChanges": [
+    "Keep only the first two rows.",
+    "Preserve all cells except 1.3 as much as possible.",
+    "Lengthen the upper blade of the 1.3 Danica-style double-ended greatsword to match the lower blade."
+  ],
+  "reviewNotes": [
+    "Attempt 04 is the exact crop from attempt 02 and best preserves non-target cells.",
+    "Attempt 05 improves 1.3 greatsword readability but lightly re-renders the full sheet."
+  ]
+}

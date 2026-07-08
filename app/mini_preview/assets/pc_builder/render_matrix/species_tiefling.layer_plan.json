@@ -1,0 +1,147 @@
+{
+  "ok": true,
+  "cacheKey": "classId-fighter__speciesId-tiefling__lineageId-abyssal__bodyTypeId-masculine__skinToneId-none__postureId-posture_1__outfitId-outfit_1__cloakId-none__headId-humanlike_narrow_severe__hairId-short_messy__facialHairId-none__weaponDisplayId-fighter_1_primary_sword__lanternaAttachmentId-dangling__base-betrayers-coin",
+  "selection": {
+    "facialHairId": "none",
+    "base": {
+      "useUniqueBase": true,
+      "uniqueBaseId": "betrayers-coin",
+      "fallbackCustomBase": {
+        "disc": "aged-gold",
+        "rim": "blackened-iron",
+        "asset": "assets/base_combinations/base_disc-aged-gold_rim-blackened-iron.png"
+      }
+    },
+    "classId": "fighter",
+    "speciesId": "tiefling",
+    "lineageId": "abyssal",
+    "bodyTypeId": "masculine",
+    "speciesFeatureIds": [
+      "horns_tail"
+    ],
+    "postureId": "posture_1",
+    "outfitId": "outfit_1",
+    "cloakId": "none",
+    "headId": "humanlike_narrow_severe",
+    "hairId": "short_messy",
+    "weaponSlotId": "main",
+    "weaponDisplayId": "fighter_1_primary_sword",
+    "lanternaAttachmentId": "dangling"
+  },
+  "render": {
+    "baseSeparated": true,
+    "baseRuntimeFootprint": {
+      "gridDiamond": {
+        "width": 128,
+        "height": 64
+      },
+      "displayWidth": 115,
+      "sourceCanvas": {
+        "width": 192,
+        "height": 128
+      },
+      "visibleBounds": {
+        "left": 16,
+        "top": 21,
+        "right": 176,
+        "bottom": 106
+      },
+      "placement": "center visible base bounds inside the occupied 128x64 grid diamond"
+    },
+    "speciesScale": 1,
+    "zOrder": [
+      "base",
+      "posture",
+      "outfit",
+      "head",
+      "facialHair",
+      "hair",
+      "speciesFeature",
+      "cloak",
+      "weapon",
+      "lanterna"
+    ]
+  },
+  "output": {
+    "canvas": {
+      "width": 256,
+      "height": 360
+    },
+    "baseCenter": {
+      "x": 128,
+      "y": 306
+    }
+  },
+  "layers": [
+    {
+      "kind": "base",
+      "id": "betrayers-coin",
+      "asset": "assets/base_combinations/betrayers_coin.png",
+      "baseSeparated": true
+    },
+    {
+      "kind": "posture",
+      "id": "tiefling_masculine_posture_1",
+      "asset": "assets/pc_builder/body/tiefling_masculine_posture_1.png",
+      "tint": [
+        114,
+        69,
+        124
+      ]
+    },
+    {
+      "kind": "outfit",
+      "id": "fighter_outfit_1",
+      "asset": "assets/pc_builder/outfit/fighter_outfit_1.png",
+      "tint": null
+    },
+    {
+      "kind": "head",
+      "id": "humanlike_narrow_severe",
+      "asset": "assets/pc_builder/head/humanlike_narrow_severe.png",
+      "tint": [
+        114,
+        69,
+        124
+      ]
+    },
+    {
+      "kind": "facialHair",
+      "id": "none",
+      "hidden": true
+    },
+    {
+      "kind": "hair",
+      "id": "short_messy",
+      "asset": "assets/pc_builder/hair/short_messy.png",
+      "tint": null
+    },
+    {
+      "kind": "speciesFeature",
+      "id": "tiefling_horns_tail",
+      "asset": "assets/pc_builder/species_features/tiefling_horns_tail.png",
+      "tint": [
+        114,
+        69,
+        124
+      ]
+    },
+    {
+      "kind": "cloak",
+      "id": "none",
+      "hidden": true
+    },
+    {
+      "kind": "weapon",
+      "id": "fighter_1_primary_sword",
+      "asset": "assets/pc_builder/weapon/fighter_1_primary_sword.png",
+      "tint": null
+    },
+    {
+      "kind": "lanterna",
+      "id": "dangling",
+      "asset": "assets/pc_builder/lanterna/dangling.png",
+      "tint": null
+    }
+  ]
+}

@@ -1,0 +1,292 @@
+{
+  "body": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/human_masculine_posture_1_basic.png",
+  "contactSheet": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/human_masculine_posture1_all_weapons_fit.png",
+  "bodyAnchorEstimate": {
+    "rightHand": [
+      310,
+      400
+    ],
+    "leftHand": [
+      139,
+      392
+    ],
+    "chest": [
+      227,
+      253
+    ],
+    "frontFoot": [
+      291,
+      735
+    ],
+    "backFoot": [
+      131,
+      735
+    ]
+  },
+  "renders": [
+    {
+      "id": "fighter_1_primary_sword",
+      "classId": "fighter",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/fighter_1_primary_sword_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 244,
+        "y": 334,
+        "scaledWidth": 166,
+        "scaledHeight": 147
+      }
+    },
+    {
+      "id": "fighter_2_sword_and_shield",
+      "classId": "fighter",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/fighter_2_sword_and_shield_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 92,
+        "y": 324,
+        "scaledWidth": 157,
+        "scaledHeight": 171
+      }
+    },
+    {
+      "id": "fighter_3_halberd",
+      "classId": "fighter",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/fighter_3_halberd_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 135,
+        "y": 186,
+        "scaledWidth": 201,
+        "scaledHeight": 241
+      }
+    },
+    {
+      "id": "fighter_4_spear",
+      "classId": "fighter",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/fighter_4_spear_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 278,
+        "y": 486,
+        "scaledWidth": 72,
+        "scaledHeight": 265
+      }
+    },
+    {
+      "id": "rogue_1_single_dagger",
+      "classId": "rogue",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/rogue_1_single_dagger_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 269,
+        "y": 349,
+        "scaledWidth": 103,
+        "scaledHeight": 114
+      }
+    },
+    {
+      "id": "rogue_2_dual_daggers",
+      "classId": "rogue",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/rogue_2_dual_daggers_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 250,
+        "y": 353,
+        "scaledWidth": 149,
+        "scaledHeight": 104
+      }
+    },
+    {
+      "id": "rogue_4_crossbow",
+      "classId": "rogue",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/rogue_4_crossbow_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 218,
+        "y": 351,
+        "scaledWidth": 177,
+        "scaledHeight": 84
+      }
+    },
+    {
+      "id": "rogue_5_empty_hand",
+      "classId": "rogue",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/rogue_5_empty_hand_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 260,
+        "y": 364,
+        "scaledWidth": 120,
+        "scaledHeight": 69
+      }
+    },
+    {
+      "id": "wizard_1_grounded_staff",
+      "classId": "wizard",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/wizard_1_grounded_staff_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 270,
+        "y": 485,
+        "scaledWidth": 88,
+        "scaledHeight": 266
+      }
+    },
+    {
+      "id": "wizard_3_back_strapped_staff",
+      "classId": "wizard",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/wizard_3_back_strapped_staff_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 179,
+        "y": 171,
+        "scaledWidth": 125,
+        "scaledHeight": 204
+      }
+    },
+    {
+      "id": "wizard_4_sidearm_dagger",
+      "classId": "wizard",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/wizard_4_sidearm_dagger_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 278,
+        "y": 352,
+        "scaledWidth": 80,
+        "scaledHeight": 107
+      }
+    },
+    {
+      "id": "wizard_5_empty_casting_hand",
+      "classId": "wizard",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/wizard_5_empty_casting_hand_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 264,
+        "y": 365,
+        "scaledWidth": 109,
+        "scaledHeight": 68
+      }
+    },
+    {
+      "id": "cleric_1_mace_and_shield",
+      "classId": "cleric",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/cleric_1_mace_and_shield_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 88,
+        "y": 332,
+        "scaledWidth": 171,
+        "scaledHeight": 151
+      }
+    },
+    {
+      "id": "cleric_2_sword_and_shield",
+      "classId": "cleric",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/cleric_2_sword_and_shield_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 97,
+        "y": 326,
+        "scaledWidth": 141,
+        "scaledHeight": 165
+      }
+    },
+    {
+      "id": "cleric_3_staff",
+      "classId": "cleric",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/cleric_3_staff_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 274,
+        "y": 501,
+        "scaledWidth": 80,
+        "scaledHeight": 249
+      }
+    },
+    {
+      "id": "cleric_5_hand_symbol",
+      "classId": "cleric",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/cleric_5_hand_symbol_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 265,
+        "y": 347,
+        "scaledWidth": 108,
+        "scaledHeight": 102
+      }
+    },
+    {
+      "id": "paladin_1_primary_sword",
+      "classId": "paladin",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/paladin_1_primary_sword_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 247,
+        "y": 319,
+        "scaledWidth": 158,
+        "scaledHeight": 181
+      }
+    },
+    {
+      "id": "paladin_2_sword_and_shield",
+      "classId": "paladin",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/paladin_2_sword_and_shield_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 92,
+        "y": 312,
+        "scaledWidth": 156,
+        "scaledHeight": 201
+      }
+    },
+    {
+      "id": "paladin_3_greatsword_rest",
+      "classId": "paladin",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/paladin_3_greatsword_rest_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 178,
+        "y": 483,
+        "scaledWidth": 103,
+        "scaledHeight": 263
+      }
+    },
+    {
+      "id": "paladin_4_grounded_spear",
+      "classId": "paladin",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/paladin_4_grounded_spear_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 276,
+        "y": 470,
+        "scaledWidth": 76,
+        "scaledHeight": 282
+      }
+    },
+    {
+      "id": "warlock_1_short_blade",
+      "classId": "warlock",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/warlock_1_short_blade_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 251,
+        "y": 348,
+        "scaledWidth": 147,
+        "scaledHeight": 115
+      }
+    },
+    {
+      "id": "warlock_2_magic_glove",
+      "classId": "warlock",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/warlock_2_magic_glove_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 263,
+        "y": 333,
+        "scaledWidth": 111,
+        "scaledHeight": 129
+      }
+    },
+    {
+      "id": "warlock_3_pact_staff",
+      "classId": "warlock",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/warlock_3_pact_staff_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 270,
+        "y": 495,
+        "scaledWidth": 90,
+        "scaledHeight": 255
+      }
+    },
+    {
+      "id": "warlock_5_empty_casting_hand",
+      "classId": "warlock",
+      "singleRender": "app/mini_preview/assets/pc_builder_production/weapon_posture1/review/body_fit/warlock_5_empty_casting_hand_on_human_masculine_posture_1.png",
+      "placement": {
+        "x": 260,
+        "y": 351,
+        "scaledWidth": 120,
+        "scaledHeight": 95
+      }
+    }
+  ]
+}

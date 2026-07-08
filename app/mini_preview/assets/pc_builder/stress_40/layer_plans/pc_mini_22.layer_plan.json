@@ -1,0 +1,135 @@
+{
+  "ok": true,
+  "cacheKey": "classId-cleric__speciesId-aasimar__lineageId-none__bodyTypeId-feminine__skinToneId-aasimar_pale__postureId-posture_1__outfitId-outfit_2__cloakId-none__headId-humanlike_narrow_severe__hairId-topknot_bun__facialHairId-none__weaponDisplayId-cleric_2_sword_and_shield__lanternaAttachmentId-dangling__base-betrayers-coin",
+  "selection": {
+    "facialHairId": "none",
+    "base": {
+      "useUniqueBase": true,
+      "uniqueBaseId": "betrayers-coin",
+      "fallbackCustomBase": {
+        "disc": "aged-gold",
+        "rim": "blackened-iron",
+        "asset": "assets/base_combinations/base_disc-aged-gold_rim-blackened-iron.png"
+      }
+    },
+    "classId": "cleric",
+    "speciesId": "aasimar",
+    "bodyTypeId": "feminine",
+    "skinToneId": "aasimar_pale",
+    "speciesFeatureIds": [],
+    "postureId": "posture_1",
+    "outfitId": "outfit_2",
+    "cloakId": "none",
+    "headId": "humanlike_narrow_severe",
+    "hairId": "topknot_bun",
+    "weaponSlotId": "offhand_or_shield",
+    "weaponDisplayId": "cleric_2_sword_and_shield",
+    "lanternaAttachmentId": "dangling"
+  },
+  "render": {
+    "baseSeparated": true,
+    "baseRuntimeFootprint": {
+      "gridDiamond": {
+        "width": 128,
+        "height": 64
+      },
+      "displayWidth": 115,
+      "sourceCanvas": {
+        "width": 192,
+        "height": 128
+      },
+      "visibleBounds": {
+        "left": 16,
+        "top": 21,
+        "right": 176,
+        "bottom": 106
+      },
+      "placement": "center visible base bounds inside the occupied 128x64 grid diamond"
+    },
+    "speciesScale": 1,
+    "zOrder": [
+      "base",
+      "posture",
+      "outfit",
+      "head",
+      "facialHair",
+      "hair",
+      "speciesFeature",
+      "cloak",
+      "weapon",
+      "lanterna"
+    ]
+  },
+  "output": {
+    "canvas": {
+      "width": 256,
+      "height": 360
+    },
+    "baseCenter": {
+      "x": 128,
+      "y": 306
+    }
+  },
+  "layers": [
+    {
+      "kind": "base",
+      "id": "betrayers-coin",
+      "asset": "assets/base_combinations/betrayers_coin.png",
+      "baseSeparated": true
+    },
+    {
+      "kind": "posture",
+      "id": "aasimar_feminine_posture_1",
+      "asset": "assets/pc_builder/body/aasimar_feminine_posture_1.png",
+      "tint": [
+        238,
+        235,
+        228
+      ]
+    },
+    {
+      "kind": "outfit",
+      "id": "cleric_outfit_2",
+      "asset": "assets/pc_builder/outfit/cleric_outfit_2.png",
+      "tint": null
+    },
+    {
+      "kind": "head",
+      "id": "humanlike_narrow_severe",
+      "asset": "assets/pc_builder/head/humanlike_narrow_severe.png",
+      "tint": [
+        238,
+        235,
+        228
+      ]
+    },
+    {
+      "kind": "facialHair",
+      "id": "none",
+      "hidden": true
+    },
+    {
+      "kind": "hair",
+      "id": "topknot_bun",
+      "asset": "assets/pc_builder/hair/topknot_bun.png",
+      "tint": null
+    },
+    {
+      "kind": "cloak",
+      "id": "none",
+      "hidden": true
+    },
+    {
+      "kind": "weapon",
+      "id": "cleric_2_sword_and_shield",
+      "asset": "assets/pc_builder/weapon/cleric_2_sword_and_shield.png",
+      "tint": null
+    },
+    {
+      "kind": "lanterna",
+      "id": "dangling",
+      "asset": "assets/pc_builder/lanterna/dangling.png",
+      "tint": null
+    }
+  ]
+}

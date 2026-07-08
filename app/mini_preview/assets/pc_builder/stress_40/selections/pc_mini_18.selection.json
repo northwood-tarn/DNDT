@@ -1,0 +1,22 @@
+{
+  "classId": "warlock",
+  "speciesId": "halfling",
+  "lineageId": "stout",
+  "bodyTypeId": "feminine",
+  "skinToneId": "human_black",
+  "speciesFeatureIds": [],
+  "postureId": "posture_3",
+  "outfitId": "outfit_2",
+  "cloakId": "hood_up",
+  "headId": "humanlike_narrow_severe",
+  "hairId": "long_loose",
+  "facialHairId": "none",
+  "weaponSlotId": "offhand_or_shield",
+  "weaponDisplayId": "warlock_2_magic_glove",
+  "lanternaAttachmentId": "neck_chain",
+  "base": {
+    "useUniqueBase": false,
+    "disc": "tarnished-brass",
+    "rim": "dull-silver"
+  }
+}

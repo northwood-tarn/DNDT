@@ -1,0 +1,73 @@
+{
+  "id": "long_tied_back",
+  "label": "Long tied back",
+  "status": "production",
+  "sourceKind": "image_generated_chroma_key",
+  "layerKind": "hair",
+  "file": "assets/pc_builder_production/hair/cutout/long_tied_back.png",
+  "sourceFile": "assets/pc_builder_production/hair/source/long_tied_back_chroma.png",
+  "promptFile": "assets/pc_builder_production/hair/prompts/long_tied_back.prompt.txt",
+  "sourceGeneratedImage": "/Users/jon/.codex/generated_images/019f137e-c16f-7730-ad49-dc9579587249/ig_063c180e3361fb51016a42fd92b6648191b863ac9ecd1ae183.png",
+  "canvas": {
+    "width": 1402,
+    "height": 1122
+  },
+  "renderBounds": {
+    "left": 157,
+    "top": 98,
+    "right": 1189,
+    "bottom": 1024,
+    "width": 1033,
+    "height": 927,
+    "visible": 335216,
+    "transparent": 1237828
+  },
+  "anchors": {
+    "headAnchor": {
+      "x": 673,
+      "y": 636
+    },
+    "scalpCrown": {
+      "x": 673,
+      "y": 265
+    },
+    "faceOpening": {
+      "x": 880,
+      "y": 636
+    },
+    "neckBack": {
+      "x": 529,
+      "y": 858
+    },
+    "cloakOcclusionAnchor": {
+      "x": 673,
+      "y": 765
+    }
+  },
+  "zOrder": 38,
+  "compositing": {
+    "hiddenWhenCloakId": [
+      "hood_up"
+    ],
+    "incompatibleSpecies": [
+      "dragonborn"
+    ],
+    "compatibleHeadKinds": [
+      "humanlike_narrow_severe",
+      "humanlike_broad_solid",
+      "humanlike_soft_round"
+    ]
+  },
+  "validation": {
+    "png": true,
+    "alpha": true,
+    "transparentBackground": true,
+    "noSvg": true,
+    "noBase": true,
+    "noLanterna": true,
+    "noWeapon": true,
+    "noWandText": true,
+    "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+  },
+  "signedOffAt": "2026-06-30T00:21:19.290Z"
+}

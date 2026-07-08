@@ -1,0 +1,752 @@
+{
+  "canvas": {
+    "width": 192,
+    "height": 128
+  },
+  "baseAnchor": {
+    "x": 96,
+    "y": 106
+  },
+  "normalBaseCount": 81,
+  "uniqueBases": [
+    {
+      "id": "betrayers-coin",
+      "asset": "betrayers_coin.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    }
+  ],
+  "normalBases": [
+    {
+      "disc": "aged-gold",
+      "rim": "aged-gold",
+      "asset": "base_disc-aged-gold_rim-aged-gold.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "aged-gold",
+      "rim": "dull-silver",
+      "asset": "base_disc-aged-gold_rim-dull-silver.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "aged-gold",
+      "rim": "tarnished-brass",
+      "asset": "base_disc-aged-gold_rim-tarnished-brass.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "aged-gold",
+      "rim": "dark-bronze",
+      "asset": "base_disc-aged-gold_rim-dark-bronze.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "aged-gold",
+      "rim": "gunmetal",
+      "asset": "base_disc-aged-gold_rim-gunmetal.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "aged-gold",
+      "rim": "metallic-green",
+      "asset": "base_disc-aged-gold_rim-metallic-green.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "aged-gold",
+      "rim": "deep-copper",
+      "asset": "base_disc-aged-gold_rim-deep-copper.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "aged-gold",
+      "rim": "blackened-iron",
+      "asset": "base_disc-aged-gold_rim-blackened-iron.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "aged-gold",
+      "rim": "ember-warmed-steel",
+      "asset": "base_disc-aged-gold_rim-ember-warmed-steel.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "dull-silver",
+      "rim": "aged-gold",
+      "asset": "base_disc-dull-silver_rim-aged-gold.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "dull-silver",
+      "rim": "dull-silver",
+      "asset": "base_disc-dull-silver_rim-dull-silver.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "dull-silver",
+      "rim": "tarnished-brass",
+      "asset": "base_disc-dull-silver_rim-tarnished-brass.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "dull-silver",
+      "rim": "dark-bronze",
+      "asset": "base_disc-dull-silver_rim-dark-bronze.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "dull-silver",
+      "rim": "gunmetal",
+      "asset": "base_disc-dull-silver_rim-gunmetal.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "dull-silver",
+      "rim": "metallic-green",
+      "asset": "base_disc-dull-silver_rim-metallic-green.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "dull-silver",
+      "rim": "deep-copper",
+      "asset": "base_disc-dull-silver_rim-deep-copper.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "dull-silver",
+      "rim": "blackened-iron",
+      "asset": "base_disc-dull-silver_rim-blackened-iron.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "dull-silver",
+      "rim": "ember-warmed-steel",
+      "asset": "base_disc-dull-silver_rim-ember-warmed-steel.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "tarnished-brass",
+      "rim": "aged-gold",
+      "asset": "base_disc-tarnished-brass_rim-aged-gold.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "tarnished-brass",
+      "rim": "dull-silver",
+      "asset": "base_disc-tarnished-brass_rim-dull-silver.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "tarnished-brass",
+      "rim": "tarnished-brass",
+      "asset": "base_disc-tarnished-brass_rim-tarnished-brass.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "tarnished-brass",
+      "rim": "dark-bronze",
+      "asset": "base_disc-tarnished-brass_rim-dark-bronze.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "tarnished-brass",
+      "rim": "gunmetal",
+      "asset": "base_disc-tarnished-brass_rim-gunmetal.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "tarnished-brass",
+      "rim": "metallic-green",
+      "asset": "base_disc-tarnished-brass_rim-metallic-green.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "tarnished-brass",
+      "rim": "deep-copper",
+      "asset": "base_disc-tarnished-brass_rim-deep-copper.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "tarnished-brass",
+      "rim": "blackened-iron",
+      "asset": "base_disc-tarnished-brass_rim-blackened-iron.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "tarnished-brass",
+      "rim": "ember-warmed-steel",
+      "asset": "base_disc-tarnished-brass_rim-ember-warmed-steel.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "dark-bronze",
+      "rim": "aged-gold",
+      "asset": "base_disc-dark-bronze_rim-aged-gold.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "dark-bronze",
+      "rim": "dull-silver",
+      "asset": "base_disc-dark-bronze_rim-dull-silver.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "dark-bronze",
+      "rim": "tarnished-brass",
+      "asset": "base_disc-dark-bronze_rim-tarnished-brass.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "dark-bronze",
+      "rim": "dark-bronze",
+      "asset": "base_disc-dark-bronze_rim-dark-bronze.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "dark-bronze",
+      "rim": "gunmetal",
+      "asset": "base_disc-dark-bronze_rim-gunmetal.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "dark-bronze",
+      "rim": "metallic-green",
+      "asset": "base_disc-dark-bronze_rim-metallic-green.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "dark-bronze",
+      "rim": "deep-copper",
+      "asset": "base_disc-dark-bronze_rim-deep-copper.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "dark-bronze",
+      "rim": "blackened-iron",
+      "asset": "base_disc-dark-bronze_rim-blackened-iron.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "dark-bronze",
+      "rim": "ember-warmed-steel",
+      "asset": "base_disc-dark-bronze_rim-ember-warmed-steel.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "gunmetal",
+      "rim": "aged-gold",
+      "asset": "base_disc-gunmetal_rim-aged-gold.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "gunmetal",
+      "rim": "dull-silver",
+      "asset": "base_disc-gunmetal_rim-dull-silver.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "gunmetal",
+      "rim": "tarnished-brass",
+      "asset": "base_disc-gunmetal_rim-tarnished-brass.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "gunmetal",
+      "rim": "dark-bronze",
+      "asset": "base_disc-gunmetal_rim-dark-bronze.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "gunmetal",
+      "rim": "gunmetal",
+      "asset": "base_disc-gunmetal_rim-gunmetal.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "gunmetal",
+      "rim": "metallic-green",
+      "asset": "base_disc-gunmetal_rim-metallic-green.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "gunmetal",
+      "rim": "deep-copper",
+      "asset": "base_disc-gunmetal_rim-deep-copper.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "gunmetal",
+      "rim": "blackened-iron",
+      "asset": "base_disc-gunmetal_rim-blackened-iron.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "gunmetal",
+      "rim": "ember-warmed-steel",
+      "asset": "base_disc-gunmetal_rim-ember-warmed-steel.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "metallic-green",
+      "rim": "aged-gold",
+      "asset": "base_disc-metallic-green_rim-aged-gold.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "metallic-green",
+      "rim": "dull-silver",
+      "asset": "base_disc-metallic-green_rim-dull-silver.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "metallic-green",
+      "rim": "tarnished-brass",
+      "asset": "base_disc-metallic-green_rim-tarnished-brass.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "metallic-green",
+      "rim": "dark-bronze",
+      "asset": "base_disc-metallic-green_rim-dark-bronze.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "metallic-green",
+      "rim": "gunmetal",
+      "asset": "base_disc-metallic-green_rim-gunmetal.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "metallic-green",
+      "rim": "metallic-green",
+      "asset": "base_disc-metallic-green_rim-metallic-green.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "metallic-green",
+      "rim": "deep-copper",
+      "asset": "base_disc-metallic-green_rim-deep-copper.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "metallic-green",
+      "rim": "blackened-iron",
+      "asset": "base_disc-metallic-green_rim-blackened-iron.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "metallic-green",
+      "rim": "ember-warmed-steel",
+      "asset": "base_disc-metallic-green_rim-ember-warmed-steel.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "deep-copper",
+      "rim": "aged-gold",
+      "asset": "base_disc-deep-copper_rim-aged-gold.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "deep-copper",
+      "rim": "dull-silver",
+      "asset": "base_disc-deep-copper_rim-dull-silver.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "deep-copper",
+      "rim": "tarnished-brass",
+      "asset": "base_disc-deep-copper_rim-tarnished-brass.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "deep-copper",
+      "rim": "dark-bronze",
+      "asset": "base_disc-deep-copper_rim-dark-bronze.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "deep-copper",
+      "rim": "gunmetal",
+      "asset": "base_disc-deep-copper_rim-gunmetal.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "deep-copper",
+      "rim": "metallic-green",
+      "asset": "base_disc-deep-copper_rim-metallic-green.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "deep-copper",
+      "rim": "deep-copper",
+      "asset": "base_disc-deep-copper_rim-deep-copper.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "deep-copper",
+      "rim": "blackened-iron",
+      "asset": "base_disc-deep-copper_rim-blackened-iron.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "deep-copper",
+      "rim": "ember-warmed-steel",
+      "asset": "base_disc-deep-copper_rim-ember-warmed-steel.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "blackened-iron",
+      "rim": "aged-gold",
+      "asset": "base_disc-blackened-iron_rim-aged-gold.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "blackened-iron",
+      "rim": "dull-silver",
+      "asset": "base_disc-blackened-iron_rim-dull-silver.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "blackened-iron",
+      "rim": "tarnished-brass",
+      "asset": "base_disc-blackened-iron_rim-tarnished-brass.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "blackened-iron",
+      "rim": "dark-bronze",
+      "asset": "base_disc-blackened-iron_rim-dark-bronze.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "blackened-iron",
+      "rim": "gunmetal",
+      "asset": "base_disc-blackened-iron_rim-gunmetal.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "blackened-iron",
+      "rim": "metallic-green",
+      "asset": "base_disc-blackened-iron_rim-metallic-green.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "blackened-iron",
+      "rim": "deep-copper",
+      "asset": "base_disc-blackened-iron_rim-deep-copper.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "blackened-iron",
+      "rim": "blackened-iron",
+      "asset": "base_disc-blackened-iron_rim-blackened-iron.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "blackened-iron",
+      "rim": "ember-warmed-steel",
+      "asset": "base_disc-blackened-iron_rim-ember-warmed-steel.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "ember-warmed-steel",
+      "rim": "aged-gold",
+      "asset": "base_disc-ember-warmed-steel_rim-aged-gold.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "ember-warmed-steel",
+      "rim": "dull-silver",
+      "asset": "base_disc-ember-warmed-steel_rim-dull-silver.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "ember-warmed-steel",
+      "rim": "tarnished-brass",
+      "asset": "base_disc-ember-warmed-steel_rim-tarnished-brass.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "ember-warmed-steel",
+      "rim": "dark-bronze",
+      "asset": "base_disc-ember-warmed-steel_rim-dark-bronze.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "ember-warmed-steel",
+      "rim": "gunmetal",
+      "asset": "base_disc-ember-warmed-steel_rim-gunmetal.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "ember-warmed-steel",
+      "rim": "metallic-green",
+      "asset": "base_disc-ember-warmed-steel_rim-metallic-green.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "ember-warmed-steel",
+      "rim": "deep-copper",
+      "asset": "base_disc-ember-warmed-steel_rim-deep-copper.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "ember-warmed-steel",
+      "rim": "blackened-iron",
+      "asset": "base_disc-ember-warmed-steel_rim-blackened-iron.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    },
+    {
+      "disc": "ember-warmed-steel",
+      "rim": "ember-warmed-steel",
+      "asset": "base_disc-ember-warmed-steel_rim-ember-warmed-steel.png",
+      "baseAnchor": {
+        "x": 96,
+        "y": 106
+      }
+    }
+  ]
+}

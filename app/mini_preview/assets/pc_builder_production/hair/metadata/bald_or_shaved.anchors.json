@@ -1,0 +1,73 @@
+{
+  "id": "bald_or_shaved",
+  "label": "Bald or shaved",
+  "status": "production",
+  "sourceKind": "image_generated_chroma_key",
+  "layerKind": "hair",
+  "file": "assets/pc_builder_production/hair/cutout/bald_or_shaved.png",
+  "sourceFile": "assets/pc_builder_production/hair/source/bald_or_shaved_chroma.png",
+  "promptFile": "assets/pc_builder_production/hair/prompts/bald_or_shaved.prompt.txt",
+  "sourceGeneratedImage": "/Users/jon/.codex/generated_images/019f137e-c16f-7730-ad49-dc9579587249/ig_063c180e3361fb51016a42fdffe178819190391e2a0134687b.png",
+  "canvas": {
+    "width": 1536,
+    "height": 1024
+  },
+  "renderBounds": {
+    "left": 388,
+    "top": 164,
+    "right": 1173,
+    "bottom": 862,
+    "width": 786,
+    "height": 699,
+    "visible": 265250,
+    "transparent": 1307614
+  },
+  "anchors": {
+    "headAnchor": {
+      "x": 781,
+      "y": 569
+    },
+    "scalpCrown": {
+      "x": 781,
+      "y": 290
+    },
+    "faceOpening": {
+      "x": 938,
+      "y": 569
+    },
+    "neckBack": {
+      "x": 671,
+      "y": 737
+    },
+    "cloakOcclusionAnchor": {
+      "x": 781,
+      "y": 667
+    }
+  },
+  "zOrder": 38,
+  "compositing": {
+    "hiddenWhenCloakId": [
+      "hood_up"
+    ],
+    "incompatibleSpecies": [
+      "dragonborn"
+    ],
+    "compatibleHeadKinds": [
+      "humanlike_narrow_severe",
+      "humanlike_broad_solid",
+      "humanlike_soft_round"
+    ]
+  },
+  "validation": {
+    "png": true,
+    "alpha": true,
+    "transparentBackground": true,
+    "noSvg": true,
+    "noBase": true,
+    "noLanterna": true,
+    "noWeapon": true,
+    "noWandText": true,
+    "notes": "Signed off as production raster hair component after contact-sheet review. Keep final fit tuning tied to production head/body anchors."
+  },
+  "signedOffAt": "2026-06-30T00:21:19.290Z"
+}

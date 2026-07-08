@@ -1,0 +1,21 @@
+{
+  "classId": "warlock",
+  "speciesId": "dwarf",
+  "bodyTypeId": "feminine",
+  "skinToneId": "human_black",
+  "speciesFeatureIds": [],
+  "postureId": "posture_3",
+  "outfitId": "outfit_2",
+  "cloakId": "hood_up",
+  "headId": "humanlike_broad_solid",
+  "hairId": "long_loose",
+  "facialHairId": "moustache",
+  "weaponSlotId": "empty_gesture",
+  "weaponDisplayId": "warlock_5_empty_casting_hand",
+  "lanternaAttachmentId": "neck_chain",
+  "base": {
+    "useUniqueBase": false,
+    "disc": "dull-silver",
+    "rim": "ember-warmed-steel"
+  }
+}
