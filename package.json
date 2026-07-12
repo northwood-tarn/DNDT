@@ -6,6 +6,7 @@
   "main": "electron/main.js",
   "scripts": {
     "validate": "node tools/validate.js",
+    "validate:maps": "node tools/validate-maps.js",
     "validate:spells": "node tools/validate-spells.js",
     "audit:level-up": "node tools/audit-level-up-choices.mjs",
     "audit:spell-actions": "node tools/audit-spell-actions.js",

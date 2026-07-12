@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DNDT Map</title>
+    <link rel="stylesheet" href="../styles/designViewport.css">
+    <link rel="stylesheet" href="./mapView.css">
+  </head>
+  <body>
+    <main class="map-shell" aria-label="Campaign map">
+      <img id="mapImage" class="map-image" src="../assets/maps/world_map.png" alt="">
+      <svg class="map-area-overlay" viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice" aria-label="Campaign areas">
+        <polygon class="map-area-zone" data-area-id="greyharbour" points="135,566 482,568 875,686 796,943 142,846" />
+        <polygon class="map-area-zone" data-area-id="necropolis" points="216,325 477,345 646,428 1644,581 1546,734 736,635 440,571 135,510" />
+        <polygon class="map-area-zone" data-area-id="endless-plains" points="418,135 874,214 875,0 1210,0 1210,279 1644,417 1540,574 653,431 216,325 296,148" />
+      </svg>
+    </main>
+
+    <aside id="mapAreaInfo" class="map-area-info" aria-live="polite" hidden>
+      <h1 id="mapAreaTitle"></h1>
+      <p id="mapAreaDescription"></p>
+    </aside>
+
+    <svg class="map-flame" viewBox="0 0 46 66" aria-hidden="true">
+      <defs>
+        <mask id="mapFlameMask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="0" y="0" width="46" height="66" mask-type="alpha">
+          <image href="../assets/images/effects/flame-black.png" x="0" y="0" width="46" height="66" preserveAspectRatio="xMidYMid meet" />
+        </mask>
+      </defs>
+      <image class="map-flame-fog-layer" href="../assets/fog/fog_01.png" x="-42" y="-58" width="130" height="178" preserveAspectRatio="xMidYMid slice" mask="url(#mapFlameMask)" />
+      <image class="map-flame-fog-layer" href="../assets/fog/fog_02.png" x="-42" y="-58" width="130" height="178" preserveAspectRatio="xMidYMid slice" mask="url(#mapFlameMask)" />
+    </svg>
+
+    <script type="module" src="./mapView.js"></script>
+  </body>
+</html>

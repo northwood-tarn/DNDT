@@ -1,0 +1,14 @@
+{
+  "id": "aasimar_masculine_01",
+  "status": "locked",
+  "species": "aasimar",
+  "presentation": "masculine",
+  "source": "source/aasimar_masculine_01_chroma.png",
+  "sourceSha256": "e1ffdf77113c7253203d1e3b8726713451f3d043ec400455a094ce49bc3a161e",
+  "cutout": "cutout/aasimar_masculine_01.png",
+  "cutoutSha256": "256aad769c3abf76ac3a1255426ea370d2c0d3679464528f2b6fd46e32621a19",
+  "humanHeightScale": 1.0,
+  "stance": 1,
+  "baseRegistrationStatus": "locked",
+  "preservationRule": "Preserve the exact source image. Do not crop, regenerate, reinterpret, replace, or improve it unless explicitly requested."
+}

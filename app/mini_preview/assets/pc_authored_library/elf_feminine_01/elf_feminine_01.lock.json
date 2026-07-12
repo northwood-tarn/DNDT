@@ -1,0 +1,19 @@
+{
+  "id": "elf_feminine_01",
+  "status": "locked",
+  "species": "elf",
+  "presentation": "feminine",
+  "stanceId": "stance_2",
+  "source": "app/mini_preview/assets/pc_authored_library/elf_feminine_01/source/elf_feminine_01_stance_2_chroma.png",
+  "preserveExactSource": true,
+  "baseRegistrationStatus": "pending",
+  "sha256": "20567ea24772ade002a632a47e7e74aa3e489a54f7a33ee0e45d392f01124465",
+  "lockedTraits": [
+    "wide slight-crouch stance",
+    "one subtly outstretched empty hand",
+    "red pixie-cut hair",
+    "less severe expression",
+    "worn golden armor sheen",
+    "muted green forearm armor accents"
+  ]
+}

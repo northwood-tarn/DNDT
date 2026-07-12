@@ -1,0 +1,21 @@
+{
+  "id": "dwarf_masculine_01",
+  "status": "locked",
+  "species": "dwarf",
+  "presentation": "masculine",
+  "heightScale": 0.75,
+  "source": "app/mini_preview/assets/pc_authored_library/dwarf_masculine_01/source/dwarf_masculine_01_chroma.png",
+  "cutout": "app/mini_preview/assets/pc_authored_library/dwarf_masculine_01/cutout/dwarf_masculine_01.png",
+  "preserveExactSource": true,
+  "basePlacement": {
+    "reviewCanvas": { "width": 900, "height": 1050 },
+    "figureHeight": 525,
+    "figureY": 415,
+    "horizontalOffsetFromCropCenter": -10,
+    "status": "locked"
+  },
+  "sha256": {
+    "source": "a9366f1d85c646a423295c2d71256085a9024a969aff925392da563d5de3322a",
+    "cutout": "1cfb77a41e6fb7e5c8cfcec76052ff0a2547754a3c8617eccdf9214b9cdd5b2a"
+  }
+}

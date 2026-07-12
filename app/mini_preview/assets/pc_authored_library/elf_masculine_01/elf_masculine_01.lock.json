@@ -1,0 +1,19 @@
+{
+  "id": "elf_masculine_01",
+  "status": "locked",
+  "species": "elf",
+  "presentation": "masculine",
+  "stanceId": "stance_2",
+  "source": "app/mini_preview/assets/pc_authored_library/elf_masculine_01/source/elf_masculine_01_stance_2_chroma.png",
+  "preserveExactSource": true,
+  "baseRegistrationStatus": "pending",
+  "sha256": "fa5fb847b39b537001dd32ee25d5f933820fbbd58b7fc768237094f3a298a60e",
+  "lockedTraits": [
+    "wide slight-crouch stance",
+    "both empty hands mostly closed",
+    "short brown hair longer than a buzz cut",
+    "less severe expression",
+    "worn golden armor sheen",
+    "muted green forearm armor accents"
+  ]
+}

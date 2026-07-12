@@ -1,0 +1,31 @@
+{
+  "posture": 3,
+  "status": "locked",
+  "definition": "Exact two foot-contact positions on the Betrayer's Coin; no upper-body or general pose meaning.",
+  "authoredFrom": "halfling_feminine_01",
+  "referenceComposite": "halfling_feminine_01/posture_3/review/halfling_feminine_01_posture_3_coin_check.png",
+  "canvas": {
+    "width": 900,
+    "height": 1050
+  },
+  "base": {
+    "source": "../base_combinations/betrayers_coin.png",
+    "x": 200,
+    "y": 770,
+    "width": 500
+  },
+  "referenceScale": {
+    "humanHeightPx": 700,
+    "speciesScale": 0.55,
+    "figureHeightPx": 385
+  },
+  "figurePlacement": {
+    "x": 384,
+    "y": 549
+  },
+  "footContactAnchorsPx": {
+    "left": { "x": 407, "y": 933 },
+    "right": { "x": 504, "y": 919 }
+  },
+  "note": "Locked after moving the accepted figure exactly 5px upward from the first coin check. Future figures assigned posture 3 must be authored to these base-relative foot contacts before generation."
+}

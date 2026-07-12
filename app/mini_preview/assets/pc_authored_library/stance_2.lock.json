@@ -1,0 +1,17 @@
+{
+  "id": "stance_2",
+  "status": "foot_placement_locked",
+  "description": "A pair of fixed foot-contact positions on the authored base. Stance 2 defines foot placement only and uses the locked male elf coin placement as its template.",
+  "referenceFigures": [
+    "elf_feminine_01",
+    "elf_masculine_01"
+  ],
+  "template": "app/mini_preview/assets/pc_authored_library/stance_2_elves_coin_check_female_right_4px.png",
+  "rules": [
+    "Stance 2 concerns only the two points where the feet contact the authored base.",
+    "Stance 2 does not define or constrain torso angle, knee bend, hand position, gesture, expression, clothing, silhouette, or overall body pose.",
+    "The locked male elf footing is the stance-2 placement template.",
+    "The locked female elf reaches the same template with a 4 px rightward placement correction relative to transparent-crop centering.",
+    "Future placement must use foot-contact anchors rather than transparent image bounds."
+  ]
+}

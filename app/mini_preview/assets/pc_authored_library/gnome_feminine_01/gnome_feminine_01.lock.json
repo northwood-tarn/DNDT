@@ -1,0 +1,11 @@
+{
+  "id": "gnome_feminine_01",
+  "status": "locked",
+  "source": "source/gnome_feminine_01_chroma.png",
+  "sourceSha256": "6b58d7f4896c7f59e19e9f238c3150ba108f99edf072f66289b621fcbdbe9ca6",
+  "cutout": "cutout/gnome_feminine_01.png",
+  "cutoutSha256": "0c79b2d4807cc2f402c53f80a0e3300e9d5524136cba05dd442bed8fcb834afc",
+  "humanHeightScale": 0.5,
+  "posture": 3,
+  "preservationRule": "Preserve the exact source image. Do not crop, regenerate, reinterpret, replace, or improve it unless explicitly requested."
+}

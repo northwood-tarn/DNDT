@@ -1,0 +1,11 @@
+{
+  "id": "orc_masculine_01",
+  "status": "locked",
+  "source": "source/orc_masculine_01_chroma.png",
+  "sourceSha256": "dc865526262743f0a9ac5a170f0d9c6bb8b5c9f0f1ba151c575ec715550990ad",
+  "cutout": "cutout/orc_masculine_01.png",
+  "cutoutSha256": "a44d1e3582fab5d1668a980f1979d9a9d1be8578b9d6d9cb30fdf62a9b341335",
+  "humanHeightScale": 1.05,
+  "stance": 1,
+  "preservationRule": "Preserve the exact source image. Do not crop, regenerate, reinterpret, replace, or improve it unless explicitly requested."
+}

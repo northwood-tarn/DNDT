@@ -1,0 +1,73 @@
+{
+  "id": "human_feminine_master",
+  "status": "geometry_locked_art_pending",
+  "purpose": "Canonical registration contract for the first complete PC miniature family.",
+  "canonicalFacing": "right_facing_side_on_isometric",
+  "canonicalCanvas": { "width": 512, "height": 512 },
+  "humanScale": 1.0,
+  "lockedInputs": {
+    "postureSource": "app/mini_preview/assets/pc_builder_production/body_head/sheets/source/human_feminine_postures_chroma.png",
+    "postureGeometry": "app/mini_preview/assets/pc_builder_production/body_head/geometry_guides/pc_posture_wire_skeletons.json",
+    "weaponPoseManifest": "app/mini_preview/assets/pc_builder_production/body_head/metadata/locked_weapon_pose_pool.json",
+    "hairManifest": "app/mini_preview/assets/pc_builder_production/hair/hair_asset_manifest.json"
+  },
+  "preservationRules": [
+    "Do not crop, regenerate, repaint, reposition, or otherwise alter locked weapon-pose images.",
+    "Do not crop, regenerate, repaint, reposition, or otherwise alter production hair images.",
+    "Body, head, outfit, cloak, Lanterna, and compositor metadata must adapt to locked assets.",
+    "Never use approximate body subtraction for accessory extraction; require an exact unarmed donor."
+  ],
+  "postures": {
+    "posture_1": {
+      "label": "Balanced Ready",
+      "head": { "x": 286, "y": 132 },
+      "bodyRoot": { "x": 262, "y": 292 },
+      "groundContactLeft": { "x": 202, "y": 394 },
+      "groundContactRight": { "x": 326, "y": 404 },
+      "weaponHand": { "x": 362, "y": 312 },
+      "offhand": { "x": 222, "y": 318 }
+    },
+    "posture_2": {
+      "label": "Forward Intent",
+      "head": { "x": 292, "y": 128 },
+      "bodyRoot": { "x": 252, "y": 296 },
+      "groundContactLeft": { "x": 190, "y": 394 },
+      "groundContactRight": { "x": 342, "y": 406 },
+      "weaponHand": { "x": 384, "y": 318 },
+      "offhand": { "x": 218, "y": 326 }
+    },
+    "posture_3": {
+      "label": "Guarded / Staff-Compatible",
+      "head": { "x": 278, "y": 132 },
+      "bodyRoot": { "x": 254, "y": 296 },
+      "groundContactLeft": { "x": 202, "y": 396 },
+      "groundContactRight": { "x": 316, "y": 404 },
+      "weaponHand": { "x": 356, "y": 344 },
+      "offhand": { "x": 226, "y": 306 },
+      "staffBottom": { "x": 356, "y": 410 }
+    }
+  },
+  "requiredBodyDeliverables": [
+    "source chroma PNG",
+    "transparent alpha PNG",
+    "prompt and provenance text",
+    "complete anchor metadata",
+    "hair compatibility contact sheet",
+    "representative martial/divine/arcane compatibility contact sheet",
+    "real combat-grid base-fit proof"
+  ],
+  "currentAssessment": {
+    "postureSourceRole": "locked exact-donor and visual reference",
+    "postureSourceIsNeutralBodyLayer": false,
+    "reason": "The source includes head, hair, clothing, boots, and wrapped hands.",
+    "hairAssets": { "status": "production_locked", "count": 32 },
+    "weaponPoseAssets": { "status": "review_cutout_locked", "count": 25 },
+    "neutralBodyAssets": {
+      "status": "generated_pending_review",
+      "count": 3,
+      "manifest": "app/mini_preview/assets/pc_builder_production/human_feminine/metadata/human_feminine_body_manifest.json",
+      "baseFit": "passes_at_npc_derived_runtime_ratio",
+      "hairFit": "all_8_styles_proofed_on_all_3_postures"
+    }
+  }
+}

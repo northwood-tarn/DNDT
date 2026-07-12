@@ -1,0 +1,14 @@
+{
+  "id": "dwarf_feminine_01",
+  "status": "placement_corrected_pending_lock",
+  "heightScale": 0.75,
+  "figureHeight": 525,
+  "figureY": 415,
+  "horizontalOffsetFromCropCenter": 6,
+  "correctionFromPreviousReview": { "x": 16, "y": 0 },
+  "footAlignmentAgainstLockedMale": {
+    "rearLeftDeltaPixels": 2,
+    "forwardRightDeltaPixels": -1
+  },
+  "review": "app/mini_preview/assets/pc_authored_library/dwarves_coin_check_female_foot_aligned.png"
+}

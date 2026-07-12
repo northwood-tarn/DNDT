@@ -1,0 +1,17 @@
+{
+  "id": "cloaked_protagonist_01",
+  "status": "locked",
+  "species": "concealed",
+  "presentation": "unisex",
+  "source": "source/cloaked_protagonist_01_chroma.png",
+  "sourceSha256": "a2d27f95d552156e901fda7e64978c2d1d0ea406158dd96f021a846a3b094853",
+  "cutout": "cutout/cloaked_protagonist_01.png",
+  "cutoutSha256": "3b1629d10a28a155e3780883f5f1951efacf0442b4d2d2fe78c29ead5e12f7ca",
+  "humanHeightScale": 1.0,
+  "posture": 2,
+  "baseRegistration": {
+    "horizontalOffsetPixels": -23,
+    "status": "locked"
+  },
+  "preservationRule": "Preserve the exact source image. Do not crop, regenerate, reinterpret, replace, or improve it unless explicitly requested."
+}

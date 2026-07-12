@@ -1,0 +1,21 @@
+{
+  "id": "gnome_masculine_01",
+  "status": "locked",
+  "source": "source/gnome_masculine_01_chroma.png",
+  "sourceSha256": "4d584ebe6b8f17ab9f8cdd11fe9e69ae9f77935c4d0d56250a3f1c0f1f5913b8",
+  "cutout": "cutout/gnome_masculine_01.png",
+  "cutoutSha256": "9d62dcbee2e774ef2c0b7d994d6794626682cd97821c15a116ce63368f794e94",
+  "humanHeightScale": 0.5,
+  "posture": 3,
+  "lockedAttributes": [
+    "complete authored figure",
+    "identity and expression",
+    "short black hair with autumnal orange highlights",
+    "flat masculine chest",
+    "hands on belt",
+    "dark studded leather with autumnal orange accents",
+    "belt books and leather-capped vials",
+    "posture 3 foot arrangement"
+  ],
+  "preservationRule": "Preserve the exact source image. Do not crop, regenerate, reinterpret, replace, or improve it unless explicitly requested."
+}

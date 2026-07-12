@@ -1,0 +1,81 @@
+{
+  "status": "generated_pending_review",
+  "scope": "posture_1 humanlike humanoid proof; dragonborn excluded",
+  "body": "app/mini_preview/assets/pc_builder_production/human_feminine/posture_1/cutout/human_feminine_posture_1_neck_socket_body.png",
+  "head": "app/mini_preview/assets/pc_builder_production/human_feminine/posture_1/cutout/humanlike_feminine_head_narrow.png",
+  "headSourceAlphaBounds": [
+    343,
+    189,
+    908,
+    997
+  ],
+  "headScale": 0.2,
+  "headPaste": {
+    "x": 585,
+    "y": 93
+  },
+  "hairPixelsModified": false,
+  "hairPlacements": {
+    "short_messy": {
+      "scale": 0.19,
+      "paste": {
+        "x": 494,
+        "y": 53
+      }
+    },
+    "short_severe": {
+      "scale": 0.19,
+      "paste": {
+        "x": 498,
+        "y": 60
+      }
+    },
+    "long_loose": {
+      "scale": 0.15,
+      "paste": {
+        "x": 549,
+        "y": 58
+      }
+    },
+    "scruffy_shoulder_length": {
+      "scale": 0.15,
+      "paste": {
+        "x": 534,
+        "y": 83
+      }
+    },
+    "long_tied_back": {
+      "scale": 0.17,
+      "paste": {
+        "x": 520,
+        "y": 57
+      }
+    },
+    "topknot_bun": {
+      "scale": 0.19,
+      "paste": {
+        "x": 520,
+        "y": 39
+      }
+    },
+    "bald_or_shaved": {
+      "scale": 0.17,
+      "paste": {
+        "x": 511,
+        "y": 58
+      }
+    },
+    "scruffy_short": {
+      "scale": 0.19,
+      "paste": {
+        "x": 495,
+        "y": 51
+      }
+    }
+  },
+  "runtime": {
+    "baseWidth": 115,
+    "figureHeightToBaseWidth": 1.4,
+    "contactDepth": 34
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "id": "tiefling_feminine_01",
+  "status": "locked",
+  "source": "source/tiefling_feminine_01_chroma.png",
+  "sourceSha256": "8c76faf27f08cb461034ba302311fcd34098dd15236431bb15b95c4548817edf",
+  "cutout": "cutout/tiefling_feminine_01.png",
+  "cutoutSha256": "6f3abc23ccf7502bdb4894269828ed0784311ae00a2bbbfe3cdddeb4637fc8b1",
+  "humanHeightScale": 1.0,
+  "stance": 1,
+  "preservationRule": "Preserve the exact source image. Do not crop, regenerate, reinterpret, replace, or improve it unless explicitly requested."
+}

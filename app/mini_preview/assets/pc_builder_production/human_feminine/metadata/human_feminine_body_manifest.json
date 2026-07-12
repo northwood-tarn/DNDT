@@ -1,0 +1,453 @@
+{
+  "status": "generated_pending_review",
+  "assets": [
+    {
+      "id": "human_feminine_posture_1_body",
+      "status": "generated_pending_review",
+      "sourceKind": "image_generated_chroma_cutout",
+      "file": "app/mini_preview/assets/pc_builder_production/human_feminine/cutout/human_feminine_posture_1_body.png",
+      "sourceFile": "app/mini_preview/assets/pc_builder_production/human_feminine/source/human_feminine_posture_1_body_chroma.png",
+      "canvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "alphaBounds": {
+        "left": 419,
+        "top": 86,
+        "right": 822,
+        "bottom": 1145,
+        "width": 403,
+        "height": 1059
+      },
+      "anchors": {
+        "head": {
+          "x": 705,
+          "y": 173
+        }
+      }
+    },
+    {
+      "id": "human_feminine_posture_2_body",
+      "status": "generated_pending_review",
+      "sourceKind": "image_generated_chroma_cutout",
+      "file": "app/mini_preview/assets/pc_builder_production/human_feminine/cutout/human_feminine_posture_2_body.png",
+      "sourceFile": "app/mini_preview/assets/pc_builder_production/human_feminine/source/human_feminine_posture_2_body_chroma.png",
+      "canvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "alphaBounds": {
+        "left": 290,
+        "top": 117,
+        "right": 891,
+        "bottom": 1114,
+        "width": 601,
+        "height": 997
+      },
+      "anchors": {
+        "head": {
+          "x": 786,
+          "y": 191
+        }
+      }
+    },
+    {
+      "id": "human_feminine_posture_3_body",
+      "status": "generated_pending_review",
+      "sourceKind": "image_generated_chroma_cutout",
+      "file": "app/mini_preview/assets/pc_builder_production/human_feminine/cutout/human_feminine_posture_3_body.png",
+      "sourceFile": "app/mini_preview/assets/pc_builder_production/human_feminine/source/human_feminine_posture_3_body_chroma.png",
+      "canvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "alphaBounds": {
+        "left": 368,
+        "top": 101,
+        "right": 879,
+        "bottom": 1139,
+        "width": 511,
+        "height": 1038
+      },
+      "anchors": {
+        "head": {
+          "x": 745,
+          "y": 180
+        }
+      }
+    }
+  ],
+  "hairFit": {
+    "posture_1": {
+      "short_messy": {
+        "scale": 0.19,
+        "offset": {
+          "x": -20,
+          "y": -15
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 705,
+          "y": 173
+        },
+        "paste": {
+          "x": 509,
+          "y": 61
+        }
+      },
+      "short_severe": {
+        "scale": 0.19,
+        "offset": {
+          "x": -20,
+          "y": -15
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 705,
+          "y": 173
+        },
+        "paste": {
+          "x": 513,
+          "y": 68
+        }
+      },
+      "long_loose": {
+        "scale": 0.15,
+        "offset": {
+          "x": -20,
+          "y": 0
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 705,
+          "y": 173
+        },
+        "paste": {
+          "x": 564,
+          "y": 66
+        }
+      },
+      "scruffy_shoulder_length": {
+        "scale": 0.15,
+        "offset": {
+          "x": -20,
+          "y": 0
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 705,
+          "y": 173
+        },
+        "paste": {
+          "x": 549,
+          "y": 91
+        }
+      },
+      "long_tied_back": {
+        "scale": 0.15,
+        "offset": {
+          "x": -20,
+          "y": 0
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 705,
+          "y": 173
+        },
+        "paste": {
+          "x": 553,
+          "y": 78
+        }
+      },
+      "topknot_bun": {
+        "scale": 0.17,
+        "offset": {
+          "x": -20,
+          "y": -5
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 705,
+          "y": 173
+        },
+        "paste": {
+          "x": 551,
+          "y": 60
+        }
+      },
+      "bald_or_shaved": {
+        "scale": 0.17,
+        "offset": {
+          "x": -20,
+          "y": -10
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 705,
+          "y": 173
+        },
+        "paste": {
+          "x": 526,
+          "y": 66
+        }
+      },
+      "scruffy_short": {
+        "scale": 0.19,
+        "offset": {
+          "x": -20,
+          "y": -15
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 705,
+          "y": 173
+        },
+        "paste": {
+          "x": 510,
+          "y": 59
+        }
+      }
+    },
+    "posture_2": {
+      "short_messy": {
+        "scale": 0.19,
+        "offset": {
+          "x": -20,
+          "y": -15
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 786,
+          "y": 191
+        },
+        "paste": {
+          "x": 590,
+          "y": 79
+        }
+      },
+      "short_severe": {
+        "scale": 0.19,
+        "offset": {
+          "x": -20,
+          "y": -15
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 786,
+          "y": 191
+        },
+        "paste": {
+          "x": 594,
+          "y": 86
+        }
+      },
+      "long_loose": {
+        "scale": 0.15,
+        "offset": {
+          "x": -20,
+          "y": 0
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 786,
+          "y": 191
+        },
+        "paste": {
+          "x": 645,
+          "y": 84
+        }
+      },
+      "scruffy_shoulder_length": {
+        "scale": 0.15,
+        "offset": {
+          "x": -20,
+          "y": 0
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 786,
+          "y": 191
+        },
+        "paste": {
+          "x": 630,
+          "y": 109
+        }
+      },
+      "long_tied_back": {
+        "scale": 0.15,
+        "offset": {
+          "x": -20,
+          "y": 0
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 786,
+          "y": 191
+        },
+        "paste": {
+          "x": 634,
+          "y": 96
+        }
+      },
+      "topknot_bun": {
+        "scale": 0.17,
+        "offset": {
+          "x": -20,
+          "y": -5
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 786,
+          "y": 191
+        },
+        "paste": {
+          "x": 632,
+          "y": 78
+        }
+      },
+      "bald_or_shaved": {
+        "scale": 0.17,
+        "offset": {
+          "x": -20,
+          "y": -10
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 786,
+          "y": 191
+        },
+        "paste": {
+          "x": 607,
+          "y": 84
+        }
+      },
+      "scruffy_short": {
+        "scale": 0.19,
+        "offset": {
+          "x": -20,
+          "y": -15
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 786,
+          "y": 191
+        },
+        "paste": {
+          "x": 591,
+          "y": 77
+        }
+      }
+    },
+    "posture_3": {
+      "short_messy": {
+        "scale": 0.19,
+        "offset": {
+          "x": -20,
+          "y": -15
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 745,
+          "y": 180
+        },
+        "paste": {
+          "x": 549,
+          "y": 68
+        }
+      },
+      "short_severe": {
+        "scale": 0.19,
+        "offset": {
+          "x": -20,
+          "y": -15
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 745,
+          "y": 180
+        },
+        "paste": {
+          "x": 553,
+          "y": 75
+        }
+      },
+      "long_loose": {
+        "scale": 0.15,
+        "offset": {
+          "x": -20,
+          "y": 0
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 745,
+          "y": 180
+        },
+        "paste": {
+          "x": 604,
+          "y": 73
+        }
+      },
+      "scruffy_shoulder_length": {
+        "scale": 0.15,
+        "offset": {
+          "x": -20,
+          "y": 0
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 745,
+          "y": 180
+        },
+        "paste": {
+          "x": 589,
+          "y": 98
+        }
+      },
+      "long_tied_back": {
+        "scale": 0.15,
+        "offset": {
+          "x": -20,
+          "y": 0
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 745,
+          "y": 180
+        },
+        "paste": {
+          "x": 593,
+          "y": 85
+        }
+      },
+      "topknot_bun": {
+        "scale": 0.17,
+        "offset": {
+          "x": -20,
+          "y": -5
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 745,
+          "y": 180
+        },
+        "paste": {
+          "x": 591,
+          "y": 67
+        }
+      },
+      "bald_or_shaved": {
+        "scale": 0.17,
+        "offset": {
+          "x": -20,
+          "y": -10
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 745,
+          "y": 180
+        },
+        "paste": {
+          "x": 566,
+          "y": 73
+        }
+      },
+      "scruffy_short": {
+        "scale": 0.19,
+        "offset": {
+          "x": -20,
+          "y": -15
+        },
+        "bodyFaceOpeningAnchor": {
+          "x": 745,
+          "y": 180
+        },
+        "paste": {
+          "x": 550,
+          "y": 66
+        }
+      }
+    }
+  },
+  "runtimeProof": {
+    "baseWidth": 115,
+    "humanFigureHeightToBaseWidth": 1.4,
+    "status": "passes_visual_fit"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "id": "stance_1",
+  "status": "locked",
+  "description": "A pair of fixed foot-contact positions on the authored base. Stance 1 defines foot placement only.",
+  "referenceFigure": "human_masculine_01",
+  "lockedReview": "app/mini_preview/assets/pc_authored_library/human_masculine_01/stance_1/review/human_masculine_01_stance_1_left_10px.png",
+  "supersededReference": "app/mini_preview/assets/pc_authored_library/human_feminine_01/review/human_feminine_01_stance_1_LOCKED.png",
+  "referenceComposition": {
+    "canvas": { "width": 900, "height": 1050 },
+    "base": {
+      "asset": "app/mini_preview/assets/base_combinations/betrayers_coin.png",
+      "x": 200,
+      "y": 770,
+      "width": 500,
+      "height": 333
+    },
+    "figure": {
+      "alphaCropSource": "app/mini_preview/assets/pc_authored_library/human_feminine_01/cutout/human_feminine_01.png",
+      "alphaCropBounds": { "left": 314, "top": 64, "right": 779, "bottom": 1359 },
+      "x": 324,
+      "y": 240,
+      "width": 251,
+      "height": 700
+    }
+  },
+  "footContactTargets": {
+    "authority": "Use the two visible foot-contact points in lockedReview; the previous female reference and its coordinates are superseded.",
+    "measurementStatus": "pending_exact_pixel_record"
+  },
+  "rules": [
+    "When the user requests stance 1, both ground-contact points must land on these base-normalized targets.",
+    "Stance 1 does not define or constrain torso angle, knee bend, hand position, gesture, expression, clothing, silhouette, or overall body pose.",
+    "Character height, species scale, leg length, foot size, or body width must not move the contact targets.",
+    "Goliath and Dragonborn use the same stance-1 contact targets as human-scale figures.",
+    "Scale and translate the complete whole-figure cutout to satisfy both targets; do not warp or repaint a locked figure.",
+    "If a generated pose cannot satisfy both targets without distortion, reject it as incompatible with stance 1.",
+    "The selected figure source and locked review composite must remain unchanged."
+  ],
+  "sha256": {
+    "sourceChroma": "d1384f19e1aa6dd5e5605b46b93f57e6097c42a179c4506f0186953fe0156a3f",
+    "cutout": "1ef0b53e98bd369b39aefe69597627cac872923a3bd4309da800240f50341163",
+    "supersededFemaleReview": "6811e4a1a20c55c0cf25714f86982eb6fbf21b6e1ef85f056c94a45422231d8b"
+  }
+}

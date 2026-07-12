@@ -1,0 +1,11 @@
+{
+  "id": "orc_feminine_01",
+  "status": "locked",
+  "source": "source/orc_feminine_01_chroma.png",
+  "sourceSha256": "c84d7a4db89d447e95ea2771445ba5df3b122ee5d9acc4d2caf7b90179184d5b",
+  "cutout": "cutout/orc_feminine_01.png",
+  "cutoutSha256": "15ba6d8f5c4a529c37e61ac75cc6ee4602e922ea4575b79b32140f3b5ae1ce84",
+  "humanHeightScale": 1.05,
+  "stance": 1,
+  "preservationRule": "Preserve the exact source image. Do not crop, regenerate, reinterpret, replace, or improve it unless explicitly requested."
+}

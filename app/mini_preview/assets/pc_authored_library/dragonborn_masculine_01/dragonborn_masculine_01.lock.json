@@ -1,0 +1,14 @@
+{
+  "id": "dragonborn_masculine_01",
+  "status": "locked",
+  "species": "dragonborn",
+  "presentation": "masculine",
+  "source": "source/dragonborn_masculine_01_chroma.png",
+  "sourceSha256": "56d107d4911a5ab1d483cddac949772f18c47c734f3b104580f03cbaf28752d5",
+  "cutout": "cutout/dragonborn_masculine_01.png",
+  "cutoutSha256": "a77cf92ebca9d52285523d95c3842b54d7e7c55fddae3fedb00b086f6c04bb1e",
+  "humanHeightScale": 1.05,
+  "posture": 2,
+  "baseRegistrationStatus": "locked",
+  "preservationRule": "Preserve the exact source image. Do not crop, regenerate, reinterpret, replace, or improve it unless explicitly requested."
+}

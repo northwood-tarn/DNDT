@@ -1,0 +1,400 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dndt.local/schemas/mapContract.schema.json",
+  "title": "DNDT Map Contract",
+  "description": "Shared contract for all game maps. Missing: authored map JSON records, finalized location-level art, and verified Photoshop-derived region coordinates.",
+  "type": "object",
+  "required": ["id", "kind", "title", "sourceSize", "background", "discovery"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "$ref": "#/$defs/id" },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "world_map",
+        "area_map",
+        "location_map",
+        "local_exploration_map",
+        "large_exploration_map",
+        "combat_map"
+      ]
+    },
+    "code": {
+      "type": "string",
+      "description": "Optional geography code such as 01, 01.01, or 01.01.N09."
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*$"
+    },
+    "title": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "blocked", "review", "locked"]
+    },
+    "sourceSize": { "$ref": "#/$defs/sourceSize" },
+    "background": { "$ref": "#/$defs/background" },
+    "discovery": { "$ref": "#/$defs/discovery" },
+    "ui": { "$ref": "#/$defs/ui" },
+    "parentMapId": { "$ref": "#/$defs/id" },
+    "regions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/region" },
+      "uniqueItems": true
+    },
+    "nodes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/node" },
+      "uniqueItems": true
+    },
+    "routes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/route" },
+      "uniqueItems": true
+    },
+    "entryPoints": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/entryPoint" },
+      "uniqueItems": true
+    },
+    "exits": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/exit" },
+      "uniqueItems": true
+    },
+    "savePosition": { "$ref": "#/$defs/savePosition" },
+    "grid": { "$ref": "#/$defs/grid" },
+    "missing": {
+      "type": "array",
+      "description": "Temporary authoring notes for known gaps. Remove before status is locked.",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "enum": ["world_map", "area_map", "location_map"]
+          }
+        },
+        "required": ["kind"]
+      },
+      "then": {
+        "required": ["regions"],
+        "properties": {
+          "regions": { "minItems": 1 }
+        },
+        "not": {
+          "anyOf": [
+            { "required": ["nodes"] },
+            { "required": ["routes"] },
+            { "required": ["entryPoints"] },
+            { "required": ["exits"] },
+            { "required": ["savePosition"] },
+            { "required": ["grid"] }
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "enum": ["local_exploration_map", "large_exploration_map"]
+          }
+        },
+        "required": ["kind"]
+      },
+      "then": {
+        "required": ["nodes", "routes", "entryPoints", "exits", "savePosition"],
+        "properties": {
+          "nodes": { "minItems": 1 },
+          "entryPoints": { "minItems": 1 },
+          "exits": { "minItems": 1 }
+        },
+        "not": {
+          "required": ["regions"]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": { "const": "combat_map" }
+        },
+        "required": ["kind"]
+      },
+      "then": {
+        "required": ["grid", "nodes", "entryPoints", "exits", "savePosition"],
+        "properties": {
+          "nodes": { "minItems": 1 },
+          "entryPoints": { "minItems": 1 }
+        },
+        "not": {
+          "required": ["regions"]
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[._:-][a-z0-9]+)*$"
+    },
+    "sourceSize": {
+      "type": "object",
+      "required": ["width", "height"],
+      "additionalProperties": false,
+      "properties": {
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "background": {
+      "type": "object",
+      "required": ["src"],
+      "additionalProperties": false,
+      "properties": {
+        "src": { "type": "string", "minLength": 1 },
+        "fit": {
+          "type": "string",
+          "enum": ["cover", "contain", "stretch"],
+          "default": "cover"
+        },
+        "alt": { "type": "string" }
+      }
+    },
+    "discovery": {
+      "type": "object",
+      "description": "Map-level default discovery state. Save data can override this at runtime.",
+      "required": ["defaultState"],
+      "additionalProperties": false,
+      "properties": {
+        "defaultState": {
+          "type": "string",
+          "enum": ["visible", "hidden", "locked", "visited", "completed"]
+        },
+        "visibleIds": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" },
+          "uniqueItems": true
+        },
+        "hiddenIds": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" },
+          "uniqueItems": true
+        },
+        "lockedIds": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" },
+          "uniqueItems": true
+        },
+        "visitedIds": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" },
+          "uniqueItems": true
+        },
+        "completedIds": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "ui": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "surface": {
+          "type": "string",
+          "const": "fullscreen_image"
+        },
+        "hoverTextAnchor": {
+          "type": "string",
+          "enum": ["top_right", "right_panel", "none"]
+        },
+        "flameAnchor": {
+          "type": "string",
+          "enum": ["center", "none"]
+        }
+      }
+    },
+    "position": {
+      "type": "object",
+      "required": ["x", "y"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number", "minimum": 0, "maximum": 1 },
+        "y": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "polygon": {
+      "type": "array",
+      "minItems": 3,
+      "items": { "$ref": "#/$defs/position" }
+    },
+    "bounds": {
+      "type": "object",
+      "description": "Use either normalized polygon points or an SVG path in source image coordinates.",
+      "additionalProperties": false,
+      "properties": {
+        "polygon": { "$ref": "#/$defs/polygon" },
+        "path": { "type": "string", "minLength": 1 }
+      },
+      "anyOf": [
+        { "required": ["polygon"] },
+        { "required": ["path"] }
+      ]
+    },
+    "region": {
+      "type": "object",
+      "required": ["id", "title", "destinationMapId", "bounds"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "code": { "type": "string" },
+        "slug": { "type": "string" },
+        "title": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "destinationMapId": { "$ref": "#/$defs/id" },
+        "status": {
+          "type": "string",
+          "enum": ["inactive", "active", "locked", "hidden"]
+        },
+        "bounds": { "$ref": "#/$defs/bounds" },
+        "labelPosition": { "$ref": "#/$defs/position" },
+        "missing": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        }
+      }
+    },
+    "node": {
+      "type": "object",
+      "required": ["id", "title", "position"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "code": { "type": "string" },
+        "title": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "position": { "$ref": "#/$defs/position" },
+        "state": {
+          "type": "string",
+          "enum": ["inactive", "active", "visited", "cleared", "locked", "hidden"]
+        },
+        "interactionIds": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" },
+          "uniqueItems": true
+        },
+        "encounterId": { "$ref": "#/$defs/id" },
+        "bounds": { "$ref": "#/$defs/bounds" },
+        "missing": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        }
+      }
+    },
+    "route": {
+      "type": "object",
+      "required": ["from", "to"],
+      "additionalProperties": false,
+      "properties": {
+        "from": { "$ref": "#/$defs/id" },
+        "to": { "$ref": "#/$defs/id" },
+        "bidirectional": { "type": "boolean", "default": true },
+        "state": {
+          "type": "string",
+          "enum": ["open", "locked", "hidden", "blocked"]
+        },
+        "requirements": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "entryPoint": {
+      "type": "object",
+      "required": ["id", "nodeId"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "nodeId": { "$ref": "#/$defs/id" },
+        "fromMapId": { "$ref": "#/$defs/id" },
+        "label": { "type": "string" }
+      }
+    },
+    "exit": {
+      "type": "object",
+      "required": ["id", "nodeId", "toMapId"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "nodeId": { "$ref": "#/$defs/id" },
+        "toMapId": { "$ref": "#/$defs/id" },
+        "label": { "type": "string" },
+        "state": {
+          "type": "string",
+          "enum": ["open", "locked", "hidden", "blocked"]
+        },
+        "requirements": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "savePosition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "nodeId": { "$ref": "#/$defs/id" },
+        "position": { "$ref": "#/$defs/position" },
+        "grid": {
+          "type": "object",
+          "required": ["column", "row"],
+          "additionalProperties": false,
+          "properties": {
+            "column": { "type": "integer", "minimum": 0 },
+            "row": { "type": "integer", "minimum": 0 }
+          }
+        }
+      },
+      "anyOf": [
+        { "required": ["nodeId"] },
+        { "required": ["position"] },
+        { "required": ["grid"] }
+      ]
+    },
+    "grid": {
+      "type": "object",
+      "required": ["type", "columns", "rows", "cell"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["square", "isometric"]
+        },
+        "columns": { "type": "integer", "minimum": 1 },
+        "rows": { "type": "integer", "minimum": 1 },
+        "origin": { "$ref": "#/$defs/position" },
+        "cell": {
+          "type": "object",
+          "required": ["width", "height"],
+          "additionalProperties": false,
+          "properties": {
+            "width": { "type": "number", "exclusiveMinimum": 0 },
+            "height": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        }
+      }
+    }
+  }
+}

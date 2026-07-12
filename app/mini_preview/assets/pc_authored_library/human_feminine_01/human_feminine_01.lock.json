@@ -1,0 +1,12 @@
+{
+  "id": "human_feminine_01",
+  "status": "locked",
+  "species": "human",
+  "presentation": "feminine",
+  "stanceId": "stance_1",
+  "source": "app/mini_preview/assets/pc_authored_library/human_feminine_01/source/human_feminine_01_chroma.png",
+  "cutout": "app/mini_preview/assets/pc_authored_library/human_feminine_01/cutout/human_feminine_01.png",
+  "lockedReview": "app/mini_preview/assets/pc_authored_library/human_feminine_01/review/human_feminine_01_stance_1_LOCKED.png",
+  "preserveExactSource": true,
+  "notes": "Locked by user after the figure was moved down 25 px from the initial temporary Betrayer's Coin composite."
+}

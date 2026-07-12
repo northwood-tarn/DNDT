@@ -1,0 +1,21 @@
+{
+  "id": "goliath_feminine_01",
+  "status": "locked",
+  "source": "source/goliath_feminine_01_chroma.png",
+  "sourceSha256": "1718d53cc3e5b7da7e4f80e96e274aef21194b89373048d8585f0b9f4419941e",
+  "cutout": "cutout/goliath_feminine_01.png",
+  "cutoutSha256": "abc736c6391e6d7f193c7c88f13db64460431184e34ad08204cac9775efc10ff",
+  "humanHeightScale": 1.15,
+  "stance": 1,
+  "lockedAttributes": [
+    "complete authored figure",
+    "identity and jaguar-like controlled intensity",
+    "short dark-brown hair",
+    "lean powerful female build",
+    "fitted light armor",
+    "small sheathed daggers and scroll cases",
+    "full-length trousers and short boots",
+    "stance 1 foot arrangement"
+  ],
+  "preservationRule": "Preserve the exact source image. Do not crop, regenerate, reinterpret, replace, or improve it unless explicitly requested."
+}

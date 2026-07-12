@@ -1,0 +1,20 @@
+{
+  "id": "halfling_masculine_01",
+  "status": "locked",
+  "source": "source/halfling_masculine_01_chroma.png",
+  "sourceSha256": "8f445c47e01475e299c8abdc90b8aebb2a4d3142c99b3ca7fc736c3caf3f21dd",
+  "cutout": "cutout/halfling_masculine_01.png",
+  "cutoutSha256": "c119a9f158b420ed22ff8e90eaa222cf6c4abe8eaaaebd7fbb52cb703c07c8eb",
+  "humanHeightScale": 0.55,
+  "posture": 3,
+  "lockedAttributes": [
+    "complete authored figure",
+    "identity and facial expression",
+    "close-cropped blonde hair",
+    "crossed arms with one hand pointing forward",
+    "dark padded leather armor and hood",
+    "body and lower-leg geometry",
+    "posture 3 foot arrangement"
+  ],
+  "preservationRule": "Preserve the exact source image. Do not crop, regenerate, reinterpret, replace, or improve it unless explicitly requested."
+}

@@ -17,7 +17,7 @@ This owns the top-layer campaign geography:
 
 ## Current Sketch
 
-- `app/docs/layout_sketches/world_map_three_acts_negative_ink_v3.png`
+- `app/docs/layout_sketches/world_map_three_acts_negative_ink_v2_2.png`
 
 This is a rough raster concept sketch of the three act-scale areas only. It is not final art and should not be treated as an implemented map surface.
 
@@ -35,10 +35,11 @@ Greyharbour and the Oil Refinery sit on the end of a broad promontory cut by a 1
 
 - Inside the Walls
 - The Twilight Bazaar
+- The Chalk Residences
 - The Regnant Eternal
 - The Administrative Encasement
 
-Inside the Walls faces No-Man's Land and stretches across the full city width. The Twilight Bazaar sits high/top and is small but culturally central. The Regnant Eternal is long and thin, culminating in the Black Apex Throne. The Administrative Encasement occupies the opposite full city edge.
+Inside the Walls faces No-Man's Land and stretches across the full city width. The Twilight Bazaar sits high/top and is small but culturally central. The Chalk Residences form a distinct Necropolis subsection. The Regnant Eternal is long and thin, culminating in the Black Apex Throne. The Administrative Encasement occupies the opposite full city edge.
 
 ### Act III: The Backlands
 
@@ -46,9 +47,9 @@ Inside the Walls faces No-Man's Land and stretches across the full city width. T
 - Untended Graves
 - Carrow
 - The Escarpment of Eyes
-- The Portal
+- Towards the Portal
 
-The Endless Plain runs along the Necropolis wall. Untended Graves punctuates the northern/top plain. Carrow begins as a small southern slip and blooms outward. The far center of the Plain leads by massive bridge toward the Escarpment of Eyes, then the Portal.
+The Endless Plain runs along the Necropolis wall. Untended Graves punctuates the northern/top plain. Carrow begins as a small southern slip and blooms outward. The far center of the Plain leads by massive bridge toward the Escarpment of Eyes, then Towards the Portal.
 
 ## Relegated
 

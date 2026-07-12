@@ -1,0 +1,6 @@
+Use case: stylized-concept
+Asset type: reusable base-less raster body component for the DNDT PC miniature builder
+Reference: locked human feminine posture sheet, third figure, posture-3 wire geometry, and accepted posture-1 neutral-body style.
+Create the same female human in posture-3 guarded/staff-compatible. Preserve the contained torso, raised guarded hands, and feet. Right-facing side-on isometric; shaved/bald head; plain close-fitting neutral dark underlayer; empty visible hands near upper torso; practical boots; both feet inside a one-cell miniature base. Preserve an empty vertical staff channel from above the shoulder to the ground beside the front foot. Posture 3 must not be broader or more aggressive than posture 2.
+Perfectly flat solid #00ff00 chroma-key background. Single complete centered figure with generous padding.
+No separate outfit, armor, coat, cloak, skirt panels, belts, pouches, hair, facial hair, weapon, shield, holy symbol, spell effect, Lanterna, staff, base, plinth, floor, active ring, halo, wings, wand, text, cast shadow, or contact shadow.

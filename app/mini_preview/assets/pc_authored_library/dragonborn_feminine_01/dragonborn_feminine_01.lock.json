@@ -1,0 +1,14 @@
+{
+  "id": "dragonborn_feminine_01",
+  "status": "locked",
+  "species": "dragonborn",
+  "presentation": "feminine",
+  "source": "source/dragonborn_feminine_01_chroma.png",
+  "sourceSha256": "46fd3381673ff9b21a7e98be934b05d903b6149001dba926d486b238fb787024",
+  "cutout": "cutout/dragonborn_feminine_01.png",
+  "cutoutSha256": "fb6160bd784e2bbef57c2076504009aee41eae9efc20a450704882bb1b905d6c",
+  "humanHeightScale": 1.05,
+  "posture": 2,
+  "baseRegistrationStatus": "locked",
+  "preservationRule": "Preserve the exact source image. Do not crop, regenerate, reinterpret, replace, or improve it unless explicitly requested."
+}

@@ -1,0 +1,12 @@
+{
+  "status": "locked",
+  "figures": ["orc_feminine_01", "orc_masculine_01"],
+  "humanReferenceHeightPx": 700,
+  "humanHeightScale": 1.05,
+  "figureHeightPx": 735,
+  "stance": 1,
+  "finalVerticalContactY": 947,
+  "adjustmentFromFirstReviewPx": 8,
+  "referenceComposite": "review/orcs_stance_1_coin_check_105pct.png",
+  "note": "Both accepted figures moved exactly 8px downward on their respective bases; horizontal alignment remains foot-anchor based."
+}
