@@ -125,7 +125,7 @@ export function parseTag(rawTag) {
       return {
         type: "req_item",
         itemId,
-        qty: Number.isFinite(qty) ? qty : 1
+        quantity: Number.isFinite(qty) ? qty : 1
       };
     }
 
@@ -191,7 +191,7 @@ export function isRequirementMet(reqAction, state) {
 
     case "req_item": {
       const itemId = reqAction.itemId;
-      const need = Number(reqAction.qty ?? 1) || 1;
+      const need = Number(reqAction.quantity ?? 1) || 1;
       if (!itemId) return false;
 
       const inv = player.inventory;
@@ -206,7 +206,7 @@ export function isRequirementMet(reqAction, state) {
           } else if (typeof e === "object") {
             const id = e.id ?? e.itemId;
             if (id !== itemId) continue;
-            const q = Number(e.qty ?? e.quantity ?? 1) || 1;
+            const q = Number(e.quantity ?? 1) || 1;
             have += q;
           }
           if (have >= need) return true;

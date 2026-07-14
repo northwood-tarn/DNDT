@@ -11,7 +11,7 @@ const CLASS_BUILDS = [
   {
     classId: "fighter",
     levelOne: buildDraft("fighter_l1", { backgroundId: "soldier", speciesId: "tiefling", lineageId: "infernal", classId: "fighter" }, martialAbilities("strength"), {
-      weaponIds: ["longsword"], armorId: "chain_mail", shieldId: "shield", inventory: [{ id: "healing_potion", qty: 1 }], attunedItemIds: [],
+      weaponIds: ["longsword"], armorId: "chain_mail", shieldId: "shield", inventory: [{ id: "healing_potion", quantity: 1 }], attunedItemIds: [],
     }),
     advanced: buildDraft("fighter_l11", { backgroundId: "soldier", speciesId: "goliath", lineageId: "stone", classId: "fighter", subclassId: "champion", level: 11 }, martialAbilities("strength"), {
       weaponIds: ["longsword"], armorId: "chain_mail", shieldId: "shield", inventory: [], attunedItemIds: [],
@@ -21,7 +21,7 @@ const CLASS_BUILDS = [
   {
     classId: "rogue",
     levelOne: buildDraft("rogue_l1", { backgroundId: "criminal", speciesId: "orc", classId: "rogue" }, martialAbilities("dexterity"), {
-      weaponIds: ["rapier"], armorId: "studded_leather", shieldId: null, inventory: [{ id: "healing_potion", qty: 1 }], attunedItemIds: [],
+      weaponIds: ["rapier"], armorId: "studded_leather", shieldId: null, inventory: [{ id: "healing_potion", quantity: 1 }], attunedItemIds: [],
     }),
     advanced: buildDraft("rogue_l11", { backgroundId: "criminal", speciesId: "halfling", lineageId: "lightfoot", classId: "rogue", subclassId: "assassin", level: 11 }, martialAbilities("dexterity"), {
       weaponIds: ["rapier", "dagger"], armorId: "studded_leather", shieldId: null, inventory: [], attunedItemIds: [],
@@ -88,7 +88,7 @@ function assertBuildValid(draft, label, { allowNonCreationLevel, expected = {} }
 
 function spellDraft(name, identity, abilities, knownSpellIds, preparedSpellIds) {
   return buildDraft(name, identity, abilities, {
-    weaponIds: ["quarterstaff"], armorId: null, shieldId: null, inventory: [{ id: "healing_potion", qty: 1 }], attunedItemIds: [],
+    weaponIds: ["quarterstaff"], armorId: null, shieldId: null, inventory: [{ id: "healing_potion", quantity: 1 }], attunedItemIds: [],
   }, { knownSpellIds, preparedSpellIds });
 }
 

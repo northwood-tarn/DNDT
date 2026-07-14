@@ -9,11 +9,11 @@ function resolveItem(def) {
   if (!def || !def.id) return def;
   const found = (consumables || []).find(c => c.id === def.id);
   if (!found) return def;
-  // Merge registry with the requested qty/name/type overrides
+  // Merge registry with the requested quantity/name/type overrides
   return { ...found, ...def };
 }
 
-// Merge an item into player.inventory, stacking qty for same id when stackable
+// Merge an item into player.inventory, stacking quantity for the same id when stackable
 function pushOrStack(inv, item) {
   if (!item) return;
   const stackable = !!item.stackable || item.type === "consumable";
@@ -21,8 +21,8 @@ function pushOrStack(inv, item) {
     const idx = inv.findIndex(it => it.id === item.id);
     if (idx >= 0) {
       const cur = inv[idx];
-      const add = Number(item.qty || 1) || 1;
-      cur.qty = Number(cur.qty || 0) + add;
+      const add = Number(item.quantity || 1) || 1;
+      cur.quantity = Number(cur.quantity || 0) + add;
       return;
     }
   }

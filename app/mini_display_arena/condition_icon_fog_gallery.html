@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Green and Blue Fog Condition Icons</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #080a09; }
+    body { display: grid; place-items: center; }
+    .viewport { width: min(100vw, calc(100vh * 16 / 9)); aspect-ratio: 16 / 9; overflow: hidden; background: #101412; }
+    .plate { position: relative; width: 1920px; height: 1080px; transform-origin: top left; color: rgba(224,250,246,.62); font-family: "Avenir Light", "Avenir", sans-serif; }
+    .reference { position: absolute; left: 132px; top: 310px; width: 333.33px; height: 555.79px; }
+    .gallery { position: absolute; left: 520px; top: 210px; width: 1240px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 54px 42px; }
+    .item { min-height: 112px; display: grid; grid-template-columns: 34px 1fr; gap: 18px; align-items: center; }
+    .item img { width: 34px; height: 34px; object-fit: contain; }
+    .item span { font-size: 21px; letter-spacing: .05em; color: rgba(224,250,246,.58); }
+  </style>
+</head>
+<body>
+  <main class="viewport">
+    <section class="plate">
+      <img class="reference" src="../mini_preview/assets/pc_authored_library/aasimar_feminine_01/runtime/aasimar_feminine_01_betrayers_coin_192x320.png" alt="Largest miniature scale reference">
+      <div class="gallery" id="gallery"></div>
+    </section>
+  </main>
+  <script>
+    const names = [
+      "minus_box", "fire", "cold", "lightning",
+      "down_box", "up_box", "healing", "bless",
+      "armor_up", "armor_down", "speed_up", "attack_up",
+      "saves_up", "saves_down", "armor_agathys", "hidden"
+    ];
+    const gallery = document.getElementById("gallery");
+    for (const name of names) {
+      const item = document.createElement("div");
+      item.className = "item";
+      const image = document.createElement("img");
+      image.src = `./assets/condition_icons_fog_v1/display/${name}.png`;
+      image.alt = name.replaceAll("_", " ");
+      const label = document.createElement("span");
+      label.textContent = name.replaceAll("_", " ");
+      item.append(image, label);
+      gallery.appendChild(item);
+    }
+    const viewport = document.querySelector(".viewport");
+    const plate = document.querySelector(".plate");
+    const fit = () => { plate.style.transform = `scale(${viewport.getBoundingClientRect().width / 1920})`; };
+    addEventListener("resize", fit);
+    fit();
+  </script>
+</body>
+</html>

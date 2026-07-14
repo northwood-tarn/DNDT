@@ -41,7 +41,7 @@ export default {
             damage: "3d6",
             damageType: "force",
             reactionMode: "automatic",
-            priority: 40
+            priority: 44
           }]
         }
       },

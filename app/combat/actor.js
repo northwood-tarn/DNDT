@@ -190,15 +190,15 @@ export function syncLegacyEconomyFields(actor) {
 
 export function getItemQuantity(actor, itemId) {
   const item = actor?.inventory?.find((entry) => entry.id === itemId);
-  return item?.qty || 0;
+  return item?.quantity || 0;
 }
 
 export function spendItem(actor, itemId, qty = 1) {
   if (!Array.isArray(actor.inventory)) actor.inventory = [];
   const item = actor.inventory.find((entry) => entry.id === itemId);
-  if (!item || (item.qty || 0) < qty) return false;
-  item.qty -= qty;
-  if (item.qty <= 0) actor.inventory = actor.inventory.filter((entry) => entry !== item);
+  if (!item || (item.quantity || 0) < qty) return false;
+  item.quantity -= qty;
+  if (item.quantity <= 0) actor.inventory = actor.inventory.filter((entry) => entry !== item);
   return true;
 }
 
@@ -382,11 +382,11 @@ function normalizeInventory(inventory) {
   const entries = Array.isArray(inventory) ? structuredClone(inventory) : [];
   const healingPotion = entries.find((entry) => entry.id === "healing_potion");
   if (healingPotion) {
-    healingPotion.qty = healingPotion.qty ?? healingPotion.quantity ?? 0;
+    healingPotion.quantity = healingPotion.quantity ?? 0;
   }
   return entries.map((entry) => ({
     id: entry.id,
-    qty: entry.qty ?? entry.quantity ?? 0,
+    quantity: entry.quantity ?? 0,
     name: entry.name,
   }));
 }

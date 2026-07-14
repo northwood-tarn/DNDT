@@ -138,7 +138,7 @@ function levelOneDraft({ name, backgroundId, speciesId, lineageId, classId, abil
       backgroundAbilityScores: backgroundAbilityScoresFor(backgroundId, classId),
       ...choices,
     },
-    gear: { inventory: [{ id: "healing_potion", qty: 1 }], attunedItemIds: [], ...gear },
+    gear: { inventory: [{ id: "healing_potion", quantity: 1 }], attunedItemIds: [], ...gear },
     spells,
   });
 }
@@ -172,7 +172,7 @@ function saboteurDraft({ name, level, classChoices, preparedRecipeIds }) {
       weaponIds: ["rapier", "dagger"],
       armorId: "studded_leather",
       shieldId: null,
-      inventory: [{ id: "healing_potion", qty: 1 }],
+      inventory: [{ id: "healing_potion", quantity: 1 }],
       attunedItemIds: [],
     },
     devices: { preparedRecipeIds },

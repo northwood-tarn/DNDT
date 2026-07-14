@@ -4,6 +4,8 @@
 import { logSystem } from "../engine/log.js";
 import { state } from "../state/stateStore.js";
 
+export const UNDERSIZED_PARTY_WARNING = "Combat and exploration have been balanced with a three-member team in mind. Are you are sure want to venture out with less?";
+
 function key(x,y){ return `${x},${y}`; }
 
 export function ensureArea(areaId){
@@ -46,18 +48,36 @@ export function pickLanding(ember, W=40, H=18){
 }
 
 // Build a numbered list menu model; caller renders and handles keys.
-export function buildEmberMenu(areaId, currentId){
+export function buildEmberMenu(areaId, currentId, options = {}){
   const entries = listDiscovered(areaId);
   const here = entries.find(e => e.id === currentId);
   const others = entries.filter(e => e.id !== currentId);
   const items = [];
   items.push({ id: "rest", label: "Take a long rest" });
   items.push({ id: "inventory", label: "Use items from your inventory" });
+  items.push({ id: "party", label: "Manage companions" });
   items.push({ id: "save", label: "Save game" });
   items.push({ id: "load", label: "Load game" });
   if (others.length){
     items.push({ id: "travel", label: "Fast travel to another ember" });
   }
-  items.push({ id: "leave", label: "Leave the ember" });
+  const departure = getEmberDepartureCheck(options.saveGame, { confirmed: options.departureConfirmed === true });
+  items.push({
+    id: "leave",
+    label: "Leave the ember",
+    requiresConfirmation: departure.requiresConfirmation,
+    confirmationMessage: departure.message,
+  });
   return { here, others, items };
+}
+
+export function getEmberDepartureCheck(saveGame, options = {}) {
+  const activeCompanionCount = saveGame?.party?.companions?.activeIds?.length || 0;
+  const requiresConfirmation = activeCompanionCount < 2 && options.confirmed !== true;
+  return {
+    allowed: !requiresConfirmation,
+    requiresConfirmation,
+    message: requiresConfirmation ? UNDERSIZED_PARTY_WARNING : null,
+    activeCompanionCount,
+  };
 }

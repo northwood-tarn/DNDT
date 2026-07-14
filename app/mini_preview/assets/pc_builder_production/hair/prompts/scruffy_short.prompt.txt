@@ -1,9 +1,0 @@
-Use case: stylized-concept
-Asset type: DNDT PC miniature builder reusable hair layer PNG source, to be chroma-key cut out and composited over a right-facing humanlike male miniature head.
-Primary request: Create one standalone dark fantasy tabletop miniature hairpiece matching the short scruffy dark hair on the existing DNDT human masculine proof figure: compact, natural, tousled, close around the ears and nape, practical adventurer hair, not spiky fantasy hair.
-Subject: A right-facing side-profile miniature hair overlay only: short scruffy black hair like the male proof figure, thick uneven locks, natural messy crown, close-cut sides, small nape texture, dark brown-black painted resin miniature texture. No face, no eyes, no skin, no head, no ear, no neck, no shoulders, no body, no clothing, no horns, no full character.
-Style/medium: dark fantasy isometric tabletop miniature art, painted resin/metal miniature detail, matching the DNDT stress-sheet style and the existing human masculine proof figure: crisp ink-like edges, muted highlights, practical sculpted forms.
-Composition/framing: centered single object, right-facing orientation, generous padding, 3/4 side-on isometric miniature component, hair volume shaped to sit on a humanlike male head anchor; compact around the skull, less wild than short_messy, more natural and scruffy than short_severe.
-Scene/backdrop: perfectly flat solid #00ff00 chroma-key background for background removal.
-Constraints: production asset source for transparent cutout workflow; background must be one uniform #00ff00 color with no shadows, gradients, texture, floor plane, or lighting variation. Keep the hair fully separated from the background with crisp edges. Do not use #00ff00 anywhere in the subject.
-Avoid: no base, no plinth, no floor, no active ring, no halo, no wings, no wand, no staff, no weapon, no text, no watermark, no face, no skin, no head, no body, no full character.

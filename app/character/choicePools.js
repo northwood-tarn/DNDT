@@ -30,18 +30,6 @@ const SPELL_CHOICE_PROGRESSION = {
   },
 };
 
-const SIMPLE_WEAPON_IDS = new Set(["dagger", "handaxe", "quarterstaff", "shortbow"]);
-const MARTIAL_WEAPON_IDS = new Set([
-  "battleaxe",
-  "greatsword",
-  "longbow",
-  "longsword",
-  "rapier",
-  "scimitar",
-  "shortsword",
-  "warhammer",
-]);
-
 export function createCharacterChoicePools(draft) {
   return {
     spells: createSpellChoicePools(draft),
@@ -551,13 +539,13 @@ function byLevelThenName(a, b) {
 function isMundane(item) {
   if (item.magical === true) return false;
   if (item.type === "shield") return true;
-  return !item.modifiers;
+  return !(item.damageBonuses || []).length;
 }
 
 function isWeaponAllowed(weapon, proficiencyNames) {
   const names = proficiencyNames.map(normalizeName);
-  if (names.includes("simple weapons") && SIMPLE_WEAPON_IDS.has(weapon.id)) return true;
-  if (names.includes("martial weapons") && MARTIAL_WEAPON_IDS.has(weapon.id)) return true;
+  if (names.includes("simple weapons") && weapon.proficiencies?.includes("simple_weapons")) return true;
+  if (names.includes("martial weapons") && weapon.proficiencies?.includes("martial_weapons")) return true;
   return names.some((name) => name === normalizeName(weapon.name) || name === normalizeName(`${weapon.name}s`));
 }
 

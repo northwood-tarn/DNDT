@@ -4,6 +4,8 @@
 
 import { getState } from "./stateStore.js";
 import { computeAC, computeInitiativeMod, getAbilityMod, getProficiencyBonus } from "../systems/derivedStats.js";
+import { ayaBlueprintToActorDefinition } from "../actors/actorAdapters.js";
+import { createActorInstance } from "../actors/actorContract.js";
 
 async function loadJSONRelative(relPath){
   const url = new URL(relPath, import.meta.url);
@@ -82,6 +84,7 @@ export async function bootstrapPlayer(opts = {}){
   console.log("[bootstrap] finished — state.player set:", playerWithDerived);
   const globalState = getState();
   globalState.player = playerWithDerived;
+  registerCanonicalPlayer(globalState, blueprint, playerWithDerived);
   return globalState.player;
 }
 
@@ -90,5 +93,25 @@ export async function resetToBlueprint(characterId = "aya"){
   const blueprint = await loadJSONRelative(`../data/characters/${characterId}.json`);
   const globalState = getState();
   globalState.player = computeDerived(blueprint);
+  registerCanonicalPlayer(globalState, blueprint, globalState.player);
   return globalState.player;
+}
+
+function registerCanonicalPlayer(globalState, blueprint, player) {
+  const definition = ayaBlueprintToActorDefinition(blueprint, { kind: "player" });
+  const instance = createActorInstance({
+    id: player.id || "aya",
+    definitionId: definition.id,
+    kind: "player",
+    team: "heroes",
+    state: {
+      hp: player.vitals?.hp ?? definition.mechanics.maxHp,
+      maxHp: player.vitals?.maxHp ?? definition.mechanics.maxHp,
+      tempHp: player.vitals?.tempHp || 0,
+      inventory: player.inventory || [],
+    },
+    metadata: { source: "legacy_bootstrap_adapter" },
+  });
+  globalState.actorDefinitions = { ...(globalState.actorDefinitions || {}), [definition.id]: definition };
+  globalState.actorInstances = { ...(globalState.actorInstances || {}), [instance.id]: instance };
 }

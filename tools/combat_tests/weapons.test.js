@@ -31,7 +31,7 @@ function testAllWeaponRecordsBridgeToValidActions() {
     assert.ok(action, `${weapon.id} should produce a combat action`);
     assert.deepEqual(validateCombatAction(action), [], `${weapon.id} combat action should validate`);
     assert.equal(action.weaponMastery, weapon.mastery || undefined, `${weapon.id} should carry mastery metadata from data`);
-    if (weapon.modifiers?.damageBonuses?.some((bonus) => bonus.type)) {
+    if (weapon.damageBonuses?.some((bonus) => bonus.damageType)) {
       assert.ok(Array.isArray(action.damageRiders), `${weapon.id} typed damage modifiers should become riders`);
     }
   }

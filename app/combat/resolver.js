@@ -17,7 +17,7 @@ import {
 import { getConditionRules } from "./effects.js";
 import { checkOutcome, currentActor, getActor, livingActors } from "./combatState.js";
 import { cleanupInvalidSourceConditions, processOngoingEffects } from "./conditionLifecycle.js";
-import { getMovementStepCost } from "./movementRules.js";
+import { getMovementEntryHazards, getMovementStepCost } from "./movementRules.js";
 import { dispatchActorTrigger } from "./triggers.js";
 import {
   resolveConsumable,
@@ -143,6 +143,20 @@ export function moveActor(snapshot, actor, to, log, { force = false, dice = null
     to: { ...actor.position },
     movementRemaining: getMovementRemaining(actor),
   });
+  if (!force) {
+    for (const hazard of getMovementEntryHazards(snapshot, actor, to)) {
+      log.add("hazard.entered", {
+        round: snapshot.round,
+        actorId: actor.id,
+        actorName: actor.name,
+        position: { ...to },
+        hazardId: hazard.hazardId,
+        save: hazard.save,
+        damage: hazard.damage,
+        condition: hazard.condition,
+      });
+    }
+  }
   if (!force) dispatchActorTrigger(snapshot, "enter_area", actor, dice, log, { from, to });
   cleanupInvalidSourceConditions(snapshot, log);
   return true;

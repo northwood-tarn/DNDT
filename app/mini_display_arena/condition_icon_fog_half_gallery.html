@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fog Icon Artwork — Half Size</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: #101412; color: rgba(224,250,246,.62); font-family: "Avenir Light", "Avenir", sans-serif; }
+    .gallery { width: min(920px, 100%); margin: 0 auto; padding: 34px 20px 60px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 26px 20px; }
+    .item { display: grid; justify-items: center; gap: 8px; }
+    .item img { display: block; width: 60px; height: 60px; object-fit: contain; }
+    .item span { font-size: 14px; letter-spacing: .05em; }
+  </style>
+</head>
+<body>
+  <main class="gallery" id="gallery"></main>
+  <script>
+    const originals = [
+      "minus_box", "fire", "cold", "lightning", "down_box", "up_box", "healing", "bless",
+      "armor_up", "armor_down", "speed_up", "attack_up", "saves_up", "saves_down", "armor_agathys", "hidden"
+    ];
+    const additions = ["resist_fire", "resist_cold", "resist_lightning", "cover", "armor_block_up", "armor_block_down"];
+    const gallery = document.getElementById("gallery");
+    for (const name of [...originals, ...additions]) {
+      const item = document.createElement("div");
+      item.className = "item";
+      const image = document.createElement("img");
+      image.src = originals.includes(name)
+        ? `./assets/condition_icons_fog_v1/display_half/${name}.png`
+        : `./assets/condition_icons_fog_v1/additions/${name}.png`;
+      image.alt = name.replaceAll("_", " ");
+      const label = document.createElement("span");
+      label.textContent = name.replaceAll("_", " ");
+      item.append(image, label);
+      gallery.appendChild(item);
+    }
+  </script>
+</body>
+</html>

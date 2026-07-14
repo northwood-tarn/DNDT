@@ -1,9 +1,9 @@
 // app/engine/long_rest.js
-// Unified Long Rest engine (usable at Ember or via settlement/dialogue)
+// Unified Long Rest engine. Long rests are available at Embers or through an explicit NPC sleeping service.
 //
 // Order of operations:
 // 1) Narrative hook at START (usually no-op; place for mystical Ember events)
-// 2) Food check + hungry-streak via centralized store (settlement feeds you; Ember consumes ration or increments streak)
+// 2) Food check + hungry-streak via centralized store
 // 3) HP recovery (fed = full; hungry1 = 30%; hungry2+ = 25%)
 // 4) Reset short-rest counter in centralized store
 // 5) Spell slot recovery (Vancian tables; Warlock pact slots always refresh)
@@ -14,24 +14,22 @@
 import {
   beginRestAndUpdateHunger,
   resetShortRestsUsed,
-  resetHungryStreak,
-  getHungryStreak,
 } from "../state/rest_counters.js"; // adjust path if needed
 
 import { classes } from "../data/classes.js";
 import { subclasses } from "../data/subclasses.js";
 
 export function canLongRest(state, opts = {}) {
-  // If you later want to enforce "Ember-only" in map mode, wire it here via opts.mode === "ember".
-  // Right now, unified: both Ember and Settlement may long rest.
-  return true;
+  return opts.atEmber === true || opts.sleepingService === true;
 }
 
 /**
  * runLongRest(state, opts)
  * opts:
  *  - key: string         // character/save identifier for the counters store
- *  - mode: "ember" | "settlement"  // settlement auto-feeds (no ration consumed)
+ *  - mode: "ember"
+ *  - atEmber: true                  // authorised Ember context
+ *  - sleepingService: true          // authorised NPC sleeping-service context
  *  - onNarrative: (state) => any    // optional narrative hook at the very beginning
  *  - onPreparation: (state) => any  // optional UI hook for spell prep / saboteur recipes, etc.
  */
@@ -53,20 +51,12 @@ export function runLongRest(state, opts = {}) {
   const narrative = typeof opts.onNarrative === "function" ? opts.onNarrative(next) : null;
 
   // 2) Food & hungry-streak logic via centralized store
-  // Settlement mode: considered fed and resets hungryStreak, without consuming inventory rations.
   let hadRations = false;
   let hungryStreak = 0;
 
-  if (mode === "settlement") {
-    resetHungryStreak(key);           // store → 0
-    hadRations = true;                // treated as fed
-    hungryStreak = getHungryStreak(key); // 0
-  } else {
-    // Ember/default: consume a ration if available, else increment hungry streak
-    const r = beginRestAndUpdateHunger(next, key); // mutates next.resources.rations
-    hadRations = r.hadRations;
-    hungryStreak = r.hungryStreak;
-  }
+  const r = beginRestAndUpdateHunger(next, key); // mutates next.resources.rations
+  hadRations = r.hadRations;
+  hungryStreak = r.hungryStreak;
 
   // 3) HP Recovery by tier
   const ratios = {
@@ -115,9 +105,7 @@ export function runLongRest(state, opts = {}) {
         discovered: featureSets,
       },
       preparation,
-      message: mode === "settlement"
-        ? "You sleep in safety and wake restored."
-        : (hadRations ? "The Ember burns without heat; you rise renewed." : "You pass the night hollow with hunger."),
+      message: hadRations ? "The Ember burns without heat; you rise renewed." : "You pass the night hollow with hunger.",
     }
   };
 }

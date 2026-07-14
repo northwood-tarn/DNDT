@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Miniature Display Arena</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --plate-width: 1920px;
+      --plate-height: 1080px;
+      --font-ui: "Avenir Light", "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      --lanterna-text: rgba(224, 250, 246, 0.62);
+      --lanterna-dim: rgba(224, 250, 246, 0.32);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #080a09;
+    }
+
+    body { display: grid; place-items: center; }
+
+    .viewport {
+      width: min(100vw, calc(100vh * 16 / 9));
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #101412;
+    }
+
+    .plate {
+      position: relative;
+      width: var(--plate-width);
+      height: var(--plate-height);
+      transform-origin: top left;
+      background: #101412;
+      cursor: crosshair;
+      user-select: none;
+    }
+
+    .grid {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .grid-line {
+      fill: none;
+      stroke: rgba(214, 224, 207, 0.5);
+      stroke-width: 2;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .grid-cell {
+      fill: transparent;
+      stroke: rgba(214, 224, 207, 0.5);
+      stroke-width: 2;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .hover-cell {
+      fill: rgba(181, 203, 176, 0.12);
+      stroke: rgba(231, 220, 172, 0.72);
+      stroke-width: 2;
+      vector-effect: non-scaling-stroke;
+      opacity: 0;
+    }
+
+    .route-label {
+      fill: rgba(112, 171, 173, 0.82);
+      font: 400 23px var(--font-ui);
+      letter-spacing: 0.08em;
+      text-anchor: end;
+      opacity: 0;
+    }
+
+    .route-dot {
+      fill: rgba(112, 171, 173, 0.62);
+    }
+
+    .obstacle-cell {
+      stroke-width: 3;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .obstacle-cell.rock {
+      fill: rgba(91, 97, 89, 0.88);
+      stroke: rgba(177, 185, 170, 0.82);
+    }
+
+    .obstacle-cell.tree {
+      fill: rgba(75, 48, 29, 0.9);
+      stroke: rgba(166, 119, 72, 0.86);
+    }
+
+    .miniature {
+      position: absolute;
+      width: 192px;
+      height: 320px;
+      transform-origin: 96px 280px;
+      transition: left 260ms ease, top 260ms ease;
+      pointer-events: none;
+      z-index: 5;
+      filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.55));
+    }
+
+    .miniature.effect-invisible {
+      opacity: 0.5;
+    }
+
+    .miniature.effect-unconscious {
+      filter: grayscale(1) saturate(0) brightness(0.88) contrast(0.62) drop-shadow(0 10px 8px rgba(0, 0, 0, 0.55));
+    }
+
+    .miniature.effect-banished {
+      animation: banished-presence 6s ease-in-out infinite;
+    }
+
+    .condition-picker {
+      position: absolute;
+      top: 22px;
+      left: 50%;
+      z-index: 10000;
+      transform: translateX(-50%);
+      width: 310px;
+      padding: 7px 28px 7px 11px;
+      border: 1px solid rgba(205, 218, 207, 0.38);
+      border-radius: 3px;
+      color: rgba(231, 239, 233, 0.9);
+      background: #171c19;
+      font: 400 18px var(--font-ui);
+    }
+
+    .condition-icon-row {
+      position: absolute;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      pointer-events: none;
+    }
+
+    .condition-icon-row img {
+      display: block;
+      object-fit: contain;
+    }
+
+    @keyframes banished-presence {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.45; }
+    }
+
+  </style>
+</head>
+<body>
+  <main class="viewport" aria-label="Movable miniature scale and base-fit grid">
+    <section class="plate" tabindex="0" aria-label="Click a grid cell or use arrow keys to move the miniature">
+      <svg class="grid" viewBox="0 0 1920 1080" aria-hidden="true">
+        <g class="grid-lines"></g>
+        <g class="obstacles"></g>
+        <g class="route-dots"></g>
+        <polygon class="hover-cell"></polygon>
+        <text class="route-label"></text>
+      </svg>
+      <img
+        class="miniature"
+        src="../mini_preview/assets/pc_authored_library/aasimar_feminine_01/runtime/aasimar_feminine_01_betrayers_coin_192x320.png"
+        alt="Female aasimar miniature on the Betrayer's Coin base"
+      >
+      <select class="condition-picker" aria-label="Condition icon group"></select>
+    </section>
+  </main>
+
+  <script type="module" src="./miniDisplayArena.js"></script>
+</body>
+</html>

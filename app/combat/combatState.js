@@ -17,10 +17,26 @@ export function checkOutcome(snapshot, log) {
   const enemies = livingActors(snapshot, "enemies").length;
   if (heroes === 0 || enemies === 0) {
     snapshot.outcome = heroes > 0 ? "victory" : "defeat";
+    reviveDefeatedCompanions(snapshot, log);
     log.add("combat.end", {
       round: snapshot.round,
       outcome: snapshot.outcome,
     });
   }
   return snapshot.outcome;
+}
+
+function reviveDefeatedCompanions(snapshot, log) {
+  for (const actor of snapshot.actors) {
+    if (actor.kind !== "companion" || actor.hp > 0) continue;
+    actor.hp = 1;
+    actor.defeated = false;
+    log.add("actor.revive", {
+      round: snapshot.round,
+      actorId: actor.id,
+      actorName: actor.name,
+      hp: 1,
+      reason: "companion post-combat recovery",
+    });
+  }
 }

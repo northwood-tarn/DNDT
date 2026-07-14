@@ -1,0 +1,27 @@
+---
+format.version: 1
+act: 1_Greyharbour
+scene.id: scene:example.quiet.crossroads
+scene.title: A Quiet Crossroads
+dialogue.type: full
+location.id: null
+trigger.id: null
+participants: []
+frequency: repeat
+required.flags: []
+forbidden.flags: []
+start.effects: []
+bypass.effects: []
+completion.effects: []
+success.destination: null
+failure.destination: null
+---
+
+The road divides beneath an old stone marker. Rain has softened the names carved into its three faces, but the paths themselves remain clear.
+
+The eastern road descends towards a line of distant lights. The western road disappears beneath dark trees. A narrow track continues north across the open heath.
+
+oa. Take the eastern road.
+ob. Follow the road into the trees.
+oc. Continue north across the heath.
+od. Remain at the crossroads for a while longer.

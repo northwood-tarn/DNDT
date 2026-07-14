@@ -64,6 +64,11 @@
       "uniqueItems": true
     },
     "savePosition": { "$ref": "#/$defs/savePosition" },
+    "encounterTriggers": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/encounterTrigger" },
+      "uniqueItems": true
+    },
     "grid": { "$ref": "#/$defs/grid" },
     "missing": {
       "type": "array",
@@ -372,6 +377,56 @@
         { "required": ["position"] },
         { "required": ["grid"] }
       ]
+    },
+    "encounterTrigger": {
+      "type": "object",
+      "required": ["id", "mapId", "location", "encounterId", "frequency", "entryMode"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "mapId": { "$ref": "#/$defs/id" },
+        "location": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": ["type", "column", "row"],
+              "additionalProperties": false,
+              "properties": {
+                "type": { "const": "tile" },
+                "column": { "type": "integer", "minimum": 0 },
+                "row": { "type": "integer", "minimum": 0 }
+              }
+            },
+            {
+              "type": "object",
+              "required": ["type", "regionId"],
+              "additionalProperties": false,
+              "properties": {
+                "type": { "const": "region" },
+                "regionId": { "$ref": "#/$defs/id" }
+              }
+            }
+          ]
+        },
+        "encounterId": { "$ref": "#/$defs/id" },
+        "frequency": { "enum": ["once", "repeat"] },
+        "entryMode": { "enum": ["dialogue", "combat"] },
+        "dialogueId": { "$ref": "#/$defs/id" },
+        "requirements": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "requiredFlags": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true },
+            "forbiddenFlags": { "type": "array", "items": { "$ref": "#/$defs/id" }, "uniqueItems": true }
+          }
+        },
+        "destinations": { "type": "object" },
+        "flags": { "type": "object" }
+      },
+      "allOf": [{
+        "if": { "properties": { "entryMode": { "const": "dialogue" } }, "required": ["entryMode"] },
+        "then": { "required": ["dialogueId"] }
+      }]
     },
     "grid": {
       "type": "object",

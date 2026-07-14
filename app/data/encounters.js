@@ -1,7 +1,7 @@
 // app/data/encounters.js
 // Encounter source records. These define enemy composition, not full combat scenarios.
 
-export const encounters = {
+const authoredEncounterRecords = {
   combat_skeleton_1: {
     id: "combat_skeleton_1",
     name: "Lone Skeleton",
@@ -260,6 +260,17 @@ function defaultBattlefield(overrides = {}) {
   };
 }
 
+export const encounters = Object.freeze(Object.fromEntries(Object.entries(authoredEncounterRecords).map(([id, encounter]) => [
+  id,
+  {
+    ...encounter,
+    enemies: (encounter.enemies || []).map(({ enemyId, ...group }) => ({
+      ...group,
+      actorDefinitionId: `enemy.${enemyId}`,
+    })),
+  },
+])));
+
 const _encountersById = new Map(Object.values(encounters).map(encounter => [encounter.id, encounter]));
 
 export function getEncounterById(id) {
@@ -272,7 +283,8 @@ export function expandEncounterEnemyRefs(encounter) {
   return encounter.enemies.flatMap((group) => {
     const count = group.count || group.instances?.length || 1;
     return Array.from({ length: count }, (_, index) => ({
-      enemyId: group.enemyId,
+      actorDefinitionId: group.actorDefinitionId || (group.enemyId ? `enemy.${group.enemyId}` : null),
+      enemyId: String(group.actorDefinitionId || group.enemyId || "").replace(/^enemy\./, ""),
       ...(group.defaults || {}),
       ...(group.instances?.[index] || {}),
     }));

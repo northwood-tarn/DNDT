@@ -20,6 +20,7 @@ let holdDuration = 6;    // seconds
 let textures = [];
 let tickerFn = null;
 let debugGfx = null;    // PIXI.Graphics (optional)
+let resizeFn = null;
 
 let enabled = true;
 let suspended = false;
@@ -256,6 +257,11 @@ export async function ensureFogLayer(app) {
   tickerFn = () => tick(app);
   app.ticker.add(tickerFn);
 
+  // Pixi resizes its renderer with the window, but the fog sprites also need
+  // to be fitted again when Electron enters or leaves fullscreen.
+  resizeFn = () => window.requestAnimationFrame(() => resize(app));
+  window.addEventListener("resize", resizeFn);
+
   // Helpful diagnostics.
   try {
     const names = (app.stage.children || []).map((c) => c && (c.name || c.constructor?.name || "<unnamed>"));
@@ -287,6 +293,7 @@ export function disableFog() {
 export function destroyFogLayer(app) {
   if (!fogLayer || !app) return;
   if (tickerFn && app.ticker) app.ticker.remove(tickerFn);
+  if (resizeFn) window.removeEventListener("resize", resizeFn);
 
   if (fogLayer.parent) fogLayer.parent.removeChild(fogLayer);
   fogLayer.destroy({ children: true, texture: false, baseTexture: false });
@@ -296,6 +303,7 @@ export function destroyFogLayer(app) {
   spriteB = null;
   textures = [];
   tickerFn = null;
+  resizeFn = null;
 
   console.info("[fogLayer] Destroyed global fog layer");
 }

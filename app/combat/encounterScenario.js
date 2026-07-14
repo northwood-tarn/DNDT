@@ -48,6 +48,11 @@ export function validateEncounterCombatScenario(scenario) {
     if (blocked.has(key)) errors.push(`cover cell ${key} overlaps blocked terrain`);
   }
   validateTerrainPositions(errors, scenario.grid, scenario.grid.cover || [], "cover");
+  validateTerrainPositions(errors, scenario.grid, scenario.grid.terrain || [], "terrain");
+  validateTerrainPositions(errors, scenario.grid, scenario.grid.elevation || [], "elevation");
+  validateTerrainPositions(errors, scenario.grid, scenario.grid.hazards || [], "hazard");
+  for (const item of scenario.grid.elevation || []) if (!Number.isFinite(Number(item.level))) errors.push(`elevation at ${item.x},${item.y} requires numeric level`);
+  for (const item of scenario.grid.hazards || []) if (!(item.hazard?.id || item.hazards?.every((hazard) => hazard.id))) errors.push(`hazard at ${item.x},${item.y} requires an id`);
   for (const actor of scenario.actors || []) {
     if (!actor?.id) errors.push("actor id is required");
     if (!actor?.position) {
@@ -85,6 +90,7 @@ function createEnemyInstanceOptions(encounter, options) {
     const count = group.count || group.instances?.length || 1;
     for (let index = 0; index < count; index += 1) {
       expanded.push({
+        actorDefinitionId: group.actorDefinitionId || (group.enemyId ? `enemy.${group.enemyId}` : null),
         ...(group.defaults || {}),
         ...(group.instances?.[index] || {}),
       });
@@ -103,6 +109,9 @@ function defaultGrid() {
     height: 10,
     blocked: [],
     cover: [],
+    terrain: [],
+    elevation: [],
+    hazards: [],
   };
 }
 

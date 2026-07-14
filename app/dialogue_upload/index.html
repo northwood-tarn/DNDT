@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dialogue Scene Upload</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <header><div><h1>Dialogue Scene Upload</h1><p>Package authored text against the dialogue contract.</p></div></header>
+  <main>
+    <section class="source panel">
+      <div class="section-title"><h2>1. Source</h2></div>
+      <label id="dropZone" class="drop-zone" for="file">
+        <strong>Upload dialogue file</strong>
+        <span>Drop a .md or .txt file here, or click to choose one</span>
+        <input id="file" type="file" accept=".md,.txt,text/markdown,text/plain">
+      </label>
+      <textarea id="source" spellcheck="false" aria-label="Dialogue source"></textarea>
+      <button id="parse" class="primary">Parse scene</button>
+    </section>
+    <section class="panel"><h2>2. Required header</h2><p class="hint">Every contract field is shown. Lists use one value per line.</p><div id="fields" class="fields empty">Parse a scene to expose its header.</div></section>
+    <section class="panel"><h2>3. Flags</h2><p class="hint">Add known flags to the catalogue, then tick how this scene uses them.</p><div class="inline"><input id="newFlag" placeholder="flag:location.event"><button id="addFlag">Add flag</button></div><div id="flags" class="empty">No flags in the catalogue.</div></section>
+    <section class="panel display-panel"><h2>4. IDs</h2><p class="hint">The scene ID is created by this file. New narrative participants need only an ID and display name.</p><div id="participantPrompts"></div><div class="inline catalogue-add"><select id="newKind"></select><input id="newId" placeholder="npc:lowercase.words"><input id="newLabel" placeholder="Display name"><button id="addId">Add ID</button></div><input id="search" class="search" placeholder="Search ID, label, alias, or category"><div id="catalogue" class="catalogue empty">No catalogue entries.</div></section>
+    <section class="panel display-panel"><h2>5. Options and annotations</h2><div id="options" class="empty">Parse a scene to extract options.</div></section>
+    <section class="panel validation-panel"><h2>6. Validation and export</h2><div id="status" class="status empty">Nothing parsed.</div><label class="output-label" for="output">Export JSON</label><textarea id="output" readonly spellcheck="false" aria-label="Compiled scene package"></textarea><button id="export" class="primary" disabled>Save JSON to Act folder</button><p id="saveStatus" class="save-status" aria-live="polite"></p></section>
+  </main>
+  <script type="module" src="./tool.js"></script>
+</body>
+</html>

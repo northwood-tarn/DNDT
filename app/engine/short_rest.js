@@ -161,7 +161,7 @@ export const ShortRestActivityHelpers = {
 
 export function pickRandomActivity(state) {
   const canStudy = hasUnstudiedFragment(state);
-  const canTinker = (state?.inventory?.consumables ?? []).some(c => (c?.qty ?? 0) > 0);
+  const canTinker = (state?.inventory?.consumables ?? []).some(c => (c?.quantity ?? 0) > 0);
   const candidates = [];
   if (canStudy) candidates.push(ShortRestActivities.STUDY_MAPS);
   if (canTinker) candidates.push(ShortRestActivities.TINKER_CONSUMABLES);
@@ -216,7 +216,7 @@ function studyMaps(state) {
 
 function tinkerConsumables(state) {
   const list = state?.inventory?.consumables ?? [];
-  const idx = list.findIndex(c => (c?.qty ?? 0) > 0);
+  const idx = list.findIndex(c => (c?.quantity ?? 0) > 0);
   if (idx === -1) return { message: "Your kit is empty—you make notes for next time.", effects: [] };
   const target = list[idx];
   target.refined = true;

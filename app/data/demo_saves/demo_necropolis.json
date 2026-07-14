@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 2,
+  "runId": "demo-necropolis-corren",
+  "savedAt": "2026-07-10T08:42:00.000Z",
+  "party": {
+    "activeSlot": "active",
+    "slots": ["active"],
+    "characterRecords": {
+      "active": {
+        "version": 2,
+        "id": "corren-ash",
+        "slot": "active",
+        "status": "invalid",
+        "savedAt": "2026-07-10T08:42:00.000Z",
+        "characterDraft": {
+          "identity": {
+            "characterName": "Corren Ash",
+            "classId": "paladin",
+            "subclassId": "oath_of_vengeance",
+            "backgroundId": "guard",
+            "level": 6
+          }
+        },
+        "resolvedCharacterSheet": {
+          "identity": {
+            "characterName": "Corren Ash",
+            "classId": "paladin",
+            "subclassId": "oath_of_vengeance",
+            "subclassName": "Oath of Vengeance",
+            "backgroundId": "guard",
+            "level": 6
+          }
+        }
+      }
+    },
+    "actorInstances": {},
+    "companions": { "recruited": {}, "activeIds": [] }
+  },
+  "world": {
+    "flags": {},
+    "visitedAreas": {},
+    "discovery": {},
+    "traversal": {},
+    "routeStack": [],
+    "location": { "scene": "characterSelect", "areaId": null }
+  },
+  "rests": { "shortRestsUsed": {}, "hungryStreak": {} },
+  "inventory": { "shared": [], "currency": { "gold": 147 } },
+  "encounter": { "activeEncounterId": null, "activeScenarioId": null, "state": null, "lastOutcome": null },
+  "quests": {},
+  "metadata": { "demo": true, "saveType": "quicksave", "displayLocation": "Necropolis — Chalk Residences" }
+}

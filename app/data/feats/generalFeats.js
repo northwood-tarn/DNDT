@@ -237,7 +237,7 @@ export const GENERAL_FEATS_BY_ID = {
     choices: [{ id: "ability", kind: "ability_score", count: 1, options: ["dexterity", "intelligence"], amount: 1, scoreCap: 20 }],
     effects: {
       proficiencies: { tools: ["poisoners_kit"] },
-      inventory: [{ id: "basic_poison", qty: 2 }],
+      inventory: [{ id: "basic_poison", quantity: 2 }],
       featureHooks: [{
         id: "poisoner_ignore_poison_resistance",
         timing: "damage_resolution",

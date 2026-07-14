@@ -4,8 +4,16 @@ import {
   recoverCharacterRecord,
   updateCharacterRecordFromCombatActor,
 } from "../character/characterRepository.js";
+import { levelUpCharacterRecord } from "../character/levelUpTransaction.js";
+import {
+  createActorDefinition,
+  createActorInstance,
+  validateActorDefinition,
+  validateActorInstance,
+} from "../actors/actorContract.js";
+import { combatActorToActorInstance } from "../actors/actorAdapters.js";
 
-export const SAVE_GAME_SCHEMA_VERSION = 1;
+export const SAVE_GAME_SCHEMA_VERSION = 2;
 export const DEFAULT_SAVE_GAME_SLOT = "autosave";
 
 export function createEmptySaveGameState(options = {}) {
@@ -18,18 +26,25 @@ export function createEmptySaveGameState(options = {}) {
       activeSlot,
       slots: options.partySlots || [activeSlot],
       characterRecords: {},
+      actorInstances: {},
+      companions: { recruited: {}, activeIds: [] },
     },
     world: {
       flags: {},
       visitedAreas: {},
+      discovery: {},
+      traversal: {},
+      routeStack: [],
       location: null,
     },
+    quests: {},
     rests: {
       shortRestsUsed: {},
       hungryStreak: {},
     },
     inventory: {
       shared: [],
+      currency: { gold: options.initialGold || 0 },
     },
     encounter: {
       activeEncounterId: null,
@@ -55,19 +70,33 @@ export function normalizeSaveGameState(saveGame) {
   for (const [slot, record] of Object.entries(saveGame.party?.characterRecords || {})) {
     if (record) characterRecords[slot] = normalizeCharacterRecord({ ...record, slot });
   }
+  const actorInstances = {};
+  for (const slot of slots) {
+    const explicit = saveGame.party?.actorInstances?.[slot];
+    const fromRecord = characterRecords[slot]?.actorInstance;
+    if (explicit || fromRecord) actorInstances[slot] = structuredClone(explicit || fromRecord);
+  }
+  const companions = normalizeCompanions(saveGame.party?.companions);
   return {
-    schemaVersion: saveGame.schemaVersion || SAVE_GAME_SCHEMA_VERSION,
+    schemaVersion: SAVE_GAME_SCHEMA_VERSION,
     runId: saveGame.runId || createRunId(),
     savedAt: saveGame.savedAt || new Date().toISOString(),
     party: {
       activeSlot,
       slots,
       characterRecords,
+      actorInstances,
+      companions,
     },
     world: {
       flags: { ...(saveGame.world?.flags || {}) },
       visitedAreas: { ...(saveGame.world?.visitedAreas || {}) },
+      discovery: structuredClone(saveGame.world?.discovery || {}),
+      traversal: structuredClone(saveGame.world?.traversal || {}),
+      routeStack: structuredClone(saveGame.world?.routeStack || []),
       location: saveGame.world?.location ? structuredClone(saveGame.world.location) : null,
+      npcServices: structuredClone(saveGame.world?.npcServices || {}),
+      fixedEncounterTriggers: structuredClone(saveGame.world?.fixedEncounterTriggers || {}),
     },
     rests: {
       shortRestsUsed: { ...(saveGame.rests?.shortRestsUsed || {}) },
@@ -75,6 +104,9 @@ export function normalizeSaveGameState(saveGame) {
     },
     inventory: {
       shared: structuredClone(saveGame.inventory?.shared || []),
+      currency: {
+        gold: Math.max(0, Number(saveGame.inventory?.currency?.gold ?? saveGame.inventory?.gold ?? 0) || 0),
+      },
     },
     encounter: {
       activeEncounterId: saveGame.encounter?.activeEncounterId || null,
@@ -82,6 +114,7 @@ export function normalizeSaveGameState(saveGame) {
       state: saveGame.encounter?.state ? structuredClone(saveGame.encounter.state) : null,
       lastOutcome: saveGame.encounter?.lastOutcome ? structuredClone(saveGame.encounter.lastOutcome) : null,
     },
+    quests: structuredClone(saveGame.quests || {}),
     metadata: structuredClone(saveGame.metadata || {}),
   };
 }
@@ -98,6 +131,10 @@ export function upsertCharacterRecord(saveGame, slot, record) {
       characterRecords: {
         ...normalized.party.characterRecords,
         [slot]: normalizedRecord,
+      },
+      actorInstances: {
+        ...normalized.party.actorInstances,
+        ...(normalizedRecord.actorInstance ? { [slot]: normalizedRecord.actorInstance } : {}),
       },
     },
   });
@@ -120,22 +157,79 @@ export function setActivePartySlot(saveGame, slot) {
   });
 }
 
+export function recruitCompanion(saveGame, definitionInput, instanceInput = {}, options = {}) {
+  const normalized = normalizeSaveGameState(saveGame);
+  const definition = createActorDefinition({ ...definitionInput, kind: "companion" });
+  const instance = createActorInstance({
+    ...instanceInput,
+    id: instanceInput.id || options.id || definition.id,
+    definitionId: definition.id,
+    kind: "companion",
+    team: "heroes",
+  });
+  const errors = [...validateActorDefinition(definition), ...validateActorInstance(instance, { definition })];
+  if (errors.length) throw new Error(`Cannot recruit invalid companion: ${errors.join("; ")}`);
+  const recruited = {
+    ...normalized.party.companions.recruited,
+    [instance.id]: {
+      id: instance.id,
+      definition,
+      instance,
+      recruitedAt: options.recruitedAt || normalized.world.location || null,
+    },
+  };
+  const activeIds = options.joinActive !== false && normalized.party.companions.activeIds.length < 2
+    ? unique([...normalized.party.companions.activeIds, instance.id])
+    : normalized.party.companions.activeIds;
+  return touchSaveGame({
+    ...normalized,
+    party: { ...normalized.party, companions: { recruited, activeIds } },
+  });
+}
+
+export function setActiveCompanions(saveGame, companionIds, options = {}) {
+  const normalized = normalizeSaveGameState(saveGame);
+  if (options.atEmber !== true) throw new Error("Active companions can only be changed at an ember");
+  const activeIds = unique(companionIds || []);
+  if (activeIds.length > 2) throw new Error("The party can include at most two companions");
+  for (const id of activeIds) {
+    if (!normalized.party.companions.recruited[id]) throw new Error(`Companion ${id} has not been recruited`);
+  }
+  return touchSaveGame({
+    ...normalized,
+    party: { ...normalized.party, companions: { ...normalized.party.companions, activeIds } },
+  });
+}
+
+export function getRecruitedCompanions(saveGame) {
+  return Object.values(normalizeSaveGameState(saveGame).party.companions.recruited).map((record) => structuredClone(record));
+}
+
+export function getActiveCompanions(saveGame) {
+  const companions = normalizeSaveGameState(saveGame).party.companions;
+  return companions.activeIds.map((id) => structuredClone(companions.recruited[id])).filter(Boolean);
+}
+
 export function applyCombatResultToSaveGame(saveGame, options = {}) {
   const normalized = normalizeSaveGameState(saveGame);
   const slot = options.slot || normalized.party.activeSlot;
   const record = normalized.party.characterRecords[slot];
-  if (!record) return normalized;
   const actor = findCombatActor(options.snapshot, options.actorId || "generated_pc");
-  if (!actor) return normalized;
-  const updatedRecord = updateCharacterRecordFromCombatActor(record, actor, options);
+  const updatedRecord = record && actor ? updateCharacterRecordFromCombatActor(record, actor, options) : record;
+  const companions = updateCompanionsFromCombat(normalized.party.companions, options.snapshot);
   return touchSaveGame({
     ...normalized,
     party: {
       ...normalized.party,
       characterRecords: {
         ...normalized.party.characterRecords,
-        [slot]: updatedRecord,
+        ...(updatedRecord ? { [slot]: updatedRecord } : {}),
       },
+      actorInstances: {
+        ...normalized.party.actorInstances,
+        ...(updatedRecord?.actorInstance ? { [slot]: updatedRecord.actorInstance } : {}),
+      },
+      companions,
     },
     encounter: {
       ...normalized.encounter,
@@ -150,6 +244,9 @@ export function restSaveGame(saveGame, options = {}) {
   const record = normalized.party.characterRecords[slot];
   if (!record) return normalized;
   const restType = options.restType || "long_rest";
+  if (restType === "long_rest" && options.atEmber !== true && options.sleepingService !== true) {
+    throw new Error("Long rests can only be taken at an ember or through an NPC sleeping service");
+  }
   const rested = recoverCharacterRecord(record, restType, options);
   const rests = updateRestState(normalized.rests, slot, restType);
   return touchSaveGame({
@@ -161,6 +258,26 @@ export function restSaveGame(saveGame, options = {}) {
         ...normalized.party.characterRecords,
         [slot]: rested,
       },
+      actorInstances: {
+        ...normalized.party.actorInstances,
+        ...(rested.actorInstance ? { [slot]: rested.actorInstance } : {}),
+      },
+    },
+  });
+}
+
+export function levelUpSaveGame(saveGame, options = {}) {
+  const normalized = normalizeSaveGameState(saveGame);
+  const slot = options.slot || normalized.party.activeSlot;
+  const record = normalized.party.characterRecords[slot];
+  if (!record) throw new Error(`No character record found in party slot ${slot}`);
+  const updatedRecord = levelUpCharacterRecord(record, options.values || {}, options);
+  return touchSaveGame({
+    ...normalized,
+    party: {
+      ...normalized.party,
+      characterRecords: { ...normalized.party.characterRecords, [slot]: updatedRecord },
+      actorInstances: { ...normalized.party.actorInstances, [slot]: updatedRecord.actorInstance },
     },
   });
 }
@@ -244,6 +361,19 @@ export function validateSaveGameState(saveGame) {
   for (const slot of normalized.party.slots) {
     const record = normalized.party.characterRecords[slot];
     if (record && record.slot !== slot) errors.push(`party.characterRecords.${slot}.slot must match its party slot`);
+    const instance = normalized.party.actorInstances[slot];
+    if (record?.actorInstance && instance?.id !== record.actorInstance.id) {
+      errors.push(`party.actorInstances.${slot}.id must match its character record actor instance`);
+    }
+  }
+  if (normalized.party.companions.activeIds.length > 2) errors.push("party.companions.activeIds cannot contain more than two companions");
+  for (const id of normalized.party.companions.activeIds) {
+    if (!normalized.party.companions.recruited[id]) errors.push(`active companion ${id} must be recruited`);
+  }
+  for (const [id, companion] of Object.entries(normalized.party.companions.recruited)) {
+    if (companion.id !== id) errors.push(`party.companions.recruited.${id}.id must match its key`);
+    errors.push(...validateActorDefinition(companion.definition).map((error) => `companion ${id} definition: ${error}`));
+    errors.push(...validateActorInstance(companion.instance, { definition: companion.definition }).map((error) => `companion ${id} instance: ${error}`));
   }
   if (normalized.encounter.state && !normalized.encounter.activeEncounterId && !normalized.encounter.activeScenarioId) {
     errors.push("encounter.state requires activeEncounterId or activeScenarioId");
@@ -253,6 +383,32 @@ export function validateSaveGameState(saveGame) {
 
 function touchSaveGame(saveGame) {
   return { ...normalizeSaveGameState(saveGame), savedAt: new Date().toISOString() };
+}
+
+function normalizeCompanions(input = {}) {
+  const recruited = {};
+  for (const [id, record] of Object.entries(input?.recruited || {})) {
+    if (!record?.definition || !record?.instance) continue;
+    recruited[id] = {
+      id,
+      definition: createActorDefinition({ ...record.definition, kind: "companion" }),
+      instance: createActorInstance({ ...record.instance, id, definitionId: record.definition.id, kind: "companion", team: "heroes" }),
+      recruitedAt: record.recruitedAt ? structuredClone(record.recruitedAt) : null,
+    };
+  }
+  return { recruited, activeIds: unique(input?.activeIds || []).filter((id) => recruited[id]).slice(0, 2) };
+}
+
+function updateCompanionsFromCombat(companions, snapshot) {
+  const updated = normalizeCompanions(companions);
+  for (const id of updated.activeIds) {
+    const record = updated.recruited[id];
+    const actor = snapshot?.actors?.find((candidate) => candidate.id === record.instance.id);
+    if (!actor) continue;
+    const revived = actor.hp <= 0 ? { ...actor, hp: 1, defeated: false } : actor;
+    record.instance = combatActorToActorInstance(revived, record.definition.id, { id: record.instance.id, team: "heroes" });
+  }
+  return updated;
 }
 
 function updateRestState(rests, slot, restType) {

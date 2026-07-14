@@ -2,6 +2,8 @@
 
 This file locks the current map standard as an implementation contract. It covers maps only; other game images can exist outside this contract.
 
+Runtime presentation over grand and local exploration maps is governed by `app/docs/EXPLORATION_INTERFACE_CONTRACT.md`. This map contract owns topology, discovery data, navigation, and traversal records; it does not independently define persistent HUD elements, the `Tab` ghost-light, hover cards, or supporting-information panels.
+
 ## Code Pieces
 
 - `app/data/mapKinds.js` is the canonical registry of accepted map kinds and their families.

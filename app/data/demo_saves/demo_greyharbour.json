@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 2,
+  "runId": "demo-greyharbour-ysra",
+  "savedAt": "2026-07-12T21:18:00.000Z",
+  "party": {
+    "activeSlot": "active",
+    "slots": ["active"],
+    "characterRecords": {
+      "active": {
+        "version": 2,
+        "id": "ysra-vell",
+        "slot": "active",
+        "status": "invalid",
+        "savedAt": "2026-07-12T21:18:00.000Z",
+        "characterDraft": {
+          "identity": {
+            "characterName": "Ysra Vell",
+            "classId": "warlock",
+            "subclassId": "great_old_one",
+            "backgroundId": "criminal",
+            "level": 4
+          }
+        },
+        "resolvedCharacterSheet": {
+          "identity": {
+            "characterName": "Ysra Vell",
+            "classId": "warlock",
+            "subclassId": "great_old_one",
+            "subclassName": "Great Old One",
+            "backgroundId": "criminal",
+            "level": 4
+          }
+        }
+      }
+    },
+    "actorInstances": {},
+    "companions": { "recruited": {}, "activeIds": [] }
+  },
+  "world": {
+    "flags": {},
+    "visitedAreas": {},
+    "discovery": {},
+    "traversal": {},
+    "routeStack": [],
+    "location": { "scene": "characterSelect", "areaId": null }
+  },
+  "rests": { "shortRestsUsed": {}, "hungryStreak": {} },
+  "inventory": { "shared": [], "currency": { "gold": 84 } },
+  "encounter": { "activeEncounterId": null, "activeScenarioId": null, "state": null, "lastOutcome": null },
+  "quests": {},
+  "metadata": { "demo": true, "saveType": "autosave", "displayLocation": "Greyharbour — Deep Library" }
+}

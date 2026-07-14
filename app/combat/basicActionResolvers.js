@@ -146,7 +146,7 @@ export function resolveConsumable(snapshot, actor, action, dice, log) {
     });
     return false;
   }
-  const healingDice = action.healing || item.combat?.healing || parseHealingDice(item.effect);
+  const healingDice = action.healing || item.effects?.find((effect) => effect.type === "change-resource" && effect.resource === "health")?.amountFormula;
   if (!healingDice) {
     log.add("target.invalid", {
       round: snapshot.round,
@@ -160,7 +160,7 @@ export function resolveConsumable(snapshot, actor, action, dice, log) {
   const rolled = dice.rollDamage(healingDice);
   const hpBefore = actor.hp;
   actor.hp = Math.min(actor.maxHp, actor.hp + Math.max(0, rolled.total));
-  if (item.consumeOnUse !== false) spendItem(actor, itemId, 1);
+  if (item.consumedOnUse !== false) spendItem(actor, itemId, 1);
   spendActionCost(actor, action.cost);
   spendActionUse(action);
   log.add("healing.roll", {

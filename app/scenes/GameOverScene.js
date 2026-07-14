@@ -1,96 +1,133 @@
-// scenes/GameOverScene.js — DOM-based scene class
-import { sceneManager } from "../engine/sceneManager.js";
-import MainMenuScene from "./MainMenuScene.js";
-import LoadGameScene from "./LoadGameScene.js";
+import { routeTo } from "../engine/sceneRouter.js";
+import { createRendererSaveGameClient } from "../state/saveGameClient.js";
+
+const STYLE_ID = "death-scene-style";
+const FADE_OUT_DELAY_MS = 5700;
+const RESTORE_DELAY_MS = 8900;
+
+function ensureStyles() {
+  if (document.getElementById(STYLE_ID)) return;
+  const style = document.createElement("style");
+  style.id = STYLE_ID;
+  style.textContent = `
+    @font-face {
+      font-family: "Pixel Takhisis";
+      src: url("./assets/fonts/pixel_takhisis/Pixel Takhisis.otf") format("opentype");
+      font-display: swap;
+    }
+
+    .death-scene {
+      position: absolute;
+      inset: 0;
+      z-index: 40;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: rgba(0, 5, 6, 0.72);
+      -webkit-app-region: drag;
+    }
+
+    .death-scene-title {
+      margin: 0;
+      color: rgba(137, 174, 168, 0.72);
+      font: clamp(50px, 8.4vw, 98px)/1.1 "Pixel Takhisis", fantasy;
+      letter-spacing: 0.055em;
+      text-align: center;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: death-title-appear 3.2s ease-out forwards;
+    }
+
+    @keyframes death-title-appear {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .death-scene-title.is-fading-out {
+      animation: death-title-disappear 3.2s ease-in forwards;
+    }
+
+    @keyframes death-title-disappear {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+  `;
+  document.head.appendChild(style);
+}
 
 export default class GameOverScene {
   constructor() {
-    this._ctx = null;
-    this._label = "GameOver";
-    this._rootEl = null;
-    this._params = null;
+    this.root = document.getElementById("game-root");
+    this.container = null;
+    this.restoreTimer = null;
+    this.fadeOutTimer = null;
+    this.saveClient = createRendererSaveGameClient();
+    this.restorePromise = null;
+    this.cleanedUp = false;
   }
 
-  init(ctx) {
-    this._ctx = ctx;
-    console.info("[Scene:init] GameOverScene");
+  start() {
+    ensureStyles();
+    this.build();
+    this.restorePromise = this.findMostRecentSave();
+    this.fadeOutTimer = window.setTimeout(() => {
+      this.container?.querySelector(".death-scene-title")?.classList.add("is-fading-out");
+    }, FADE_OUT_DELAY_MS);
+    this.restoreTimer = window.setTimeout(() => this.restoreMostRecentSave(), RESTORE_DELAY_MS);
   }
 
-  enter(params = {}) {
-    this._params = params;
-    console.info("[Scene:enter] GameOverScene", params);
-    this._buildUi();
+  build() {
+    if (!this.root) return;
+    this.container = document.createElement("section");
+    this.container.className = "death-scene";
+    this.container.setAttribute("aria-label", "Character death");
+    this.container.innerHTML = `<h1 class="death-scene-title">You died</h1>`;
+    this.root.appendChild(this.container);
   }
 
-  _buildUi() {
-    const container = document.getElementById("center") || document.body;
-    container.innerHTML = "";
+  async findMostRecentSave() {
+    const summaries = await this.saveClient.list();
+    return [...summaries]
+      .filter((save) => save?.slot)
+      .sort((left, right) => Date.parse(right.savedAt || 0) - Date.parse(left.savedAt || 0))[0] || null;
+  }
 
-    const root = document.createElement("div");
-    root.className = "game-over-scene";
-
-    const title = document.createElement("h1");
-    title.textContent = "Game Over";
-    root.appendChild(title);
-
-    const message = document.createElement("p");
-    message.textContent = this._params.reason || "Your journey ends here.";
-    root.appendChild(message);
-
-    const buttonsDiv = document.createElement("div");
-    buttonsDiv.className = "game-over-buttons";
-
-    const loadBtn = document.createElement("button");
-    loadBtn.textContent = "Load Game";
-    loadBtn.addEventListener("click", () => {
-      sceneManager.replace(LoadGameScene);
-    });
-    buttonsDiv.appendChild(loadBtn);
-
-    const mainMenuBtn = document.createElement("button");
-    mainMenuBtn.textContent = "Main Menu";
-    mainMenuBtn.addEventListener("click", () => {
-      sceneManager.replace(MainMenuScene);
-    });
-    buttonsDiv.appendChild(mainMenuBtn);
-
-    const quitBtn = document.createElement("button");
-    quitBtn.textContent = "Quit";
-    quitBtn.addEventListener("click", () => {
-      if (window.api && typeof window.api.quit === "function") {
-        window.api.quit();
-      } else {
-        try {
-          window.close();
-        } catch {}
+  async restoreMostRecentSave() {
+    try {
+      const summary = await this.restorePromise;
+      if (this.cleanedUp) return;
+      if (!summary?.slot) {
+        routeTo({ toScene: "loadGame", fromScene: "gameOver", reason: "death_no_save" });
+        return;
       }
-    });
-    buttonsDiv.appendChild(quitBtn);
 
-    root.appendChild(buttonsDiv);
-    container.appendChild(root);
-    this._rootEl = root;
-  }
-
-  update(dt) {
-    // No per-frame updates needed
-  }
-
-  render(g) {
-    // Rendering handled via DOM
-  }
-
-  exit() {
-    console.info("[Scene:exit] GameOverScene");
-    if (this._rootEl && this._rootEl.parentNode) {
-      this._rootEl.parentNode.removeChild(this._rootEl);
+      const saveGame = await this.saveClient.load(summary.slot);
+      if (this.cleanedUp || !saveGame) return;
+      const location = saveGame.world?.location || {};
+      routeTo({
+        toScene: location.scene || "dialogue",
+        fromScene: "gameOver",
+        reason: "death_restore_latest",
+        saveSlot: summary.slot,
+        saveGame,
+        areaId: location.areaId || undefined,
+        entryKnot: location.entryKnot,
+      });
+    } catch (error) {
+      console.warn("[GameOverScene] Could not restore the most recent save:", error);
+      if (!this.cleanedUp) routeTo({ toScene: "loadGame", fromScene: "gameOver", reason: "death_restore_failed" });
     }
-    this._rootEl = null;
-    this._params = null;
   }
 
-  destroy() {
-    console.info("[Scene:destroy] GameOverScene");
-    this._ctx = null;
+  cleanup() {
+    this.cleanedUp = true;
+    if (this.fadeOutTimer) window.clearTimeout(this.fadeOutTimer);
+    if (this.restoreTimer) window.clearTimeout(this.restoreTimer);
+    this.fadeOutTimer = null;
+    this.restoreTimer = null;
+    this.container?.remove();
+    this.container = null;
   }
+
+  destroy() { this.cleanup(); }
 }

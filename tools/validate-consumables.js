@@ -119,22 +119,60 @@ function validateConsumableRecord(errors, item) {
     fail(errors, id, "record must be an object");
     return;
   }
-  for (const field of REQUIRED_TOP_LEVEL) {
+  for (const field of ["id", "name", "type", "inspectText", "stackable", "maxStackSize"]) {
     if (!(field in item)) fail(errors, id, `missing required field ${field}`);
   }
   validateString(errors, id, "id", item.id);
   if (typeof item.id === "string" && !/^[a-z0-9_]+$/.test(item.id)) fail(errors, id, "id must be snake_case");
   validateString(errors, id, "name", item.name);
-  validateString(errors, id, "type", item.type);
-  validateUses(errors, id, item.uses);
-  if (!VALID_USE_TIMES.has(item.useTime)) fail(errors, id, `useTime must be one of: ${Array.from(VALID_USE_TIMES).join(", ")}`);
-  if (typeof item.consumeOnUse !== "boolean") fail(errors, id, "consumeOnUse must be boolean");
+  if (!["usable", "tool", "quest"].includes(item.type)) fail(errors, id, "type must be usable, tool, or quest");
+  validateString(errors, id, "inspectText", item.inspectText);
+  if (typeof item.stackable !== "boolean") fail(errors, id, "stackable must be boolean");
+  if (!Number.isInteger(item.maxStackSize) || item.maxStackSize < 1) fail(errors, id, "maxStackSize must be a positive integer");
+  if (item.stackable === false && item.maxStackSize !== 1) fail(errors, id, "non-stackable items must have maxStackSize 1");
   if (item.value !== undefined) validatePositiveNumber(errors, id, "value", item.value);
-  if (item.effect !== undefined) validateString(errors, id, "effect", item.effect);
-  validateString(errors, id, "description", item.description);
-  validateCombat(errors, item);
-  if (item.combat?.kind === "healing" && item.effect && !/\d+d\d+\s*(?:[+-]\s*\d+)?\s*HP/i.test(item.effect)) {
-    fail(errors, id, "healing effect text must include parseable HP dice for legacy compatibility");
+  if (item.type === "usable") validateCanonicalUsable(errors, item);
+  if (item.type === "tool") {
+    validateString(errors, id, "useHookId", item.useHookId);
+    if (item.consumedOnUse !== undefined || item.effects !== undefined || item.delivery !== undefined) fail(errors, id, "tools cannot declare consumable behavior");
+  }
+  if (item.type === "quest" && item.keyComponent !== undefined) validateString(errors, id, "keyComponent.keyId", item.keyComponent?.keyId);
+}
+
+function validateCanonicalUsable(errors, item) {
+  const id = item.id;
+  if (!["combat", "exploration", "narrative", "noncombat", "anywhere"].includes(item.availability)) fail(errors, id, "availability is invalid");
+  if (!Array.isArray(item.targets) || item.targets.length === 0) fail(errors, id, "targets must be a non-empty array");
+  if (typeof item.consumedOnUse !== "boolean") fail(errors, id, "consumedOnUse must be boolean");
+  if (["combat", "anywhere"].includes(item.availability) && !["action", "bonus-action", "reaction"].includes(item.combatCost)) fail(errors, id, "combat-capable items require a valid combatCost");
+  if (!Array.isArray(item.effects)) fail(errors, id, "effects must be an array");
+  for (const [index, effect] of (item.effects || []).entries()) {
+    const pathName = `effects[${index}]`;
+    if (effect.type === "change-resource") validateFixedOrFormula(errors, id, effect, "amount", "amountFormula", pathName);
+    if (effect.type === "damage") validateFixedOrFormula(errors, id, effect, "damage", "damageFormula", pathName);
+    if (effect.amountFormula !== undefined && !isDiceExpression(effect.amountFormula)) fail(errors, id, `${pathName}.amountFormula must be a dice expression`);
+    if (effect.damageFormula !== undefined && !isDiceExpression(effect.damageFormula)) fail(errors, id, `${pathName}.damageFormula must be a dice expression`);
+  }
+  if (item.delivery !== undefined) validateDelivery(errors, item);
+}
+
+function validateFixedOrFormula(errors, id, effect, fixedKey, formulaKey, pathName) {
+  const count = Number(effect[fixedKey] !== undefined) + Number(effect[formulaKey] !== undefined);
+  if (count !== 1) fail(errors, id, `${pathName} must declare exactly one of ${fixedKey} or ${formulaKey}`);
+}
+
+function validateDelivery(errors, item) {
+  const id = item.id;
+  const delivery = item.delivery;
+  if (!isPlainObject(delivery) || delivery.kind !== "thrown") return fail(errors, id, "delivery must be a thrown delivery object");
+  if (!Number.isInteger(delivery.range) || delivery.range < 1) fail(errors, id, "delivery.range must be a positive grid-square integer");
+  const resolution = delivery.resolution;
+  if (!isPlainObject(resolution) || !["attack", "save"].includes(resolution.type)) return fail(errors, id, "delivery.resolution must be attack or save");
+  if (!["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"].includes(resolution.ability)) fail(errors, id, "delivery.resolution.ability is invalid");
+  if (resolution.type === "attack" && typeof resolution.addProficiency !== "boolean") fail(errors, id, "thrown attacks require addProficiency");
+  if (resolution.type === "save") {
+    validatePositiveNumber(errors, id, "delivery.resolution.dc", resolution.dc);
+    if (!["none", "half"].includes(resolution.onSuccess)) fail(errors, id, "save onSuccess must be none or half");
   }
 }
 

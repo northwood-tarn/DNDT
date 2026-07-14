@@ -1,4 +1,4 @@
-export const weapons = [
+const legacyWeaponRecords = [
   {
     "name": "Shortsword",
     "description": "A quick, practical blade made for close quarters.",
@@ -396,8 +396,76 @@ export const weapons = [
     "magical": true,
     "value": 460,
     "id": "silent_bow"
+  },
+  {
+    "name": "Mace",
+    "description": "A weighted metal head mounted on a sturdy haft.",
+    "uses": "infinite",
+    "consumeOnUse": false,
+    "useTime": "action",
+    "type": "melee",
+    "damage": "1d6",
+    "properties": [],
+    "mastery": "sap",
+    "value": 5,
+    "id": "mace"
   }
 ];
+
+const SIMPLE_WEAPON_IDS = new Set([
+  "dagger", "venomous_dagger",
+  "handaxe", "exploding_handaxe",
+  "quarterstaff", "blessed_quarterstaff", "mace",
+  "shortbow", "silent_bow",
+]);
+
+export const weapons = legacyWeaponRecords.map(toCanonicalWeapon);
+
+function toCanonicalWeapon(record) {
+  const twoHanded = record.properties.includes("two-handed");
+  const ranged = record.type === "ranged";
+  return {
+    id: record.id,
+    type: "equipment",
+    equipmentKind: "weapon",
+    name: record.name,
+    inspectText: record.description,
+    stackable: false,
+    maxStackSize: 1,
+    allowedSlots: ["weapon-1", "weapon-2"],
+    proficiencies: [SIMPLE_WEAPON_IDS.has(record.id) ? "simple_weapons" : "martial_weapons"],
+    effects: [],
+    weaponType: record.type,
+    attackAbility: ranged || record.properties.includes("finesse") ? "dexterity" : "strength",
+    damageFormula: record.damage,
+    damageType: baseDamageType(record.id),
+    range: ranged ? rangeFromProperties(record.properties) : 1,
+    hands: twoHanded ? 2 : 1,
+    properties: record.properties.filter((property) => !property.startsWith("range (")),
+    mastery: record.mastery,
+    damageBonuses: (record.modifiers?.damageBonuses || []).map(canonicalDamageBonus),
+    magical: record.magical === true || Boolean(record.modifiers),
+    value: record.value,
+  };
+}
+
+function canonicalDamageBonus(bonus) {
+  return typeof bonus.amount === "number"
+    ? { damage: bonus.amount, damageType: bonus.type || null }
+    : { damageFormula: bonus.amount, damageType: bonus.type || null };
+}
+
+function baseDamageType(id) {
+  if (["dagger", "venomous_dagger", "rapier", "frost_brand_rapier", "shortsword", "piercing_shortsword", "longbow", "bow_of_accuracy", "shortbow", "silent_bow"].includes(id)) return "piercing";
+  if (["warhammer", "thunder_hammer", "quarterstaff", "blessed_quarterstaff", "mace"].includes(id)) return "bludgeoning";
+  return "slashing";
+}
+
+function rangeFromProperties(properties) {
+  const property = properties.find((entry) => entry.startsWith("range ("));
+  const match = property?.match(/range \((\d+)\//);
+  return Math.max(1, Math.ceil(Number(match?.[1] || 5) / 5));
+}
 
 export function getWeaponById(id) {
   return weapons.find(w => w.id === id) || null;

@@ -1,6 +1,6 @@
 import { routeTo } from '../engine/sceneRouter.js';
 import { getApp, getAppReadyPromise } from '../engine/pixi.js';
-import { ensureFogLayer } from '../engine/foglayer.js';
+import { disableFog, ensureFogLayer } from '../engine/foglayer.js';
 
 // PreloadScene.js.js
 // Minimal router-safe stub. Non-destructive: replace incrementally.
@@ -30,13 +30,15 @@ export default class PreloadScene {
       getApp();
       const app = await getAppReadyPromise();
       await ensureFogLayer(app);
+      disableFog();
     } catch (e) {
       console.warn('[PreloadScene] Failed to init PIXI app and/or fog layer:', e);
       // Non-fatal: keep routing so the game remains usable even if fog assets fail.
     }
 
+    const requestedScene = new URLSearchParams(window.location.search).get('scene');
     routeTo({
-      toScene: 'mainMenu',
+      toScene: ['credits', 'gameOver', 'explorationLauncherPreview'].includes(requestedScene) ? requestedScene : 'mainMenu',
       reason: params.reason || 'boot',
       fromScene: 'preload',
     });

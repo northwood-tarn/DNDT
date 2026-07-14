@@ -20,6 +20,7 @@ const BASE_STEPS = [
   { id: "features", label: "Features" },
   { id: "gear", label: "Gear" },
   { id: "summary", label: "Summary" },
+  { id: "appearance", label: "Portrait and Miniature" },
 ];
 const SPELL_STEP = { id: "spells", label: "Spells" };
 
@@ -37,6 +38,8 @@ const SPELLS_PROMPT =
   "Power gathered in words, signs, and habits of attention, waiting to be given shape.";
 const GEAR_PROMPT =
   "Worn a little, each piece of your gear is a partial portrait of your unusual childhood.";
+const APPEARANCE_PROMPT =
+  "Choose the portrait by which your story will remember you, and the figure that will carry you into battle.";
 const ABILITY_SCORE_OPTIONS = [8, 10, 11, 12, 13, 14, 15];
 const SKILL_ABILITY = {
   acrobatics: "dexterity",
@@ -125,6 +128,8 @@ const els = {
   subclassOptions: document.querySelector("#subclassOptions"),
   abilityTable: document.querySelector("#abilityTable"),
   featChoices: document.querySelector("#featChoices"),
+  portraitSelection: document.querySelector("#portraitSelection"),
+  miniatureSelection: document.querySelector("#miniatureSelection"),
   diamonds: document.querySelector("#stepDiamonds"),
   nextButton: document.querySelector("#nextStepButton"),
   detailsToggle: document.querySelector("#detailsToggle"),
@@ -154,6 +159,8 @@ const state = {
   hoveredFeatureKey: "",
   hoveredGearOption: null,
   hoveredSpellOption: null,
+  portraitId: "",
+  miniatureId: "",
 };
 
 renderBackgroundOptions();
@@ -196,7 +203,7 @@ document.addEventListener("keydown", (event) => {
 
 function advanceStep() {
   if (!canAdvanceStep()) return;
-  if (state.stepId === "summary") {
+  if (state.stepId === "appearance") {
     startGame();
     return;
   }
@@ -224,6 +231,7 @@ function canAdvanceStep() {
   if (state.stepId === "spells") return true;
   if (state.stepId === "gear") return true;
   if (state.stepId === "summary") return true;
+  if (state.stepId === "appearance") return Boolean(state.portraitId && state.miniatureId);
   return false;
 }
 
@@ -263,11 +271,12 @@ function render() {
   const isSpells = state.stepId === "spells";
   const isGear = state.stepId === "gear";
   const isSummary = state.stepId === "summary";
+  const isAppearance = state.stepId === "appearance";
   els.shell?.classList.toggle("is-summary", isSummary);
   els.shell?.classList.toggle("is-features", isFeatures);
-  els.nextButton?.classList.toggle("is-start-ready", isSummary);
-  els.nextButton?.setAttribute("aria-label", isSummary ? "Start game" : "Next section");
-  els.title.textContent = isName ? "Your Name" : isBackground ? "Your Background" : isSpecies ? "Your Species" : isClass ? "Your Class" : isFeats ? "Your Feats" : isFeatures ? "Your Features" : isSpells ? "Your Spells" : isGear ? "Your Gear" : "Your Summary";
+  els.nextButton?.classList.toggle("is-start-ready", isAppearance && canAdvanceStep());
+  els.nextButton?.setAttribute("aria-label", isAppearance ? "Start game" : "Next section");
+  els.title.textContent = isName ? "Your Name" : isBackground ? "Your Background" : isSpecies ? "Your Species" : isClass ? "Your Class" : isFeats ? "Your Feats" : isFeatures ? "Your Features" : isSpells ? "Your Spells" : isGear ? "Your Gear" : isSummary ? "Your Summary" : "Select Portrait and Miniature";
   els.nameInput.hidden = !isName;
   els.dropdown.hidden = !isBackground;
   els.speciesDropdown.hidden = !isSpecies;
@@ -279,11 +288,13 @@ function render() {
   els.subclassDropdown.hidden = !needsSubclass;
   els.abilityTable.hidden = !isClass || !canShowAbilityTable();
   els.featChoices.hidden = !isFeats && !isFeatures && !isSpells && !isGear;
+  els.portraitSelection.hidden = !isAppearance;
+  els.miniatureSelection.hidden = !isAppearance;
   els.chosenName.hidden = isName || isSummary;
   els.chosenName.textContent = state.name;
   els.infoPanel.innerHTML = isName
     ? "Uttered in admiration and tenderness, disgust and hatred, what is the name by which you were known?"
-    : isBackground ? BACKGROUND_PROMPT : isSpecies ? SPECIES_PROMPT : isClass ? CLASS_PROMPT : isFeats ? FEATS_PROMPT : isFeatures ? FEATURES_PROMPT : isSpells ? SPELLS_PROMPT : isGear ? GEAR_PROMPT : "";
+    : isBackground ? BACKGROUND_PROMPT : isSpecies ? SPECIES_PROMPT : isClass ? CLASS_PROMPT : isFeats ? FEATS_PROMPT : isFeatures ? FEATURES_PROMPT : isSpells ? SPELLS_PROMPT : isGear ? GEAR_PROMPT : isAppearance ? APPEARANCE_PROMPT : "";
   els.diamonds.hidden = !state.started;
   updateNextProgress();
   renderAbilityTable();
@@ -293,6 +304,7 @@ function render() {
   else if (isSpells) renderSpellChoices();
   else if (isGear) renderGearChoices();
   else els.featChoices?.replaceChildren();
+  if (isAppearance) renderAppearanceChoices();
   renderGrants();
   renderDiamonds();
   renderDetails();
@@ -385,6 +397,78 @@ function renderBackgroundOptions() {
     });
     return option;
   }));
+}
+
+function renderAppearanceChoices() {
+  if (!els.portraitSelection || !els.miniatureSelection) return;
+
+  const speciesId = state.speciesId;
+  const portraitOptions = speciesId ? [
+    appearancePortraitOption(speciesId, "feminine", "01", "Portrait I"),
+    appearancePortraitOption(speciesId, "masculine", "01", "Portrait II"),
+    appearancePortraitOption(speciesId, "feminine", "02", "Portrait III"),
+    appearancePortraitOption(speciesId, "masculine", "02", "Portrait IV"),
+    appearancePortraitOption(speciesId, "feminine", "03", "Portrait V"),
+    appearancePortraitOption(speciesId, "masculine", "03", "Portrait VI"),
+  ] : [];
+  const portraitIds = new Set(portraitOptions.map((option) => option.id));
+  if (state.portraitId && !portraitIds.has(state.portraitId)) {
+    state.portraitId = "";
+    state.draft.presentation.portraitId = null;
+  }
+
+  const miniatureOptions = speciesId ? [
+    appearanceMiniatureOption(speciesId, "feminine", "Figure I"),
+    appearanceMiniatureOption(speciesId, "masculine", "Figure II"),
+  ] : [];
+  const miniatureIds = new Set(miniatureOptions.map((option) => option.id));
+  if (state.miniatureId && !miniatureIds.has(state.miniatureId)) {
+    state.miniatureId = "";
+    state.draft.presentation.miniatureId = null;
+  }
+
+  els.portraitSelection.replaceChildren(...portraitOptions.map((option) => appearanceButton(option, "portrait")));
+  els.miniatureSelection.replaceChildren(...miniatureOptions.map((option) => appearanceButton(option, "miniature")));
+}
+
+function appearancePortraitOption(speciesId, form, setId, label) {
+  const assetName = `${speciesId}_${form}_${setId}.png`;
+  const id = `character_creator/assets/player_portraits/${assetName}`;
+  return { id, src: `assets/player_portraits/${assetName}`, label };
+}
+
+function appearanceMiniatureOption(speciesId, form, label) {
+  const assetName = `${speciesId}_${form}_01`;
+  const id = `mini_preview/assets/pc_authored_library/${assetName}/cutout/${assetName}.png`;
+  return { id, src: `../${id}`, label };
+}
+
+function appearanceButton(option, kind) {
+  const selectedId = kind === "portrait" ? state.portraitId : state.miniatureId;
+  const button = document.createElement("button");
+  button.className = `appearance-option${selectedId === option.id ? " is-selected" : ""}`;
+  button.type = "button";
+  button.setAttribute("aria-pressed", selectedId === option.id ? "true" : "false");
+
+  const image = document.createElement("img");
+  image.src = option.src;
+  image.alt = "";
+  const label = document.createElement("span");
+  label.className = "appearance-option-label";
+  label.textContent = option.label;
+  button.append(image, label);
+
+  button.addEventListener("click", () => {
+    if (kind === "portrait") {
+      state.portraitId = option.id;
+      state.draft.presentation.portraitId = option.id;
+    } else {
+      state.miniatureId = option.id;
+      state.draft.presentation.miniatureId = option.id;
+    }
+    render();
+  });
+  return button;
 }
 
 function renderClassOptions() {
@@ -1153,6 +1237,10 @@ function optionButton(label, preview) {
 
 function renderGrants() {
   if (!els.grantPanel) return;
+  if (state.stepId === "appearance") {
+    els.grantPanel.replaceChildren();
+    return;
+  }
   if (state.stepId === "summary") {
     renderSummaryGrants();
     return;

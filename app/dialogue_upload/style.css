@@ -1,0 +1,52 @@
+:root { color-scheme: dark; --paper:#171713; --panel:#22221d; --display:#30302b; --line:#46463a; --ink:#f0eadb; --muted:#aaa492; --gold:#d4ad62; --bad:#ef8c80; --good:#89c497; }
+* { box-sizing:border-box; }
+body { margin:0; background:#11110e; color:var(--ink); font:15px/1.45 Georgia,serif; }
+header { position:sticky; top:0; z-index:2; padding:18px 28px; background:#181812ef; border-bottom:1px solid var(--line); backdrop-filter:blur(8px); }
+h1,h2,p { margin:0; }
+h1 { font-size:24px; }
+h2 { font-size:18px; }
+header p,.hint { color:var(--muted); }
+main { display:grid; grid-template-columns:minmax(430px,1.35fr) minmax(360px,1fr) minmax(400px,1.15fr); gap:16px; padding:20px; max-width:1900px; margin:auto; align-items:start; }
+.panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:18px; min-width:0; }
+.source { grid-column:1; grid-row:1 / span 4; }
+.display-panel { background:var(--display); }
+.validation-panel { grid-column:3; grid-row:1 / span 4; position:sticky; top:105px; }
+.section-title { display:flex; justify-content:space-between; align-items:center; }
+.drop-zone { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; min-height:108px; margin:12px 0; border:2px dashed var(--line); border-radius:7px; background:#191914; color:var(--gold); text-align:center; cursor:pointer; transition:border-color .15s,background .15s; }
+.drop-zone span { color:var(--muted); font-size:13px; }
+.drop-zone:hover,.drop-zone.dragging { border-color:var(--gold); background:#29251a; }
+.drop-zone input { display:none; }
+textarea,input,select { background:#11110e; color:var(--ink); border:1px solid var(--line); border-radius:4px; padding:9px; font:14px/1.35 ui-monospace,monospace; }
+#source { width:100%; height:720px; margin:12px 0; resize:vertical; font-size:18px; line-height:1.5; }
+#output { width:100%; height:600px; margin:8px 0 12px; resize:vertical; }
+.output-label { display:block; margin-top:18px; color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.08em; }
+.save-status { min-height:22px; margin-top:10px; color:var(--good); font-family:ui-monospace,monospace; font-size:12px; }
+button { border:1px solid var(--gold); border-radius:4px; background:transparent; color:var(--gold); padding:9px 14px; cursor:pointer; font-weight:700; }
+button.primary { background:var(--gold); color:#171713; }
+button:disabled { opacity:.35; cursor:not-allowed; }
+.fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:12px; }
+.field { display:flex; flex-direction:column; gap:4px; }
+.field span { color:var(--muted); font-size:12px; }
+.field input,.field textarea,.field select { width:100%; height:auto; }
+.inline { display:flex; gap:8px; margin:12px 0; }
+.inline input { flex:1; }
+.catalogue-add,.participant-prompt { display:grid; grid-template-columns:130px 1.4fr 1fr auto; }
+.participant-prompt { gap:8px; align-items:center; margin:12px 0; padding:10px; border:1px solid var(--line); border-radius:5px; }
+.participant-prompt code,.catalogue-row code,.option strong { color:var(--gold); }
+.search { width:100%; margin-bottom:8px; }
+.catalogue { max-height:240px; overflow:auto; }
+.catalogue-row,.flag-row { display:grid; align-items:center; gap:8px; padding:7px; border-bottom:1px solid #46463e; }
+.catalogue-row { grid-template-columns:1fr 1fr auto; }
+.flag-row { grid-template-columns:minmax(180px,1fr) repeat(5,72px); font:12px ui-monospace,monospace; }
+.flag-head { color:var(--muted); }
+.flag-row label { text-align:center; }
+.empty { color:var(--muted); padding:14px 0; }
+.option { border-top:1px solid var(--line); padding:12px 0; }
+.annotation { display:grid; grid-template-columns:minmax(140px,1fr) 150px minmax(160px,1fr); gap:8px; margin:8px 0; }
+.annotation em { color:var(--muted); }
+.status ul { margin:8px 0; padding-left:20px; }
+.errors { color:var(--bad); }
+.warnings { color:#e3c77a; }
+.valid { color:var(--good); }
+@media(max-width:1250px) { main { grid-template-columns:1fr 1fr; } .source { grid-row:1 / span 4; } .validation-panel { grid-column:1 / -1; grid-row:auto; position:static; } }
+@media(max-width:850px) { main { grid-template-columns:1fr; } .source,.validation-panel { grid-column:auto; grid-row:auto; } .catalogue-add,.participant-prompt,.annotation,.fields { grid-template-columns:1fr; } }

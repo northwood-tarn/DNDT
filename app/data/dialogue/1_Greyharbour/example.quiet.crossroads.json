@@ -1,0 +1,65 @@
+{
+  "formatVersion": 1,
+  "scene": {
+    "id": "scene:example.quiet.crossroads",
+    "act": "1_Greyharbour",
+    "title": "A Quiet Crossroads",
+    "type": "full",
+    "locationId": null,
+    "triggerId": null,
+    "participants": [],
+    "frequency": "repeat",
+    "requirements": {
+      "requiredFlags": [],
+      "forbiddenFlags": []
+    },
+    "effects": {
+      "start": [],
+      "bypass": [],
+      "completion": []
+    },
+    "destinations": {
+      "success": null,
+      "failure": null
+    }
+  },
+  "content": {
+    "body": "The road divides beneath an old stone marker. Rain has softened the names carved into its three faces, but the paths themselves remain clear.\n\nThe eastern road descends towards a line of distant lights. The western road disappears beneath dark trees. A narrow track continues north across the open heath.\n\noa. Take the eastern road.\nob. Follow the road into the trees.\noc. Continue north across the heath.\nod. Remain at the crossroads for a while longer.",
+    "options": [
+      {
+        "label": "oa",
+        "text": "Take the eastern road.",
+        "annotations": [],
+        "effects": []
+      },
+      {
+        "label": "ob",
+        "text": "Follow the road into the trees.",
+        "annotations": [],
+        "effects": []
+      },
+      {
+        "label": "oc",
+        "text": "Continue north across the heath.",
+        "annotations": [],
+        "effects": []
+      },
+      {
+        "label": "od",
+        "text": "Remain at the crossroads for a while longer.",
+        "annotations": [],
+        "effects": []
+      }
+    ]
+  },
+  "catalogueAdditions": [
+    {
+      "id": "scene:example.quiet.crossroads",
+      "kind": "scene",
+      "label": "A Quiet Crossroads",
+      "aliases": [],
+      "status": "active",
+      "source": "scene:example.quiet.crossroads"
+    }
+  ]
+}

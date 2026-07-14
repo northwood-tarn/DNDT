@@ -31,7 +31,7 @@ function convertsResolvedFighterToCombatActor() {
       weaponIds: ["longsword"],
       armorId: "chain_mail",
       shieldId: "shield",
-      inventory: [{ id: "healing_potion", qty: 2 }],
+      inventory: [{ id: "healing_potion", quantity: 2 }],
       attunedItemIds: [],
     },
   });

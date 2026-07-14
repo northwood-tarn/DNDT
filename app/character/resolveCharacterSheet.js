@@ -23,6 +23,7 @@ export function resolveCharacterSheet(draft, registries = {}, options = {}) {
   }
 
   const sheet = createEmptyResolvedCharacterSheet();
+  sheet.metadata.presentation = structuredClone(draft.presentation || {});
   const backgrounds = registries.backgrounds || BACKGROUNDS;
   const classes = registries.classes || CLASSES;
   const species = registries.species || SPECIES;

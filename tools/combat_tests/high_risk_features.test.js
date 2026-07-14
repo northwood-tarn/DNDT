@@ -18,6 +18,7 @@ import { canUseAction } from "../../app/combat/rules.js";
 
 export function runHighRiskFeatureCombatTests() {
   testWarlockAutomaticReactionConflictUsesOneReaction();
+  testWarlockAutomaticReactionUsesOnlyLiveEffect();
   testWarpriestResolvesWeaponAttack();
   testHarnessDivinePowerRestoresSpellSlot();
   testSaboteurDoubleRigUnlocksFollowupDevice();
@@ -33,6 +34,7 @@ export function runHighRiskFeatureCombatTests() {
   testLastLightOverloadsAtEightDice();
   testGuidedStrikeConvertsNearMiss();
   testUnyieldingStancePreventsZeroHp();
+  testIndomitabilityPreventsZeroHpAndRestoresHighestEligibleSlot();
   testSentinelAtDeathsDoorSuppressesAllyCritical();
   testSentinelAtDeathsDoorIgnoresNormalAllyHit();
   testSurprisedTargetCriticalAndRiders();
@@ -269,31 +271,44 @@ function testSaboteurDoubleRigUnlocksFollowupDevice() {
 }
 
 function testWarlockAutomaticReactionConflictUsesOneReaction() {
-  const sheet = resolveCharacterSheet(createEmptyCharacterDraft({
-    identity: { characterName: "Fiend Warlock", level: 5, classId: "warlock", subclassId: "the_fiend" },
-    abilities: { strength: 8, dexterity: 14, constitution: 12, intelligence: 10, wisdom: 10, charisma: 16 },
-  }), {}, { allowNonCreationLevel: true });
-  const warlock = resolvedSheetToCombatActor(sheet, { id: "fiend_warlock", position: { x: 1, y: 1 } });
-  warlock.turnFlags.hitsTakenSinceLastTurn = 3;
+  for (const level of [5, 10, 13]) {
+    const warlock = warlockActor({ level, id: "fiend_warlock" });
+    warlock.turnFlags.hitsTakenSinceLastTurn = 3;
+    const attacker = createEnemyCombatActor("goblin", { id: "attacker", hp: 30, maxHp: 30, position: { x: 2, y: 1 } });
+    attacker.actions = [meleeAttack({ id: "club", attackBonus: 20, damage: "1d6" })];
+    const snapshot = createSnapshotFromScenario(testScenario(`warlock-reaction-conflict-level-${level}-test`, [warlock, attacker]));
+    const log = createCombatLog();
+
+    assert.equal(resolveAction(snapshot, snapshot.actors.find((item) => item.id === "attacker"), "club", "fiend_warlock", scriptedDice({ d20: [10], damage: [4, 6] }), log), true);
+    const defender = snapshot.actors.find((item) => item.id === "fiend_warlock");
+    const source = snapshot.actors.find((item) => item.id === "attacker");
+    const resolved = log.events.filter((event) => event.type === "reaction.resolve");
+    const suppressed = log.events.filter((event) => event.type === "reaction.suppressed");
+
+    assert.equal(resolved.length, 1, `only one automatic reaction should resolve at level ${level}`);
+    assert.equal(resolved[0].detail.reactionId, "spiral_of_retribution", `Spiral of Retribution should win at level ${level}`);
+    assert.equal(suppressed.length, 1, `the losing reaction should be logged at level ${level}`);
+    assert.equal(suppressed[0].detail.reactionId, "hellish_rebuke");
+    assert.ok(defender.resources.find((item) => item.id === "hellish_rebuke").current > 0, "suppressed Hellish Rebuke should remain available");
+    assert.equal(defender.resources.find((item) => item.id === "spiral_of_retribution").current, 0);
+    assert.equal(hasReaction(defender), false);
+    assert.equal(source.hp, 24, "the winning retaliation reaction should damage the attacker once");
+  }
+}
+
+function testWarlockAutomaticReactionUsesOnlyLiveEffect() {
+  const warlock = warlockActor({ level: 5, id: "fiend_warlock" });
+  warlock.turnFlags.hitsTakenSinceLastTurn = 1;
   const attacker = createEnemyCombatActor("goblin", { id: "attacker", hp: 30, maxHp: 30, position: { x: 2, y: 1 } });
   attacker.actions = [meleeAttack({ id: "club", attackBonus: 20, damage: "1d6" })];
-  const snapshot = createSnapshotFromScenario(testScenario("warlock-reaction-conflict-test", [warlock, attacker]));
+  const snapshot = createSnapshotFromScenario(testScenario("warlock-single-live-reaction-test", [warlock, attacker]));
   const log = createCombatLog();
 
   assert.equal(resolveAction(snapshot, snapshot.actors.find((item) => item.id === "attacker"), "club", "fiend_warlock", scriptedDice({ d20: [10], damage: [4, 6] }), log), true);
   const defender = snapshot.actors.find((item) => item.id === "fiend_warlock");
-  const source = snapshot.actors.find((item) => item.id === "attacker");
-  const resolved = log.events.filter((event) => event.type === "reaction.resolve");
-  const suppressed = log.events.filter((event) => event.type === "reaction.suppressed");
-
-  assert.equal(resolved.length, 1, "only one automatic reaction should resolve for the same trigger");
-  assert.equal(resolved[0].detail.reactionId, "hellish_rebuke", "higher-priority Hellish Rebuke should win the conflict");
-  assert.equal(suppressed.length, 1, "the losing automatic reaction should be explicitly logged as suppressed");
-  assert.equal(suppressed[0].detail.reactionId, "spiral_of_retribution");
+  assert.ok(log.events.some((event) => event.type === "reaction.resolve" && event.detail.reactionId === "hellish_rebuke"), "Hellish Rebuke should trigger when Spiral is not live");
   assert.equal(defender.resources.find((item) => item.id === "hellish_rebuke").current, 0);
   assert.equal(defender.resources.find((item) => item.id === "spiral_of_retribution").current, 1);
-  assert.equal(hasReaction(defender), false);
-  assert.equal(source.hp, 24, "the winning retaliation reaction should damage the attacker once");
 }
 
 function testGuidedStrikeConvertsNearMiss() {
@@ -340,6 +355,30 @@ function testUnyieldingStancePreventsZeroHp() {
   assert.equal(resolveAction(snapshot, actor, "club", "duelist", fixedDice({ d20: 10, damage: 30 }), createCombatLog()), true);
   assert.equal(defender.hp, 0, "zero-HP prevention should not trigger after its resource is spent");
   assert.equal(defender.defeated, true, "the fighter should be defeated once the prevention resource is gone");
+}
+
+function testIndomitabilityPreventsZeroHpAndRestoresHighestEligibleSlot() {
+  const sheet = resolveCharacterSheet(createEmptyCharacterDraft({
+    identity: { characterName: "Dirt Wizard", level: 13, classId: "wizard", subclassId: "dirt_wizard" },
+    abilities: { strength: 8, dexterity: 14, constitution: 12, intelligence: 18, wisdom: 10, charisma: 10 },
+  }), {}, { allowNonCreationLevel: true });
+  const wizard = resolvedSheetToCombatActor(sheet, { id: "dirt_wizard", position: { x: 1, y: 1 } });
+  wizard.hp = 5;
+  wizard.spellSlots[4].current = 0;
+  wizard.spellSlots[5].current -= 1;
+  const attacker = createEnemyCombatActor("goblin", { id: "attacker", hp: 12, maxHp: 12, position: { x: 2, y: 1 } });
+  attacker.actions = [meleeAttack({ id: "club", attackBonus: 20, damage: "8d10" })];
+  const snapshot = createSnapshotFromScenario(testScenario("indomitability-test", [wizard, attacker]));
+  const log = createCombatLog();
+
+  assert.equal(resolveAction(snapshot, snapshot.actors.find((item) => item.id === "attacker"), "club", "dirt_wizard", fixedDice({ d20: 10, damage: 30 }), log), true);
+  const defender = snapshot.actors.find((item) => item.id === "dirt_wizard");
+  assert.equal(defender.hp, 1, "Indomitability should leave the wizard at 1 HP");
+  assert.equal(defender.defeated, false);
+  assert.equal(defender.spellSlots[5].current, defender.spellSlots[5].max, "Indomitability should restore the highest eligible expended slot");
+  assert.equal(defender.spellSlots[4].current, 0, "Indomitability should restore only one slot");
+  assert.equal(defender.resources.find((item) => item.id === "dirt_wizard_indomitability").current, 0);
+  assert.ok(log.events.some((event) => event.type === "reaction.resolve" && event.detail.restoredSlotLevel === 5));
 }
 
 function testSentinelAtDeathsDoorSuppressesAllyCritical() {

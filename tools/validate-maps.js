@@ -16,6 +16,7 @@ import {
   isMapKind,
   isNavigationMapKind,
 } from "../app/data/mapKinds.js";
+import { getEncounterById } from "../app/data/encounters.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -142,6 +143,22 @@ function validateGraph(map) {
 
   if (map.savePosition?.nodeId && !nodeIds.has(map.savePosition.nodeId)) {
     errors.push(`Save position references missing node: ${map.savePosition.nodeId}`);
+  }
+
+  const triggerIds = new Set();
+  for (const trigger of map.encounterTriggers || []) {
+    if (triggerIds.has(trigger.id)) errors.push(`Duplicate encounter trigger id: ${trigger.id}`);
+    triggerIds.add(trigger.id);
+    if (trigger.mapId !== map.id) errors.push(`Encounter trigger ${trigger.id} mapId must match map id`);
+    if (!getEncounterById(trigger.encounterId)) errors.push(`Encounter trigger ${trigger.id} references unknown encounter: ${trigger.encounterId}`);
+    if (trigger.location?.type === "region" && !regionIds.has(trigger.location.regionId)) {
+      errors.push(`Encounter trigger ${trigger.id} references missing region: ${trigger.location.regionId}`);
+    }
+    if (trigger.location?.type === "tile" && map.grid) {
+      if (trigger.location.column >= map.grid.columns || trigger.location.row >= map.grid.rows) {
+        errors.push(`Encounter trigger ${trigger.id} tile is outside grid bounds`);
+      }
+    }
   }
 
   return errors;

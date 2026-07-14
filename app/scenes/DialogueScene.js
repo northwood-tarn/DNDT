@@ -28,6 +28,8 @@ import {
   getSkillCheckAction
 } from "./dialogueEngine.js";
 import renderMiniMap from "../ui/renderMiniMap.js";
+import { chooseDialogueOption, describeDialogueCheck, startDialogueSession, validateDialoguePackage } from "../dialogue/runtime.js";
+import MerchantScene from "./MerchantScene.js";
 
 
 import { rollD20 } from "../utils/dice.js";
@@ -45,7 +47,7 @@ const SESSION_SEEN_SKILL_SCHEMA = new Set();
 function _normSkillKey(skill) {
   return String(skill || "")
     .trim()
-    .replace(/\s+/g, "_")
+    .replace(/[.\s]+/g, "_")
     .toLowerCase();
 }
 
@@ -190,6 +192,8 @@ export default class DialogueScene {
     this._choiceLocked = false;
     this._lastChosenChoiceText = null;
     this._pendingExit = false;
+    this.compiledSession = null;
+    this.onSaveGame = null;
   }
 
   // sceneManager will call this when replacing the scene
@@ -198,7 +202,9 @@ export default class DialogueScene {
     areaId,
     mode = "dialogue",
     entryKnot,
-    returnTo = null
+    returnTo = null,
+    saveGame = null,
+    onSaveGame = null
   } = {}) {
     if (!script && !areaId) {
       console.warn("[DialogueScene] No script or areaId passed to start()");
@@ -209,6 +215,7 @@ export default class DialogueScene {
     this.mode = mode;
     this.entryKnot = entryKnot || null;
     this.returnTo = returnTo;
+    this.onSaveGame = typeof onSaveGame === "function" ? onSaveGame : null;
     this._pendingExit = false;
 
     // Prefer resolving script path via registry when we have an areaId.
@@ -269,6 +276,17 @@ export default class DialogueScene {
           );
           throw parseErr;
         }
+      }
+
+      if (storySource?.formatVersion === 1 && storySource?.scene && storySource?.content) {
+        const errors = validateDialoguePackage(storySource);
+        if (errors.length) throw new Error(errors.join("; "));
+        if (!saveGame) throw new Error("Compiled dialogue requires saveGame state");
+        this.compiledSession = startDialogueSession(storySource, saveGame);
+        this.areaId = storySource.scene.locationId || this.areaId;
+        this.onSaveGame?.(this.compiledSession.saveGame);
+        this._renderCompiledDialogue();
+        return;
       }
 
       // Case 1 (or after parsing): compiled Ink JSON object
@@ -419,7 +437,7 @@ if (!center) {
     if (!this.headerEl) return;
 
     // Try to get AREA_NAME from global tags
-    let title = this.areaId || "Dialogue";
+    let title = this.compiledSession?.scene?.title || this.areaId || "Dialogue";
     if (this.story && Array.isArray(this.story.globalTags)) {
       const areaNameTag = this.story.globalTags.find(t => t.startsWith("AREA_NAME "));
       if (areaNameTag) {
@@ -428,6 +446,53 @@ if (!center) {
     }
 
     this.headerEl.textContent = title;
+  }
+
+  _renderCompiledDialogue() {
+    if (!this.compiledSession || !this.bodyEl || !this.choicesEl) return;
+    this._updateHeaderTitle();
+    this.bodyEl.innerHTML = "";
+    const prose = document.createElement("div");
+    prose.className = "dialogue-prose";
+    prose.textContent = this.compiledSession.body;
+    this.bodyEl.appendChild(prose);
+    this.choicesEl.innerHTML = "";
+    this.compiledSession.options.forEach((option, index) => {
+      const row = document.createElement("button");
+      row.type = "button";
+      row.className = "dialogue-choice";
+      const checkEffect = option.effects?.find((effect) => (typeof effect === "string" ? effect.startsWith("check.skill=") : effect?.effect === "check.skill"));
+      const checkArgument = typeof checkEffect === "string" ? checkEffect.split("=").slice(1).join("=") : checkEffect?.argument;
+      const checkMatch = String(checkArgument || "").match(/^([a-z]+(?:\.[a-z]+)*)\.dc\.(\d+)$/);
+      const checkLabel = checkMatch ? ` [${describeDialogueCheck({ skill: checkMatch[1], dc: Number(checkMatch[2]) }, { team: checkEffect?.team === true })}]` : "";
+      row.textContent = `${index + 1}. ${option.text}${checkLabel}`;
+      row.disabled = option.available === false;
+      if (option.unavailableReason) row.title = option.unavailableReason;
+      row.addEventListener("click", () => {
+        const result = chooseDialogueOption(this.compiledSession, option.label, {
+          resolveSkillCheck: (check) => ({ d20: rollD20({ context: { type: "check", label: check.skill } }).roll, modifier: getPlayerSkillMod(getState()?.player, check.skill), performerId: "pc" }),
+        });
+        this.compiledSession.saveGame = result.saveGame;
+        this.onSaveGame?.(result.saveGame);
+        for (const route of result.routes) {
+          if (route.type === "service") {
+            this.rootEl.hidden = true;
+            const merchant = new MerchantScene();
+            merchant.start({
+              id: route.id,
+              saveGame: result.saveGame,
+              onSaveGame: (nextSave) => { this.compiledSession.saveGame = nextSave; this.onSaveGame?.(nextSave); },
+              onClose: (nextSave) => { merchant.cleanup(); this.compiledSession.saveGame = nextSave; this.rootEl.hidden = false; },
+            });
+          } else {
+            window.dispatchEvent(new CustomEvent("game:exit", { detail: { toScene: route.type, ...route } }));
+          }
+        }
+        if (result.checkResults.length) window.dispatchEvent(new CustomEvent("dialogue:skill-check", { detail: { checks: result.checkResults, option } }));
+        if (result.consequences.length) window.dispatchEvent(new CustomEvent("dialogue:consequences", { detail: { consequences: result.consequences, option } }));
+      });
+      this.choicesEl.appendChild(row);
+    });
   }
 
   _updateMinimap() {
@@ -943,15 +1008,15 @@ if (!center) {
           });
 
           if (idx === -1) {
-            inv.push({ id: itemId, qty });
+            inv.push({ id: itemId, quantity: qty });
           } else {
             const cur = inv[idx];
             if (typeof cur === "string") {
               // Promote string entry to object.
-              inv[idx] = { id: itemId, qty: qty + 1 };
+              inv[idx] = { id: itemId, quantity: qty + 1 };
             } else {
-              const curQty = Number(cur.qty ?? cur.quantity ?? 0) || 0;
-              inv[idx] = { ...cur, id: cur.id ?? cur.itemId ?? itemId, qty: curQty + qty };
+              const curQty = Number(cur.quantity ?? 0) || 0;
+              inv[idx] = { ...cur, id: cur.id ?? cur.itemId ?? itemId, quantity: curQty + qty };
             }
           }
 
@@ -995,10 +1060,10 @@ if (!center) {
             // If strings are used, they represent 1 unit.
             inv.splice(idx, 1);
           } else {
-            const curQty = Number(cur.qty ?? cur.quantity ?? 0) || 0;
+            const curQty = Number(cur.quantity ?? 0) || 0;
             const nextQty = curQty - qty;
             if (nextQty > 0) {
-              inv[idx] = { ...cur, id: cur.id ?? cur.itemId ?? itemId, qty: nextQty };
+              inv[idx] = { ...cur, id: cur.id ?? cur.itemId ?? itemId, quantity: nextQty };
             } else {
               inv.splice(idx, 1);
             }

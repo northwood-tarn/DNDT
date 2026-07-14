@@ -70,7 +70,7 @@ function equipmentSection(sheet, actor) {
     line("Masteries", list((sheet.equipment.masteredWeaponIds || []).map(weaponName)), "Mastered weapon ids enable weapon mastery riders/actions."),
     line("Armor", getArmorById(sheet.equipment.armorId)?.name || "None", "Armor record feeds AC calculation before bridge."),
     line("Shield", getArmorById(sheet.equipment.shieldId)?.name || "None", "Shield record feeds AC calculation before bridge."),
-    line("Consumables", list((sheet.equipment.inventory || []).map((entry) => `${getConsumableById(entry.id)?.name || entry.id} x${entry.qty || 1}`)), "Inventory consumables become combat consumable actions."),
+    line("Consumables", list((sheet.equipment.inventory || []).map((entry) => `${getConsumableById(entry.id)?.name || entry.id} x${entry.quantity || 1}`)), "Inventory consumables become combat consumable actions."),
     line("Actor gear ids", actor ? list([...(actor.equipment?.weaponIds || []), actor.equipment?.armorId, actor.equipment?.shieldId].filter(Boolean)) : "Unavailable", "IDs retained for runtime inspection."),
   ]);
 }

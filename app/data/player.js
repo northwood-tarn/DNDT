@@ -6,7 +6,7 @@ import { armor } from "../data/armor.js";
 import { consumables } from "../data/consumables.js";
 
 function resolveItem(name) {
-  return weapons[name] || armor[name] || consumables[name] || { name, type: "unknown" };
+  return weapons.find((item) => item.id === name) || armor[name] || consumables.find((item) => item.id === name) || { name, type: "unknown" };
 }
 
 function resolveItems(list) {
@@ -115,17 +115,18 @@ export function createPlayer(config) {
     },
 
     useItem(item) {
-      if (item.type === "potion" && item.effect?.includes("HP")) {
-        const match = item.effect.match(/(\d+)d(\d+) \+ (\d+)/);
+      const formula = item.effects?.find((effect) => effect.type === "change-resource" && effect.resource === "health")?.amountFormula;
+      if (item.type === "usable" && formula) {
+        const match = formula.match(/(\d+)d(\d+)(?:\+(\d+))?/);
         if (match) {
-          const [, count, sides, bonus] = match.map(Number);
+          const [, count, sides, bonus = 0] = match.map(Number);
           const roll = Array.from({ length: count }, () => Math.ceil(Math.random() * sides)).reduce((a, b) => a + b, 0);
           const healAmount = roll + bonus;
           this.heal(healAmount);
         }
       }
 
-      if (item.uses === 1) {
+      if (item.type === "usable" && item.consumedOnUse !== false) {
         this.inventory = this.inventory.filter(i => i !== item);
       }
     },

@@ -308,6 +308,7 @@ label {
   filter: drop-shadow(0 12px 9px rgba(0, 0, 0, 0.56));
 }
 
+
 .actor-miniature-enemy .actor-miniature-figure {
   filter: drop-shadow(0 12px 9px rgba(0, 0, 0, 0.62)) saturate(0.82) brightness(0.9);
 }

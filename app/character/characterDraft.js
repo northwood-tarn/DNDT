@@ -55,6 +55,11 @@ export function createEmptyCharacterDraft(overrides = {}) {
       preparedRecipeIds: [],
       ...overrides.devices,
     },
+    presentation: {
+      portraitId: null,
+      miniatureId: null,
+      ...overrides.presentation,
+    },
     metadata: {
       source: "character_creator",
       notes: [],

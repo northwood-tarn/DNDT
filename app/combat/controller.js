@@ -189,12 +189,18 @@ export function createCombatController({ scenarioId = DEFAULT_COMBAT_SCENARIO_ID
           ...source.grid,
           blocked: Array.from(source.grid.blocked),
           cover: Array.from(source.grid.cover || []),
+          terrain: Array.from(source.grid.terrain || []),
+          elevation: Array.from(source.grid.elevation || []),
+          hazards: Array.from(source.grid.hazards || []),
         },
       }),
       grid: {
         ...source.grid,
         blocked: new Set(source.grid.blocked),
         cover: new Map(source.grid.cover || []),
+        terrain: new Map(source.grid.terrain || []),
+        elevation: new Map(source.grid.elevation || []),
+        hazards: new Map(source.grid.hazards || []),
       },
     };
   }

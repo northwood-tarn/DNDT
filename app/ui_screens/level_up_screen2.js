@@ -244,8 +244,8 @@ function armamentChoiceBlock() {
   list.className = "choice-list";
   for (const weapon of regularWeapons()) {
     const selected = state.armament === weapon.id;
-    const row = choiceRow(weapon.name, selected ? "selected" : weapon.damage, selected);
-    row.addEventListener("mouseenter", () => showDetail("Arcane Armament", `${weapon.description} Battlemage gains all regular and martial weapons at level 3, then chooses one proficient melee weapon as the arcane armament and can use Intelligence for attack and damage with it.`));
+    const row = choiceRow(weapon.name, selected ? "selected" : weapon.damageFormula, selected);
+    row.addEventListener("mouseenter", () => showDetail("Arcane Armament", `${weapon.inspectText} Battlemage gains all regular and martial weapons at level 3, then chooses one proficient melee weapon as the arcane armament and can use Intelligence for attack and damage with it.`));
     row.addEventListener("click", () => {
       state.armament = weapon.id;
       render();
@@ -609,7 +609,7 @@ function selectedSubclass() {
 
 function regularWeapons() {
   return weapons
-    .filter((weapon) => !weapon.magical && !weapon.effect && !weapon.modifiers)
+    .filter((weapon) => !weapon.magical)
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 

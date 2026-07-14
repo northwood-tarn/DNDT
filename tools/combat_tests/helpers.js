@@ -116,7 +116,7 @@ export function makeHarnessSnapshot() {
         speed: 6,
         position: { x: 0, y: 2 },
         saves: { wis: 1 },
-        inventory: [{ id: "healing_potion", qty: 2 }],
+        inventory: [{ id: "healing_potion", quantity: 2 }],
         actions: [
           createConsumableAction(getConsumableById("healing_potion")),
           {

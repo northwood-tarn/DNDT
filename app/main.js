@@ -1,6 +1,9 @@
 // app/main.js (ESM)
 import { attachExitListener, routeTo } from "./engine/sceneRouter.js";
+import { installSystemMenu } from "./ui/SystemMenu.js";
 import "./scenes/index.js";
+
+installSystemMenu();
 
 // === Dev console mirror -> in-game log (bottom pane) ===
 (function attachInGameLogMirror() {
@@ -72,6 +75,12 @@ async function startGame() {
     window.__dndtIntroMusicFinished = true;
     window.dispatchEvent(new CustomEvent("dndt:intro-music-finished"));
   };
+
+  // Direct scene previews do not play the title-screen cue underneath them.
+  if (["credits", "gameOver", "explorationLauncherPreview"].includes(new URLSearchParams(window.location.search).get("scene"))) {
+    markIntroMusicFinished();
+    return;
+  }
 
   // Intro audio stays here so the music still kicks in on launch.
   const audio = new Audio("./assets/audio/intro_theme.mp3");

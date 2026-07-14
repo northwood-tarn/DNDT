@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 2,
+  "runId": "demo-backlands-elian",
+  "savedAt": "2026-07-06T16:05:00.000Z",
+  "party": {
+    "activeSlot": "active",
+    "slots": ["active"],
+    "characterRecords": {
+      "active": {
+        "version": 2,
+        "id": "elian-marr",
+        "slot": "active",
+        "status": "invalid",
+        "savedAt": "2026-07-06T16:05:00.000Z",
+        "characterDraft": {
+          "identity": {
+            "characterName": "Elian Marr",
+            "classId": "wizard",
+            "subclassId": "abjurer",
+            "backgroundId": "sage",
+            "level": 8
+          }
+        },
+        "resolvedCharacterSheet": {
+          "identity": {
+            "characterName": "Elian Marr",
+            "classId": "wizard",
+            "subclassId": "abjurer",
+            "subclassName": "Abjurer",
+            "backgroundId": "sage",
+            "level": 8
+          }
+        }
+      }
+    },
+    "actorInstances": {},
+    "companions": { "recruited": {}, "activeIds": [] }
+  },
+  "world": {
+    "flags": {},
+    "visitedAreas": {},
+    "discovery": {},
+    "traversal": {},
+    "routeStack": [],
+    "location": { "scene": "characterSelect", "areaId": null }
+  },
+  "rests": { "shortRestsUsed": {}, "hungryStreak": {} },
+  "inventory": { "shared": [], "currency": { "gold": 231 } },
+  "encounter": { "activeEncounterId": null, "activeScenarioId": null, "state": null, "lastOutcome": null },
+  "quests": {},
+  "metadata": { "demo": true, "saveType": "autosave", "displayLocation": "Backlands — Approach to the Portal" }
+}

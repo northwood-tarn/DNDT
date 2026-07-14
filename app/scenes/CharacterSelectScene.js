@@ -1,53 +1,37 @@
-// CharacterSelectScene.js
-// Scene wrapper around the CharacterSelect UI module.
-// Keeps character creation inside the scene lifecycle so sceneManager
-// can handle transitions, fades, and cleanup consistently.
-
-import CharacterSelect from "./CharacterSelect.js";
+// Scene wrapper for the canonical full-screen character creator.
 
 export default class CharacterSelectScene {
   constructor() {
-    this._ctx = null;
-    this._params = null;
-    this._label = "CharacterSelect";
-    this._started = false;
+    this.root = document.getElementById("game-root");
+    this.frame = null;
   }
 
-  init(ctx) {
-    this._ctx = ctx;
-    console.info("[Scene:init] CharacterSelectScene");
+  start() {
+    if (!this.root) {
+      console.error("[CharacterSelectScene] #game-root not found");
+      return;
+    }
+
+    this.frame = document.createElement("iframe");
+    this.frame.className = "character-creator-frame";
+    this.frame.title = "Character creator";
+    this.frame.src = "./character_creator/step_index.html";
+    Object.assign(this.frame.style, {
+      position: "absolute",
+      inset: "0",
+      zIndex: "30",
+      width: "100%",
+      height: "100%",
+      border: "0",
+      background: "#061719"
+    });
+    this.root.appendChild(this.frame);
   }
 
-  enter(params = {}) {
-    this._params = params;
-    console.info("[Scene:enter] CharacterSelectScene", params);
-
-    // Mount the existing character creation UI into the shell panes.
-    // CharacterSelect.start() takes care of building all DOM and wiring events.
-    CharacterSelect.start(params);
-    this._started = true;
+  cleanup() {
+    this.frame?.remove();
+    this.frame = null;
   }
 
-  update(_dt) {
-    // No per-frame logic needed; UI is event-driven.
-  }
-
-  render(_g) {
-    // All visual work is handled by the DOM/UI module.
-  }
-
-  exit() {
-    console.info("[Scene:exit] CharacterSelectScene");
-
-    // NOTE: CharacterSelect.js currently has no explicit cleanup API.
-    // Other scenes that mount into the same panes will naturally overwrite
-    // this UI when they enter. If we later add CharacterSelect.cleanup(),
-    // call it here.
-    this._params = null;
-  }
-
-  destroy() {
-    console.info("[Scene:destroy] CharacterSelectScene");
-    this._ctx = null;
-  }
+  destroy() { this.cleanup(); }
 }

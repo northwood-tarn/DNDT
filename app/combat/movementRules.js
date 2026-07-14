@@ -1,12 +1,18 @@
 import { getConditionRules } from "./effects.js";
 import { combatObjectsAt } from "./combatObjects.js";
+import { canTraverseElevation, resolveHazardEntry } from "./tacticalTerrain.js";
 
 export function getMovementStepCost(snapshot, actor, from, to) {
   let cost = 1;
   if (isDifficultTerrain(snapshot, to)) cost += 1;
   if (hasConditionMechanic(actor, "crawlOnly")) cost += 1;
+  const elevation=canTraverseElevation(snapshot.grid,from,to,{maxElevationStep:actor.maxElevationStep??1});
+  if(!elevation.ok)return Infinity;
+  cost+=elevation.cost;
   return cost;
 }
+
+export function getMovementEntryHazards(snapshot,actor,to){return resolveHazardEntry(snapshot.grid,to,actor)}
 
 export function canUseMovementMode(actor, mode) {
   if (mode === "walk" && hasConditionMechanic(actor, "cannotMove")) {

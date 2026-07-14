@@ -75,21 +75,25 @@ export function resolveSourceMissReactionAdjustment(snapshot, context, log) {
 
 export function resolveCriticalReactionAdjustment(snapshot, context, log) {
   if (!context?.critical || !context?.target) return context.critical;
-  for (const actor of livingActors(snapshot)) {
-    if (actor.id === context.target.id || actor.team !== context.target.team) continue;
-    const reaction = chooseAutomaticReaction(actor, "ally_would_take_critical_hit", { ...context, target: context.target }, (item) => item.suppressCritical === true);
-    if (!reaction) continue;
-    spendReactionUse(snapshot, actor, reaction, log);
-    log.add("reaction.resolve", reactionDetail(snapshot, actor, reaction, {
-      targetId: context.target.id,
-      targetName: context.target.name,
-      sourceId: context.source?.id,
-      sourceName: context.source?.name,
-      result: "critical suppressed",
-    }));
-    return false;
-  }
-  return context.critical;
+  const candidate = livingActors(snapshot)
+    .filter((actor) => actor.id !== context.target.id && actor.team === context.target.team)
+    .map((actor) => ({
+      actor,
+      reaction: chooseAutomaticReaction(actor, "ally_would_take_critical_hit", { ...context, target: context.target }, (item) => item.suppressCritical === true),
+    }))
+    .filter(({ reaction }) => reaction)
+    .sort(compareReactionCandidates)[0];
+  if (!candidate) return context.critical;
+
+  spendReactionUse(snapshot, candidate.actor, candidate.reaction, log);
+  log.add("reaction.resolve", reactionDetail(snapshot, candidate.actor, candidate.reaction, {
+    targetId: context.target.id,
+    targetName: context.target.name,
+    sourceId: context.source?.id,
+    sourceName: context.source?.name,
+    result: "critical suppressed",
+  }));
+  return false;
 }
 
 export function resolveZeroHpReactionAdjustment(snapshot, context, log) {
@@ -101,12 +105,14 @@ export function resolveZeroHpReactionAdjustment(snapshot, context, log) {
     if (!reaction) continue;
     const leaveAtHp = reactionLeaveAtHp(reaction);
     spendReactionUse(snapshot, context.target, reaction, log);
+    const restoredSlotLevel = restoreHighestExpendedSpellSlot(context.target, reaction.restoreSlotMaxLevel);
     const adjustedAmount = Math.max(0, context.tempHpBefore + context.hpBefore - leaveAtHp);
     log.add("reaction.resolve", reactionDetail(snapshot, context.target, reaction, {
       sourceId: context.source?.id,
       sourceName: context.source?.name,
       originalAmount: context.amount,
       adjustedAmount,
+      restoredSlotLevel,
       result: `damage adjusted to leave ${leaveAtHp} HP`,
     }));
     return adjustedAmount;
@@ -438,4 +444,36 @@ function defaultReactionPriority(reaction) {
 
 function compareReactionPriority(a, b) {
   return (b.priority || 0) - (a.priority || 0) || String(a.id).localeCompare(String(b.id));
+}
+
+function compareReactionCandidates(a, b) {
+  return compareReactionPriority(a.reaction, b.reaction)
+    || String(a.actor.id).localeCompare(String(b.actor.id));
+}
+
+function restoreHighestExpendedSpellSlot(actor, maximumLevel) {
+  if (!Number.isFinite(maximumLevel)) return null;
+  const slots = actor?.spellSlots || actor?.spellcasting?.slots || {};
+  const levels = Object.keys(slots)
+    .map(Number)
+    .filter((level) => Number.isFinite(level) && level <= maximumLevel)
+    .sort((a, b) => b - a);
+  for (const level of levels) {
+    const slot = slots[level] ?? slots[String(level)];
+    if (Number.isFinite(slot)) continue;
+    if (!slot || typeof slot !== "object") continue;
+    if (Number.isFinite(slot.current) && Number.isFinite(slot.max) && slot.current < slot.max) {
+      slot.current += 1;
+      return level;
+    }
+    if (Number.isFinite(slot.remaining) && Number.isFinite(slot.max) && slot.remaining < slot.max) {
+      slot.remaining += 1;
+      return level;
+    }
+    if (Number.isFinite(slot.used) && slot.used > 0) {
+      slot.used -= 1;
+      return level;
+    }
+  }
+  return null;
 }

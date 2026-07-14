@@ -27,7 +27,7 @@ export function resolveClass(sheet, draft, classRegistry = CLASSES) {
   sheet.identity.classId = classRecord.id;
   sheet.identity.className = classRecord.name;
   sheet.durability.hitDice = `d${classRecord.hitDie}`;
-  sheet.durability.maxHp = calculateMaxHp(sheet, classRecord);
+  sheet.durability.maxHp = calculateMaxHp(sheet, classRecord, draft);
   addUniqueAll(sheet.proficiencies.armor, classRecord.armor || []);
   addUniqueAll(sheet.proficiencies.weapons, classRecord.weapons || []);
   addUniqueAll(sheet.proficiencies.tools, classRecord.tools || []);
@@ -204,7 +204,7 @@ function resolvePactChoice(sheet, draft, classRecord, choice) {
   }
 }
 
-function calculateMaxHp(sheet, classRecord) {
+function calculateMaxHp(sheet, classRecord, draft) {
   const levelOneBase = classRecord.hp?.level1?.base;
   if (!Number.isFinite(levelOneBase)) return null;
   const level = Math.max(1, sheet.identity.level || 1);
@@ -212,11 +212,16 @@ function calculateMaxHp(sheet, classRecord) {
   const levelOneCon = classRecord.hp.level1.addCon ? conMod : 0;
   const laterLevelBase = classRecord.hp?.perLevel?.base || 0;
   const laterLevelCon = classRecord.hp?.perLevel?.addCon ? conMod : 0;
-  const laterLevels = Math.max(0, level - 1);
+  const levelUpHistory = draft.choices?.levelUpHistory || {};
+  let laterLevelHitPoints = 0;
+  for (let gainedLevel = 2; gainedLevel <= level; gainedLevel += 1) {
+    const rolled = levelUpHistory[String(gainedLevel)]?.hpDie;
+    laterLevelHitPoints += Number.isInteger(rolled) ? rolled : laterLevelBase;
+  }
   const bonus = (sheet.durability.hitPointBonuses || []).reduce((total, item) => (
     total + (Number.isFinite(item.total) ? item.total : 0)
   ), 0);
-  return levelOneBase + levelOneCon + laterLevels * (laterLevelBase + laterLevelCon) + bonus;
+  return levelOneBase + levelOneCon + laterLevelHitPoints + Math.max(0, level - 1) * laterLevelCon + bonus;
 }
 
 function addFeatureSet(sheet, draft, featuresByLevel, source) {

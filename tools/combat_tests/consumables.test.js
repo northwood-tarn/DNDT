@@ -22,13 +22,13 @@ function testConsumableCombatActionsResolveGenerically() {
   hero.position = { x: 0, y: 0 };
   enemy.position = { x: 2, y: 0 };
   hero.inventory.push(
-    { id: "acid_vial", qty: 1 },
-    { id: "alchemists_fire", qty: 1 },
-    { id: "fire_granado", qty: 1 },
-    { id: "caltrops", qty: 1 },
-    { id: "hunting_trap", qty: 1 },
-    { id: "lightning_paper", qty: 1 },
-    { id: "basic_poison", qty: 1 }
+    { id: "acid_vial", quantity: 1 },
+    { id: "alchemists_fire", quantity: 1 },
+    { id: "fire_granado", quantity: 1 },
+    { id: "caltrops", quantity: 1 },
+    { id: "hunting_trap", quantity: 1 },
+    { id: "lightning_paper", quantity: 1 },
+    { id: "basic_poison", quantity: 1 }
   );
   hero.actions.push(
     createConsumableAction(CONSUMABLES.acid_vial, { attackBonus: 5 }),
@@ -121,7 +121,7 @@ function testPoisonerBypassesPoisonResistance() {
     damageTypes: ["poison"],
     ignoreResistance: true,
   }];
-  hero.inventory.push({ id: "basic_poison", qty: 1 });
+  hero.inventory.push({ id: "basic_poison", quantity: 1 });
   hero.actions.push(createConsumableAction(CONSUMABLES.basic_poison));
 
   assert.equal(resolveAction(snapshot, hero, "basic_poison", null, scriptedDice({ damage: 1 }), log), true);

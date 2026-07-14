@@ -350,7 +350,7 @@ const MARTIAL_GEAR = {
   weaponIds: ["longsword", "warhammer", "greatsword"],
   armorId: "chain_mail",
   shieldId: "shield",
-  inventory: [{ id: "healing_potion", qty: 2 }],
+  inventory: [{ id: "healing_potion", quantity: 2 }],
   attunedItemIds: [],
 };
 
@@ -375,7 +375,7 @@ const CLASS_PRESETS = {
     lineageId: "lightfoot",
     abilities: { strength: 10, dexterity: 16, constitution: 14, intelligence: 12, wisdom: 10, charisma: 10 },
     weaponMasteryIds: ["rapier", "shortsword"],
-    gear: { weaponIds: ["rapier", "shortsword"], armorId: "studded_leather", shieldId: null, inventory: [{ id: "healing_potion", qty: 1 }], attunedItemIds: [] },
+    gear: { weaponIds: ["rapier", "shortsword"], armorId: "studded_leather", shieldId: null, inventory: [{ id: "healing_potion", quantity: 1 }], attunedItemIds: [] },
     spells: { knownSpellIds: [], preparedSpellIds: [] },
   },
   wizard: {
@@ -383,7 +383,7 @@ const CLASS_PRESETS = {
     speciesId: "aasimar",
     lineageId: null,
     abilities: { strength: 8, dexterity: 14, constitution: 12, intelligence: 16, wisdom: 10, charisma: 10 },
-    gear: { weaponIds: ["quarterstaff"], armorId: null, shieldId: null, inventory: [{ id: "healing_potion", qty: 1 }], attunedItemIds: [] },
+    gear: { weaponIds: ["quarterstaff"], armorId: null, shieldId: null, inventory: [{ id: "healing_potion", quantity: 1 }], attunedItemIds: [] },
     spells: CASTER_SPELLS,
   },
   warlock: {
@@ -392,7 +392,7 @@ const CLASS_PRESETS = {
     lineageId: "infernal",
     abilities: { strength: 10, dexterity: 14, constitution: 12, intelligence: 10, wisdom: 10, charisma: 16 },
     weaponMasteryIds: ["longsword"],
-    gear: { weaponIds: ["longsword"], armorId: "leather", shieldId: null, inventory: [{ id: "healing_potion", qty: 1 }], attunedItemIds: [] },
+    gear: { weaponIds: ["longsword"], armorId: "leather", shieldId: null, inventory: [{ id: "healing_potion", quantity: 1 }], attunedItemIds: [] },
     spells: { knownSpellIds: ["eldritch_blast", "fire_bolt"], preparedSpellIds: ["hex", "armor_of_agathys", "hellish_rebuke", "banishment"] },
   },
   cleric: {
@@ -400,7 +400,7 @@ const CLASS_PRESETS = {
     speciesId: "aasimar",
     lineageId: null,
     abilities: { strength: 12, dexterity: 12, constitution: 14, intelligence: 10, wisdom: 16, charisma: 10 },
-    gear: { weaponIds: ["quarterstaff"], armorId: "half_plate", shieldId: "shield", inventory: [{ id: "healing_potion", qty: 2 }], attunedItemIds: [] },
+    gear: { weaponIds: ["quarterstaff"], armorId: "half_plate", shieldId: "shield", inventory: [{ id: "healing_potion", quantity: 2 }], attunedItemIds: [] },
     spells: { knownSpellIds: ["guidance", "sacred_flame"], preparedSpellIds: ["cure_wounds", "bless", "spirit_guardians", "banishment"] },
   },
   paladin: {

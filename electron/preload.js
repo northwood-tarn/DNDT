@@ -34,6 +34,15 @@ contextBridge.exposeInMainWorld('api', {
   loadGame: (slot) => safeInvoke('loadGame', { slot }),
   listSaves: () => safeInvoke('listSaves', {}),
   clearGame: (slot) => safeInvoke('clearGame', { slot }),
+  quit: () => ipcRenderer.send('app:quit'),
+  enterFramedMode: () => ipcRenderer.send('app:enter-framed'),
+  setFullscreen: (value) => ipcRenderer.send('app:set-fullscreen', value === true),
+  onSystemMenuToggle: (listener) => {
+    if (typeof listener !== 'function') return () => {};
+    const wrapped = () => listener();
+    ipcRenderer.on('app:toggle-system-menu', wrapped);
+    return () => ipcRenderer.removeListener('app:toggle-system-menu', wrapped);
+  },
 
   // Read local text files via main-process IPC (e.g., compiled Ink JSON)
   readTextFile: (relPath) => safeInvoke('fs:readText', relPath)

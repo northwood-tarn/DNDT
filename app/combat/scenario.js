@@ -1,4 +1,5 @@
 import { normalizeCombatActor, validateCombatActor } from "./actor.js";
+import { combatActorToActorDefinition, combatActorToActorInstance } from "../actors/actorAdapters.js";
 import { normalizeCombatObjects } from "./combatObjects.js";
 import { createGeneratedEncounterArenaScenario } from "./scenarios/generatedEncounterArena.js";
 import { createBacklandsFieldPlateauScenario, createDocksideStageGridScenario, createGeneratedCharacterArenaScenario, createGeneratedEmptyArenaScenario } from "./scenarios/generatedCharacterArena.js";
@@ -36,6 +37,25 @@ export function createCombatScenario(id = DEFAULT_COMBAT_SCENARIO_ID, options = 
 
 export function createSnapshotFromScenario(scenario) {
   const actors = scenario.actors.map((actor) => normalizeCombatActor(structuredClone(actor)));
+  const actorDefinitions = {};
+  const actorInstances = {};
+  for (const actor of actors) {
+    const definitionId = actor.actorContract?.definitionId || `actor.${actor.sourceId || actor.id}`;
+    const definition = scenario.actorDefinitions?.[definitionId]
+      || combatActorToActorDefinition(actor, {
+        id: definitionId,
+        kind: actor.kind || (actor.team === "enemies" ? "enemy" : actor.id === "generated_pc" ? "player" : "npc"),
+      });
+    const instance = combatActorToActorInstance(actor, definition.id);
+    actor.actorContract = {
+      definitionVersion: definition.schemaVersion,
+      instanceVersion: instance.schemaVersion,
+      definitionId: definition.id,
+      kind: definition.kind,
+    };
+    actorDefinitions[definition.id] = definition;
+    actorInstances[instance.id] = instance;
+  }
   const actorErrors = actors.flatMap((actor) => {
     const errors = validateCombatActor(actor);
     return errors.map((error) => `${actor.id || "(unknown)"}: ${error}`);
@@ -54,8 +74,13 @@ export function createSnapshotFromScenario(scenario) {
       height: scenario.grid.height,
       blocked: new Set(scenario.grid.blocked.map((pos) => `${pos.x},${pos.y}`)),
       cover: new Map((scenario.grid.cover || []).map((pos) => [`${pos.x},${pos.y}`, pos.kind])),
+      terrain: new Map((scenario.grid.terrain || []).map((pos) => [`${pos.x},${pos.y}`, pos.kind || "normal"])),
+      elevation: new Map((scenario.grid.elevation || []).map((pos) => [`${pos.x},${pos.y}`, Number(pos.level) || 0])),
+      hazards: new Map((scenario.grid.hazards || []).map((pos) => [`${pos.x},${pos.y}`, structuredClone(pos.hazards || [pos.hazard].filter(Boolean))])),
     },
     actors,
+    actorDefinitions,
+    actorInstances,
     combatObjects: normalizeCombatObjects(scenario.combatObjects),
     initiative: [],
     metadata: structuredClone(scenario.metadata || {}),

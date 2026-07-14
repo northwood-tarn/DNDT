@@ -16,6 +16,7 @@ import {
   nextStepToward,
 } from "./grid.js";
 import { livingActors } from "./resolver.js";
+import { canTargetAction, canUseAction, isHarmfulAction } from "./rules.js";
 
 export async function runAiTurn(snapshot, actor, controller) {
   if (!actor || actor.defeated || actor.hp <= 0) return;
@@ -25,12 +26,12 @@ export async function runAiTurn(snapshot, actor, controller) {
 }
 
 async function runRangedTurn(snapshot, actor, controller, profile) {
-  const action = getPrimaryAttack(actor);
+  const action = getPrimaryAttack(snapshot, actor, profile);
   if (!action) {
     await dodgeIfUseful(snapshot, actor, controller, profile, "no available attack, taking Dodge");
     return;
   }
-  let target = selectTarget(snapshot, actor, action.range, profile) || nearestEnemy(snapshot, actor);
+  let target = selectTarget(snapshot, actor, action, profile) || nearestEnemy(snapshot, actor);
 
   if (!target) return;
   if (!canShoot(snapshot, actor, target, action.range)) {
@@ -48,8 +49,8 @@ async function runRangedTurn(snapshot, actor, controller, profile) {
     }
   }
 
-  target = selectTarget(snapshot, actor, action.range, profile) || target;
-  if (hasAction(actor) && canShoot(snapshot, actor, target, action.range)) {
+  target = selectTarget(snapshot, actor, action, profile, { legalNow: true }) || target;
+  if (hasAction(actor) && canTargetAction(snapshot, actor, action, target).ok) {
     controller.log.add("ai.intent", {
       round: snapshot.round,
       actorId: actor.id,
@@ -61,17 +62,17 @@ async function runRangedTurn(snapshot, actor, controller, profile) {
     await controller.afterStep?.({ kind: "attack", actorId: actor.id, targetId: target.id });
   }
 
-  if (profile.seekCoverAfterAttack) await duckIntoCover(snapshot, actor, controller, profile);
+  if (profile.seekCoverAfterAttack) await duckIntoCover(snapshot, actor, controller, profile, action);
   if (hasAction(actor)) await dodgeIfUseful(snapshot, actor, controller, profile, "no shot taken, taking Dodge");
 }
 
 async function runMeleeTurn(snapshot, actor, controller, profile) {
-  const action = getPrimaryAttack(actor);
+  const action = getPrimaryAttack(snapshot, actor, profile);
   if (!action) {
     await dodgeIfUseful(snapshot, actor, controller, profile, "no available attack, taking Dodge");
     return;
   }
-  let target = selectTarget(snapshot, actor, action.range, profile) || nearestEnemy(snapshot, actor);
+  let target = selectTarget(snapshot, actor, action, profile) || nearestEnemy(snapshot, actor);
   if (!target) return;
 
   while (getMovementRemaining(actor) > 0 && distance(actor.position, target.position) > action.range) {
@@ -79,7 +80,7 @@ async function runMeleeTurn(snapshot, actor, controller, profile) {
     if (!step) break;
     if (!await moveOneStep(snapshot, actor, step, controller)) break;
     if (actor.hp <= 0 || snapshot.outcome) return;
-    target = nearestEnemy(snapshot, actor) || target;
+    target = selectTarget(snapshot, actor, action, profile) || target;
   }
 
   if (distance(actor.position, target.position) > action.range && profile.dashWhenOutOfRange) {
@@ -89,11 +90,12 @@ async function runMeleeTurn(snapshot, actor, controller, profile) {
       if (!step) break;
       if (!await moveOneStep(snapshot, actor, step, controller)) break;
       if (actor.hp <= 0 || snapshot.outcome) return;
-      target = nearestEnemy(snapshot, actor) || target;
+      target = selectTarget(snapshot, actor, action, profile) || target;
     }
   }
 
-  if (hasAction(actor) && distance(actor.position, target.position) <= action.range) {
+  target = selectTarget(snapshot, actor, action, profile, { legalNow: true }) || target;
+  if (hasAction(actor) && canTargetAction(snapshot, actor, action, target).ok) {
     controller.log.add("ai.intent", {
       round: snapshot.round,
       actorId: actor.id,
@@ -108,10 +110,19 @@ async function runMeleeTurn(snapshot, actor, controller, profile) {
   }
 }
 
-function selectTarget(snapshot, actor, range, profile) {
-  if (profile.targetPriority === "weakest_visible") return bestVisibleTarget(snapshot, actor, range);
-  if (profile.targetPriority === "weakest") return weakestEnemy(snapshot, actor);
-  return nearestEnemy(snapshot, actor);
+function selectTarget(snapshot, actor, action, profile, options = {}) {
+  const candidates = livingActors(snapshot, oppositeTeam(actor.team))
+    .filter((target) => options.legalNow
+      ? canTargetAction(snapshot, actor, action, target).ok
+      : isPotentialTarget(snapshot, actor, action, target));
+  if (profile.targetPriority === "weakest_visible") {
+    return candidates
+      .filter((target) => canShoot(snapshot, actor, target, action.range))
+      .sort((a, b) => a.hp - b.hp || distance(actor.position, a.position) - distance(actor.position, b.position) || String(a.id).localeCompare(String(b.id)))[0]
+      || sortTargets(candidates, actor, "weakest")[0]
+      || null;
+  }
+  return sortTargets(candidates, actor, profile.targetPriority)[0] || null;
 }
 
 function bestVisibleTarget(snapshot, actor, range) {
@@ -122,12 +133,12 @@ function bestVisibleTarget(snapshot, actor, range) {
 
 function nearestEnemy(snapshot, actor) {
   return livingActors(snapshot, oppositeTeam(actor.team))
-    .sort((a, b) => distance(actor.position, a.position) - distance(actor.position, b.position))[0] || null;
+    .sort((a, b) => distance(actor.position, a.position) - distance(actor.position, b.position) || String(a.id).localeCompare(String(b.id)))[0] || null;
 }
 
 function weakestEnemy(snapshot, actor) {
   return livingActors(snapshot, oppositeTeam(actor.team))
-    .sort((a, b) => a.hp - b.hp || distance(actor.position, a.position) - distance(actor.position, b.position))[0] || null;
+    .sort((a, b) => a.hp - b.hp || distance(actor.position, a.position) - distance(actor.position, b.position) || String(a.id).localeCompare(String(b.id)))[0] || null;
 }
 
 function canShoot(snapshot, actor, target, range) {
@@ -150,11 +161,11 @@ async function moveTowardFiringPosition(snapshot, actor, target, range, controll
   await moveAlongGreedyPath(snapshot, actor, destination, controller);
 }
 
-async function duckIntoCover(snapshot, actor, controller, profile) {
+async function duckIntoCover(snapshot, actor, controller, profile, selectedAttack = null) {
   if (!profile.preferCover) return;
   if (getMovementRemaining(actor) <= 0) return;
   const enemies = livingActors(snapshot, oppositeTeam(actor.team));
-  const attack = getPrimaryAttack(actor);
+  const attack = selectedAttack || getPrimaryAttack(snapshot, actor, profile);
   const coverReachable = findReachable(snapshot, actor, getMovementRemaining(actor))
     .filter(({ pos, steps }) => steps > 0 && coverSortValue(snapshot, pos, enemies) > 0)
     .filter(({ pos }) => enemies.some((enemy) => canShootFrom(snapshot, pos, enemy, attack?.range || 0)))
@@ -251,8 +262,36 @@ async function dodgeIfUseful(snapshot, actor, controller, profile, intent) {
   return used;
 }
 
-function getPrimaryAttack(actor) {
-  return actor.actions.find((action) => action.requiresTarget !== false && getActionUses(action) > 0);
+export function getAiActionCandidates(snapshot, actor, profile = getAiProfile(actor)) {
+  const declaredPriority = profile.actionPriority || profile.actionPriorities || [];
+  return (actor.actions || [])
+    .filter((action) => action.requiresTarget !== false)
+    .filter((action) => isHarmfulAction(action))
+    .filter((action) => getActionUses(action) > 0 && canUseAction(actor, action).ok)
+    .filter((action) => livingActors(snapshot, oppositeTeam(actor.team)).some((target) => isPotentialTarget(snapshot, actor, action, target)))
+    .sort((a, b) => actionPriority(b, declaredPriority) - actionPriority(a, declaredPriority) || String(a.id).localeCompare(String(b.id)));
+}
+
+function getPrimaryAttack(snapshot, actor, profile) {
+  return getAiActionCandidates(snapshot, actor, profile)[0] || null;
+}
+
+function actionPriority(action, declaredPriority) {
+  const declaredIndex = declaredPriority.indexOf(action.id);
+  if (declaredIndex >= 0) return 10000 - declaredIndex;
+  return Number(action.aiPriority ?? action.ai?.priority ?? 0) || 0;
+}
+
+function isPotentialTarget(snapshot, actor, action, target) {
+  const result = canTargetAction(snapshot, actor, action, target);
+  return result.ok || result.reason?.startsWith("out of range") || result.reason === "line of sight blocked";
+}
+
+function sortTargets(candidates, actor, priority) {
+  return [...candidates].sort((a, b) => {
+    if (priority === "weakest") return a.hp - b.hp || distance(actor.position, a.position) - distance(actor.position, b.position) || String(a.id).localeCompare(String(b.id));
+    return distance(actor.position, a.position) - distance(actor.position, b.position) || a.hp - b.hp || String(a.id).localeCompare(String(b.id));
+  });
 }
 
 function oppositeTeam(team) {

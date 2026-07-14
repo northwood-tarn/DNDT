@@ -13,11 +13,11 @@ const DEFAULT_SPELL_SAVE_DC = 10;
 const DEFAULT_ATTACK_BONUS = 0;
 
 export function createWeaponAction(weaponRecord, options = {}) {
-  if (!weaponRecord || weaponRecord.useTime === "exploration") return null;
-  const baseDamageType = options.damageType || inferWeaponDamageType(weaponRecord);
+  if (!weaponRecord) return null;
+  const baseDamageType = options.damageType || weaponRecord.damageType || inferWeaponDamageType(weaponRecord);
   const flatUntypedBonus = getFlatUntypedWeaponDamageBonus(weaponRecord);
   const damageBonus = (options.damageBonus ?? 0) + flatUntypedBonus;
-  const damage = options.damage || addDamageBonus(weaponRecord.damage, damageBonus);
+  const damage = options.damage || addDamageBonus(weaponRecord.damageFormula || weaponRecord.damage, damageBonus);
   const range = options.range ?? getWeaponRangeSquares(weaponRecord);
   const damageRiders = createWeaponDamageRiders(weaponRecord, baseDamageType);
   const mastery = getWeaponMastery(weaponRecord.mastery);
@@ -34,7 +34,7 @@ export function createWeaponAction(weaponRecord, options = {}) {
     id: options.id || weaponRecord.id,
     name: options.name || weaponRecord.name,
     type: "weapon_attack",
-    cost: mapUseTimeToCost(options.cost || weaponRecord.useTime),
+    cost: mapUseTimeToCost(options.cost || weaponRecord.actionCost || weaponRecord.useTime || "action"),
     range,
     attackBonus: options.attackBonus ?? DEFAULT_ATTACK_BONUS,
     damage,
@@ -421,7 +421,8 @@ function getSpellRangeSquares(spellRecord) {
 }
 
 function getWeaponRangeSquares(weaponRecord) {
-  if (weaponRecord.type === "melee") return 1;
+  if (Number.isFinite(weaponRecord.range)) return weaponRecord.range;
+  if ((weaponRecord.weaponType || weaponRecord.type) === "melee") return 1;
   const rangeProperty = (weaponRecord.properties || []).find((property) => /^range \(/i.test(property));
   const match = rangeProperty?.match(/range \((\d+)\//i);
   return feetToSquares(match ? Number(match[1]) : 5);
@@ -450,21 +451,28 @@ function propertyTag(property) {
 }
 
 function getFlatUntypedWeaponDamageBonus(weaponRecord) {
-  return (weaponRecord.modifiers?.damageBonuses || []).reduce((total, bonus) => {
-    if (typeof bonus?.amount !== "number" || bonus.type) return total;
-    return total + bonus.amount;
+  return (weaponRecord.damageBonuses || weaponRecord.modifiers?.damageBonuses || []).reduce((total, bonus) => {
+    const amount = bonus.damage ?? bonus.amount;
+    const damageType = bonus.damageType ?? bonus.type;
+    if (typeof amount !== "number" || damageType) return total;
+    return total + amount;
   }, 0);
 }
 
 function createWeaponDamageRiders(weaponRecord, baseDamageType) {
-  const riders = (weaponRecord.modifiers?.damageBonuses || [])
-    .filter((bonus) => bonus && (bonus.type || typeof bonus.amount !== "number"))
+  const riders = (weaponRecord.damageBonuses || weaponRecord.modifiers?.damageBonuses || [])
+    .map((bonus) => ({
+      damage: bonus.damage ?? bonus.amount,
+      damageFormula: bonus.damageFormula,
+      damageType: bonus.damageType ?? bonus.type,
+    }))
+    .filter((bonus) => bonus && (bonus.damageType || bonus.damageFormula || typeof bonus.damage !== "number"))
     .map((bonus, index) => ({
       id: `${weaponRecord.id || "weapon"}_damage_bonus_${index + 1}`,
-      name: bonus.type ? `${weaponRecord.name} ${bonus.type} bonus` : `${weaponRecord.name} damage bonus`,
+      name: bonus.damageType ? `${weaponRecord.name} ${bonus.damageType} bonus` : `${weaponRecord.name} damage bonus`,
       trigger: "source_hits_with_attack_roll",
-      damage: bonus.amount,
-      damageType: bonus.type || baseDamageType,
+      damage: bonus.damageFormula ?? bonus.damage,
+      damageType: bonus.damageType || baseDamageType,
     }));
   return riders.length ? riders : null;
 }

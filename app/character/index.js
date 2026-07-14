@@ -4,6 +4,7 @@ export { applyCreationStep, createCharacterDraftFromPlan } from "./characterCrea
 export { getCharacterCreationStepContract, getCreationStepById, CHARACTER_CREATION_STEPS } from "./characterCreationSteps.js";
 export { createCharacterChoicePools, createFeatChoicePools, createGearChoicePools, createSpellChoicePools, createWeaponMasteryChoicePools } from "./choicePools.js";
 export { createLevelUpManifest } from "./levelUpManifest.js";
+export { applyLevelUpToDraft, createLevelUpPlan, levelUpCharacterRecord, levelUpCharacterStore, validateLevelUpSubmission } from "./levelUpTransaction.js";
 export { createChoiceRequirementsReport } from "./choiceRequirementsReport.js";
 export { createEmptyResolvedCharacterSheet, validateResolvedCharacterSheet } from "./resolvedSheet.js";
 export { characterHasNarrativeAccess, createNarrativeAccessIndex } from "./narrativeAccess.js";

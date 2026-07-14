@@ -334,8 +334,10 @@ function weaponDamageBonus(sheet, weapon) {
 function weaponAbilityModifier(sheet, weapon) {
   const str = sheet.abilities.strength?.modifier || 0;
   const dex = sheet.abilities.dexterity?.modifier || 0;
+  if (weapon.attackAbility === "strength") return str;
+  if (weapon.attackAbility === "dexterity") return dex;
   if ((weapon.properties || []).includes("finesse")) return Math.max(str, dex);
-  if (weapon.type === "ranged") return dex;
+  if ((weapon.weaponType || weapon.type) === "ranged") return dex;
   return str;
 }
 

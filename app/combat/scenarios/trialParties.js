@@ -91,7 +91,7 @@ function createLevelSevenPc() {
       weaponIds: ["longsword", "warhammer"],
       armorId: "chain_mail",
       shieldId: "shield",
-      inventory: [{ id: "healing_potion", qty: 2 }],
+      inventory: [{ id: "healing_potion", quantity: 2 }],
       attunedItemIds: [],
     },
     spells: { knownSpellIds: [], preparedSpellIds: [] },
@@ -120,7 +120,7 @@ function createLevelSevenWizardDraft() {
     },
     abilities: { strength: 8, dexterity: 14, constitution: 12, intelligence: 16, wisdom: 10, charisma: 10 },
     choices: { backgroundAbilityScores: ["intelligence", "dexterity"] },
-    gear: { weaponIds: ["quarterstaff"], armorId: null, shieldId: null, inventory: [{ id: "healing_potion", qty: 1 }], attunedItemIds: [] },
+    gear: { weaponIds: ["quarterstaff"], armorId: null, shieldId: null, inventory: [{ id: "healing_potion", quantity: 1 }], attunedItemIds: [] },
     spells: {
       knownSpellIds: ["fire_bolt", "mage_hand", "ray_of_frost"],
       preparedSpellIds: ["magic_missile", "shield", "burning_hands", "thunderwave", "hold_person", "fireball"],
@@ -148,7 +148,7 @@ function createLevelSevenWarlockDraft() {
         book_of_shadows_cantrips: ["fire_bolt", "ray_of_frost"],
       },
     },
-    gear: { weaponIds: ["dagger"], armorId: "leather", shieldId: null, inventory: [{ id: "healing_potion", qty: 1 }], attunedItemIds: [] },
+    gear: { weaponIds: ["dagger"], armorId: "leather", shieldId: null, inventory: [{ id: "healing_potion", quantity: 1 }], attunedItemIds: [] },
     spells: {
       knownSpellIds: ["eldritch_blast", "dread_whisper"],
       preparedSpellIds: ["hex", "armor_of_agathys", "hellish_rebuke", "darkness", "hunger_of_hadar"],
@@ -172,7 +172,7 @@ function createLevelSevenPaladinDraft() {
       backgroundAbilityScores: ["strength", "charisma"],
       weaponMasteryIds: ["longsword", "warhammer"],
     },
-    gear: { weaponIds: ["longsword"], armorId: "chain_mail", shieldId: "shield", inventory: [{ id: "healing_potion", qty: 1 }], attunedItemIds: [] },
+    gear: { weaponIds: ["longsword"], armorId: "chain_mail", shieldId: "shield", inventory: [{ id: "healing_potion", quantity: 1 }], attunedItemIds: [] },
     spells: { knownSpellIds: [], preparedSpellIds: ["bless", "shield_of_faith", "cure_wounds"] },
   });
 }

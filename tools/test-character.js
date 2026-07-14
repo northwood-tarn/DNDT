@@ -1,4 +1,5 @@
 import { runAbilityScoreTests } from "./character_tests/ability_scores.test.js";
+import { runActorContractTests } from "./character_tests/actor_contract.test.js";
 import { runCharacterPipelineTests } from "./character_tests/pipeline.test.js";
 import { runCharacterRepositoryTests } from "./character_tests/character_repository.test.js";
 import { runCombatActorAdapterTests } from "./character_tests/combat_actor_adapter.test.js";
@@ -7,6 +8,7 @@ import { runFeatContractTests } from "./character_tests/feat_contract.test.js";
 import { runGeneratedVariantTests } from "./character_tests/generated_variants.test.js";
 import { runHighLevelReadinessTests } from "./character_tests/high_level_readiness.test.js";
 import { runLevelUpManifestTests } from "./character_tests/level_up_manifest.test.js";
+import { runLevelUpTransactionTests } from "./character_tests/level_up_transaction.test.js";
 import { runNarrativeAccessTests } from "./character_tests/narrative_access.test.js";
 import { runRepresentativeBuildTests } from "./character_tests/representative_builds.test.js";
 import { runReportsAndPreviewTests } from "./character_tests/reports_and_preview.test.js";
@@ -17,6 +19,7 @@ import { runStepCreatorPipelineTests } from "./character_tests/step_creator_pipe
 
 async function main() {
   runAbilityScoreTests();
+  runActorContractTests();
   runCharacterPipelineTests();
   runCharacterRepositoryTests();
   runCombatActorAdapterTests();
@@ -25,6 +28,7 @@ async function main() {
   runGeneratedVariantTests();
   runHighLevelReadinessTests();
   runLevelUpManifestTests();
+  runLevelUpTransactionTests();
   runNarrativeAccessTests();
   runRepresentativeBuildTests();
   runSubclassReadinessTests();

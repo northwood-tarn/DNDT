@@ -1,6 +1,8 @@
 
 # UI Principles
 
+For grand and local exploration, `app/docs/EXPLORATION_INTERFACE_CONTRACT.md` is the canonical presentation and interaction contract. Where general guidance in this file conflicts with that contract, the exploration contract takes precedence.
+
 ## Module Contract
 **Location:** docs/UI principles.md  
 **Role:** Guidance (UI layer design policy)  

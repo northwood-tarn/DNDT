@@ -1,10 +1,13 @@
 import { enemies, getEnemyStats } from "../data/enemies.js";
 import { expandEncounterEnemyRefs, getEncounterById } from "../data/encounters.js";
 import { compileEnemyActions } from "./enemyActionCompiler.js";
+import { combatActorToActorInstance, enemySourceToActorDefinition } from "../actors/actorAdapters.js";
 
 export function createEnemyCombatActor(enemyRef, options = {}) {
   const source = resolveEnemySource(enemyRef);
   if (!source) return null;
+
+  const definition = enemySourceToActorDefinition(source);
 
   const instanceId = options.id || source.id;
   const actionSource = {
@@ -15,7 +18,7 @@ export function createEnemyCombatActor(enemyRef, options = {}) {
   const resources = structuredClone(options.resources || source.resources || []);
   const features = structuredClone(options.features || source.features || []);
 
-  return {
+  const actor = {
     id: instanceId,
     sourceId: source.id,
     name: options.name || source.name,
@@ -58,6 +61,13 @@ export function createEnemyCombatActor(enemyRef, options = {}) {
     loot: structuredClone(source.loot || {}),
     actions: compileEnemyActions(actionSource, { ...options, resources, features }).filter(Boolean),
   };
+  const instance = combatActorToActorInstance(actor, definition.id);
+  actor.actorContract = {
+    definitionVersion: definition.schemaVersion,
+    instanceVersion: instance.schemaVersion,
+    definitionId: definition.id,
+  };
+  return actor;
 }
 
 function unique(values) {
@@ -66,9 +76,10 @@ function unique(values) {
 
 export function createEnemyCombatActors(enemyRefs = [], options = {}) {
   return enemyRefs.map((enemyRef, index) => {
-    const enemyId = typeof enemyRef === "string" ? enemyRef : enemyRef?.enemyId || enemyRef?.id;
+    const enemyId = String(typeof enemyRef === "string" ? enemyRef : enemyRef?.actorDefinitionId || enemyRef?.enemyId || enemyRef?.id || "enemy").replace(/^enemy\./, "");
     const instanceOptions = typeof enemyRef === "object" && enemyRef ? { ...enemyRef } : {};
     delete instanceOptions.enemyId;
+    delete instanceOptions.actorDefinitionId;
     return createEnemyCombatActor(enemyRef, {
       id: `${enemyId || "enemy"}_${index + 1}`,
       ...(options.defaults || {}),
@@ -88,8 +99,23 @@ export function getEnemySourceRecords() {
   return Object.values(enemies);
 }
 
+export function getEnemyActorDefinitions() {
+  return Object.values(enemies).map(enemySourceToActorDefinition);
+}
+
+export function getEnemyActorDefinition(enemyId) {
+  const source = getEnemyStats(String(enemyId || "").replace(/^enemy\./, ""));
+  return source ? enemySourceToActorDefinition(source) : null;
+}
+
 function resolveEnemySource(enemyRef) {
-  if (typeof enemyRef === "string") return getEnemyStats(enemyRef);
+  if (typeof enemyRef === "string") return getEnemyStats(enemyRef.replace(/^enemy\./, ""));
+  if (enemyRef?.actorDefinitionId) {
+    const enemyId = String(enemyRef.actorDefinitionId).replace(/^enemy\./, "");
+    const { actorDefinitionId, enemyId: legacyEnemyId, id, name, position, ...sourceOverrides } = enemyRef;
+    const source = getEnemyStats(enemyId);
+    return source ? { ...source, ...sourceOverrides } : null;
+  }
   if (enemyRef?.enemyId && getEnemyStats(enemyRef.enemyId)) {
     const { enemyId, id, name, position, ...sourceOverrides } = enemyRef;
     return { ...getEnemyStats(enemyId), ...sourceOverrides };

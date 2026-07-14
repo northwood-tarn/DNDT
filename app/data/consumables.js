@@ -6,7 +6,7 @@
 // - Structured combat metadata belongs in `combat`.
 // - Unsupported combat kinds are valid data, but require a resolver before use.
 
-export const consumables = [
+const legacyConsumableRecords = [
   {
     id: "rope_50_ft",
     name: "Rope (50 ft)",
@@ -376,6 +376,129 @@ export const consumables = [
     description: "A leather flask used to carry drinking water."
   }
 ];
+
+const TOOL_IDS = new Set(["rope_50_ft", "crowbar", "hammer", "tinderbox", "waterskin"]);
+const QUEST_IDS = new Set(["map_fragment"]);
+const EXCLUDED_IDS = new Set(["ration"]);
+const HEALING_KINDS = new Set(["healing"]);
+const THROWN_ATTACK_KINDS = new Set(["thrown_damage", "thrown_ongoing_damage"]);
+const THROWN_SAVE_KINDS = new Set(["area_damage"]);
+const SELF_EFFECT_KINDS = new Set(["condition_defense", "weapon_coating", "weapon_damage_buff"]);
+
+export const consumables = legacyConsumableRecords
+  .filter((record) => !EXCLUDED_IDS.has(record.id))
+  .map(toCanonicalItemRecord);
+
+function toCanonicalItemRecord(record) {
+  if (TOOL_IDS.has(record.id)) {
+    return {
+      id: record.id,
+      type: "tool",
+      name: record.name,
+      inspectText: record.description,
+      stackable: false,
+      maxStackSize: 1,
+      useHookId: record.id,
+      value: record.value,
+    };
+  }
+  if (QUEST_IDS.has(record.id)) {
+    return {
+      id: record.id,
+      type: "quest",
+      name: record.name,
+      inspectText: record.description,
+      stackable: true,
+      maxStackSize: 99,
+      keyComponent: { keyId: "map_fragments" },
+    };
+  }
+
+  const runtime = structuredClone(record.combat || {});
+  const canonical = {
+    id: record.id,
+    type: "usable",
+    name: record.name,
+    inspectText: record.description,
+    stackable: record.id !== "hunting_trap",
+    maxStackSize: record.id === "hunting_trap" ? 1 : 10,
+    availability: HEALING_KINDS.has(runtime.kind) || runtime.kind === "condition_defense" ? "anywhere" : "combat",
+    targets: canonicalTargets(runtime.kind),
+    consumedOnUse: record.consumeOnUse !== false,
+    combatCost: canonicalCombatCost(record.useTime),
+    effects: canonicalEffects(runtime),
+    value: record.value,
+    runtime,
+  };
+  const delivery = canonicalDelivery(runtime);
+  if (delivery) canonical.delivery = delivery;
+  return canonical;
+}
+
+function canonicalTargets(kind) {
+  if (HEALING_KINDS.has(kind) || kind === "condition_defense") return ["self", "ally"];
+  if (SELF_EFFECT_KINDS.has(kind)) return ["self"];
+  if (kind === "stabilize") return ["ally"];
+  return ["enemy"];
+}
+
+function canonicalCombatCost(useTime) {
+  if (useTime === "bonus" || useTime === "bonus_action") return "bonus-action";
+  if (useTime === "reaction") return "reaction";
+  return "action";
+}
+
+function canonicalEffects(runtime) {
+  if (runtime.kind === "healing") {
+    return [{ type: "change-resource", resource: "health", amountFormula: runtime.healing }];
+  }
+  if (runtime.kind === "thrown_damage" || runtime.kind === "area_damage") {
+    return [{ type: "damage", damageFormula: runtime.damage, damageType: runtime.damageType }];
+  }
+  if (runtime.kind === "thrown_ongoing_damage") {
+    return [{ type: "add-condition", conditionId: "burning" }];
+  }
+  return [];
+}
+
+function canonicalDelivery(runtime) {
+  if (THROWN_ATTACK_KINDS.has(runtime.kind)) {
+    return {
+      kind: "thrown",
+      range: feetToSquares(runtime.rangeFt || 20),
+      resolution: {
+        type: "attack",
+        ability: "dexterity",
+        addProficiency: true,
+      },
+    };
+  }
+  if (THROWN_SAVE_KINDS.has(runtime.kind)) {
+    return {
+      kind: "thrown",
+      range: feetToSquares(runtime.rangeFt || 20),
+      resolution: {
+        type: "save",
+        ability: expandAbility(runtime.save?.ability || "dex"),
+        dc: runtime.save?.dc || 10,
+        onSuccess: runtime.save?.onSave === "half" ? "half" : "none",
+      },
+      area: {
+        shape: runtime.area?.shape || "radius",
+        size: feetToSquares(runtime.area?.radiusFt || runtime.area?.sizeFt || 5),
+      },
+    };
+  }
+  return null;
+}
+
+function expandAbility(ability) {
+  return ({ str: "strength", dex: "dexterity", con: "constitution", int: "intelligence", wis: "wisdom", cha: "charisma" })[ability] || ability;
+}
+
+function feetToSquares(feet) {
+  return Math.max(1, Math.ceil(Number(feet) / 5));
+}
 
 export function getConsumableById(id){
   return consumables.find(c => c.id === id) || null;

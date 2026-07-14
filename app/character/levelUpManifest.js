@@ -2,16 +2,20 @@ import { getClassById } from "../data/classes.js";
 import { listFeats } from "../data/feats.js";
 import { SPELLS, listSpellsByClass } from "../data/spells.js";
 import { weapons } from "../data/weapons.js";
+import { listDeviceRecipes } from "../data/deviceRecipes.js";
+import { SKILL_OPTIONS } from "../character_creator/creatorHarnessOptions.js";
 import { createFeatChoicePools, createSpellChoicePools } from "./choicePools.js";
 
-export function createLevelUpManifest(draft, { toLevel = (draft.identity?.level || 1) + 1 } = {}) {
+export function createLevelUpManifest(draft, { toLevel = (draft.identity?.level || 1) + 1, values = {} } = {}) {
   const classRecord = getClassById(draft.identity?.classId);
   if (!classRecord) throw new Error(`Cannot create level-up manifest for unknown class: ${draft.identity?.classId}`);
   const fromLevel = draft.identity?.level || Math.max(1, toLevel - 1);
   const targetDraft = withLevel(draft, toLevel);
+  const classSteps = classChoiceSteps(classRecord, toLevel);
+  applyPreliminaryClassChoices(targetDraft, classSteps, values);
   const steps = [
     hpStep(classRecord, toLevel),
-    ...classChoiceSteps(classRecord, toLevel),
+    ...classSteps,
     ...spellDeltaSteps(targetDraft),
     ...advancementSteps(classRecord, targetDraft, toLevel),
     ...featureChoiceSteps(classRecord, targetDraft, toLevel),
@@ -28,6 +32,19 @@ export function createLevelUpManifest(draft, { toLevel = (draft.identity?.level 
     steps,
     grants,
   };
+}
+
+function applyPreliminaryClassChoices(targetDraft, steps, values) {
+  for (const step of steps) {
+    const value = values[step.id];
+    const selected = Array.isArray(value) ? value[0] : value;
+    if (!selected || !(step.options || []).some((option) => option.id === selected)) continue;
+    if (step.path === "identity.subclassId") targetDraft.identity.subclassId = selected;
+    if (step.path === "identity.pactId") targetDraft.identity.pactId = selected;
+    if (step.path?.startsWith("choices.classChoices.")) {
+      targetDraft.choices.classChoices[step.path.split(".").at(-1)] = value;
+    }
+  }
 }
 
 function hpStep(classRecord, level) {
@@ -171,6 +188,13 @@ function featureChoiceStep(classRecord, targetDraft, owner, feature, requirement
 
 function featureChoiceOptions(classRecord, targetDraft, requirement, level) {
   if (requirement.options?.length) return requirement.options.map((id) => optionByKind(requirement.kind, id));
+  if (requirement.kind === "skill") return SKILL_OPTIONS.map((id) => ({ id, name: titleCase(id) }));
+  if (requirement.kind === "device_recipe") {
+    return listDeviceRecipes()
+      .filter((recipe) => (recipe.minLevel || 1) <= level)
+      .map((recipe) => ({ id: recipe.id, name: recipe.name, description: recipe.text || "" }))
+      .sort(byName);
+  }
   if (requirement.kind === "spell") {
     if (requirement.id === "book_of_shadows_cantrips") {
       return Object.values(SPELLS).filter((spell) => spell.active !== false && spell.level === 0).map(spellOption).sort(byName);
@@ -184,7 +208,7 @@ function featureChoiceOptions(classRecord, targetDraft, requirement, level) {
     const equipped = new Set(targetDraft.gear?.weaponIds || []);
     return weapons
       .filter((weapon) => equipped.has(weapon.id) || !weapon.magical)
-      .map((weapon) => ({ id: weapon.id, name: weapon.name, description: weapon.description || "", meta: weapon.damage || "" }))
+      .map((weapon) => ({ id: weapon.id, name: weapon.name, description: weapon.inspectText || "", meta: weapon.damageFormula || "" }))
       .sort(byName);
   }
   return [];

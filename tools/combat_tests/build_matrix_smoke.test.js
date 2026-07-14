@@ -163,7 +163,7 @@ export function draftFor(spec) {
       weaponIds: ["longsword", "dagger", "quarterstaff"],
       armorId: null,
       shieldId: null,
-      inventory: [{ id: "healing_potion", qty: 1 }],
+      inventory: [{ id: "healing_potion", quantity: 1 }],
       attunedItemIds: [],
     },
     spells: spellChoicesFor(spec.classId, spec.level),

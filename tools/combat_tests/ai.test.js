@@ -458,6 +458,41 @@ async function testAiStopsWhenMovementPathIsBlockedByCombatObject() {
   assert.ok(steps.includes("intent"), "AI should emit an observable blocked-path step");
 }
 
+async function testFightDataCanPrioritizeSpecificEnemyActions() {
+  const snapshot = createSnapshotFromScenario({
+    id: "ai-action-priority",
+    grid: { width: 3, height: 1, blocked: [], cover: [] },
+    actors: [
+      {
+        id: "hero", name: "Hero", team: "heroes", role: "fighter", token: "H",
+        hp: 20, maxHp: 20, ac: 12, speed: 6, position: { x: 0, y: 0 }, saves: {}, actions: [],
+      },
+      {
+        id: "enemy", name: "Enemy", team: "enemies", role: "swordsman", token: "E",
+        hp: 20, maxHp: 20, ac: 12, speed: 6, position: { x: 1, y: 0 }, saves: {},
+        ai: { profile: "melee", actionPriority: ["fight_specific_strike", "basic_strike"] },
+        actions: [
+          { id: "basic_strike", name: "Basic Strike", type: "weapon_attack", range: 1, attackBonus: 5, damage: "1d6", damageType: "slashing" },
+          { id: "fight_specific_strike", name: "Fight-specific Strike", type: "weapon_attack", range: 1, attackBonus: 5, damage: "1d8", damageType: "force" },
+        ],
+      },
+    ],
+  });
+  const log = createCombatLog();
+  const controller = {
+    log,
+    move: (actorId, pos) => moveActor(snapshot, snapshot.actors.find((actor) => actor.id === actorId), pos, log, { dice: fixedDice() }),
+    action: (actorId, actionId, targetId) => resolveAction(snapshot, snapshot.actors.find((actor) => actor.id === actorId), actionId, targetId, fixedDice(), log),
+    afterStep: async () => {},
+  };
+
+  await runAiTurn(snapshot, snapshot.actors[1], controller);
+  assert.ok(
+    log.events.some((event) => event.type === "attack.roll" && event.detail.actionId === "fight_specific_strike"),
+    "fight data should be able to prioritize a specific legal action without replacing the general AI",
+  );
+}
+
 
 export async function runAiCombatTests() {
   testEnemyDataAiProfilesAreRegistered();
@@ -468,6 +503,7 @@ export async function runAiCombatTests() {
   await testAiProfileCanPreferNearestTarget();
   await testArcherPrioritizesBestCoverInRange();
   await testAiStopsWhenMovementPathIsBlockedByCombatObject();
+  await testFightDataCanPrioritizeSpecificEnemyActions();
 }
 
 function testEnemyDataAiProfilesAreRegistered() {

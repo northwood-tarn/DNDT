@@ -1,6 +1,11 @@
 import { createCharacterPipelineExport } from "./characterPipelineExport.js";
+import {
+  combatActorToActorInstance,
+  resolvedSheetToActorDefinition,
+} from "../actors/actorAdapters.js";
+import { resolveActorToCombatActor } from "../actors/actorContract.js";
 
-export const CHARACTER_RECORD_VERSION = 1;
+export const CHARACTER_RECORD_VERSION = 2;
 export const DEFAULT_CHARACTER_SLOT = "active";
 export const DEFAULT_CHARACTER_STORAGE_NAMESPACE = "dndt.character.";
 
@@ -12,6 +17,15 @@ export function createCharacterRecord(draft, options = {}) {
     resolveOptions: options.resolveOptions,
   });
   const valid = Boolean(pipelineExport.validityReport?.valid && pipelineExport.combatActor);
+  const actorDefinition = valid
+    ? resolvedSheetToActorDefinition(pipelineExport.resolvedCharacterSheet, pipelineExport.combatActor, {
+        id: options.definitionId,
+        kind: options.kind || "player",
+      })
+    : null;
+  const actorInstance = valid
+    ? combatActorToActorInstance(pipelineExport.combatActor, actorDefinition.id)
+    : null;
   return {
     version: CHARACTER_RECORD_VERSION,
     id: options.id || stableCharacterId(pipelineExport.characterDraft),
@@ -21,6 +35,8 @@ export function createCharacterRecord(draft, options = {}) {
     characterDraft: pipelineExport.characterDraft,
     resolvedCharacterSheet: pipelineExport.resolvedCharacterSheet,
     combatActor: pipelineExport.combatActor,
+    actorDefinition,
+    actorInstance,
     runtime: createCharacterRuntimeState(pipelineExport.combatActor),
     validityReport: pipelineExport.validityReport,
     preview: pipelineExport.preview,
@@ -87,7 +103,12 @@ export function loadCharacterRecord(options = {}) {
 
 export function loadCombatActorFromCharacter(options = {}) {
   const record = options.record || loadCharacterRecord(options);
-  if (!record || record.status !== "ready" || !record.combatActor) return null;
+  if (!record || record.status !== "ready") return null;
+  if (record.actorDefinition && record.actorInstance) {
+    const instance = applyRuntimeStateToActorInstance(record.actorInstance, record.runtime);
+    return resolveActorToCombatActor(record.actorDefinition, instance);
+  }
+  if (!record.combatActor) return null;
   return applyRuntimeStateToCombatActor(record.combatActor, record.runtime);
 }
 
@@ -134,6 +155,9 @@ export function updateCharacterRecordFromCombatActor(record, actor, options = {}
     ...normalized,
     savedAt: options.savedAt || new Date().toISOString(),
     runtime: createCharacterRuntimeState(actor),
+    actorInstance: normalized.actorDefinition
+      ? combatActorToActorInstance(actor, normalized.actorDefinition.id)
+      : normalized.actorInstance,
   });
 }
 
@@ -153,18 +177,55 @@ export function normalizeCharacterRecord(record) {
   if (!record || typeof record !== "object") throw new Error("CharacterRecord must be an object");
   if (!record.characterDraft) throw new Error("CharacterRecord.characterDraft is required");
   if (!record.resolvedCharacterSheet) throw new Error("CharacterRecord.resolvedCharacterSheet is required");
+  const combatActor = record.combatActor ? structuredClone(record.combatActor) : null;
+  const actorDefinition = record.actorDefinition
+    ? structuredClone(record.actorDefinition)
+    : combatActor
+      ? resolvedSheetToActorDefinition(record.resolvedCharacterSheet, combatActor, {
+          id: `character.${record.id || stableCharacterId(record.characterDraft)}`,
+          kind: "player",
+        })
+      : null;
+  const actorInstance = record.actorInstance
+    ? structuredClone(record.actorInstance)
+    : combatActor && actorDefinition
+      ? combatActorToActorInstance(combatActor, actorDefinition.id)
+      : null;
   return {
-    version: record.version || CHARACTER_RECORD_VERSION,
+    version: CHARACTER_RECORD_VERSION,
     id: record.id || stableCharacterId(record.characterDraft),
     slot: record.slot || DEFAULT_CHARACTER_SLOT,
     status: record.status === "ready" && record.combatActor ? "ready" : "invalid",
     savedAt: record.savedAt || new Date().toISOString(),
     characterDraft: structuredClone(record.characterDraft),
     resolvedCharacterSheet: structuredClone(record.resolvedCharacterSheet),
-    combatActor: record.combatActor ? structuredClone(record.combatActor) : null,
+    combatActor,
+    actorDefinition,
+    actorInstance,
     runtime: structuredClone(record.runtime || createCharacterRuntimeState(record.combatActor)),
     validityReport: structuredClone(record.validityReport || null),
     preview: structuredClone(record.preview || null),
+  };
+}
+
+function applyRuntimeStateToActorInstance(instance, runtime) {
+  if (!instance || !runtime) return structuredClone(instance);
+  return {
+    ...structuredClone(instance),
+    state: {
+      ...(instance.state || {}),
+      hp: runtime.hp,
+      maxHp: runtime.maxHp,
+      tempHp: runtime.tempHp || 0,
+      defeated: runtime.defeated === true,
+      spellSlots: structuredClone(runtime.spellSlots || {}),
+      resources: structuredClone(runtime.resources || []),
+      inventory: structuredClone(runtime.inventory || []),
+      conditions: structuredClone(runtime.conditions || []),
+      activeEffects: structuredClone(runtime.activeEffects || []),
+      marks: structuredClone(runtime.marks || []),
+      luck: structuredClone(runtime.luck || null),
+    },
   };
 }
 

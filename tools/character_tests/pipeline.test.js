@@ -189,7 +189,7 @@ function resolvesGeneralFeatEffects() {
   const poisonerSheet = resolveCharacterSheet(poisonerDraft, { backgrounds: testBackgrounds }, { allowNonCreationLevel: true });
   assert.equal(poisonerSheet.abilities.dexterity.score, 11);
   assert.equal(poisonerSheet.proficiencies.tools.includes("poisoners_kit"), true);
-  assert.deepEqual(poisonerSheet.equipment.inventory.find((item) => item.id === "basic_poison"), { id: "basic_poison", qty: 2 });
+  assert.deepEqual(poisonerSheet.equipment.inventory.find((item) => item.id === "basic_poison"), { id: "basic_poison", quantity: 2 });
   assert.equal(poisonerSheet.featureHooks.some((hook) => hook.id === "poisoner_ignore_poison_resistance"), true);
   assert.deepEqual(poisonerSheet.metadata.unresolved, []);
 
@@ -719,7 +719,7 @@ function preservesDraftGearAndSpellsWithoutResolvingMechanics() {
       weaponIds: ["dagger"],
       armorId: "leather_armor",
       shieldId: null,
-      inventory: [{ id: "potion_of_healing", qty: 2 }],
+      inventory: [{ id: "healing_potion", quantity: 2 }],
       attunedItemIds: ["ember_standard"],
     },
     spells: {
@@ -731,7 +731,7 @@ function preservesDraftGearAndSpellsWithoutResolvingMechanics() {
   const sheet = resolveCharacterSheet(draft);
   assert.equal(sheet.proficiencyBonus, 2);
   assert.deepEqual(sheet.equipment.weaponIds, ["dagger"]);
-  assert.deepEqual(sheet.equipment.inventory, [{ id: "potion_of_healing", qty: 2 }]);
+  assert.deepEqual(sheet.equipment.inventory, [{ id: "healing_potion", quantity: 2 }]);
   assert.deepEqual(sheet.spellcasting.knownSpellIds, ["fire_bolt"]);
   assert.deepEqual(sheet.spellcasting.preparedSpellIds, ["detect_magic"]);
 }

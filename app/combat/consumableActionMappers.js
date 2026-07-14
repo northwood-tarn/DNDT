@@ -1,13 +1,13 @@
 export function createActionFromConsumable(consumableRecord, options = {}) {
-  if (!consumableRecord || consumableRecord.useTime === "exploration") return null;
-  const combat = consumableRecord.combat || {};
+  if (!consumableRecord || consumableRecord.type !== "usable" || !["combat", "anywhere"].includes(consumableRecord.availability)) return null;
+  const combat = consumableRecord.runtime || {};
   const base = {
     id: options.id || consumableRecord.id,
     name: options.name || consumableRecord.name,
-    cost: mapUseTimeToCost(options.cost || consumableRecord.useTime),
+    cost: mapCombatCost(options.cost || consumableRecord.combatCost),
     itemId: consumableRecord.id,
-    description: describeConsumable(consumableRecord),
-    consumeOnResolve: consumableRecord.consumeOnUse !== false,
+    description: consumableRecord.inspectText || consumableRecord.name,
+    consumeOnResolve: consumableRecord.consumedOnUse !== false,
   };
 
   if (combat.kind === "healing") {
@@ -15,7 +15,7 @@ export function createActionFromConsumable(consumableRecord, options = {}) {
       ...base,
       type: "consumable",
       requiresTarget: false,
-      healing: options.healing || combat.healing || parseHealingDice(consumableRecord.effect),
+      healing: options.healing || resourceFormula(consumableRecord, "health") || combat.healing,
       tags: { harmful: false },
     };
   }
@@ -25,7 +25,7 @@ export function createActionFromConsumable(consumableRecord, options = {}) {
       ...base,
       type: "weapon_attack",
       requiresTarget: true,
-      range: feetToSquares(combat.rangeFt || 20),
+      range: consumableRecord.delivery?.range ?? feetToSquares(combat.rangeFt || 20),
       attackBonus: options.attackBonus ?? 0,
       damage: combat.damage,
       damageType: combat.damageType,
@@ -39,9 +39,9 @@ export function createActionFromConsumable(consumableRecord, options = {}) {
       ...base,
       type: "spell_area_save",
       requiresTarget: true,
-      range: feetToSquares(combat.rangeFt || 20),
-      saveAbility: combat.save?.ability || "dex",
-      spellSaveDC: combat.save?.dc || options.spellSaveDC || 10,
+      range: consumableRecord.delivery?.range ?? feetToSquares(combat.rangeFt || 20),
+      saveAbility: abbreviateAbility(consumableRecord.delivery?.resolution?.ability) || combat.save?.ability || "dex",
+      spellSaveDC: consumableRecord.delivery?.resolution?.dc || combat.save?.dc || options.spellSaveDC || 10,
       damage: combat.damage,
       damageType: combat.damageType,
       targeting: targetingFromArea(combat.area),
@@ -111,7 +111,7 @@ export function createActionFromConsumable(consumableRecord, options = {}) {
 }
 
 function objectFromConsumable(item) {
-  const combat = item.combat || {};
+  const combat = item.runtime || {};
   const area = combat.area || {};
   const effects = [];
   if (combat.damage || combat.ignitedDamage) {
@@ -188,7 +188,7 @@ function ongoingDamageEffects(combat) {
 }
 
 function weaponRiderEffect(item) {
-  const combat = item.combat || {};
+  const combat = item.runtime || {};
   const damage = combat.bonusDamage || combat.damage;
   const remainingHits = Number.isFinite(combat.maxHits) ? combat.maxHits : null;
   return {
@@ -231,21 +231,18 @@ function areaShape(area = {}) {
   return "cube";
 }
 
-function describeConsumable(item) {
-  const parts = [item.name, item.effect, item.description].filter(Boolean);
-  return parts.join(" | ");
+function resourceFormula(item, resource) {
+  return (item.effects || []).find((effect) => effect.type === "change-resource" && effect.resource === resource)?.amountFormula || null;
 }
 
-function parseHealingDice(effect = "") {
-  const match = effect.match(/(\d+d\d+(?:\s*[+-]\s*\d+)?)\s*HP/i);
-  return match ? match[1].replace(/\s+/g, "") : null;
-}
-
-function mapUseTimeToCost(useTime = "action") {
-  if (useTime === "bonus_action" || useTime === "bonus") return "bonus";
-  if (useTime === "reaction") return "reaction";
-  if (useTime === "free") return "movement";
+function mapCombatCost(cost = "action") {
+  if (cost === "bonus-action" || cost === "bonus") return "bonus";
+  if (cost === "reaction") return "reaction";
   return "action";
+}
+
+function abbreviateAbility(ability) {
+  return ({ strength: "str", dexterity: "dex", constitution: "con", intelligence: "int", wisdom: "wis", charisma: "cha" })[ability] || ability;
 }
 
 function feetToSquares(feet) {

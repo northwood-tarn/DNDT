@@ -92,7 +92,7 @@ function previewEquipment(sheet) {
     inventory: (sheet.equipment.inventory || []).map((entry) => ({
       id: entry.id,
       name: getConsumableById(entry.id)?.name || entry.id,
-      qty: entry.qty,
+      quantity: entry.quantity,
     })),
     attunedItemIds: [...(sheet.equipment.attunedItemIds || [])],
   };

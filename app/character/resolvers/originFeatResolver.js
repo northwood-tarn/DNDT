@@ -101,8 +101,8 @@ function applyInventory(sheet, entries) {
   for (const entry of entries) {
     if (!entry.id) continue;
     const existing = sheet.equipment.inventory.find((item) => item.id === entry.id);
-    if (existing) existing.qty = (existing.qty || 0) + (entry.qty || 1);
-    else sheet.equipment.inventory.push({ id: entry.id, qty: entry.qty || 1 });
+    if (existing) existing.quantity = (existing.quantity || 0) + (entry.quantity || 1);
+    else sheet.equipment.inventory.push({ id: entry.id, quantity: entry.quantity || 1 });
   }
 }
 

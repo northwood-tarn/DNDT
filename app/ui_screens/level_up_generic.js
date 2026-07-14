@@ -1,4 +1,4 @@
-import { createLevelUpManifest, createStarterCharacterDraft } from "../character/index.js";
+import { applyLevelUpToDraft, createLevelUpManifest, createStarterCharacterDraft, validateLevelUpSubmission } from "../character/index.js";
 import { dissipateGreenFog } from "../ui/fogDissolve.js";
 
 const url = new URL(window.location.href);
@@ -25,14 +25,14 @@ render();
 
 function render() {
   const toLevel = Math.min(maxLevel, (state.draft.identity.level || 1) + 1);
-  const manifest = createLevelUpManifest(state.draft, { toLevel });
+  const manifest = createLevelUpManifest(state.draft, { toLevel, values: state.values });
   els.levelTitle.textContent = `Level ${manifest.toLevel}`;
   els.characterLine.textContent = `${state.draft.identity.characterName}, ${manifest.className}`;
   els.levelContent.replaceChildren(...[
     ...manifest.steps.map((step) => renderStep(step)),
     ...renderGrants(manifest.grants),
   ].filter(Boolean));
-  els.completeLevelButton.disabled = !manifest.steps.every((step) => stepComplete(step));
+  els.completeLevelButton.disabled = !validateLevelUpSubmission(manifest, state.values).valid;
   els.completeLevelButton.onclick = () => complete(manifest);
 }
 
@@ -180,8 +180,7 @@ function renderGrants(grants) {
 
 async function complete(manifest) {
   if (els.completeLevelButton.disabled) return;
-  for (const step of manifest.steps) applyStep(step);
-  state.draft.identity.level = manifest.toLevel;
+  state.draft = applyLevelUpToDraft(state.draft, manifest, state.values);
   state.values = {};
   if (manifest.toLevel >= maxLevel) {
     els.completeLevelButton.disabled = true;
@@ -190,33 +189,6 @@ async function complete(manifest) {
     return;
   }
   render();
-}
-
-function applyStep(step) {
-  if (step.kind === "hp_roll") return;
-  if (step.kind === "feat_or_asi") {
-    const value = state.values[step.id];
-    setPath(step.path, { kind: "feat", featId: value.id });
-    if (value.choices && Object.keys(value.choices).length) {
-      state.draft.choices.featChoices[value.id] = value.choices;
-    }
-    return;
-  }
-  const selected = selectedValues(step);
-  if (step.path === "identity.subclassId") state.draft.identity.subclassId = selected[0];
-  else if (step.path === "identity.pactId") state.draft.identity.pactId = selected[0];
-  else if (step.path === "spells.knownSpellIds") state.draft.spells.knownSpellIds = [...new Set([...state.draft.spells.knownSpellIds, ...selected])];
-  else setPath(step.path, selected.length === 1 ? selected[0] : selected);
-}
-
-function setPath(path, value) {
-  const keys = path.split(".");
-  let target = state.draft;
-  for (const key of keys.slice(0, -1)) {
-    target[key] ||= {};
-    target = target[key];
-  }
-  target[keys.at(-1)] = value;
 }
 
 function stepComplete(step) {

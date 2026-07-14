@@ -3,6 +3,11 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 
+const creditsPreviewRequested = process.argv.includes('--credits-preview');
+if (creditsPreviewRequested) {
+  app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
+}
+
 const DESIGN_VIEWPORT = Object.freeze({
   width: 1280,
   height: 800,
@@ -41,17 +46,21 @@ function createWindow() {
   const combatPreview = process.argv.includes("--combat-preview");
   const creatorPreview = process.argv.includes("--creator-preview");
   const fogPreview = process.argv.includes("--fog-preview");
+  const miniDisplayPreview = process.argv.includes("--mini-display-preview");
   const inventorySmallPreview = process.argv.includes("--inventory-small-preview");
   const restPrepareSmallPreview = process.argv.includes("--rest-prepare-small-preview");
-  const designPreview = combatPreview || creatorPreview || fogPreview || inventorySmallPreview || restPrepareSmallPreview;
-  let windowButtonHideTimer = null;
+  const creditsPreview = process.argv.includes("--credits-preview");
+  const deathPreview = process.argv.includes("--death-preview");
+  const explorationUiPreview = process.argv.includes("--exploration-ui-preview");
+  const designPreview = combatPreview || creatorPreview || fogPreview || miniDisplayPreview || inventorySmallPreview || restPrepareSmallPreview || creditsPreview || deathPreview || explorationUiPreview;
   win = new BrowserWindow({
     width: DESIGN_VIEWPORT.width,
     height: DESIGN_VIEWPORT.height,
     useContentSize: true,
     minWidth: DESIGN_VIEWPORT.minWidth,
     minHeight: DESIGN_VIEWPORT.minHeight,
-    backgroundColor: designPreview ? '#050706' : '#0b0f14',
+    backgroundColor: designPreview ? '#050706' : '#00000000',
+    transparent: !designPreview,
     show: !designPreview,
     frame: false,                       // ⬅ remove OS title bar
     titleBarStyle: 'hiddenInset',       // macOS smooth dragging
@@ -67,35 +76,37 @@ function createWindow() {
     }
   });
 
+  if (process.platform === 'darwin' && typeof win.setWindowButtonVisibility === 'function') {
+    win.setWindowButtonVisibility(false);
+  }
+
+  if (!designPreview) {
+    if (typeof win.setHasShadow === 'function') win.setHasShadow(false);
+  }
+
   const indexPath = combatPreview
     ? resolveFromApp('app', 'combat_test', 'index.html')
     : creatorPreview
       ? resolveFromApp('app', 'character_creator', 'step_index.html')
+      : miniDisplayPreview
+        ? resolveFromApp('app', 'mini_display_arena', 'index.html')
       : inventorySmallPreview
         ? resolveFromApp('app', 'ui_screens', 'inventory_small.html')
         : restPrepareSmallPreview
           ? resolveFromApp('app', 'ui_screens', 'rest_prepare_small.html')
           : resolveFromApp('app', 'index.html');
-  win.loadFile(indexPath);
+  if (creditsPreview) win.loadFile(indexPath, { query: { scene: 'credits' } });
+  else if (deathPreview) win.loadFile(indexPath, { query: { scene: 'gameOver' } });
+  else if (explorationUiPreview) win.loadFile(indexPath, { query: { scene: 'explorationLauncherPreview' } });
+  else win.loadFile(indexPath);
 
-  if (designPreview && process.platform === 'darwin' && typeof win.setWindowButtonVisibility === 'function') {
-    const hideWindowButtons = () => {
-      win.setWindowButtonVisibility(false);
-    };
-    const revealWindowButtons = () => {
-      win.setWindowButtonVisibility(true);
-      if (windowButtonHideTimer) clearTimeout(windowButtonHideTimer);
-      windowButtonHideTimer = setTimeout(hideWindowButtons, 4500);
-    };
-
-    hideWindowButtons();
-    win.webContents.on('before-input-event', (event, input) => {
-      if (input.type === 'keyDown' && input.key === 'Escape') {
-        event.preventDefault();
-        revealWindowButtons();
-      }
-    });
-  }
+  // Capture Escape in the main process so the application menu still opens
+  // when keyboard focus is inside an embedded scene iframe.
+  win.webContents.on('before-input-event', (event, input) => {
+    if (input.type !== 'keyDown' || input.key !== 'Escape' || input.isAutoRepeat) return;
+    event.preventDefault();
+    win.webContents.send('app:toggle-system-menu');
+  });
 
   if (designPreview) {
     win.once('ready-to-show', () => {
@@ -118,6 +129,18 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
+ipcMain.on('app:quit', () => app.quit());
+ipcMain.on('app:enter-framed', () => {
+  if (!win || win.isDestroyed()) return;
+  win.setBackgroundColor('#050706');
+  if (typeof win.setHasShadow === 'function') win.setHasShadow(true);
+  if (process.platform === 'darwin' && typeof win.setWindowButtonVisibility === 'function') win.setWindowButtonVisibility(false);
+});
+ipcMain.on('app:set-fullscreen', (_event, value) => {
+  if (!win || win.isDestroyed()) return;
+  win.setFullScreen(value === true);
+});
+
 // ===== FILE READ IPC (for local content like compiled Ink JSON) =====
 ipcMain.handle("fs:readText", async (_e, relPath) => {
   try {
@@ -132,6 +155,7 @@ ipcMain.handle("fs:readText", async (_e, relPath) => {
 // ===== SAVE/LOAD IPC =====
 const saveDir = path.join(app.getPath('userData'), 'saves');
 if (!fs.existsSync(saveDir)) fs.mkdirSync(saveDir, { recursive: true });
+seedBundledDemoSaves();
 
 ipcMain.handle('saveGame', async (_e, { data, slot }) => {
   try {
@@ -203,7 +227,7 @@ function safeSaveSlot(slot) {
 
 function assertSaveGameShape(data) {
   if (!data || typeof data !== 'object') throw new Error('SaveGameState must be an object');
-  if (data.schemaVersion !== 1) throw new Error('Unsupported SaveGameState schemaVersion');
+  if (![1, 2].includes(data.schemaVersion)) throw new Error('Unsupported SaveGameState schemaVersion');
   if (!data.runId) throw new Error('SaveGameState.runId is required');
   if (!data.party || typeof data.party !== 'object') throw new Error('SaveGameState.party is required');
   if (!data.world || typeof data.world !== 'object') throw new Error('SaveGameState.world is required');
@@ -218,6 +242,7 @@ function saveSummary(slot, data) {
     runId: data.runId,
     savedAt: data.savedAt,
     activePartySlot: activeSlot,
+    activeCharacterId: activeRecord?.id || null,
     activeCharacterName:
       activeRecord?.resolvedCharacterSheet?.identity?.characterName ||
       activeRecord?.characterDraft?.identity?.characterName ||
@@ -226,12 +251,32 @@ function saveSummary(slot, data) {
       activeRecord?.resolvedCharacterSheet?.identity?.classId ||
       activeRecord?.characterDraft?.identity?.classId ||
       null,
+    activeSubclassId:
+      activeRecord?.resolvedCharacterSheet?.identity?.subclassName ||
+      activeRecord?.resolvedCharacterSheet?.identity?.subclassId ||
+      activeRecord?.characterDraft?.identity?.subclassId ||
+      null,
+    activeBackgroundId:
+      activeRecord?.resolvedCharacterSheet?.identity?.backgroundId ||
+      activeRecord?.characterDraft?.identity?.backgroundId ||
+      null,
     level:
       activeRecord?.resolvedCharacterSheet?.identity?.level ||
       activeRecord?.characterDraft?.identity?.level ||
       null,
     locationAreaId: data.world?.location?.areaId || null,
+    locationLabel: data.metadata?.displayLocation || data.world?.location?.areaId || null,
     locationScene: data.world?.location?.scene || null,
     activeEncounterId: data.encounter?.activeEncounterId || null,
+    saveType: data.metadata?.saveType || (slot.includes('quick') ? 'quicksave' : 'autosave'),
   };
+}
+
+function seedBundledDemoSaves() {
+  const demoDir = resolveFromApp('app', 'data', 'demo_saves');
+  if (!fs.existsSync(demoDir)) return;
+  for (const file of fs.readdirSync(demoDir).filter((entry) => entry.endsWith('.json'))) {
+    const destination = path.join(saveDir, file);
+    if (!fs.existsSync(destination)) fs.copyFileSync(path.join(demoDir, file), destination);
+  }
 }

@@ -1,5 +1,8 @@
 // app/scenes/MainMenuScene.js
 
+import { routeTo } from "../engine/sceneRouter.js";
+import { disableFog, enableFog } from "../engine/foglayer.js";
+
 const FOG_STYLE_ID = "main-menu-fog-style";
 
 function ensureFogStyles() {
@@ -8,6 +11,12 @@ function ensureFogStyles() {
   const style = document.createElement("style");
   style.id = FOG_STYLE_ID;
   style.textContent = `
+    @font-face {
+      font-family: "Pixel Takhisis";
+      src: url("./assets/fonts/pixel_takhisis/Pixel%20Takhisis.otf") format("opentype");
+      font-display: block;
+    }
+
     .main-menu-root {
       --lanterna-line: rgba(205, 252, 244, 0.25);
       --lanterna-glow: rgba(164, 245, 230, 0.12);
@@ -17,10 +26,13 @@ function ensureFogStyles() {
         drop-shadow(0 0 0 var(--lanterna-line))
         drop-shadow(0 0 2px var(--lanterna-line))
         drop-shadow(0 0 18px var(--lanterna-glow));
-      background: #050706;
+      background: transparent;
       display: grid;
       place-items: center;
     }
+
+    html.is-main-menu,
+    body.is-main-menu { background: transparent !important; }
 
     .splash-stage {
       position: relative;
@@ -39,7 +51,7 @@ function ensureFogStyles() {
       object-fit: contain;
       opacity: 0;
       filter: brightness(0.88);
-      transition: opacity 520ms ease, filter 900ms ease;
+      transition: filter 900ms ease;
       z-index: 0;
     }
 
@@ -90,21 +102,70 @@ function ensureFogStyles() {
     }
 
     .main-menu-root.is-lanterna-lit .lanterna-flame-fill {
-      animation: lanterna-flame-ignite 760ms cubic-bezier(0.2, 0.9, 0.18, 1) forwards;
+      opacity: 1;
     }
 
     .lanterna-flame-outline {
       z-index: 1;
-      opacity: 0.28;
+      opacity: 0;
       color: var(--dnd-title-blue);
     }
 
     .main-menu-root.is-lanterna-lit .lanterna-flame-outline {
-      animation: lanterna-outline-ignite 620ms cubic-bezier(0.2, 0.9, 0.18, 1) forwards;
+      opacity: 1;
     }
 
     .main-menu-root.is-lanterna-lit .main-menu-splash {
       filter: brightness(1);
+    }
+
+    .splash-menu {
+      position: absolute;
+      left: 50%;
+      bottom: 16px;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 21px;
+      width: 100%;
+      transform: translateX(-50%);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      -webkit-app-region: no-drag;
+      transition: opacity 220ms ease;
+      font-family: "Pixel Takhisis", fantasy;
+      font-size: clamp(12px, 1.35vw, 15px);
+      letter-spacing: 0.015em;
+      white-space: nowrap;
+    }
+
+    .main-menu-root.is-lanterna-lit .splash-menu {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .splash-menu button {
+      appearance: none;
+      border: 0;
+      border-radius: 0;
+      padding: 4px 1px;
+      background: transparent;
+      color: var(--dnd-title-blue);
+      font: inherit;
+      letter-spacing: inherit;
+      text-transform: none;
+      cursor: pointer;
+    }
+
+    .splash-menu button:hover,
+    .splash-menu button:focus-visible {
+      color: #000;
+      background: var(--dnd-title-blue);
+      outline: none;
+      text-shadow: none;
     }
 
     .lanterna-flame-outline svg {
@@ -112,41 +173,6 @@ function ensureFogStyles() {
       width: 100%;
       height: 100%;
       overflow: visible;
-    }
-
-    @keyframes lanterna-flame-ignite {
-      0% {
-        opacity: 0;
-        filter: brightness(0.55) blur(5px);
-        transform: scale(0.5);
-      }
-      18% {
-        opacity: 1;
-        filter: brightness(1.5) blur(1px);
-        transform: scale(1.22);
-      }
-      36% {
-        opacity: 0.62;
-        filter: brightness(0.92) blur(3px);
-        transform: scale(0.9);
-      }
-      58% {
-        opacity: 1;
-        filter: brightness(1.18) blur(0.5px);
-        transform: scale(1.08);
-      }
-      100% {
-        opacity: 1;
-        filter: brightness(1) blur(0);
-        transform: scale(1);
-      }
-    }
-
-    @keyframes lanterna-outline-ignite {
-      0% { opacity: 0.28; }
-      24% { opacity: 1; }
-      42% { opacity: 0.54; }
-      100% { opacity: 1; }
     }
 
   `;
@@ -177,6 +203,8 @@ export default class MainMenuScene {
     this.teardown();
   }
 
+  cleanup() { this.teardown(); }
+
   buildDOM() {
     if (!this.root) {
       console.error("[MainMenuScene] #game-root not found");
@@ -184,6 +212,9 @@ export default class MainMenuScene {
     }
 
     ensureFogStyles();
+    disableFog();
+    document.documentElement.classList.add("is-main-menu");
+    document.body.classList.add("is-main-menu");
 
     const el = document.createElement("div");
     el.className = "main-menu-root";
@@ -236,7 +267,15 @@ export default class MainMenuScene {
     splash.src = "./assets/images/mainscreen.png";
     if (splash.complete) markSplashLoaded();
 
-    stage.append(lanterna, splash);
+    const menu = document.createElement("nav");
+    menu.className = "splash-menu";
+    menu.setAttribute("aria-label", "Main menu");
+    const newGame = this.menuButton("New Game", () => this.enterGame({ toScene: "prologue", fromScene: "mainMenu", reason: "new_game" }));
+    const loadGame = this.menuButton("Load Game", () => this.enterGame({ toScene: "loadGame", fromScene: "mainMenu", reason: "load_game" }));
+    const exit = this.menuButton("Exit", () => this.exitGame());
+    menu.append(newGame, loadGame, exit);
+
+    stage.append(lanterna, splash, menu);
     el.appendChild(stage);
 
     this.root.appendChild(el);
@@ -273,7 +312,28 @@ export default class MainMenuScene {
     audio.play().catch(() => {});
   }
 
+  menuButton(label, action) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = label;
+    button.addEventListener("click", action);
+    return button;
+  }
+
+  exitGame() {
+    if (window.api?.quit) window.api.quit();
+    else window.close();
+  }
+
+  enterGame(route) {
+    enableFog();
+    window.api?.enterFramedMode?.();
+    routeTo(route);
+  }
+
   teardown() {
+    document.documentElement.classList.remove("is-main-menu");
+    document.body.classList.remove("is-main-menu");
     if (this._onIntroMusicFinished) {
       window.removeEventListener("dndt:intro-music-finished", this._onIntroMusicFinished);
       this._onIntroMusicFinished = null;

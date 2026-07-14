@@ -84,18 +84,28 @@ function saveGameSummary(slot, saveGame) {
     runId: saveGame.runId,
     savedAt: saveGame.savedAt,
     activePartySlot: saveGame.party?.activeSlot || null,
+    activeCharacterId: activeRecord?.id || null,
     activeCharacterName: activeRecord?.resolvedCharacterSheet?.identity?.characterName ||
       activeRecord?.characterDraft?.identity?.characterName ||
       null,
     activeClassId: activeRecord?.resolvedCharacterSheet?.identity?.classId ||
       activeRecord?.characterDraft?.identity?.classId ||
       null,
+    activeSubclassId: activeRecord?.resolvedCharacterSheet?.identity?.subclassName ||
+      activeRecord?.resolvedCharacterSheet?.identity?.subclassId ||
+      activeRecord?.characterDraft?.identity?.subclassId ||
+      null,
+    activeBackgroundId: activeRecord?.resolvedCharacterSheet?.identity?.backgroundId ||
+      activeRecord?.characterDraft?.identity?.backgroundId ||
+      null,
     level: activeRecord?.resolvedCharacterSheet?.identity?.level ||
       activeRecord?.characterDraft?.identity?.level ||
       null,
     locationAreaId: saveGame.world?.location?.areaId || null,
+    locationLabel: saveGame.metadata?.displayLocation || saveGame.world?.location?.areaId || null,
     locationScene: saveGame.world?.location?.scene || null,
     activeEncounterId: saveGame.encounter?.activeEncounterId || null,
+    saveType: saveGame.metadata?.saveType || (slot.includes("quick") ? "quicksave" : "autosave"),
   };
 }
 

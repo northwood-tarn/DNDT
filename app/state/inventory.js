@@ -82,7 +82,7 @@ export function consumeItem(id) {
   if (!entry || !item) return false;
 
   // Some items can be "used" without being consumed
-  if (item.consumeOnUse === false) return true;
+  if (item.type !== "usable" || item.consumedOnUse === false) return true;
 
   // Consumption is a decrement of quantity by 1
   entry.quantity -= 1;

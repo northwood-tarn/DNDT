@@ -5,13 +5,12 @@
 //   LootScene.open({
 //     gold: { min: 5, max: 20 }, // or a fixed number, or omit for none
 //     items: [
-//       { id: "potion_healing", name: "Healing Potion", quantity: 2 },
+//       { id: "healing_potion", name: "Healing Potion", quantity: 2 },
 //       { id: "rusty_sword", name: "Rusty Sword" } // quantity defaults to 1
 //     ]
 //   });
 //
-// This module assumes a global `window.state.player` object with
-// `gold` and `inventory` fields, but will defensively initialise them.
+import { applyLootToSaveGame, normalizeLootBundle } from "../state/loot.js";
 
 let root = null;
 
@@ -40,14 +39,15 @@ const LootScene = {
    *     items: [{ id, name, quantity? }]
    *   }
    */
-  open(lootBundle = {}) {
+  open(lootBundle = {}, options = {}) {
     // Close any previous overlay first
     if (root) {
       this.close();
     }
 
-    const goldAmount = rollGold(lootBundle.gold);
-    const items = Array.isArray(lootBundle.items) ? lootBundle.items : [];
+    const resolvedLoot = normalizeLootBundle(lootBundle);
+    const goldAmount = resolvedLoot.gold;
+    const items = resolvedLoot.items;
 
     // Full-screen overlay
     const overlay = document.createElement("div");
@@ -134,11 +134,7 @@ const LootScene = {
       const takeGoldBtn = document.createElement("button");
       takeGoldBtn.textContent = "Take Gold";
       takeGoldBtn.addEventListener("click", () => {
-        const g = window.state && window.state.player ? window.state.player : null;
-        if (g) {
-          if (typeof g.gold !== "number") g.gold = 0;
-          g.gold += goldAmount;
-        }
+        if (options.saveGame) options.onSaveGame?.(applyLootToSaveGame(options.saveGame, { gold: goldAmount }).saveGame);
         this.close();
       });
       buttonsDiv.appendChild(takeGoldBtn);
@@ -147,20 +143,7 @@ const LootScene = {
     const takeAllBtn = document.createElement("button");
     takeAllBtn.textContent = "Take All";
     takeAllBtn.addEventListener("click", () => {
-      const g = window.state && window.state.player ? window.state.player : null;
-      if (g) {
-        if (typeof g.gold !== "number") g.gold = 0;
-        g.gold += goldAmount;
-
-        if (!Array.isArray(g.inventory)) g.inventory = [];
-
-        for (const item of items) {
-          const qty = item.quantity && item.quantity > 1 ? item.quantity : 1;
-          for (let i = 0; i < qty; i++) {
-            g.inventory.push({ ...item, quantity: 1 });
-          }
-        }
-      }
+      if (options.saveGame) options.onSaveGame?.(applyLootToSaveGame(options.saveGame, resolvedLoot).saveGame);
       this.close();
     });
     buttonsDiv.appendChild(takeAllBtn);

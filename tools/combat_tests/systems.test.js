@@ -20,6 +20,25 @@ import { resolveActionResult } from "../../app/combat/actionResult.js";
 import { canSeeActor } from "../../app/combat/perception.js";
 import { createStarterCharacterDraft, resolveCharacterSheet, resolvedSheetToCombatActor } from "../../app/character/index.js";
 import { SPELLS } from "../../app/data/spells.js";
+import { checkOutcome } from "../../app/combat/combatState.js";
+
+function testDefeatedCompanionRevivesWhenCombatEnds() {
+  const snapshot = {
+    round: 3,
+    outcome: null,
+    actors: [
+      { id: "pc", name: "PC", kind: "player", team: "heroes", hp: 8 },
+      { id: "tara", name: "Tara", kind: "companion", team: "heroes", hp: 0, defeated: true },
+      { id: "enemy", name: "Enemy", kind: "enemy", team: "enemies", hp: 0, defeated: true },
+    ],
+  };
+  const log = createCombatLog();
+
+  assert.equal(checkOutcome(snapshot, log), "victory");
+  assert.equal(snapshot.actors[1].hp, 1);
+  assert.equal(snapshot.actors[1].defeated, false);
+  assert.ok(log.events.some((event) => event.type === "actor.revive" && event.detail.actorId === "tara"));
+}
 
 function testActionTagInference() {
   assert.deepEqual(
@@ -646,6 +665,7 @@ function pickTags(tags) {
 }
 
 export async function runSystemCombatTests() {
+  testDefeatedCompanionRevivesWhenCombatEnds();
   testActionTagInference();
   testPerceptionGate();
   testMovementCostGate();

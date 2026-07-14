@@ -1,0 +1,70 @@
+.appearance-selection {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+  margin-top: 22px;
+}
+
+.appearance-selection[hidden] {
+  display: none;
+}
+
+.appearance-option {
+  position: relative;
+  min-width: 0;
+  padding: 0;
+  border: 1px solid rgba(150, 190, 186, 0.13);
+  border-radius: 0;
+  background: rgba(0, 10, 12, 0.22);
+  color: rgba(150, 190, 186, 0.42);
+  cursor: pointer;
+  overflow: hidden;
+  -webkit-app-region: no-drag;
+}
+
+.appearance-option:hover,
+.appearance-option:focus-visible {
+  border-color: rgba(150, 190, 186, 0.34);
+  outline: none;
+}
+
+.appearance-option.is-selected {
+  border-color: rgba(150, 190, 186, 0.62);
+  box-shadow: inset 0 0 0 1px rgba(150, 190, 186, 0.18);
+}
+
+.appearance-option img {
+  display: block;
+  width: 100%;
+  aspect-ratio: .721;
+  object-fit: cover;
+}
+
+.appearance-option-label {
+  display: block;
+  padding: 8px 5px 9px;
+  font-family: var(--font-speaker);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.miniature-selection {
+  align-items: end;
+  width: 90%;
+  margin: 20px auto 0;
+}
+
+.miniature-selection .appearance-option {
+  background: rgba(0, 10, 12, 0.10);
+}
+
+.miniature-selection .appearance-option img {
+  height: min(52vh, 430px);
+  aspect-ratio: auto;
+  object-fit: contain;
+  object-position: center bottom;
+}

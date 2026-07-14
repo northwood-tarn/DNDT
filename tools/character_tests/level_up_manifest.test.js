@@ -8,6 +8,26 @@ export function runLevelUpManifestTests() {
   exposesWarlockSubclassAndPactChoices();
   exposesDuplicateFriendlyAsiChoices();
   exposesWarlockArcanumChoices();
+  exposesConditionalSubclassAndGenericSkillChoices();
+}
+
+function exposesConditionalSubclassAndGenericSkillChoices() {
+  const wizard = createStarterCharacterDraft("wizard");
+  wizard.identity.level = 2;
+  const base = createLevelUpManifest(wizard, { toLevel: 3 });
+  const subclass = base.steps.find((step) => step.choiceKind === "subclass");
+  const battlemage = createLevelUpManifest(wizard, {
+    toLevel: 3,
+    values: { [subclass.id]: ["battlemage"] },
+  });
+  assert.equal(battlemage.steps.some((step) => step.id.endsWith("arcane_armament_weapon")), true);
+
+  const rogue = createStarterCharacterDraft("rogue");
+  rogue.identity.level = 5;
+  rogue.identity.subclassId = "assassin";
+  const expertise = createLevelUpManifest(rogue, { toLevel: 6 }).steps.find((step) => step.id.endsWith("rogue_expertise_skills"));
+  assert.equal(expertise.count, 2);
+  assert.equal(expertise.options.length, 18);
 }
 
 function exposesWarlockSubclassAndPactChoices() {

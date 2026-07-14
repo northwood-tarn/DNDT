@@ -7,7 +7,7 @@ import { enemies } from "../app/data/enemies.js";
 
 const DEFAULT_ENCOUNTERS_PATH = "app/data/encounters.js";
 const VALID_DIFFICULTIES = new Set(["trivial", "easy", "medium", "hard", "deadly", "boss"]);
-const ENEMY_IDS = new Set(Object.keys(enemies));
+const ENEMY_DEFINITION_IDS = new Set(Object.keys(enemies).map((id) => `enemy.${id}`));
 
 function fail(errors, id, message) {
   errors.push(`${id}: ${message}`);
@@ -27,8 +27,10 @@ function validateEnemyGroup(errors, encounterId, group, index) {
     fail(errors, encounterId, `${pathName} must be an object`);
     return;
   }
-  validateString(errors, encounterId, `${pathName}.enemyId`, group.enemyId);
-  if (group.enemyId && !ENEMY_IDS.has(group.enemyId)) fail(errors, encounterId, `${pathName}.enemyId references unknown enemy: ${group.enemyId}`);
+  validateString(errors, encounterId, `${pathName}.actorDefinitionId`, group.actorDefinitionId);
+  if (group.actorDefinitionId && !ENEMY_DEFINITION_IDS.has(group.actorDefinitionId)) {
+    fail(errors, encounterId, `${pathName}.actorDefinitionId references unknown actor definition: ${group.actorDefinitionId}`);
+  }
   if (!Number.isInteger(group.count) || group.count <= 0) fail(errors, encounterId, `${pathName}.count must be a positive integer`);
   validateInstanceOverrides(errors, encounterId, group.defaults, `${pathName}.defaults`);
   if (group.instances != null) {

@@ -197,7 +197,7 @@ hr { border: none; border-top: 1px solid #22314d; margin: 10px 0; }
   position: fixed;
   top: 0;
   left: 0;
-  height: 40px;
+  height: 22px;
   width: 100%;
   -webkit-app-region: drag;
   z-index: 9999;
@@ -271,6 +271,11 @@ body:not(.shell-mode) .app-grid {
 }
 
 /* The minimap container is created by DialogueScene and should carry this class */
+.journal-overlay{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;background:rgba(0,0,0,.72)}
+.merchant-scene{width:min(760px,92vw);max-height:88vh;overflow:auto;margin:5vh auto;padding:24px;background:#181818;color:#eee;border:1px solid #666}.merchant-scene>div{display:flex;gap:10px;margin:14px 0}.merchant-scene__list{display:grid!important;gap:8px!important}.merchant-scene__list button{display:flex;justify-content:space-between;padding:10px 14px;text-align:left}
+.information-overlay{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:24px;background:rgba(0,0,0,.72)}.information-panel{width:min(820px,94vw);max-height:88vh;overflow:auto;padding:24px;background:#181818;color:#eee;border:1px solid #666}.information-panel__section{margin:20px 0}.information-panel__row{display:grid;grid-template-columns:minmax(150px,1fr) 2fr;gap:18px;padding:7px 0;border-bottom:1px solid #333}.information-panel__row span{text-align:right}
+.journal-panel{width:min(760px,92vw);max-height:86vh;overflow:auto;padding:28px;background:#20201b;color:#f0eadb;border:1px solid #6f674f;box-shadow:0 20px 70px #000}
+.journal-panel section{padding:12px 0;border-top:1px solid #46463a}.journal-panel h1,.journal-panel h2,.journal-panel h3{margin:0 0 10px}.journal-panel p{color:#bbb4a1}
 .dialogue-minimap {
   position: absolute;
   width: 150px;

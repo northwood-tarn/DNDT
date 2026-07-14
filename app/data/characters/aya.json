@@ -78,22 +78,22 @@
     {
       "id": "healing_potion",
       "name": "Healing Potion",
-      "qty": 2
+      "quantity": 2
     },
     {
       "id": "rope_50_ft",
       "name": "Rope (50 ft)",
-      "qty": 1
+      "quantity": 1
     },
 {
   "id": "oil_premium",
   "name": "Premium Lantern Oil",
-  "qty": 60
+  "quantity": 60
 },
 {
   "id": "oil_basilisk",
   "name": "Basilisk Oil",
-  "qty": 30
+  "quantity": 30
 }
   ],
   "quests": {},
