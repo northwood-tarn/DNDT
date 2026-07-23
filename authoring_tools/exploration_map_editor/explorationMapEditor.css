@@ -1,0 +1,521 @@
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #071011;
+  color: #b8cfca;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+#spike-root {
+  position: fixed;
+  inset: 0;
+}
+
+#tool-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 8;
+  height: 68px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 28px;
+  border-bottom: 1px solid #29423d;
+  background: #071011;
+  -webkit-app-region: drag;
+  user-select: none;
+}
+
+#tool-header h1 {
+  margin: 0;
+  color: #d9e6e1;
+  font-size: 22px;
+  font-weight: 650;
+}
+
+#tool-header p,
+#tool-header span {
+  margin: 2px 0 0;
+  color: #7f9993;
+  font-size: 13px;
+}
+
+.tool-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+#new-map-button,
+#load-map-button,
+#tool-close {
+  padding: 8px 13px;
+  border: 1px solid #45645e;
+  background: #10201f;
+  color: #d5e5e0;
+  font: 13px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+
+#map-drop-prompt.is-dragging {
+  border-color: #d5e5e0;
+  background: rgba(25, 48, 45, 0.72);
+  color: #e2eeeb;
+}
+
+#stage {
+  position: fixed;
+  top: 68px;
+  left: 0;
+  right: 390px;
+  bottom: 0;
+  background: #030707;
+  overflow: auto;
+}
+
+#map-drop-prompt {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  width: 360px;
+  padding: 28px;
+  transform: translate(-50%, -50%);
+  border: 1px dashed #5c7d76;
+  color: #9fb7b1;
+  font: 16px/1.3 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  text-align: center;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+#map-drop-prompt span {
+  margin-top: 6px;
+  color: #718d87;
+  font-size: 13px;
+}
+
+#map-drop-prompt[hidden] {
+  display: none;
+}
+
+#stage canvas {
+  display: block;
+  width: 1920px;
+  height: 1080px;
+  max-width: none;
+  max-height: none;
+}
+
+#hud {
+  position: fixed;
+  top: 68px;
+  right: 0;
+  bottom: 0;
+  left: auto;
+  z-index: 5;
+  display: flex;
+  width: 390px;
+  box-sizing: border-box;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  overflow-y: auto;
+  pointer-events: auto;
+  border-left: 1px solid #29423d;
+  background: #071011;
+  color: #b8cfca;
+}
+
+.hud-group {
+  display: grid;
+  gap: 9px;
+  padding: 0;
+  pointer-events: auto;
+}
+
+.hud-metadata {
+  width: auto;
+}
+
+.hud-checks,
+.hud-actions {
+  grid-auto-flow: row;
+  grid-template-rows: none;
+}
+
+.hud-checks {
+  width: auto;
+  grid-template-columns: 1fr 1fr;
+}
+
+.hud-actions {
+  width: auto;
+  grid-template-columns: 1fr;
+}
+
+.reset-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+}
+
+.hud-palette {
+  width: auto;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: none;
+}
+
+.node-details {
+  width: auto;
+  grid-template-rows: none;
+}
+
+.node-details[hidden] {
+  display: none;
+}
+
+.node-field-label {
+  margin-bottom: -4px;
+  color: #9fb7b1;
+  font: 12px/1.2 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.node-behaviour {
+  display: grid;
+  gap: 9px;
+  margin-top: 4px;
+  padding: 14px;
+  border: 1px solid #29423d;
+  background: #0b1717;
+}
+
+.node-behaviour h2 {
+  margin: 0 0 2px;
+  color: #d5e5e0;
+  font: 600 14px/1.2 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+#conversation-panel {
+  position: fixed;
+  z-index: 4;
+  width: 330px;
+  min-height: 136px;
+  box-sizing: border-box;
+  padding: 0;
+  pointer-events: auto;
+  background: transparent;
+  box-shadow: none;
+  color: #f3f0e8;
+}
+
+#conversation-panel[hidden] {
+  display: none;
+}
+
+#conversation-frame {
+  position: relative;
+  padding: 18px 20px;
+  background: rgba(8, 10, 10, 0.5);
+}
+
+#conversation-speaker {
+  margin-bottom: 8px;
+  color: #d6bd86;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+#conversation-text {
+  min-height: 42px;
+  color: #ece7db;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+#conversation-replies {
+  display: grid;
+  gap: 5px;
+  padding: 12px 0 0;
+}
+
+.conversation-reply {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 3px 0;
+  border: 0;
+  background: transparent;
+  color: #f3f0e8;
+  font: 11px/1.35 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  text-align: left;
+  cursor: pointer;
+}
+
+.conversation-reply:hover {
+  color: #ffffff;
+  background: transparent;
+}
+
+.conversation-reply-number {
+  color: #d6bd86;
+}
+
+#hud span {
+  display: block;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.hud-field {
+  min-height: 38px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border: 1px solid #45645e;
+  background: #0d1a19;
+  color: #d5e5e0;
+  font: 14px/1.2 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.grid-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  min-height: 32px;
+  color: #b8cfca;
+  font-size: 13px;
+  line-height: 1;
+  user-select: none;
+}
+
+.grid-control input {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  accent-color: #7dac9f;
+}
+
+.palette-button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 42px;
+  width: auto;
+  padding: 7px 9px;
+  border: 1px solid #45645e;
+  background: #10201f;
+  color: #d5e5e0;
+  font: 12px/1.1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  cursor: pointer;
+}
+
+.palette-button[aria-pressed="true"] {
+  border-color: rgba(255, 226, 166, 0.78);
+  background: rgba(62, 49, 25, 0.95);
+  color: #fff1c8;
+}
+
+.tool-icon {
+  position: relative;
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.node-icon {
+  border-radius: 50%;
+  background: #ffc96f;
+  box-shadow: 0 0 0 3px rgba(3, 5, 4, 0.78), 0 0 0 5px rgba(255, 241, 200, 0.35);
+}
+
+.connect-icon::before,
+.connect-icon::after {
+  position: absolute;
+  content: "";
+}
+
+.connect-icon::before {
+  left: 2px;
+  right: 2px;
+  top: 8px;
+  height: 2px;
+  background: #d7e8b5;
+}
+
+.connect-icon::after {
+  inset: 3px;
+  border-left: 5px solid #ffc96f;
+  border-right: 5px solid #ffc96f;
+}
+
+.inflection-icon::before {
+  position: absolute;
+  inset: 4px;
+  content: "";
+  transform: rotate(45deg);
+  background: #75d9ff;
+  box-shadow: 0 0 0 2px rgba(3, 16, 21, 0.78);
+}
+
+.node-description {
+  min-height: 54px;
+  resize: none;
+  line-height: 1.35;
+}
+
+.discovery-control {
+  min-height: 24px;
+}
+
+#nav-reset,
+#occlusion-reset,
+#water-reset,
+#metadata-save-button {
+  min-height: 38px;
+  width: auto;
+  padding: 8px 10px;
+  border: 1px solid #45645e;
+  background: #10201f;
+  color: #d5e5e0;
+  font: 13px/1.1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  cursor: pointer;
+}
+
+.reset-actions button {
+  min-width: 0;
+  padding-right: 5px;
+  padding-left: 5px;
+  font-size: 12px;
+}
+
+#metadata-save-button {
+  width: 100%;
+}
+
+#readme-button {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 8;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #58746e;
+  border-radius: 50%;
+  background: #10201f;
+  color: #d5e5e0;
+  font: italic 600 16px/1 Georgia, serif;
+  cursor: pointer;
+}
+
+#readme-dialog {
+  width: min(620px, calc(100vw - 48px));
+  max-height: calc(100vh - 80px);
+  box-sizing: border-box;
+  padding: 22px;
+  overflow: auto;
+  border: 1px solid #45645e;
+  background: #071011;
+  color: #b8cfca;
+}
+
+#load-map-dialog {
+  width: min(520px, calc(100vw - 48px));
+  max-height: calc(100vh - 80px);
+  box-sizing: border-box;
+  padding: 22px;
+  overflow: auto;
+  border: 1px solid #45645e;
+  background: #071011;
+  color: #b8cfca;
+}
+
+#load-map-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.load-map-list {
+  display: grid;
+  gap: 9px;
+  margin-top: 18px;
+}
+
+.load-map-list button {
+  padding: 12px 14px;
+  border: 1px solid #45645e;
+  background: #10201f;
+  color: #d5e5e0;
+  font: 14px/1.2 system-ui, sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+
+#readme-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.readme-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.readme-heading h2 {
+  margin: 0;
+  color: #e2eeeb;
+  font: 600 20px/1.2 system-ui, sans-serif;
+}
+
+#readme-content {
+  margin-top: 18px;
+  font: 14px/1.5 system-ui, sans-serif;
+}
+
+#readme-content p {
+  margin: 9px 0;
+}
+
+#nav-reset:hover,
+#occlusion-reset:hover,
+#water-reset:hover,
+#metadata-save-button:hover {
+  background: rgba(32, 41, 43, 0.96);
+}
+
+@media (max-width: 720px) {
+  #hud {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .hud-metadata,
+  .hud-checks,
+  .hud-palette,
+  .node-details,
+  .hud-actions {
+    width: 100%;
+  }
+
+  .hud-checks,
+  .hud-actions,
+  .hud-palette {
+    grid-auto-flow: row;
+    grid-template-rows: none;
+  }
+
+  .palette-button {
+    width: 100%;
+  }
+}

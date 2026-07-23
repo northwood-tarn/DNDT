@@ -1,3 +1,8 @@
+
+# Plot notes
+
+Duncan sends you to see Deligny, who runs the stock house, about the oil situation. 'The fine carvings and high, arched ceiling betray the dining hall that used to be housed here. There are motifs of sea monsters, high towers spilling light out across choppea seas. a vast fireplace runs the full length of the space. The cheerfulness of the flames jars against the hushed business-like activities. Dozens of people gathering and distributing supplies. The mood is somber.'
+
 # Conversational notes
 
 03.01 First rest note. Duncan has taken Kestrel's outside shirt, which had been drying by the fire, and started to sew it back up. Kestrel is terrified and furious, verbally attacks Duncan. Danica arcs up. Duncan shushes Danica and apologises to Kestrel, handing the shirt back. If the PC 'leans in', Duncan says: Sometimes everything unexpected can hurt as surely as a blow. It was my fault. I'll keep my distance.
@@ -22,4 +27,4 @@ An astonishing outburst that somehow expands Tahrone rather than embarassing him
 
 
 Oneliners
-Tara: keep drinking until the bottle tastes like your own spit.
+Tara: keep drinking until it  tastes like your own spit.

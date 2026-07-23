@@ -233,7 +233,15 @@ export function hasConditionRule(actor, ruleName) {
 }
 
 export function getStandingCost(actor) {
+  if (Number.isFinite(actor?.movementRules?.standFromProneMovementFt)) {
+    return Math.max(0, Math.ceil(actor.movementRules.standFromProneMovementFt / 5));
+  }
   return Math.ceil((actor?.speed || 0) / 2);
+}
+
+export function getJumpDistanceFt(actor, baseDistanceFt) {
+  const multiplier = Math.max(1, Number(actor?.movementRules?.jumpDistanceMultiplier) || 1);
+  return Math.max(0, (Number(baseDistanceFt) || 0) * multiplier);
 }
 
 export function getActionUses(action) {
@@ -251,6 +259,9 @@ export function spendResourceUse(actor, resourceId) {
   const resource = actor.resources.find((item) => item.id === resourceId);
   if (!resource || !Number.isFinite(resource.current) || resource.current <= 0) return false;
   resource.current -= 1;
+  if (resource.current <= 0 && Array.isArray(actor.activeEffects)) {
+    actor.activeEffects = actor.activeEffects.filter((effect) => effect.resourceId !== resourceId);
+  }
   return true;
 }
 

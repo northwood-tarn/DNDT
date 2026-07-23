@@ -14,7 +14,8 @@ export const armor = [
     "ac": 11,
     "magical": false,
     "value": 10,
-    "id": "leather_armor"
+    "id": "leather_armor",
+    "icon": { "src": "combat_ui_v2/assets/icons/armor/leather_armor.png", "width": 160, "height": 224 }
   },
   {
     "name": "Studded Leather",
@@ -31,7 +32,8 @@ export const armor = [
     "ac": 12,
     "magical": false,
     "value": 45,
-    "id": "studded_leather"
+    "id": "studded_leather",
+    "icon": { "src": "combat_ui_v2/assets/icons/armor/studded_leather.png", "width": 160, "height": 224 }
   },
   {
     "name": "Hide Armor",
@@ -48,7 +50,8 @@ export const armor = [
     "ac": 12,
     "magical": false,
     "value": 10,
-    "id": "hide_armor"
+    "id": "hide_armor",
+    "icon": { "src": "combat_ui_v2/assets/icons/armor/hide_armor.png", "width": 160, "height": 224 }
   },
   {
     "name": "Half Plate",
@@ -65,7 +68,8 @@ export const armor = [
     "ac": 15,
     "magical": false,
     "value": 750,
-    "id": "half_plate"
+    "id": "half_plate",
+    "icon": { "src": "combat_ui_v2/assets/icons/armor/half_plate.png", "width": 160, "height": 224 }
   },
   {
     "name": "Chain Mail",
@@ -82,7 +86,8 @@ export const armor = [
     "ac": 16,
     "magical": false,
     "value": 75,
-    "id": "chain_mail"
+    "id": "chain_mail",
+    "icon": { "src": "combat_ui_v2/assets/icons/armor/chain_mail.png", "width": 160, "height": 224 }
   },
   {
     "name": "Plate Armor",
@@ -99,7 +104,8 @@ export const armor = [
     "ac": 18,
     "magical": false,
     "value": 1500,
-    "id": "plate_armor"
+    "id": "plate_armor",
+    "icon": { "src": "combat_ui_v2/assets/icons/armor/plate_armor.png", "width": 160, "height": 224 }
   },
   {
     "name": "Shadow Leather Armor",
@@ -119,7 +125,8 @@ export const armor = [
     "modifiers": { skillBonuses: { stealth: 1 } },
     "magical": true,
     "value": 350,
-    "id": "shadow_leather_armor"
+    "id": "shadow_leather_armor",
+    "icon": { "src": "combat_ui_v2/assets/icons/armor_magic_trials/shadow_leather_armor.png", "width": 160, "height": 224 }
   },
   {
     "name": "Blessed Studded Leather",
@@ -139,7 +146,8 @@ export const armor = [
     "modifiers": { acBonus: 1 },
     "magical": true,
     "value": 400,
-    "id": "blessed_studded_leather"
+    "id": "blessed_studded_leather",
+    "icon": { "src": "combat_ui_v2/assets/icons/armor_magic_trials/blessed_studded_leather.png", "width": 160, "height": 224 }
   },
   {
     "name": "Storm Hide",
@@ -159,7 +167,8 @@ export const armor = [
     "modifiers": { resistances: ["lightning"] },
     "magical": true,
     "value": 600,
-    "id": "storm_hide"
+    "id": "storm_hide",
+    "icon": { "src": "combat_ui_v2/assets/icons/armor_magic_trials/storm_hide.png", "width": 160, "height": 224 }
   },
   {
     "name": "Half Plate of Fortitude",
@@ -179,7 +188,8 @@ export const armor = [
     "modifiers": { acBonus: 1 },
     "magical": true,
     "value": 800,
-    "id": "half_plate_of_fortitude"
+    "id": "half_plate_of_fortitude",
+    "icon": { "src": "combat_ui_v2/assets/icons/armor_magic_trials/half_plate_of_fortitude.png", "width": 160, "height": 224 }
   },
   {
     "name": "Infernal Chain Mail",
@@ -199,7 +209,8 @@ export const armor = [
     "modifiers": { resistances: ["fire"] },
     "magical": true,
     "value": 900,
-    "id": "infernal_chain_mail"
+    "id": "infernal_chain_mail",
+    "icon": { "src": "combat_ui_v2/assets/icons/armor_magic_trials/infernal_chain_mail.png", "width": 160, "height": 224 }
   },
   {
     "name": "Celestial Plate Armor",
@@ -219,7 +230,8 @@ export const armor = [
     "modifiers": { acBonus: 1 },
     "magical": true,
     "value": 1600,
-    "id": "celestial_plate_armor"
+    "id": "celestial_plate_armor",
+    "icon": { "src": "combat_ui_v2/assets/icons/armor_magic_trials/celestial_plate_armor.png", "width": 160, "height": 224 }
   },
   {
     "name": "Shield",
@@ -235,7 +247,8 @@ export const armor = [
     ],
     "magical": false,
     "value": 10,
-    "id": "shield"
+    "id": "shield",
+    "icon": { "src": "combat_ui_v2/icons/shields/shield.png", "width": 80, "height": 80 }
   },
   {
     "name": "Buckler",
@@ -252,7 +265,8 @@ export const armor = [
     ],
     "magical": false,
     "value": 8,
-    "id": "buckler"
+    "id": "buckler",
+    "icon": { "src": "combat_ui_v2/icons/shields/buckler.png", "width": 80, "height": 80 }
   },
   {
     "name": "Tower Shield",
@@ -270,7 +284,8 @@ export const armor = [
     ],
     "magical": false,
     "value": 18,
-    "id": "tower_shield"
+    "id": "tower_shield",
+    "icon": { "src": "combat_ui_v2/icons/shields/tower_shield.png", "width": 80, "height": 80 }
   },
   {
     "name": "Aegis of Light",
@@ -279,8 +294,8 @@ export const armor = [
     "useTime": "exploration",
     "consumeOnUse": false,
     "type": "shield",
-    "effect": "+3 AC",
-    "modifiers": { "acBonus": 3 },
+    "effect": "+2 AC",
+    "modifiers": { "acBonus": 2 },
     "properties": [
       "light",
       "magical",
@@ -288,7 +303,8 @@ export const armor = [
     ],
     "magical": true,
     "value": 500,
-    "id": "aegis_of_light"
+    "id": "aegis_of_light",
+    "icon": { "src": "combat_ui_v2/icons/shields/aegis_of_light.png", "width": 80, "height": 80 }
   }
 ];
 

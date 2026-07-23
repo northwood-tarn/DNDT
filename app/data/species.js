@@ -86,7 +86,7 @@ export const SPECIES = {
         id: "celestial_revelation",
         name: "Celestial Revelation",
         minLevel: 3,
-        description: "As a Bonus Action, transform for 1 minute.",
+        description: "As a Bonus Action, gain temporary HP equal to your level and +1 to all saving throws for 1 minute.",
         effects: {
           resources: [{ id: "celestial_revelation", name: "Celestial Revelation", max: 1, recovery: "long_rest" }],
           actionOptions: [{
@@ -95,6 +95,7 @@ export const SPECIES = {
             requiresTarget: false,
             duration: { kind: "rounds", rounds: 10, tick: "turn_end" },
             temporaryHpFormula: "level",
+            description: "Gain temporary HP equal to your level and +1 to all saving throws for 1 minute.",
             activeEffectOnResolve: { id: "celestial_revelation_active", type: "modifier", stat: "save", amount: 1, duration: { rounds: 10, tick: "turn_end" } }
           }],
           narrativeTags: ["celestial_revelation"]

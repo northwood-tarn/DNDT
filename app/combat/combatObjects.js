@@ -16,7 +16,12 @@ export function normalizeCombatObjects(objects = []) {
     blocksMovement: object.blocksMovement === true,
     blocksLineOfSight: object.blocksLineOfSight === true,
     difficultTerrain: object.difficultTerrain === true,
+    blocksBoundaryMovement: object.blocksBoundaryMovement === true,
+    blocksTeleport: object.blocksTeleport === true,
+    teleportSaveAbility: object.teleportSaveAbility ? String(object.teleportSaveAbility).toLowerCase().slice(0, 3) : null,
+    immuneToDispel: object.immuneToDispel === true,
     visual: object.visual || null,
+    logSummary: object.logSummary || null,
     followsSource: object.followsSource === true,
     sourceActorId: object.sourceActorId || null,
     sourceTeam: object.sourceTeam || sourceTeamFromObject(object),
@@ -106,6 +111,13 @@ export function combatObjectsAt(snapshot, position) {
 export function combatObjectsAffectingActor(snapshot, actor) {
   if (!actor?.position) return [];
   return combatObjectsAt(snapshot, actor.position);
+}
+
+export function blockingContainmentBoundary(snapshot, from, to) {
+  return (snapshot.combatObjects || []).find((object) =>
+    object.blocksBoundaryMovement === true &&
+    combatObjectContains(snapshot, object, from) !== combatObjectContains(snapshot, object, to)
+  ) || null;
 }
 
 export function combatObjectContains(snapshot, object, position) {

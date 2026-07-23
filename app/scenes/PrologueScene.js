@@ -177,11 +177,12 @@ export default class PrologueScene {
     this.progressButton = null;
     this.pageIndex = 0;
     this.timers = new Set();
-    this.audio = null;
     this.leaving = false;
+    this.onKeyDown = (event) => this.handleKeyDown(event);
   }
 
   start() {
+    document.addEventListener("keydown", this.onKeyDown);
     ensureStyles();
     document.body.classList.add("prologue-active");
     this.container = document.createElement("section");
@@ -194,8 +195,25 @@ export default class PrologueScene {
     this.content.className = "prologue-content";
     this.container.append(flame, this.content);
     this.root?.appendChild(this.container);
-    this.startSoundscape();
     this.showTitleCard();
+  }
+
+  handleKeyDown(event) {
+    if (
+      event.key !== "Enter"
+      || event.repeat
+      || this.leaving
+      || !this.progressButton
+      || this.progressButton.disabled
+    ) {
+      return;
+    }
+
+    // A focused button already turns Enter into its native click event.
+    if (event.target === this.progressButton) return;
+
+    event.preventDefault();
+    this.advance();
   }
 
   later(callback, delay) {
@@ -260,75 +278,10 @@ export default class PrologueScene {
     this.later(() => this.renderPage(), 520);
   }
 
-  startSoundscape() {
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) return;
-    const context = new AudioContextClass();
-    const master = context.createGain();
-    master.gain.setValueAtTime(0.0001, context.currentTime);
-    master.gain.exponentialRampToValueAtTime(0.28, context.currentTime + 2.4);
-    master.connect(context.destination);
-
-    const noiseBuffer = context.createBuffer(1, context.sampleRate * 3, context.sampleRate);
-    const samples = noiseBuffer.getChannelData(0);
-    for (let i = 0; i < samples.length; i += 1) samples[i] = Math.random() * 2 - 1;
-
-    const rain = context.createBufferSource();
-    const rainFilter = context.createBiquadFilter();
-    const rainGain = context.createGain();
-    rain.buffer = noiseBuffer;
-    rain.loop = true;
-    rainFilter.type = "highpass";
-    rainFilter.frequency.value = 1600;
-    rainGain.gain.value = 0.055;
-    rain.connect(rainFilter).connect(rainGain).connect(master);
-
-    const ocean = context.createBufferSource();
-    const oceanFilter = context.createBiquadFilter();
-    const oceanGain = context.createGain();
-    ocean.buffer = noiseBuffer;
-    ocean.loop = true;
-    oceanFilter.type = "lowpass";
-    oceanFilter.frequency.value = 360;
-    oceanGain.gain.value = 0.17;
-    ocean.connect(oceanFilter).connect(oceanGain).connect(master);
-
-    rain.start();
-    ocean.start();
-    context.resume().catch(() => {});
-    const bellTimer = window.setInterval(() => this.ringBell(), 6200);
-    this.audio = { context, master, rain, ocean, bellTimer };
-    this.later(() => this.ringBell(), 650);
-  }
-
-  ringBell() {
-    const { context, master } = this.audio || {};
-    if (!context || context.state === "closed") return;
-    const now = context.currentTime;
-    [220, 440, 660].forEach((frequency, index) => {
-      const oscillator = context.createOscillator();
-      const gain = context.createGain();
-      oscillator.type = "sine";
-      oscillator.frequency.value = frequency;
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.16 / (index + 1), now + 0.035);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.8 + index * 0.45);
-      oscillator.connect(gain).connect(master);
-      oscillator.start(now);
-      oscillator.stop(now + 4.6);
-    });
-  }
-
   beginCharacterCreation() {
     this.leaving = true;
     this.progressButton?.setAttribute("disabled", "");
     this.content?.querySelector(".prologue-page")?.classList.remove("is-visible");
-    if (this.audio) {
-      const { context, master } = this.audio;
-      master.gain.cancelScheduledValues(context.currentTime);
-      master.gain.setValueAtTime(Math.max(master.gain.value, 0.0001), context.currentTime);
-      master.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 1.35);
-    }
     this.later(() => routeTo({
       toScene: "characterSelect",
       fromScene: "prologue",
@@ -336,20 +289,11 @@ export default class PrologueScene {
     }), 1400);
   }
 
-  stopSoundscape() {
-    if (!this.audio) return;
-    window.clearInterval(this.audio.bellTimer);
-    try { this.audio.rain.stop(); } catch {}
-    try { this.audio.ocean.stop(); } catch {}
-    this.audio.context.close().catch(() => {});
-    this.audio = null;
-  }
-
   cleanup() {
+    document.removeEventListener("keydown", this.onKeyDown);
     document.body.classList.remove("prologue-active");
     this.timers.forEach((timer) => window.clearTimeout(timer));
     this.timers.clear();
-    this.stopSoundscape();
     this.container?.remove();
     this.container = null;
     this.content = null;

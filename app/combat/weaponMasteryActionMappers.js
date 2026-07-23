@@ -1,7 +1,7 @@
 export function createWeaponMasteryEffects(weaponRecord, mastery) {
   if (!mastery || mastery.implementation !== "automatic") return [];
   const name = weaponRecord.name || "Weapon";
-  if (mastery.id === "vex") return [modifierEffect(name, "Vex", "incoming_attack_roll", "advantage", "incoming_attack")];
+  if (mastery.id === "vex") return [modifierEffect(name, "Vex", "incoming_attack_roll", "advantage", "incoming_attack", "source")];
   if (mastery.id === "sap") return [modifierEffect(name, "Sap", "attack_roll", "disadvantage", "outgoing_attack")];
   if (mastery.id === "slow") {
     return [{
@@ -43,7 +43,7 @@ export function createWeaponMasteryEffects(weaponRecord, mastery) {
   return [];
 }
 
-function modifierEffect(weaponName, masteryName, stat, mode, consumeOn) {
+function modifierEffect(weaponName, masteryName, stat, mode, consumeOn, durationAnchor = null) {
   return {
     type: "modifier",
     trigger: "hit",
@@ -52,11 +52,11 @@ function modifierEffect(weaponName, masteryName, stat, mode, consumeOn) {
     mode,
     sourceActorOnly: stat === "incoming_attack_roll",
     consumeOn,
-    duration: oneRound(),
+    duration: oneRound(durationAnchor),
     label: `${weaponName} ${masteryName}`,
   };
 }
 
-function oneRound() {
-  return { kind: "rounds", rounds: 1, tick: "turn_end" };
+function oneRound(anchor = null) {
+  return { kind: "rounds", rounds: 1, tick: "turn_end", ...(anchor ? { anchor } : {}) };
 }

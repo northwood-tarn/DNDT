@@ -1,8 +1,10 @@
 import { enableFog } from "../engine/foglayer.js";
 import { getCurrentSceneName, routeTo } from "../engine/sceneRouter.js";
+import { audioRuntime } from "../audio/index.js";
 
 const STYLE_ID = "dndt-system-menu-style";
 const MENU_ID = "dndt-system-menu";
+const SYSTEM_MENU_FONT_URL = new URL("../assets/fonts/pixel_takhisis/Pixel Takhisis.otf", import.meta.url).href;
 
 function installStyles() {
   if (document.getElementById(STYLE_ID)) return;
@@ -12,7 +14,7 @@ function installStyles() {
   style.textContent = `
     @font-face {
       font-family: "Pixel Takhisis";
-      src: url("./assets/fonts/pixel_takhisis/Pixel Takhisis.otf") format("opentype");
+      src: url("${SYSTEM_MENU_FONT_URL}") format("opentype");
       font-display: swap;
     }
 
@@ -63,11 +65,20 @@ function installStyles() {
       background: rgba(137, 174, 168, 0.72);
       color: #020809;
     }
+
+    #${MENU_ID} button:disabled,
+    #${MENU_ID} button:disabled:hover,
+    #${MENU_ID} button:disabled:focus-visible {
+      border-color: transparent;
+      background: transparent;
+      color: rgba(137, 174, 168, 0.22);
+      cursor: default;
+    }
   `;
   document.head.appendChild(style);
 }
 
-export function installSystemMenu() {
+export function installSystemMenu(options = {}) {
   if (document.getElementById(MENU_ID)) return;
 
   installStyles();
@@ -92,14 +103,17 @@ export function installSystemMenu() {
     document.body.classList.remove("is-system-menu-open");
     if (previousFocus instanceof HTMLElement) previousFocus.focus();
     previousFocus = null;
+    audioRuntime.playEvent("UI_CLOSE");
   };
 
   const open = () => {
     if (!overlay.hidden) return;
     previousFocus = document.activeElement;
     overlay.hidden = false;
+    audioRuntime.unlock();
+    audioRuntime.playEvent("UI_OPEN");
     document.body.classList.add("is-system-menu-open");
-    window.requestAnimationFrame(() => menu.querySelector("button")?.focus());
+    window.requestAnimationFrame(() => menu.querySelector("button:not(:disabled)")?.focus());
   };
 
   const toggle = () => {
@@ -119,24 +133,33 @@ export function installSystemMenu() {
       close();
       return;
     }
+    audioRuntime.playEvent("UI_CONFIRM");
     close();
     enableFog();
     window.api?.enterFramedMode?.();
     routeTo({ toScene, fromScene, reason });
   };
 
-  const actions = [
-    ["New Game", () => goTo("prologue", "system_menu_new_game")],
-    ["Load Game", () => goTo("loadGame", "system_menu_load_game")],
-    ["Settings", () => goTo("settings", "system_menu_settings")],
-    ["Exit", () => window.api?.quit ? window.api.quit() : window.close()],
-  ];
+  const actions = options.combat === true
+    ? [
+        { label: "Load", disabled: true },
+        { label: "Save", disabled: true },
+        { label: "System", action: () => goTo("settings", "combat_system_menu_settings") },
+        { label: "Exit", action: () => window.api?.quit ? window.api.quit() : window.close() },
+      ]
+    : [
+        { label: "New Game", action: () => goTo("prologue", "system_menu_new_game") },
+        { label: "Load Game", action: () => goTo("loadGame", "system_menu_load_game") },
+        { label: "Settings", action: () => goTo("settings", "system_menu_settings") },
+        { label: "Exit", action: () => window.api?.quit ? window.api.quit() : window.close() },
+      ];
 
-  for (const [label, action] of actions) {
+  for (const item of actions) {
     const button = document.createElement("button");
     button.type = "button";
-    button.textContent = label;
-    button.addEventListener("click", action);
+    button.textContent = item.label;
+    button.disabled = item.disabled === true;
+    if (item.action) button.addEventListener("click", item.action);
     menu.appendChild(button);
   }
 

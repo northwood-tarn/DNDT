@@ -54,7 +54,7 @@ export default {
         type: "Action",
         uses: "channelDivinity",
         description:
-          "Spend a Channel Divinity use to restore divine spell power (engine-defined). Typically restores an expended spell slot up to a level allowed by your Cleric level.",
+          "Spend a Channel Divinity use to restore your highest expended eligible spell slot. The slot can be no higher than half your Proficiency Bonus, rounded up.",
         effects: {
           actionOptions: [{
             id: "harness_divine_power",
@@ -62,8 +62,9 @@ export default {
             actionType: "action",
             resourceId: "channel_divinity",
             restoresResource: "spell_slot",
+            resourceRestore: { resourceId: "spell_slot", amount: 1, maxLevelFormula: "half_proficiency_bonus_rounded_up" },
             amount: 1,
-            description: "Spend Channel Divinity to restore one expended spell slot."
+            description: "Spend Channel Divinity to restore your highest expended eligible spell slot."
           }]
         }
       }
@@ -97,7 +98,8 @@ export default {
             damageByTargetProperty: {
               property: "undeadRank",
               default: "1d8",
-              values: { profane: "3d8", bound: "2d8", sovereign: "1d8" }
+              values: { profane: "3d8", bound: "2d8", sovereign: "1d8" },
+              scaling: [{ minLevel: 8, addDice: 1 }, { minLevel: 13, addDice: 1 }]
             },
             damageType: "radiant",
             description: "Spend Channel Divinity to damage nearby undead."
@@ -250,7 +252,7 @@ export default {
                   condition: "blinded",
                   duration: { kind: "rounds", rounds: 1, tick: "turn_end" }
                 }],
-                description: "Blind nearby enemies with a pulse of lantern-light."
+                description: "Enemies within 10 ft make a Constitution save or become Blinded until the start of your next turn."
               }]
             } }
         ],
@@ -288,6 +290,7 @@ export default {
                   radiusFt: 15,
                   followsSource: true,
                   duration: { kind: "rounds", rounds: 10, tick: "turn_end" },
+                  logSummary: "15-ft aura for 10 rounds: allies gain advantage on saves against fear and charm; enemies take radiant damage equal to your Wisdom modifier at the start of their turns and gain advantage on attacks against you.",
                   effects: [
                     {
                       id: "halo_fear_charm_save_advantage",

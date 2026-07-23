@@ -1,4 +1,4 @@
-import { actorAt, inBounds, isMovementBlocked } from "./grid.js";
+import { actorAt, distance, inBounds, isMovementBlocked } from "./grid.js";
 import {
   getMovementRemaining,
   getItemQuantity,
@@ -40,8 +40,7 @@ import {
   resolveOpportunityAttacks,
   resolveSaveSpell,
 } from "./combatResolution.js";
-import { combatObjectsAt } from "./combatObjects.js";
-import { combatObjectContains } from "./combatObjects.js";
+import { blockingContainmentBoundary, combatObjectContains, combatObjectsAt } from "./combatObjects.js";
 import { applyDamageAmount, rollSaveD20 } from "./combatEffectsResolution.js";
 import { rollSaveModifier } from "./modifiers.js";
 import { canMoveTo, canTargetAction, canUseAction } from "./rules.js";
@@ -183,10 +182,43 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
   }
   if (!hasConsumableStock(actor, action, log, snapshot)) return false;
 
+  if (action.type === "relic_revivify") {
+    const target = getActor(snapshot, targetActorId(targetId));
+    const legality = canTargetAction(snapshot, actor, action, target);
+    if (!legality.ok) return false;
+    target.hp = 1;
+    target.defeated = false;
+    spendActionCost(actor, action.cost);
+    action.uses.remaining = Math.max(0, (action.uses.remaining ?? action.uses.max ?? 1) - 1);
+    const backlash = dice.rollDamage("3d10");
+    const hpBefore = actor.hp;
+    actor.hp = Math.max(0, actor.hp - backlash.total);
+    actor.defeated = actor.hp <= 0;
+    log.add("actor.revive", { round: snapshot.round, actorId: target.id, actorName: target.name, sourceId: actor.id, sourceName: actor.name, hp: 1, reason: action.name });
+    log.add("damage.applied", { round: snapshot.round, sourceId: actor.id, sourceName: actor.name, targetId: actor.id, targetName: actor.name, amount: hpBefore - actor.hp, originalAmount: backlash.total, damageModifiers: [], damageType: "necrotic", hpBefore, hpAfter: actor.hp, unavoidable: true });
+    checkOutcome(snapshot, log);
+    return true;
+  }
+
   if (action.type === "dash") {
     const resolved = resolveDash(snapshot, actor, action, log);
     cleanupInvalidSourceConditions(snapshot, log);
     return resolved;
+  }
+  if (action.type === "feature_action" && action.actionKind === "staff_of_the_adder_transform") {
+    actor.activeEffects ??= [];
+    actor.activeEffects.push({
+      id: "staff_of_the_adder_awakened", label: "Awakened Adder",
+      duration: { kind: "rounds", rounds: 10, remaining: 10, tick: "turn_end" },
+      damageRider: {
+        id: "staff_of_the_adder_poison", trigger: "source_hits_with_attack_roll", damage: "1d6", damageType: "poison", actionTags: ["weapon"],
+        effects: [{ type: "condition", trigger: "hit", condition: "opportunity_attacks_blocked", noSave: true, duration: { kind: "until", point: "source_turn_start" } }],
+      },
+    });
+    spendActionCost(actor, action.cost);
+    spendResourceUse(actor, action.resourceId);
+    log.add("effect.applied", { round: snapshot.round, sourceId: actor.id, sourceName: actor.name, targetId: actor.id, targetName: actor.name, effectId: "staff_of_the_adder_awakened", label: "Awakened Adder", actionName: action.name });
+    return true;
   }
   if (action.type === "dodge") {
     const resolved = resolveDodge(snapshot, actor, action, log);
@@ -218,7 +250,7 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
     cleanupInvalidSourceConditions(snapshot, log);
     return resolved;
   }
-  if (action.type === "spell_self_heal") {
+  if (action.type === "spell_self_heal" && !(Number.isFinite(action.maxTargets) && action.maxTargets > 1)) {
     const target = action.requiresTarget === false ? actor : getActor(snapshot, targetActorId(targetId));
     const targetLegality = action.requiresTarget === false
       ? { ok: true }
@@ -238,10 +270,21 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
     return resolved;
   }
   if (action.type === "spell_teleport") {
-    const resolved = resolveTeleport(snapshot, actor, action, targetId, log);
+    const resolved = resolveTeleport(snapshot, actor, action, targetId, log, dice);
     if (resolved) afterResolvedAction(snapshot, actor, action, log);
     cleanupInvalidSourceConditions(snapshot, log);
     return resolved;
+  }
+  if (action.type === "move_spell_area") {
+    const anchor = targetId?.anchor || targetId;
+    const object = (snapshot.combatObjects || []).find((item) => item.sourceActorId === actor.id && item.sourceActionId === action.objectSourceActionId);
+    if (!object || !anchor || !Number.isFinite(anchor.x) || !Number.isFinite(anchor.y)) return false;
+    const from = object.position ? { ...object.position } : null;
+    object.position = { x: anchor.x, y: anchor.y };
+    spendActionCost(actor, action.cost);
+    log.add("object.moved", { round: snapshot.round, actorId: actor.id, actorName: actor.name, actionName: action.name, objectId: object.id, objectName: object.name, from, to: object.position });
+    cleanupInvalidSourceConditions(snapshot, log);
+    return true;
   }
   if (action.type === "spell_effect" && action.requiresTarget === false) {
     beginConcentrationForCast(snapshot, actor, action, log);
@@ -256,15 +299,16 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
   if (isAreaSaveAction(action, targetId)) {
     if (!hasAreaAnchor(targetId)) {
       const resolved = action.type === "spell_object"
-        ? resolveObjectSpell(snapshot, actor, action, targetId, log)
+        ? resolveObjectSpell(snapshot, actor, action, targetId, log, dice)
         : resolveAreaSaveSpell(snapshot, actor, action, targetId, dice, log);
       return resolved;
     }
     beginConcentrationForCast(snapshot, actor, action, log);
     const resolved = action.type === "spell_object"
-      ? resolveObjectSpell(snapshot, actor, action, targetId, log)
+      ? resolveObjectSpell(snapshot, actor, action, targetId, log, dice)
       : resolveAreaSaveSpell(snapshot, actor, action, targetId, dice, log);
     if (!resolved) return false;
+    applySpellCastEndEffects(snapshot, actor, action, log, log.events.length);
     spendActionCost(actor, action.cost);
     spendActionLinkedResources(actor, action);
     spendConsumableForAction(actor, action);
@@ -283,9 +327,14 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
       .map((id) => getActor(snapshot, id))
       .filter(Boolean);
     const selectedTargets = action.allowRepeatedTargets ? targets : uniqueActors(targets).slice(0, action.maxTargets);
+    const linkedRangeInvalid = action.linkedTargetRange && selectedTargets.length > 1
+      ? selectedTargets.slice(1).find((target) => distance(selectedTargets[0].position, target.position) > action.linkedTargetRange)
+      : null;
     const invalidTarget = selectedTargets.find((target) => !canTargetAction(snapshot, actor, action, target).ok);
-    if (!selectedTargets.length || invalidTarget) {
-      const targetLegality = invalidTarget ? canTargetAction(snapshot, actor, action, invalidTarget) : { reason: "no valid targets selected" };
+    if (!selectedTargets.length || invalidTarget || linkedRangeInvalid) {
+      const targetLegality = linkedRangeInvalid
+        ? { reason: `secondary target is more than ${action.linkedTargetRange * 5} feet from the primary target` }
+        : invalidTarget ? canTargetAction(snapshot, actor, action, invalidTarget) : { reason: "no valid targets selected" };
       log.add("target.invalid", {
         round: snapshot.round,
         actorId: actor.id,
@@ -302,6 +351,8 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
       if (!gate.ok) continue;
       if (action.type === "spell_effect") {
         applyActionResolvedEffects(snapshot, actor, target, action, log);
+      } else if (action.type === "spell_self_heal") {
+        resolveHealingAction(snapshot, actor, target, action, dice, log, { spend: false });
       } else if (action.type === "spell_save") {
         resolveSaveSpell(snapshot, actor, target, action, dice, log);
       } else if (action.type === "spell_auto_damage") {
@@ -373,6 +424,7 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
     return true;
   }
 
+  const spellEventStart = log.events.length;
   if (action.type === "spell_auto_damage") {
     resolveAutoDamageSpell(snapshot, actor, target, action, dice, log);
   } else if (action.type === "compound_weapon_attack") {
@@ -382,6 +434,7 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
   } else {
     resolveAttack(snapshot, actor, target, action, dice, log);
   }
+  applySpellCastEndEffects(snapshot, actor, action, log, spellEventStart);
 
   markActionResolvedForTurn(actor, action);
   spendActionCost(actor, action.cost);
@@ -419,6 +472,12 @@ function spendActionLinkedResources(actor, action) {
 }
 
 function afterResolvedAction(snapshot, actor, action, log) {
+  applyEquipmentSpellCastEffects(snapshot, actor, action, log);
+  if (action.consumesEquippedItemId) {
+    if (actor.equipment?.headwearId === action.consumesEquippedItemId) actor.equipment.headwearId = null;
+    if (Array.isArray(actor.equipment?.itemIds)) actor.equipment.itemIds = actor.equipment.itemIds.filter((id) => id !== action.consumesEquippedItemId);
+    actor.actions = (actor.actions || []).filter((candidate) => candidate.consumesEquippedItemId !== action.consumesEquippedItemId);
+  }
   if (action.forbiddenTranscriptionRepeat) {
     clearForbiddenTranscriptionRepeat(actor);
     return;
@@ -428,6 +487,29 @@ function afterResolvedAction(snapshot, actor, action, log) {
     return;
   }
   clearForbiddenTranscriptionRepeat(actor);
+}
+
+function applyEquipmentSpellCastEffects(snapshot, actor, action, log) {
+  if (!action?.type?.startsWith("spell_") || action.grantedByActionId) return;
+  for (const effect of actor.equipmentTraits?.onSpellCast || []) {
+    if (effect.kind !== "heal_wearer") continue;
+    const amount = effect.amountFrom === "spell_level" ? Math.max(0, Number(action.spellLevel) || 0) : Math.max(0, Number(effect.amount) || 0);
+    if (amount <= 0 || actor.hp >= actor.maxHp) continue;
+    const before = actor.hp;
+    actor.hp = Math.min(actor.maxHp, actor.hp + amount);
+    log.add("healing.applied", {
+      round: snapshot.round,
+      sourceId: actor.id,
+      sourceName: actor.name,
+      targetId: actor.id,
+      targetName: actor.name,
+      actionName: action.name,
+      sourceItemId: effect.sourceItemId,
+      sourceItemName: effect.sourceItemName,
+      amount: actor.hp - before,
+      before,
+    });
+  }
 }
 
 function shouldOfferForbiddenTranscription(actor, action) {
@@ -669,7 +751,7 @@ function isIndividualMultiTargetAction(action) {
     Number.isFinite(action.maxTargets) &&
     action.maxTargets > 1 &&
     !action.targeting?.shape &&
-    ["spell_effect", "spell_save", "spell_attack", "spell_auto_damage"].includes(action.type);
+    ["spell_effect", "spell_save", "spell_attack", "spell_auto_damage", "spell_self_heal"].includes(action.type);
 }
 
 function uniqueActors(targets) {
@@ -785,9 +867,11 @@ function pushDirection(actorPos, targetPos) {
 }
 
 function canForcedMoveTo(snapshot, pos, targetId) {
+  const target = getActor(snapshot, targetId);
   return inBounds(snapshot.grid, pos) &&
     !isMovementBlocked(snapshot.grid, pos) &&
     !combatObjectsAt(snapshot, pos).some((object) => object.blocksMovement) &&
+    !blockingContainmentBoundary(snapshot, target?.position, pos) &&
     !actorAt(snapshot, pos, targetId);
 }
 
@@ -796,9 +880,11 @@ function collisionDealsDamage(snapshot, pos, targetId) {
 }
 
 function clearOffenseEndedConditions(actor, action, log, snapshot) {
-  if (!isOffensiveAction(action)) return;
   for (const condition of [...(actor.conditions || [])]) {
-    if (!hasConditionRule({ conditions: [condition] }, "endsOnOffense")) continue;
+    const endsOn = condition.endsOn || [];
+    const endsOnAttack = isOffensiveAction(action) && (endsOn.includes("attack") || hasConditionRule({ conditions: [condition] }, "endsOnOffense"));
+    const endsOnSomaticSpell = action?.tags?.spell === true && action?.tags?.requiresHands === true && endsOn.includes("cast_spell_with_somatic_component");
+    if (!endsOnAttack && !endsOnSomaticSpell) continue;
     removeCondition(actor, condition.id);
     log.add("condition.removed", {
       round: snapshot.round,

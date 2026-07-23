@@ -1,6 +1,7 @@
 import { BACKGROUND_LIST } from "../../data/backgrounds.js";
 import { CLASS_LIST } from "../../data/classes.js";
-import { getDeviceRecipeById, listDeviceRecipes } from "../../data/deviceRecipes.js";
+import { describeDeviceRecipe, getDeviceRecipeById, listDeviceRecipes } from "../../data/deviceRecipes.js";
+import { proficiencyForLevel } from "../../rules/proficiency.js";
 import { SPECIES_LIST } from "../../data/species.js";
 import { getFeatById, listOriginFeats } from "../../data/feats.js";
 import { SPELLS } from "../../data/spells.js";
@@ -10,6 +11,9 @@ import { assignClassDefaultAbilityScores } from "../../character/abilityScores.j
 import { ABILITY_IDS, createEmptyCharacterDraft } from "../../character/characterDraft.js";
 import { SKILL_OPTIONS } from "../creatorHarnessOptions.js";
 import { createStepCreatorCharacterRecord } from "../stepCreatorPipeline.js";
+import { createRendererSaveGameClient } from "../../state/saveGameClient.js";
+import { createSaveGameFromCharacterRecord, DEFAULT_SAVE_GAME_SLOT } from "../../state/saveGameState.js";
+import { DEFAULT_MINI_BASE_SELECTION, UNIQUE_MINI_BASES } from "../../mini_preview/base_asset_manifest.js";
 
 const BASE_STEPS = [
   { id: "name", label: "Name" },
@@ -19,8 +23,8 @@ const BASE_STEPS = [
   { id: "feats", label: "Feats" },
   { id: "features", label: "Features" },
   { id: "gear", label: "Gear" },
-  { id: "summary", label: "Summary" },
   { id: "appearance", label: "Portrait and Miniature" },
+  { id: "summary", label: "Summary" },
 ];
 const SPELL_STEP = { id: "spells", label: "Spells" };
 
@@ -130,6 +134,8 @@ const els = {
   featChoices: document.querySelector("#featChoices"),
   portraitSelection: document.querySelector("#portraitSelection"),
   miniatureSelection: document.querySelector("#miniatureSelection"),
+  appearanceWorkspace: document.querySelector("#appearanceWorkspace"),
+  appearanceName: document.querySelector("#appearanceName"),
   diamonds: document.querySelector("#stepDiamonds"),
   nextButton: document.querySelector("#nextStepButton"),
   detailsToggle: document.querySelector("#detailsToggle"),
@@ -161,7 +167,14 @@ const state = {
   hoveredSpellOption: null,
   portraitId: "",
   miniatureId: "",
+  miniatureBaseId: DEFAULT_MINI_BASE_SELECTION.uniqueBaseId,
+  portraitPage: 0,
+  miniaturePage: 0,
+  portraitFilter: "",
+  miniatureFilter: "",
 };
+state.draft.presentation.miniatureBaseId = DEFAULT_MINI_BASE_SELECTION.uniqueBaseId;
+state.draft.presentation.miniatureBaseAsset = `mini_preview/${UNIQUE_MINI_BASES[0].asset}`;
 
 renderBackgroundOptions();
 renderSpeciesOptions();
@@ -188,6 +201,9 @@ setupDropdown(els.subclassDropdown, els.subclassDropdownButton);
 
 document.addEventListener("click", (event) => {
   if (!event.target.closest(".background-dropdown")) closeDropdowns();
+  if (!event.target.closest(".game-select")) {
+    for (const menu of document.querySelectorAll(".game-select-options")) menu.hidden = true;
+  }
 });
 
 els.detailsToggle?.addEventListener("click", () => setDetailsOpen(els.details?.hidden));
@@ -203,7 +219,7 @@ document.addEventListener("keydown", (event) => {
 
 function advanceStep() {
   if (!canAdvanceStep()) return;
-  if (state.stepId === "appearance") {
+  if (state.stepId === "summary") {
     startGame();
     return;
   }
@@ -230,8 +246,8 @@ function canAdvanceStep() {
   if (state.stepId === "features") return true;
   if (state.stepId === "spells") return true;
   if (state.stepId === "gear") return true;
-  if (state.stepId === "summary") return true;
-  if (state.stepId === "appearance") return Boolean(state.portraitId && state.miniatureId);
+  if (state.stepId === "appearance") return Boolean(state.portraitId && state.miniatureId && state.miniatureBaseId);
+  if (state.stepId === "summary") return Boolean(state.portraitId && state.miniatureId && state.miniatureBaseId);
   return false;
 }
 
@@ -270,13 +286,17 @@ function render() {
   const isFeatures = state.stepId === "features";
   const isSpells = state.stepId === "spells";
   const isGear = state.stepId === "gear";
-  const isSummary = state.stepId === "summary";
   const isAppearance = state.stepId === "appearance";
+  const isSummary = state.stepId === "summary";
   els.shell?.classList.toggle("is-summary", isSummary);
   els.shell?.classList.toggle("is-features", isFeatures);
-  els.nextButton?.classList.toggle("is-start-ready", isAppearance && canAdvanceStep());
-  els.nextButton?.setAttribute("aria-label", isAppearance ? "Start game" : "Next section");
-  els.title.textContent = isName ? "Your Name" : isBackground ? "Your Background" : isSpecies ? "Your Species" : isClass ? "Your Class" : isFeats ? "Your Feats" : isFeatures ? "Your Features" : isSpells ? "Your Spells" : isGear ? "Your Gear" : isSummary ? "Your Summary" : "Select Portrait and Miniature";
+  els.shell?.classList.toggle("is-appearance", isAppearance);
+  els.appearanceWorkspace.hidden = !isAppearance;
+  els.appearanceName.textContent = state.name;
+  els.nextButton?.classList.toggle("is-start-ready", isSummary && canAdvanceStep());
+  els.nextButton?.setAttribute("aria-label", isSummary ? "Start game" : "Next section");
+  els.title.hidden = isAppearance;
+  els.title.textContent = isName ? "Your Name" : isBackground ? "Your Background" : isSpecies ? "Your Species" : isClass ? "Your Class" : isFeats ? "Your Feats" : isFeatures ? "Your Features" : isSpells ? "Your Spells" : isGear ? "Your Gear" : isSummary ? "Your Summary" : "";
   els.nameInput.hidden = !isName;
   els.dropdown.hidden = !isBackground;
   els.speciesDropdown.hidden = !isSpecies;
@@ -288,8 +308,6 @@ function render() {
   els.subclassDropdown.hidden = !needsSubclass;
   els.abilityTable.hidden = !isClass || !canShowAbilityTable();
   els.featChoices.hidden = !isFeats && !isFeatures && !isSpells && !isGear;
-  els.portraitSelection.hidden = !isAppearance;
-  els.miniatureSelection.hidden = !isAppearance;
   els.chosenName.hidden = isName || isSummary;
   els.chosenName.textContent = state.name;
   els.infoPanel.innerHTML = isName
@@ -402,45 +420,155 @@ function renderBackgroundOptions() {
 function renderAppearanceChoices() {
   if (!els.portraitSelection || !els.miniatureSelection) return;
 
-  const speciesId = state.speciesId;
-  const portraitOptions = speciesId ? [
-    appearancePortraitOption(speciesId, "feminine", "01", "Portrait I"),
-    appearancePortraitOption(speciesId, "masculine", "01", "Portrait II"),
-    appearancePortraitOption(speciesId, "feminine", "02", "Portrait III"),
-    appearancePortraitOption(speciesId, "masculine", "02", "Portrait IV"),
-    appearancePortraitOption(speciesId, "feminine", "03", "Portrait V"),
-    appearancePortraitOption(speciesId, "masculine", "03", "Portrait VI"),
-  ] : [];
-  const portraitIds = new Set(portraitOptions.map((option) => option.id));
-  if (state.portraitId && !portraitIds.has(state.portraitId)) {
-    state.portraitId = "";
-    state.draft.presentation.portraitId = null;
-  }
+  if (!state.portraitFilter) state.portraitFilter = state.speciesId;
+  if (!state.miniatureFilter) state.miniatureFilter = state.speciesId;
+  const allPortraitOptions = SPECIES_LIST.flatMap((species) => {
+    const options = [
+      appearancePortraitOption(species.id, "feminine", "01", "Portrait I"),
+      appearancePortraitOption(species.id, "masculine", "01", "Portrait II"),
+      appearancePortraitOption(species.id, "feminine", "02", "Portrait III"),
+      appearancePortraitOption(species.id, "masculine", "02", "Portrait IV"),
+      appearancePortraitOption(species.id, "feminine", "03", "Portrait V"),
+      appearancePortraitOption(species.id, "masculine", "03", "Portrait VI"),
+    ];
+    if (species.id === "aasimar") {
+      options.push(
+        appearancePortraitOption(species.id, "feminine", "04", "Portrait VII"),
+        appearancePortraitOption(species.id, "masculine", "04", "Portrait VIII"),
+      );
+    }
+    return options;
+  });
+  const portraitOptions = state.portraitFilter === "all"
+    ? allPortraitOptions
+    : allPortraitOptions.filter((option) => option.speciesId === state.portraitFilter);
+  const portraitPageCount = Math.max(1, Math.ceil(portraitOptions.length / 2));
+  state.portraitPage = Math.min(state.portraitPage, portraitPageCount - 1);
+  const visiblePortraits = portraitOptions.slice(state.portraitPage * 2, state.portraitPage * 2 + 2);
 
-  const miniatureOptions = speciesId ? [
-    appearanceMiniatureOption(speciesId, "feminine", "Figure I"),
-    appearanceMiniatureOption(speciesId, "masculine", "Figure II"),
-  ] : [];
-  const miniatureIds = new Set(miniatureOptions.map((option) => option.id));
-  if (state.miniatureId && !miniatureIds.has(state.miniatureId)) {
-    state.miniatureId = "";
-    state.draft.presentation.miniatureId = null;
-  }
+  const allMiniatureOptions = SPECIES_LIST.flatMap((species) => [
+    appearanceMiniatureOption(species.id, "feminine", "Figure I"),
+    appearanceMiniatureOption(species.id, "masculine", "Figure II"),
+  ]);
+  const filteredMiniatureOptions = state.miniatureFilter === "all"
+    ? allMiniatureOptions
+    : allMiniatureOptions.filter((option) => option.speciesId === state.miniatureFilter);
+  const miniatureOptions = [...filteredMiniatureOptions, appearanceHoodedMiniatureOption()];
+  const miniaturePageCount = Math.max(1, Math.ceil(miniatureOptions.length / 2));
+  state.miniaturePage = Math.min(state.miniaturePage, miniaturePageCount - 1);
+  const visibleMiniatures = miniatureOptions.slice(state.miniaturePage * 2, state.miniaturePage * 2 + 2);
 
-  els.portraitSelection.replaceChildren(...portraitOptions.map((option) => appearanceButton(option, "portrait")));
-  els.miniatureSelection.replaceChildren(...miniatureOptions.map((option) => appearanceButton(option, "miniature")));
+  const portraitNav = document.createElement("div");
+  portraitNav.className = "appearance-page-controls";
+  const back = appearancePageButton("Back", "‹", "portraitPage", -1, state.portraitPage === 0);
+  const position = document.createElement("span");
+  position.textContent = `${state.portraitPage + 1} / ${portraitPageCount}`;
+  const forward = appearancePageButton("Forward", "›", "portraitPage", 1, state.portraitPage === portraitPageCount - 1);
+  portraitNav.append(back, position, forward);
+  const portraitFilter = appearanceFilter("Portrait selection", state.portraitFilter, (value) => {
+    state.portraitFilter = value;
+    state.portraitPage = 0;
+    renderAppearanceChoices();
+  });
+  els.portraitSelection.replaceChildren(portraitFilter, ...visiblePortraits.map((option) => appearanceButton(option, "portrait")), portraitNav);
+
+  const miniatureNav = document.createElement("div");
+  miniatureNav.className = "appearance-page-controls";
+  const miniatureBack = appearancePageButton("Back", "‹", "miniaturePage", -1, state.miniaturePage === 0);
+  const miniaturePosition = document.createElement("span");
+  miniaturePosition.textContent = `${state.miniaturePage + 1} / ${miniaturePageCount}`;
+  const miniatureForward = appearancePageButton("Forward", "›", "miniaturePage", 1, state.miniaturePage === miniaturePageCount - 1);
+  miniatureNav.append(miniatureBack, miniaturePosition, miniatureForward);
+  const miniatureFilter = appearanceFilter("Figure selection", state.miniatureFilter, (value) => {
+    state.miniatureFilter = value;
+    state.miniaturePage = 0;
+    renderAppearanceChoices();
+  });
+  els.miniatureSelection.replaceChildren(miniatureFilter, ...visibleMiniatures.map((option) => appearanceButton(option, "miniature")), miniatureNav);
+}
+
+function appearanceFilter(labelText, value, onChange) {
+  const label = document.createElement("div");
+  label.className = "appearance-filter";
+  const text = document.createElement("span");
+  text.textContent = labelText;
+  const choices = [{ id: state.speciesId, name: selectedSpecies()?.name || titleCase(state.speciesId) }, { id: "all", name: "All portraits" }];
+  if (labelText === "Figure selection") choices[1].name = "All figures";
+  label.append(text, gameSelect(labelText, value, choices, onChange));
+  return label;
+}
+
+function appearancePageButton(label, glyph, pageKey, delta, disabled) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "appearance-page-button";
+  button.setAttribute("aria-label", `${label} portraits`);
+  button.textContent = glyph;
+  button.disabled = disabled;
+  button.addEventListener("click", () => {
+    state[pageKey] += delta;
+    renderAppearanceChoices();
+  });
+  return button;
+}
+
+
+function gameSelect(labelText, value, choices, onChange) {
+  const root = document.createElement("div");
+  root.className = "game-select";
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "game-select-button";
+  button.setAttribute("aria-label", labelText);
+  button.setAttribute("aria-expanded", "false");
+  const buttonText = document.createElement("span");
+  buttonText.textContent = choices.find((choice) => choice.id === value)?.name || "Choose";
+  const arrow = document.createElement("img");
+  arrow.src = "../assets/images/ui/forward-arrow-sumie.png";
+  arrow.alt = "";
+  button.append(buttonText, arrow);
+  const menu = document.createElement("div");
+  menu.className = "game-select-options";
+  menu.hidden = true;
+  menu.replaceChildren(...choices.map((choice) => {
+    const option = document.createElement("button");
+    option.type = "button";
+    option.className = `game-select-option${choice.id === value ? " is-selected" : ""}`;
+    option.textContent = choice.name;
+    option.addEventListener("click", (event) => {
+      event.stopPropagation();
+      menu.hidden = true;
+      onChange(choice.id);
+    });
+    return option;
+  }));
+  button.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const opening = menu.hidden;
+    for (const other of document.querySelectorAll(".game-select-options")) other.hidden = true;
+    menu.hidden = !opening;
+    button.setAttribute("aria-expanded", opening ? "true" : "false");
+  });
+  root.append(button, menu);
+  return root;
 }
 
 function appearancePortraitOption(speciesId, form, setId, label) {
   const assetName = `${speciesId}_${form}_${setId}.png`;
   const id = `character_creator/assets/player_portraits/${assetName}`;
-  return { id, src: `assets/player_portraits/${assetName}`, label };
+  return { id, src: `assets/player_portraits/${assetName}`, label, speciesId };
 }
 
 function appearanceMiniatureOption(speciesId, form, label) {
   const assetName = `${speciesId}_${form}_01`;
-  const id = `mini_preview/assets/pc_authored_library/${assetName}/cutout/${assetName}.png`;
-  return { id, src: `../${id}`, label };
+  const id = `mini_preview/assets/pc_authored_library/${assetName}/runtime/${assetName}_betrayers_coin_192x320.png`;
+  return { id, src: `../${id}`, label, speciesId };
+}
+
+function appearanceHoodedMiniatureOption() {
+  const assetName = "cloaked_protagonist_01";
+  const id = `mini_preview/assets/pc_authored_library/${assetName}/runtime/${assetName}_betrayers_coin_192x320.png`;
+  return { id, src: `../${id}`, label: "Hooded Figure", speciesId: "hooded" };
 }
 
 function appearanceButton(option, kind) {
@@ -456,7 +584,15 @@ function appearanceButton(option, kind) {
   const label = document.createElement("span");
   label.className = "appearance-option-label";
   label.textContent = option.label;
-  button.append(image, label);
+  if (kind === "miniature") {
+    const stage = document.createElement("span");
+    stage.className = "miniature-option-stage";
+    image.className = "miniature-runtime-image";
+    stage.append(image);
+    button.append(stage, label);
+  } else {
+    button.append(image, label);
+  }
 
   button.addEventListener("click", () => {
     if (kind === "portrait") {
@@ -1196,7 +1332,11 @@ function previewSpellOption(option, source) {
 }
 
 function previewDeviceOption(option, source) {
-  state.hoveredGearOption = { option: { ...option, description: option.text || option.description || "" }, pool: { label: source || "Device Recipe" } };
+  const recipe = getDeviceRecipeById(option.id);
+  const description = recipe
+    ? describeDeviceRecipe(recipe, proficiencyForLevel(state.draft.identity.level || 1))
+    : option.text || option.description || "";
+  state.hoveredGearOption = { option: { ...option, description }, pool: { label: source || "Device Recipe" } };
   renderGrants();
   renderDetails();
 }
@@ -1206,7 +1346,7 @@ function previewFeatureChoice(record, option) {
   if (recipe) {
     state.hoveredFeatureKey = record.key;
     state.hoveredFeatSource = `${record.feature.name}: ${recipe.name}`;
-    state.hoveredGearOption = { option: { ...option, name: recipe.name, description: recipe.text }, pool: { label: "Device Recipe" } };
+    state.hoveredGearOption = { option: { ...option, name: recipe.name, description: describeDeviceRecipe(recipe, proficiencyForLevel(state.draft.identity.level || 1)) }, pool: { label: "Device Recipe" } };
     renderGrants();
     renderDetails();
     return;
@@ -1446,19 +1586,14 @@ function renderClassGrants() {
 
 function renderPortraitTiles() {
   if (!els.portraitTiles) return;
-  const background = selectedBackground();
-  const species = selectedSpecies();
   const classRecord = selectedClass();
   const subclass = selectedSubclass();
   const showClassTiles = ["class", "feats", "features", "spells", "gear", "summary"].includes(state.stepId);
-  const showTiles = ["background", "species", "class", "feats", "features", "spells", "gear", "summary"].includes(state.stepId);
   const tiles = [
-    portraitTile(background, "background"),
-    portraitTile(species, "species"),
     showClassTiles ? portraitTile(classRecord, "class") : null,
     showClassTiles ? portraitTile(subclass, "subclass") : null,
   ].filter(Boolean);
-  els.portraitTiles.hidden = !showTiles || tiles.length === 0;
+  els.portraitTiles.hidden = !showClassTiles || tiles.length === 0;
   els.portraitTiles.replaceChildren(...tiles);
 }
 
@@ -1770,7 +1905,7 @@ function featureChoiceOptions(choice) {
     return listDeviceRecipes({
       ids: ids.map((item) => typeof item === "string" ? item : item.id),
       level: state.draft.identity.level || 1,
-    }).map((recipe) => ({ id: recipe.id, name: recipe.name, meta: `Level ${recipe.minLevel} recipe`, text: recipe.text }));
+    }).map((recipe) => ({ id: recipe.id, name: recipe.name, meta: `Level ${recipe.minLevel} recipe`, text: describeDeviceRecipe(recipe, proficiencyForLevel(state.draft.identity.level || 1)) }));
   }
   return (choice.options || []).map((option) => {
     if (typeof option === "string") return { id: option, name: titleCase(option), meta: titleCase(choice.kind) };
@@ -2316,10 +2451,18 @@ function hideTooltip() {
   els.tooltip.hidden = true;
 }
 
-function startGame() {
+async function startGame() {
   const characterRecord = createStepCreatorCharacterRecord(state.draft);
-  window.dispatchEvent(new CustomEvent("game:startFromCreator", { detail: { draft: structuredClone(state.draft), characterRecord } }));
-  window.location.href = "../index.html";
+  const saveGame = createSaveGameFromCharacterRecord(characterRecord, { slot: characterRecord.slot });
+  els.nextButton.disabled = true;
+  try {
+    await createRendererSaveGameClient().save(saveGame, DEFAULT_SAVE_GAME_SLOT);
+    window.location.href = "../index.html";
+  } catch (error) {
+    console.error("Unable to save the created character", error);
+    els.nextButton.disabled = false;
+    els.infoPanel.textContent = "Your character could not be saved. Please try again.";
+  }
 }
 
 function createDiamondSvg() {

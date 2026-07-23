@@ -42,6 +42,9 @@ export function createEmptyCharacterDraft(overrides = {}) {
       weaponIds: [],
       armorId: null,
       shieldId: null,
+      headwearId: null,
+      ringIds: [],
+      footwearId: null,
       inventory: [],
       attunedItemIds: [],
       ...overrides.gear,
@@ -58,6 +61,8 @@ export function createEmptyCharacterDraft(overrides = {}) {
     presentation: {
       portraitId: null,
       miniatureId: null,
+      miniatureBaseId: null,
+      miniatureBaseAsset: null,
       ...overrides.presentation,
     },
     metadata: {
@@ -96,6 +101,7 @@ export function validateCharacterDraft(draft, options = {}) {
   }
   if (!Array.isArray(draft.choices?.weaponMasteryIds)) errors.push("choices.weaponMasteryIds must be an array");
   if (!Array.isArray(draft.gear?.weaponIds)) errors.push("gear.weaponIds must be an array");
+  if (!Array.isArray(draft.gear?.ringIds)) errors.push("gear.ringIds must be an array");
   if (!Array.isArray(draft.gear?.inventory)) errors.push("gear.inventory must be an array");
   if (!Array.isArray(draft.gear?.attunedItemIds)) errors.push("gear.attunedItemIds must be an array");
   if (!Array.isArray(draft.spells?.knownSpellIds)) errors.push("spells.knownSpellIds must be an array");

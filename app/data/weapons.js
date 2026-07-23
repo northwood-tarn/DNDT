@@ -47,6 +47,39 @@ const legacyWeaponRecords = [
     "id": "greatsword"
   },
   {
+    "name": "Maul",
+    "description": "A massive two-handed hammer built to break armor and drive foes from their feet.",
+    "uses": "infinite",
+    "consumeOnUse": false,
+    "useTime": "action",
+    "type": "melee",
+    "damage": "2d6",
+    "properties": [
+      "heavy",
+      "two-handed"
+    ],
+    "mastery": "topple",
+    "value": 10,
+    "id": "maul"
+  },
+  {
+    "name": "Glaive",
+    "description": "A long-hafted cutting weapon whose reach keeps enemies at the edge of a sweeping blade.",
+    "uses": "infinite",
+    "consumeOnUse": false,
+    "useTime": "action",
+    "type": "melee",
+    "damage": "1d10",
+    "properties": [
+      "heavy",
+      "reach",
+      "two-handed"
+    ],
+    "mastery": "graze",
+    "value": 20,
+    "id": "glaive"
+  },
+  {
     "name": "Dagger",
     "description": "A small, wicked edge built for speed and desperation.",
     "uses": "infinite",
@@ -194,7 +227,7 @@ const legacyWeaponRecords = [
     "type": "melee",
     "damage": "1d8",
     "effect": "+1d6 fire damage",
-    "modifiers": { "damageBonuses": [ { "amount": "1d6", "type": "fire" } ] },
+    "modifiers": { "enhancementBonus": 1, "damageBonuses": [ { "amount": "1d6", "type": "fire" } ] },
     "properties": [
       "versatile"
     ],
@@ -211,7 +244,7 @@ const legacyWeaponRecords = [
     "type": "melee",
     "damage": "1d4",
     "effect": "+1d6 poison damage",
-    "modifiers": { "damageBonuses": [ { "amount": "1d6", "type": "poison" } ] },
+    "modifiers": { "enhancementBonus": 1, "damageBonuses": [ { "amount": "1d6", "type": "poison" } ] },
     "properties": [
       "finesse",
       "light"
@@ -229,7 +262,7 @@ const legacyWeaponRecords = [
     "type": "melee",
     "damage": "2d6",
     "effect": "+1 damage",
-    "modifiers": { "damageBonuses": [ { "amount": 1, "type": null } ] },
+    "modifiers": { "enhancementBonus": 1, "damageBonuses": [ { "amount": 1, "type": null } ] },
     "properties": [
       "heavy",
       "two-handed"
@@ -247,7 +280,7 @@ const legacyWeaponRecords = [
     "type": "melee",
     "damage": "1d8",
     "effect": "+1d6 thunder damage",
-    "modifiers": { "damageBonuses": [ { "amount": "1d6", "type": "thunder" } ] },
+    "modifiers": { "enhancementBonus": 1, "damageBonuses": [ { "amount": "1d6", "type": "thunder" } ] },
     "properties": [
       "versatile"
     ],
@@ -264,7 +297,7 @@ const legacyWeaponRecords = [
     "type": "melee",
     "damage": "1d8",
     "effect": "+1d6 cold damage",
-    "modifiers": { "damageBonuses": [ { "amount": "1d6", "type": "cold" } ] },
+    "modifiers": { "enhancementBonus": 1, "damageBonuses": [ { "amount": "1d6", "type": "cold" } ] },
     "properties": [
       "finesse"
     ],
@@ -281,7 +314,7 @@ const legacyWeaponRecords = [
     "type": "ranged",
     "damage": "1d8",
     "effect": "+1 damage",
-    "modifiers": { "damageBonuses": [ { "amount": 1, "type": null } ] },
+    "modifiers": { "enhancementBonus": 1, "damageBonuses": [ { "amount": 1, "type": null } ] },
     "properties": [
       "range (150/600)",
       "two-handed"
@@ -299,7 +332,7 @@ const legacyWeaponRecords = [
     "type": "melee",
     "damage": "1d6",
     "effect": "+1d6 fire damage",
-    "modifiers": { "damageBonuses": [ { "amount": "1d6", "type": "fire" } ] },
+    "modifiers": { "enhancementBonus": 1, "damageBonuses": [ { "amount": "1d6", "type": "fire" } ] },
     "properties": [
       "light"
     ],
@@ -316,7 +349,7 @@ const legacyWeaponRecords = [
     "type": "melee",
     "damage": "1d6",
     "effect": "+1d4 lightning damage",
-    "modifiers": { "damageBonuses": [ { "amount": "1d4", "type": "lightning" } ] },
+    "modifiers": { "enhancementBonus": 1, "damageBonuses": [ { "amount": "1d4", "type": "lightning" } ] },
     "properties": [
       "finesse",
       "light"
@@ -334,7 +367,7 @@ const legacyWeaponRecords = [
     "type": "melee",
     "damage": "1d6",
     "effect": "+1 radiant damage",
-    "modifiers": { "damageBonuses": [ { "amount": 1, "type": "radiant" } ] },
+    "modifiers": { "enhancementBonus": 1, "damageBonuses": [ { "amount": 1, "type": "radiant" } ] },
     "properties": [
       "versatile"
     ],
@@ -351,7 +384,7 @@ const legacyWeaponRecords = [
     "type": "melee",
     "damage": "1d6",
     "effect": "+1 damage",
-    "modifiers": { "damageBonuses": [ { "amount": 1, "type": null } ] },
+    "modifiers": { "enhancementBonus": 1, "damageBonuses": [ { "amount": 1, "type": null } ] },
     "properties": [
       "finesse",
       "light"
@@ -369,7 +402,7 @@ const legacyWeaponRecords = [
     "type": "melee",
     "damage": "1d8",
     "effect": "+1d6 force damage",
-    "modifiers": { "damageBonuses": [ { "amount": "1d6", "type": "force" } ] },
+    "modifiers": { "enhancementBonus": 1, "damageBonuses": [ { "amount": "1d6", "type": "force" } ] },
     "properties": [
       "versatile"
     ],
@@ -387,7 +420,7 @@ const legacyWeaponRecords = [
     "type": "ranged",
     "damage": "1d6",
     "effect": "+1 psychic damage",
-    "modifiers": { "damageBonuses": [ { "amount": 1, "type": "psychic" } ] },
+    "modifiers": { "enhancementBonus": 1, "damageBonuses": [ { "amount": 1, "type": "psychic" } ] },
     "properties": [
       "range (80/320)",
       "two-handed"
@@ -421,6 +454,15 @@ const SIMPLE_WEAPON_IDS = new Set([
 
 export const weapons = legacyWeaponRecords.map(toCanonicalWeapon);
 
+export function isWeaponProficient(weapon, proficiencyNames = []) {
+  if (!weapon) return false;
+  const names = proficiencyNames.map((name) => String(name || "").trim().toLowerCase());
+  if (names.includes("simple weapons") && weapon.proficiencies?.includes("simple_weapons")) return true;
+  if (names.includes("martial weapons") && weapon.proficiencies?.includes("martial_weapons")) return true;
+  const weaponName = String(weapon.name || "").trim().toLowerCase();
+  return names.some((name) => name === weaponName || name === `${weaponName}s`);
+}
+
 function toCanonicalWeapon(record) {
   const twoHanded = record.properties.includes("two-handed");
   const ranged = record.type === "ranged";
@@ -439,13 +481,25 @@ function toCanonicalWeapon(record) {
     attackAbility: ranged || record.properties.includes("finesse") ? "dexterity" : "strength",
     damageFormula: record.damage,
     damageType: baseDamageType(record.id),
-    range: ranged ? rangeFromProperties(record.properties) : 1,
+    range: ranged ? rangeFromProperties(record.properties) : record.properties.includes("reach") ? 2 : 1,
     hands: twoHanded ? 2 : 1,
     properties: record.properties.filter((property) => !property.startsWith("range (")),
     mastery: record.mastery,
+    enhancementBonus: record.modifiers?.enhancementBonus || 0,
     damageBonuses: (record.modifiers?.damageBonuses || []).map(canonicalDamageBonus),
     magical: record.magical === true || Boolean(record.modifiers),
     value: record.value,
+    icon: weaponIcon(record.id, record.magical === true || Boolean(record.modifiers)),
+  };
+}
+
+function weaponIcon(id, magical) {
+  return {
+    src: magical
+      ? `combat_ui_v2/icons/weapon_badges/previews/${id}.png`
+      : `combat_ui_v2/icons/weapons/${id}.png`,
+    width: 80,
+    height: 80,
   };
 }
 
@@ -457,7 +511,7 @@ function canonicalDamageBonus(bonus) {
 
 function baseDamageType(id) {
   if (["dagger", "venomous_dagger", "rapier", "frost_brand_rapier", "shortsword", "piercing_shortsword", "longbow", "bow_of_accuracy", "shortbow", "silent_bow"].includes(id)) return "piercing";
-  if (["warhammer", "thunder_hammer", "quarterstaff", "blessed_quarterstaff", "mace"].includes(id)) return "bludgeoning";
+  if (["warhammer", "thunder_hammer", "quarterstaff", "blessed_quarterstaff", "mace", "maul"].includes(id)) return "bludgeoning";
   return "slashing";
 }
 

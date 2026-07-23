@@ -13,7 +13,9 @@ export function canSpendSpellSlotThisTurn(actor, action) {
   if (actor?.turnFlags?.spellSlotSpentThisTurn === true) {
     return { ok: false, reason: "a spell slot has already been used this turn" };
   }
-  const level = lowestAvailableSpellSlot(actor, action.spellLevel || 1);
+  const level = action.usesExactSpellSlot
+    ? exactAvailableSpellSlot(actor, action.spellLevel || 1)
+    : lowestAvailableSpellSlot(actor, action.spellLevel || 1);
   if (!level && highestSlotLevel(actor) < Number(action.spellLevel || 1)) return { ok: true, reason: null };
   if (!level) return { ok: false, reason: `no level ${action.spellLevel || 1}+ spell slot available` };
   return { ok: true, reason: null, level };
@@ -22,7 +24,9 @@ export function canSpendSpellSlotThisTurn(actor, action) {
 export function spendActionSpellSlot(actor, action) {
   if (!actionConsumesSpellSlot(action)) return true;
   if (!hasSpellSlotPool(actor)) return true;
-  const level = lowestAvailableSpellSlot(actor, action.spellLevel || 1);
+  const level = action.usesExactSpellSlot
+    ? exactAvailableSpellSlot(actor, action.spellLevel || 1)
+    : lowestAvailableSpellSlot(actor, action.spellLevel || 1);
   if (!level && highestSlotLevel(actor) < Number(action.spellLevel || 1)) return true;
   if (!level || !spendSpellSlot(actor, level)) return false;
   actor.turnFlags ??= {};
@@ -48,6 +52,11 @@ export function lowestAvailableSpellSlot(actor, minimumLevel = 1) {
     if (availableSlotUses(slots[key]) > 0) return key;
   }
   return null;
+}
+
+function exactAvailableSpellSlot(actor, level) {
+  const slots = actor?.spellSlots || actor?.spellcasting?.slots || {};
+  return availableSlotUses(slots[level] || slots[String(level)]) > 0 ? Number(level) : null;
 }
 
 export function availableSlotUses(slot) {

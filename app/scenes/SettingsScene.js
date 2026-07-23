@@ -2,7 +2,7 @@ import { routeTo } from "../engine/sceneRouter.js";
 
 const STYLE_ID = "settings-scene-style";
 const STORAGE_KEY = "dndt.settings";
-const DEFAULTS = Object.freeze({ master: 1, music: 0.9, effects: 0.9, fullscreen: false });
+const DEFAULTS = Object.freeze({ master: 1, music: 0.9, effects: 0.9, fullscreen: false, audioBuses: {} });
 
 function ensureStyles() {
   if (document.getElementById(STYLE_ID)) return;

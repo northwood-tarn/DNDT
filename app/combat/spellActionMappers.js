@@ -16,7 +16,7 @@ export function createEffectsFromSpell(spellRecord, options = {}) {
   return effects;
 }
 
-export function createCombatObjectFromSpell(spellRecord) {
+export function createCombatObjectFromSpell(spellRecord, options = {}) {
   const payload = spellRecord.hooks?.applyEffect;
   const kind = String(payload?.kind || "").toLowerCase();
   if (![
@@ -26,6 +26,8 @@ export function createCombatObjectFromSpell(spellRecord) {
     "wall",
     "moving_ring_hazard",
     "area_tentacles",
+    "aura_hazard",
+    "containment",
   ].includes(kind)) return null;
 
   const area = payload.area || spellRecord.area || {};
@@ -43,6 +45,10 @@ export function createCombatObjectFromSpell(spellRecord) {
     blocksLineOfSight: payload.blocksSight === true || payload.blocksLineOfSight === true || kind === "wall",
     blocksProjectiles: payload.blocksProjectiles === true || kind === "wall",
     difficultTerrain: payload.difficultTerrain === true,
+    blocksBoundaryMovement: payload.blocksBoundaryMovement === true || kind === "containment",
+    blocksTeleport: payload.blocksTeleport === true,
+    teleportSaveAbility: payload.teleportSaveAbility || null,
+    immuneToDispel: payload.immuneToDispel === true,
     visual: "green_glow",
     followsSource: payload.followsCaster === true,
     duration: spellDuration(spellRecord.duration),
@@ -68,10 +74,16 @@ export function createCombatObjectFromSpell(spellRecord) {
     object.effects.push({
       type: "damage",
       trigger: tick.phase,
-      damage: tick.damage.dice,
+      damage: getScaledSpellDamage(spellRecord, { ...options, damage: tick.damage.dice }),
       damageType: tick.damage.type || "untyped",
-      save: tick.save || null,
+      save: tick.save || (spellRecord.hooks?.save ? { ...spellRecord.hooks.save, dc: null } : null),
+      affects: payload.targetTeam || "all",
     });
+  }
+
+  if (kind === "aura_hazard" || kind === "area_hazard") {
+    const initial = object.effects.find((effect) => effect.type === "damage");
+    if (initial) object.effects.unshift({ ...structuredClone(initial), trigger: "area_created" });
   }
 
   if (kind === "moving_ring_hazard" && payload.damage?.dice) {
@@ -79,7 +91,7 @@ export function createCombatObjectFromSpell(spellRecord) {
       object.effects.push({
         type: "damage",
         trigger,
-        damage: payload.damage.dice,
+        damage: scaleSlotDamage(payload.damage.dice, payload.scaling?.per2SlotsAboveBase, options.slotLevel || spellRecord.level),
         damageType: payload.damage.type || "untyped",
         save: {
           ...(spellRecord.hooks?.save || {}),
@@ -114,9 +126,13 @@ export function getSpellDamage(spellRecord, options = {}) {
 }
 
 export function createSpellActionExtras(spellRecord, options = {}) {
+  const applyEffect = spellRecord.hooks?.applyEffect;
   return {
     ...createSpellActionExtrasFromScaling(spellRecord, options),
-    ...areaExtrasFromEffect(spellRecord.hooks?.applyEffect),
+    ...areaExtrasFromEffect(applyEffect),
+    ...(String(applyEffect?.kind || "").toLowerCase() === "chain_targets"
+      ? { linkedTargetRange: feetToSquares(applyEffect.secondaryRangeFt || 30) }
+      : {}),
   };
 }
 
@@ -163,6 +179,21 @@ function createConditionEffect(payload, spellRecord, options = {}) {
 
 function specialEffectFromEffect(payload, spellRecord, options = {}) {
   const kind = String(payload?.kind || "").toLowerCase();
+  if (kind === "light") {
+    return { type: "light_source", trigger: "action_resolved", target: "target", brightFt: payload.brightFt || 20, dimFt: payload.dimFt || 20, duration: spellDuration(spellRecord.duration) };
+  }
+  if (kind === "max_hp_bonus") {
+    const levelsAbove = Math.max(0, Number(options.slotLevel || spellRecord.level) - Number(payload.baseLevel || spellRecord.level));
+    return { type: "max_hp_bonus", trigger: "action_resolved", target: "target", amount: Number(payload.amount || 0) + levelsAbove * Number(payload.addPerSlotAboveBase || 0), duration: spellDuration(spellRecord.duration) };
+  }
+  if (kind === "death_ward") return { type: "death_ward", trigger: "action_resolved", target: "target", duration: spellDuration(spellRecord.duration) };
+  if (kind === "dispel_magic") return { type: "dispel_magic", trigger: "action_resolved", target: "target", maximumAutomaticSpellLevel: Number(options.slotLevel || spellRecord.level) };
+  if (kind === "greater_restoration") {
+    return { type: "greater_restoration", trigger: "action_resolved", target: "target", conditions: (payload.conditions || []).map(normalizeConditionId), removeExhaustion: Number(payload.removeExhaustion || 0), removeAbilityOrMaxHpReduction: payload.removeAbilityOrMaxHpReduction === true };
+  }
+  if (kind === "cleanse_all" && Array.isArray(payload.conditions)) {
+    return { type: "remove_conditions", trigger: "action_resolved", target: "target", conditions: payload.conditions.map(normalizeConditionId), maxRemoved: payload.conditions.length };
+  }
   if (kind === "held_flame" && payload.laterAction) {
     return {
       type: "grant_action",
@@ -191,12 +222,14 @@ function specialEffectFromEffect(payload, spellRecord, options = {}) {
     };
   }
   if (kind === "temp_hp_with_retal") {
+    const levelsAbove = Math.max(0, Number(options.slotLevel || spellRecord.level) - spellRecord.level);
+    const tempHp = Number(payload.tempHP?.base || 0) + levelsAbove * Number(payload.tempHP?.perSlotAboveFirst || 0);
     return [
       {
         type: "temp_hp",
         trigger: "action_resolved",
         target: "self",
-        amount: payload.tempHP?.base || 0,
+        amount: tempHp,
         duration: durationFromEffect(payload, spellRecord),
       },
       {
@@ -207,7 +240,7 @@ function specialEffectFromEffect(payload, spellRecord, options = {}) {
         duration: durationFromEffect(payload, spellRecord),
         damageRetaliation: {
           trigger: payload.retaliation?.trigger || "hit_by_melee",
-          damage: `${retaliationDamageAmount(payload)}`,
+          damage: `${payload.retaliation?.damage?.amountFrom === "tempHPBase" ? tempHp : retaliationDamageAmount(payload)}`,
           damageType: payload.retaliation?.damage?.type || "cold",
           requiresTempHp: true,
         },
@@ -504,7 +537,13 @@ function durationFromEffect(payload, spellRecord) {
 function spellDuration(duration = {}) {
   if (duration.type !== "timed" || !Number.isFinite(duration.value)) return null;
   const unit = duration.unit || "rounds";
-  const rounds = unit === "seconds" ? Math.ceil(duration.value / 6) : duration.value;
+  const rounds = unit === "seconds"
+    ? Math.ceil(duration.value / 6)
+    : unit === "minutes"
+      ? Math.ceil(duration.value * 10)
+      : unit === "hours"
+        ? Math.ceil(duration.value * 600)
+        : duration.value;
   return { kind: "rounds", rounds, tick: "turn_end" };
 }
 

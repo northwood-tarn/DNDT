@@ -1,5 +1,6 @@
 import {
   assert,
+  createCombatController,
   createCombatLog,
   createEmptyCharacterDraft,
   createEnemyCombatActor,
@@ -12,6 +13,7 @@ import {
   scriptedDice,
   startTurn,
 } from "./helpers.js";
+import { getEffectiveSpeed } from "../../app/combat/modifiers.js";
 
 export function runRepresentativeBuildSmokeTests() {
   testGeneratedWarClericUsesGuidedStrike();
@@ -19,6 +21,42 @@ export function runRepresentativeBuildSmokeTests() {
   testGeneratedStoneGoliathUsesEndurance();
   testGeneratedPaladinAuraAffectsAlly();
   testGeneratedWarlockRetaliatesWithStormsThunder();
+  testSaboteurFirePaperAddsWeaponDamage();
+  testSaboteurFrostGrenadoSlowsTarget();
+}
+
+function testSaboteurFirePaperAddsWeaponDamage() {
+  const controller = createCombatController({
+    scenarioId: "combat-ui-saboteur-l13",
+    scenarioOptions: { enemyHp: 999, enemyPosition: { x: 2, y: 1 } },
+  });
+  const snapshot = controller.snapshot;
+  const nix = snapshot.actors.find((actor) => actor.team === "heroes");
+  const enemy = snapshot.actors.find((actor) => actor.team === "enemies");
+  const log = createCombatLog();
+  const dice = fixedDice({ d20: 20, damage: 4 });
+
+  assert.equal(resolveAction(snapshot, nix, "device_fire_paper", nix.id, dice, log), true);
+  assert.equal(resolveAction(snapshot, nix, "rapier", enemy.id, dice, log), true);
+  assert.equal(
+    log.events.some((event) => event.type === "damage.applied" && event.detail.damageType === "fire"),
+    true,
+    "Fire Paper should add fire damage to Nix's next weapon hit",
+  );
+}
+
+function testSaboteurFrostGrenadoSlowsTarget() {
+  const controller = createCombatController({
+    scenarioId: "combat-ui-saboteur-l13",
+    scenarioOptions: { enemyHp: 999, enemyPosition: { x: 2, y: 1 } },
+  });
+  const snapshot = controller.snapshot;
+  const nix = snapshot.actors.find((actor) => actor.team === "heroes");
+  const enemy = snapshot.actors.find((actor) => actor.team === "enemies");
+  const baseSpeed = enemy.speed;
+
+  assert.equal(resolveAction(snapshot, nix, "device_frost_grenado", enemy.id, fixedDice({ d20: 20, damage: 10 }), createCombatLog()), true);
+  assert.equal(getEffectiveSpeed(snapshot, enemy), baseSpeed - 2, "Frost Grenado should reduce the target's speed by two squares");
 }
 
 function testGeneratedWarClericUsesGuidedStrike() {

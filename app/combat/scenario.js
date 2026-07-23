@@ -5,6 +5,7 @@ import { createGeneratedEncounterArenaScenario } from "./scenarios/generatedEnco
 import { createBacklandsFieldPlateauScenario, createDocksideStageGridScenario, createGeneratedCharacterArenaScenario, createGeneratedEmptyArenaScenario } from "./scenarios/generatedCharacterArena.js";
 import { GENERATED_ENCOUNTER_SCENARIOS, getGeneratedEncounterScenarioConfig } from "./scenarios/generatedEncounterScenarioConfigs.js";
 import { createTrenchRampLiveScenario } from "./scenarios/trenchRampLiveScenario.js";
+import { createCombatUiTestCharacterRecord } from "../character/combatUiTestCharacters.js";
 
 export { createGeneratedCharacterArenaScenario } from "./scenarios/generatedCharacterArena.js";
 export { createGeneratedEncounterArenaScenario } from "./scenarios/generatedEncounterArena.js";
@@ -19,6 +20,9 @@ export function getCombatScenarioOptions() {
     { id: "backlands-field-plateau-01", name: "Backlands Field Plateau 01", group: "Stage Geometry Tests" },
     { id: "trench-ramp-live-test", name: "Trench Ramp Live Test", group: "Stage Geometry Tests" },
     { id: "generated-character-arena", name: "Generated Character Arena", group: "Generated Character Tests" },
+    { id: "combat-ui-battlemage-l13", name: "Level 13 Battlemage", group: "Combat UI Stress Tests" },
+    { id: "combat-ui-saboteur-l13", name: "Level 13 Saboteur", group: "Combat UI Stress Tests" },
+    { id: "combat-ui-lantern-cleric-l13", name: "Level 13 Lantern Cleric", group: "Combat UI Stress Tests" },
     { id: "generated-wizard-shield-arena", name: "Generated Wizard Shield Arena", group: "Reaction Tests" },
     ...GENERATED_ENCOUNTER_SCENARIOS.map((scenario) => ({ id: scenario.id, name: scenario.name, group: "Encounter Templates" })),
   ];
@@ -30,6 +34,9 @@ export function createCombatScenario(id = DEFAULT_COMBAT_SCENARIO_ID, options = 
   if (id === "backlands-field-plateau-01") return createBacklandsFieldPlateauScenario(options);
   if (id === "trench-ramp-live-test") return createTrenchRampLiveScenario(options);
   if (id === "generated-character-arena") return createGeneratedCharacterArenaScenario(options);
+  if (id === "combat-ui-battlemage-l13") return createGeneratedCharacterArenaScenario({ ...options, characterRecord: createCombatUiTestCharacterRecord("battlemage"), freshCharacterRuntime: true });
+  if (id === "combat-ui-saboteur-l13") return createGeneratedCharacterArenaScenario({ ...options, characterRecord: createCombatUiTestCharacterRecord("saboteur"), freshCharacterRuntime: true });
+  if (id === "combat-ui-lantern-cleric-l13") return createGeneratedCharacterArenaScenario({ ...options, characterRecord: createCombatUiTestCharacterRecord("lantern_cleric"), freshCharacterRuntime: true });
   if (id === "generated-wizard-shield-arena") return createGeneratedCharacterArenaScenario({ ...options, variantId: "wizard", enemyAttackBonus: 4, enemyPosition: { x: 3, y: 1 }, diceSeed: "shield-2" });
   if (getGeneratedEncounterScenarioConfig(id)) return createGeneratedEncounterArenaScenario(id, options);
   throw new Error(`Unknown combat scenario: ${id}`);

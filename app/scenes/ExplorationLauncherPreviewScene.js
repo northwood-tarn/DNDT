@@ -1,3 +1,12 @@
+import { getRingById } from "../data/rings.js";
+import { getArmorById } from "../data/armor.js";
+import { getFootwearById } from "../data/footwear.js";
+import { getHeadwearById } from "../data/headwear.js";
+import { getWeaponById } from "../data/weapons.js";
+import { getSpellcastingFocusById } from "../data/spellcastingFoci.js";
+import { getState } from "../state/stateStore.js";
+import { createItemIconImage } from "../ui/itemIconRegistry.js";
+
 const STYLE_ID = "exploration-launcher-preview-style";
 const ICON_ROOT = "./assets/images/ui/exploration_launchers";
 
@@ -346,6 +355,27 @@ function ensureStyles() {
       pointer-events: none;
     }
 
+    .equipment-slot-item-art {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    .equipment-slot.has-item .equipment-slot-label { opacity: 0; }
+    .equipment-slot.has-item:hover .equipment-slot-label { opacity: 1; }
+
+    .equipment-slot.is-off-hand .equipment-slot-item-art { transform: scaleX(-1); }
+
+    .equipment-slot.is-mirrored-pair-hand .equipment-slot-item-art { transform: scaleX(-1); }
+
+    .equipment-slot.is-two-handed-occupancy .equipment-slot-item-art {
+      opacity: 0.7;
+      transform: rotate(180deg);
+    }
+
     .inventory-panel-content {
       display: flex;
       flex-direction: column;
@@ -525,6 +555,105 @@ export default class ExplorationLauncherPreviewScene {
     );
     this.mapLauncher?.addEventListener("click", this.toggleMap);
     this.panelLaunchers.forEach((button) => button.addEventListener("click", this.togglePanel));
+    this.renderEquippedArmor();
+    this.renderEquippedHeadwear();
+    this.renderEquippedFootwear();
+    this.renderEquippedRings();
+    this.renderWeaponSets();
+  }
+
+  renderEquippedHeadwear() {
+    const equipment = getState()?.player?.equipment || {};
+    this.renderEquipmentItem("headwear", getHeadwearById(equipment.headwear), "Headwear");
+  }
+
+  renderEquippedFootwear() {
+    const equipment = getState()?.player?.equipment || {};
+    const slot = this.container?.querySelector('[data-equipment-slot="boots"]');
+    if (!slot) return;
+    slot.querySelector(".equipment-slot-item-art")?.remove();
+    slot.classList.remove("has-item");
+    const footwear = getFootwearById(equipment.boots || "standard_boots");
+    const image = createItemIconImage(footwear, "equipment-slot-item-art");
+    if (!footwear || !image) return;
+    slot.prepend(image);
+    slot.classList.add("has-item");
+    slot.setAttribute("aria-label", `Boots: ${footwear.name}`);
+    slot.title = `${footwear.name} — ${footwear.description}`;
+  }
+
+  renderWeaponSets() {
+    const equipment = getState()?.player?.equipment || {};
+    const sets = resolveEquipmentWeaponSets(equipment);
+    sets.forEach((set, index) => {
+      const setNumber = index + 1;
+      const primary = resolveHandItem(set.mainHand);
+      const resolvedSecondary = resolveHandItem(set.offHand);
+      const secondary = hasExclusiveHandConflict(primary, resolvedSecondary) ? null : resolvedSecondary;
+      const occupiesBoth = isTwoHandedEquipment(primary);
+      const mirroredPair = primary?.mirroredHandPair === true;
+      this.renderEquipmentItem(`weapon-set-${setNumber}-hand-1`, primary, `Set ${setNumber} · Hand 1`);
+      this.renderEquipmentItem(
+        `weapon-set-${setNumber}-hand-2`,
+        occupiesBoth ? primary : secondary,
+        `Set ${setNumber} · Hand 2`,
+        { offHand: !occupiesBoth && secondary?.equipmentKind === "weapon", twoHandedOccupancy: occupiesBoth && !mirroredPair, mirroredPairHand: mirroredPair },
+      );
+    });
+  }
+
+  renderEquipmentItem(slotName, item, emptyLabel, options = {}) {
+    const slot = this.container?.querySelector(`[data-equipment-slot="${slotName}"]`);
+    if (!slot) return;
+    slot.querySelector(".equipment-slot-item-art")?.remove();
+    slot.classList.remove("has-item", "is-off-hand", "is-two-handed-occupancy", "is-mirrored-pair-hand");
+    slot.setAttribute("aria-label", emptyLabel);
+    slot.removeAttribute("title");
+    const image = createItemIconImage(item, "equipment-slot-item-art");
+    if (!item || !image) return;
+    slot.prepend(image);
+    slot.classList.add("has-item");
+    if (options.offHand) slot.classList.add("is-off-hand");
+    if (options.twoHandedOccupancy) slot.classList.add("is-two-handed-occupancy");
+    if (options.mirroredPairHand) slot.classList.add("is-mirrored-pair-hand");
+    const occupiesPair = options.twoHandedOccupancy || options.mirroredPairHand;
+    slot.setAttribute("aria-label", occupiesPair ? `${item.name}, occupying both hands` : `${emptyLabel}: ${item.name}`);
+    slot.title = occupiesPair ? `${item.name} occupies both hands` : `${item.name} — ${item.description || item.inspectText || ""}`;
+  }
+
+  renderEquippedArmor() {
+    const equipment = getState()?.player?.equipment || {};
+    const slot = this.container?.querySelector('[data-equipment-slot="armor"]');
+    if (!slot) return;
+    slot.querySelector(".equipment-slot-item-art")?.remove();
+    slot.classList.remove("has-item");
+    const armor = getArmorById(equipment.armor);
+    const image = createItemIconImage(armor, "equipment-slot-item-art");
+    if (!armor || !image) return;
+    slot.prepend(image);
+    slot.classList.add("has-item");
+    slot.setAttribute("aria-label", `Armor: ${armor.name}`);
+    slot.title = `${armor.name} — ${armor.description}`;
+  }
+
+  renderEquippedRings() {
+    const equipment = getState()?.player?.equipment || {};
+    this.renderRingSlot("ring-1", equipment.ring1);
+    this.renderRingSlot("ring-2", equipment.ring2);
+  }
+
+  renderRingSlot(slotName, ringId) {
+    const slot = this.container?.querySelector(`[data-equipment-slot="${slotName}"]`);
+    if (!slot) return;
+    slot.querySelector(".equipment-slot-item-art")?.remove();
+    slot.classList.remove("has-item");
+    const ring = getRingById(ringId);
+    const image = createItemIconImage(ring, "equipment-slot-item-art");
+    if (!ring || !image) return;
+    slot.prepend(image);
+    slot.classList.add("has-item");
+    slot.setAttribute("aria-label", `${slotName === "ring-1" ? "Ring 1" : "Ring 2"}: ${ring.name}`);
+    slot.title = `${ring.name} — ${ring.description}`;
   }
 
   toggleMap = () => {
@@ -640,4 +769,41 @@ function equipmentPanelContent() {
 function equipmentSlot(slot, label, hint = "") {
   const hintMarkup = hint ? `<span class="equipment-slot-hint">${hint}</span>` : "";
   return `<div class="equipment-slot" data-equipment-slot="${slot}" role="group" aria-label="${label}"><span class="equipment-slot-label">${label}</span>${hintMarkup}</div>`;
+}
+
+export function resolveEquipmentWeaponSets(equipment = {}) {
+  if (Array.isArray(equipment.weaponSets)) {
+    return [0, 1].map((index) => normalizeWeaponSet(equipment.weaponSets[index]));
+  }
+  const weaponIds = equipment.weaponIds || [];
+  return [
+    {
+      mainHand: equipment.mainHand || weaponIds[0] || null,
+      offHand: equipment.offHand || equipment.shield || equipment.shieldId || weaponIds[1] || null,
+    },
+    {
+      mainHand: equipment.weaponSet2MainHand || weaponIds[2] || null,
+      offHand: equipment.weaponSet2OffHand || weaponIds[3] || null,
+    },
+  ];
+}
+
+function normalizeWeaponSet(set) {
+  if (Array.isArray(set)) return { mainHand: set[0] || null, offHand: set[1] || null };
+  return {
+    mainHand: set?.mainHand || set?.primary || set?.hand1 || null,
+    offHand: set?.offHand || set?.secondary || set?.hand2 || null,
+  };
+}
+
+export function resolveHandItem(id) {
+  return getWeaponById(id) || getArmorById(id) || getSpellcastingFocusById(id) || null;
+}
+
+export function isTwoHandedEquipment(item) {
+  return item?.hands === 2 || item?.properties?.includes("two-handed") === true;
+}
+
+export function hasExclusiveHandConflict(primary, secondary) {
+  return Boolean(primary?.exclusiveGroup && primary.exclusiveGroup === secondary?.exclusiveGroup);
 }

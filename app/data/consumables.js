@@ -420,6 +420,7 @@ function toCanonicalItemRecord(record) {
     type: "usable",
     name: record.name,
     inspectText: record.description,
+    combatText: record.effect || null,
     stackable: record.id !== "hunting_trap",
     maxStackSize: record.id === "hunting_trap" ? 1 : 10,
     availability: HEALING_KINDS.has(runtime.kind) || runtime.kind === "condition_defense" ? "anywhere" : "combat",

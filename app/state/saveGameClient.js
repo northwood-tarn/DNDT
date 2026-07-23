@@ -18,10 +18,13 @@ export function createRendererSaveGameClient(options = {}) {
         const result = await api.saveGame(report.saveGame, slot);
         if (result?.ok) {
           saveGame(fallbackStore, report.saveGame, slot);
+          globalThis.window?.__dndtAudio?.playEvent?.("SAVE_COMPLETE");
           return report.saveGame;
         }
       }
-      return saveGame(fallbackStore, report.saveGame, slot);
+      const saved = saveGame(fallbackStore, report.saveGame, slot);
+      globalThis.window?.__dndtAudio?.playEvent?.("SAVE_COMPLETE");
+      return saved;
     },
     async load(slot = DEFAULT_SAVE_GAME_SLOT) {
       if (api?.loadGame) {
@@ -29,11 +32,15 @@ export function createRendererSaveGameClient(options = {}) {
         if (loaded) {
           const saveGameState = validateLoadedSaveGame(loaded);
           saveGame(fallbackStore, saveGameState, slot);
+          globalThis.window?.__dndtAudio?.playEvent?.("LOAD_COMPLETE");
           return saveGameState;
         }
       }
       const loaded = loadGame(fallbackStore, slot);
-      return loaded ? validateLoadedSaveGame(loaded) : null;
+      if (!loaded) return null;
+      const save = validateLoadedSaveGame(loaded);
+      globalThis.window?.__dndtAudio?.playEvent?.("LOAD_COMPLETE");
+      return save;
     },
     async list() {
       if (api?.listSaves) {

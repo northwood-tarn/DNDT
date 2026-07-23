@@ -5,12 +5,20 @@ import { getConsumableById } from "../data/consumables.js";
 import { getUniqueById } from "../data/uniques.js";
 import { getWeaponById } from "../data/weapons.js";
 import { getArmorById } from "../data/armor.js";
+import { getRingById } from "../data/rings.js";
+import { getFootwearById } from "../data/footwear.js";
+import { getHeadwearById } from "../data/headwear.js";
+import { getSpellcastingFocusById } from "../data/spellcastingFoci.js";
 
 function resolveItemById(id) {
   return (
     getConsumableById(id) ||
     getUniqueById(id) ||
     getArmorById(id) ||
+    getRingById(id) ||
+    getFootwearById(id) ||
+    getHeadwearById(id) ||
+    getSpellcastingFocusById(id) ||
     getWeaponById(id) ||
     null
   );
@@ -33,9 +41,9 @@ export function addItemToInventory(id, qty = 1) {
   const existing = inventory.find(i => i.id === id);
 
   if (existing) {
-    existing.quantity += qty;
+    existing.quantity = item.unique || item.stackable === false ? 1 : existing.quantity + qty;
   } else {
-    inventory.push({ id, quantity: qty });
+    inventory.push({ id, quantity: item.unique || item.stackable === false ? 1 : qty });
   }
 
   setState({

@@ -113,7 +113,7 @@ function isIndividualMultiTargetAction(action) {
     Number.isFinite(action.maxTargets) &&
     action.maxTargets > 1 &&
     !action.targeting?.shape &&
-    ["spell_effect", "spell_save", "spell_attack", "spell_auto_damage"].includes(action.type);
+    ["spell_effect", "spell_save", "spell_attack", "spell_auto_damage", "spell_self_heal"].includes(action.type);
 }
 
 function isExplicitTargetList(targetPayload) {

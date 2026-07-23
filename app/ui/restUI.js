@@ -290,6 +290,7 @@ const RestUI = {
     );
 
     if (didRest) {
+      window.__dndtAudio?.playEvent?.("LONG_REST_COMPLETE");
       window.dispatchEvent(
         new CustomEvent("autosave:trigger", {
           detail: { reason: "short_rest" }

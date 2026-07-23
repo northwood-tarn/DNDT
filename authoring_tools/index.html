@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DNDT Authoring Tools</title>
+  <link rel="stylesheet" href="./launcher.css">
+</head>
+<body>
+  <header>
+    <div><h1>Authoring Tools</h1><p>Open a tool and start working.</p></div>
+    <button id="close" type="button">Close</button>
+  </header>
+  <main>
+    <button class="tool" data-tool="map" type="button">
+      <span><strong>Exploration Map Editor</strong><small>Navigation, occlusion, water and area bundles</small></span>
+      <b>Open</b>
+    </button>
+    <button class="tool" data-tool="audio" type="button">
+      <span><strong>Audio Manager</strong><small>Area audio, game-wide sounds and mixer settings</small></span>
+      <b>Open</b>
+    </button>
+    <button class="tool" data-tool="dialogue" type="button">
+      <span><strong>Dialogue Scene Upload</strong><small>Parse, validate and save authored dialogue scenes</small></span>
+      <b>Open</b>
+    </button>
+  </main>
+  <script type="module" src="./launcher.js"></script>
+</body>
+</html>

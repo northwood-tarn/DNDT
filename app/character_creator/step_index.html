@@ -53,17 +53,29 @@
         </div>
         <div id="abilityTable" class="ability-table" hidden></div>
         <div id="featChoices" class="creator-choice-list" hidden></div>
-        <div id="portraitSelection" class="appearance-selection" hidden></div>
       </section>
 
       <section class="preview-column preview-center" aria-label="Chosen name">
         <p id="chosenName" class="chosen-name" hidden></p>
         <div id="portraitTiles" class="portrait-tiles" hidden></div>
-        <div id="miniatureSelection" class="appearance-selection miniature-selection" hidden></div>
       </section>
       <section class="preview-column preview-right" aria-label="Context information">
         <p id="infoPanel" class="info-panel" aria-live="polite">Uttered in admiration and tenderness, disgust and hatred, what is the name by which you were known?</p>
         <div id="grantPanel" class="grant-panel" aria-live="polite"></div>
+      </section>
+      <section id="appearanceWorkspace" class="appearance-workspace" hidden aria-label="Portrait and miniature selection">
+        <p id="appearanceName" class="appearance-name"></p>
+        <div class="appearance-grid">
+          <section class="appearance-panel" aria-label="Portrait selection">
+            <div id="portraitSelection" class="appearance-selection"></div>
+          </section>
+          <section class="appearance-panel" aria-label="Figure selection">
+            <div id="miniatureSelection" class="appearance-selection miniature-selection"></div>
+          </section>
+          <aside class="appearance-copy">
+            <p>Choose the portrait by which your story will remember you, and the figure that will carry you into battle.</p>
+          </aside>
+        </div>
       </section>
     </main>
     <nav id="stepDiamonds" class="step-diamonds page-fade" aria-label="Character creation steps" hidden></nav>

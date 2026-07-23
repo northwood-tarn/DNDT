@@ -2,6 +2,7 @@ import { getConsumableById } from "../data/consumables.js";
 import { getUniqueById } from "../data/uniques.js";
 import { getWeaponById } from "../data/weapons.js";
 import { getArmorById } from "../data/armor.js";
+import { getRingById } from "../data/rings.js";
 import {
   hasStoryFlag,
   normalizeSaveGameState,
@@ -74,6 +75,7 @@ function describeOffer(saveGame, npcDefinition, offer, options) {
   if (saveGame.inventory.currency.gold < priceOf(offer)) return unavailable(offer, "insufficient_funds", "Not enough gold");
   const item = offer.kind === "item" ? resolveItem(offer.itemId) : null;
   if (offer.kind === "item" && !item) return unavailable(offer, "unknown_item", `Unknown item: ${offer.itemId}`);
+  if (item?.worldUnique && saveGame.inventory.shared.some((holding) => (holding.id || holding.itemId) === offer.itemId)) return unavailable(offer, "already_owned", "The game's only instance of this item is already owned");
   if (item?.unique && saveGame.inventory.shared.some((holding) => (holding.id || holding.itemId) === offer.itemId)) return unavailable(offer, "already_owned", "Unique item already owned");
   return { ...structuredClone(offer), name: offer.name || item?.name, available: true, reason: null, message: null, remainingStock: remainingStock(saveGame, npcDefinition.id, offer) };
 }
@@ -93,9 +95,10 @@ function applyOffer(saveGame, npcDefinition, offer, options) {
 
 function addSharedItem(saveGame, itemId, quantity) {
   const next = normalizeSaveGameState(saveGame);
+  const definition = resolveItem(itemId);
   const existing = next.inventory.shared.find((holding) => (holding.id || holding.itemId) === itemId);
-  if (existing) existing.quantity += quantity;
-  else next.inventory.shared.push({ id: itemId, quantity });
+  if (existing) existing.quantity = definition?.worldUnique ? 1 : existing.quantity + quantity;
+  else next.inventory.shared.push({ id: itemId, quantity: definition?.worldUnique ? 1 : quantity });
   return next;
 }
 
@@ -134,7 +137,7 @@ function priceOf(offer) {
 }
 
 function resolveItem(id) {
-  return getConsumableById(id) || getUniqueById(id) || getWeaponById(id) || getArmorById(id) || null;
+  return getConsumableById(id) || getUniqueById(id) || getWeaponById(id) || getArmorById(id) || getRingById(id) || null;
 }
 
 function unavailable(offer, reason, message) {

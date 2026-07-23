@@ -29,6 +29,14 @@ export function getDeviceRecipeById(id) {
   return DEVICE_RECIPES[id] || null;
 }
 
+export function describeDeviceRecipe(recipe, proficiencyBonus) {
+  const bonus = Number(proficiencyBonus) || 0;
+  return String(recipe?.text || "")
+    .replace(/PB \+ 1 rounds/gi, `${bonus + 1} rounds`)
+    .replace(/PB rounds/gi, `${bonus} rounds`)
+    .replace(/proficiency bonus d12/gi, `${bonus}d12`);
+}
+
 export function listDeviceRecipes(options = {}) {
   const level = options.level || 20;
   const ids = new Set(options.ids || DEVICE_RECIPE_LIST.map((recipe) => recipe.id));

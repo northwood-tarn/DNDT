@@ -160,7 +160,7 @@ export function draftFor(spec) {
     abilities: balancedAbilities(),
     choices: choicesFor(spec),
     gear: {
-      weaponIds: ["longsword", "dagger", "quarterstaff"],
+      weaponIds: ["longsword", "dagger", focusForClass(spec.classId)],
       armorId: null,
       shieldId: null,
       inventory: [{ id: "healing_potion", quantity: 1 }],
@@ -168,6 +168,10 @@ export function draftFor(spec) {
     },
     spells: spellChoicesFor(spec.classId, spec.level),
   });
+}
+
+function focusForClass(classId) {
+  return ({ wizard: "wizards_staff", warlock: "warlocks_gloves", cleric: "clerics_holy_symbol" })[classId] || "quarterstaff";
 }
 
 function choicesFor(spec) {

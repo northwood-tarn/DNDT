@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DNDT Visual Spike</title>
+  <link rel="stylesheet" href="./explorationMapEditor.css" />
+</head>
+<body>
+  <main id="spike-root">
+    <header id="tool-header">
+      <div><h1>Exploration Map Editor</h1><p>Navigation, occlusion and water markup</p></div>
+      <div class="tool-header-actions"><span>1920 × 1080 authoring space</span><button id="new-map-button" type="button">New</button><button id="load-map-button" type="button">Load</button><button id="tool-close" type="button">Close</button></div>
+    </header>
+    <div id="stage">
+      <label id="map-drop-prompt" for="map-file-input">Upload map here<br><span>Drag and drop or click to select</span></label>
+      <input id="map-file-input" type="file" accept="image/png,image/jpeg" hidden />
+    </div>
+    <div id="conversation-panel" hidden>
+      <div id="conversation-frame">
+        <div id="conversation-speaker"></div>
+        <div id="conversation-text"></div>
+        <div id="conversation-replies"></div>
+      </div>
+    </div>
+    <div id="hud" aria-live="polite">
+      <div class="hud-group hud-metadata">
+        <input id="area-name-input" class="hud-field" type="text" aria-label="Area name" placeholder="{Add Area name}" />
+        <select id="map-kind-select" class="hud-field" aria-label="Map type">
+          <option value="">{Choose map mode}</option>
+          <option value="exploration">exploration</option>
+          <option value="grand_exploration">grand_exploration</option>
+        </select>
+        <select id="act-number-select" class="hud-field" aria-label="Act number">
+          <option value="">{Choose Act Number}</option>
+          <option value="1">Act 1</option>
+          <option value="2">Act 2</option>
+          <option value="3">Act 3</option>
+          <option value="4">Act 4</option>
+          <option value="5">Act 5</option>
+        </select>
+        <input id="map-distribution-name" class="hud-field" type="text" aria-label="Distribution map name" placeholder="Distribution map name" readonly />
+      </div>
+      <div class="hud-group hud-checks">
+        <label class="grid-control">
+          <input id="nav-edit-toggle" type="checkbox" />
+          <span>Edit nav</span>
+        </label>
+        <label class="grid-control">
+          <input id="grid-toggle" type="checkbox" />
+          <span>Show markup</span>
+        </label>
+        <label class="grid-control">
+          <input id="occlusion-edit-toggle" type="checkbox" />
+          <span>Edit occlusion</span>
+        </label>
+        <label class="grid-control">
+          <input id="water-edit-toggle" type="checkbox" />
+          <span>Edit water</span>
+        </label>
+      </div>
+      <div class="hud-group hud-palette" aria-label="Navigation tool palette">
+        <button id="nav-node-tool" class="palette-button" type="button" aria-pressed="true">
+          <span class="tool-icon node-icon" aria-hidden="true"></span>
+          <span>Node V</span>
+        </button>
+        <button id="nav-connect-tool" class="palette-button" type="button" aria-pressed="false">
+          <span class="tool-icon connect-icon" aria-hidden="true"></span>
+          <span>Connect C</span>
+        </button>
+        <button id="nav-inflection-tool" class="palette-button" type="button" aria-pressed="false">
+          <span class="tool-icon inflection-icon" aria-hidden="true"></span>
+          <span>Inflect B</span>
+        </button>
+      </div>
+      <div id="node-details" class="hud-group node-details" hidden>
+        <input id="node-label-input" class="hud-field" type="text" aria-label="Node name" placeholder="Node name" />
+        <select id="node-trigger-select" class="hud-field" aria-label="Node trigger">
+          <option value="none">no trigger</option>
+          <option value="conversation">conversation</option>
+          <option value="area_transition">area transition</option>
+          <option value="combat">combat</option>
+        </select>
+        <label class="node-field-label" for="node-scale-input">Character size</label>
+        <input id="node-scale-input" class="hud-field" type="number" min="0.25" max="1.5" step="0.01" aria-label="Character size" />
+        <textarea id="node-description-input" class="hud-field node-description" aria-label="Node details" placeholder="Node details"></textarea>
+        <section class="node-behaviour" aria-labelledby="node-behaviour-title">
+          <h2 id="node-behaviour-title">Node behaviour</h2>
+          <label class="grid-control discovery-control">
+            <input id="node-discovered-toggle" type="checkbox" />
+            <span>Discovered from start</span>
+          </label>
+          <label class="grid-control discovery-control">
+            <input id="node-show-label-toggle" type="checkbox" />
+            <span>Show name after visit</span>
+          </label>
+        </section>
+      </div>
+      <div class="hud-group hud-actions">
+        <div class="reset-actions">
+          <button id="nav-reset" type="button">Reset nav</button>
+          <button id="occlusion-reset" type="button">Reset occlusion</button>
+          <button id="water-reset" type="button">Reset water</button>
+        </div>
+        <button id="metadata-save-button" type="button">Save map metadata</button>
+      </div>
+    </div>
+    <button id="readme-button" type="button" aria-label="About this editor">i</button>
+    <dialog id="readme-dialog" aria-labelledby="readme-title">
+      <div class="readme-heading"><h2 id="readme-title">Exploration Map Editor</h2><button id="readme-close" type="button">Close</button></div>
+      <div id="readme-content"></div>
+    </dialog>
+    <dialog id="load-map-dialog" aria-labelledby="load-map-title">
+      <div class="readme-heading"><h2 id="load-map-title">Load area</h2><button id="load-map-close" type="button">Close</button></div>
+      <div id="load-map-list" class="load-map-list"></div>
+    </dialog>
+  </main>
+  <script type="module">
+    document.getElementById("tool-close")?.addEventListener("click", () => window.api?.quit?.() || window.close());
+    import(`./explorationMapEditor.js?v=${Date.now()}`);
+  </script>
+</body>
+</html>

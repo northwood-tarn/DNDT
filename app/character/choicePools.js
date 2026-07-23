@@ -5,7 +5,7 @@ import { findClassByIdOrName } from "../data/classes.js";
 import { getFeatById, listFeats } from "../data/feats.js";
 import { SPECIES_LIST } from "../data/species.js";
 import { listSpellsByClass } from "../data/spells.js";
-import { weapons } from "../data/weapons.js";
+import { isWeaponProficient, weapons } from "../data/weapons.js";
 
 const SPELL_CHOICE_PROGRESSION = {
   cleric: {
@@ -543,10 +543,7 @@ function isMundane(item) {
 }
 
 function isWeaponAllowed(weapon, proficiencyNames) {
-  const names = proficiencyNames.map(normalizeName);
-  if (names.includes("simple weapons") && weapon.proficiencies?.includes("simple_weapons")) return true;
-  if (names.includes("martial weapons") && weapon.proficiencies?.includes("martial_weapons")) return true;
-  return names.some((name) => name === normalizeName(weapon.name) || name === normalizeName(`${weapon.name}s`));
+  return isWeaponProficient(weapon, proficiencyNames);
 }
 
 function isArmorAllowed(item, proficiencyNames) {

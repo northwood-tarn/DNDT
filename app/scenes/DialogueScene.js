@@ -470,7 +470,21 @@ if (!center) {
       if (option.unavailableReason) row.title = option.unavailableReason;
       row.addEventListener("click", () => {
         const result = chooseDialogueOption(this.compiledSession, option.label, {
-          resolveSkillCheck: (check) => ({ d20: rollD20({ context: { type: "check", label: check.skill } }).roll, modifier: getPlayerSkillMod(getState()?.player, check.skill), performerId: "pc" }),
+          resolveSkillCheck: (check) => {
+            const state = getState();
+            const derived = derivePlayerStats(state);
+            const skillKey = _normSkillKey(check.skill);
+            const hasAdvantage = (derived?.skillAdvantages || []).map(_normSkillKey).includes(skillKey);
+            const first = rollD20({ context: { type: "check", label: check.skill } }).roll;
+            const second = hasAdvantage ? rollD20({ context: { type: "check", label: check.skill } }).roll : null;
+            return {
+              d20: hasAdvantage ? Math.max(first, second) : first,
+              modifier: getPlayerSkillMod(state?.player, check.skill) + (Number(derived?.skillBonuses?.[skillKey]) || 0),
+              performerId: "pc",
+              advantage: hasAdvantage,
+              rolls: hasAdvantage ? [first, second] : [first],
+            };
+          },
         });
         this.compiledSession.saveGame = result.saveGame;
         this.onSaveGame?.(result.saveGame);
@@ -775,11 +789,14 @@ if (!center) {
         const skillAction = getSkillCheckAction(actions);
         if (skillAction) console.log("[DialogueScene][skillAction]", skillAction);
         if (skillAction) {
-          const roll = (rollD20()?.total ?? 0);
           // --- Modified block: calculate mod with derived equipment bonus ---
           const baseMod = getPlayerSkillMod(player, skillAction.skill);
           const derived = derivePlayerStats(getState());
           const skillKey = _normSkillKey(skillAction.skill);
+          const hasAdvantage = (derived?.skillAdvantages || []).map(_normSkillKey).includes(skillKey);
+          const firstRoll = (rollD20()?.total ?? 0);
+          const secondRoll = hasAdvantage ? (rollD20()?.total ?? 0) : null;
+          const roll = hasAdvantage ? Math.max(firstRoll, secondRoll) : firstRoll;
           const equipBonus = Number(derived?.skillBonuses?.[skillKey] ?? 0) || 0;
           const ac = Number(derived?.ac ?? 0) || 0;
           const mod = baseMod + equipBonus;
@@ -794,7 +811,9 @@ if (!center) {
             mod,
             total,
             success,
-            ac
+            ac,
+            advantage: hasAdvantage,
+            rolls: hasAdvantage ? [firstRoll, secondRoll] : [firstRoll]
           };
           console.info("[DialogueScene][skill]", {
             skill: result.skill,

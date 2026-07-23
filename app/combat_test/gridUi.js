@@ -256,7 +256,8 @@ function createActorMiniature(actor, { config, currentActor, selectedTargetId, s
   node.title = `${actor.name} (${actor.hp}/${actor.maxHp})`;
 
   const base = document.createElement("div");
-  base.className = "actor-miniature-base";
+  base.className = `actor-miniature-base${actor.miniatureBaseAsset ? " has-authored-base" : ""}`;
+  if (actor.miniatureBaseAsset) base.style.backgroundImage = `url("../${actor.miniatureBaseAsset}")`;
   node.appendChild(base);
 
   const figure = document.createElement("div");
@@ -274,7 +275,7 @@ function actorMiniatureSize(actor, config) {
 
 function actorMiniatureImage(actor, config) {
   const assets = config.assets || {};
-  return assets[actor.id] || assets[actor.role] || assets[actor.team] || assets.default || "";
+  return actor.miniatureId ? `../${actor.miniatureId}` : assets[actor.id] || assets[actor.role] || assets[actor.team] || assets.default || "";
 }
 
 function createDemoMiniature(miniature, grid, projection, boardRotationQuarterTurns) {

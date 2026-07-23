@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { compileDialogue, parseDialogueSource } from "../../app/dialogue_upload/dialogueSource.js";
+import { compileDialogue, parseDialogueSource } from "../../authoring_tools/dialogue_scene_upload/dialogueSource.js";
 
 const source=`---
 format.version: 1

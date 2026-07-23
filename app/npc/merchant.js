@@ -2,6 +2,7 @@ import { getArmorById } from "../data/armor.js";
 import { getConsumableById } from "../data/consumables.js";
 import { getUniqueById } from "../data/uniques.js";
 import { getWeaponById } from "../data/weapons.js";
+import { getRingById } from "../data/rings.js";
 import { getActiveCharacterRecord, normalizeSaveGameState } from "../state/saveGameState.js";
 
 export const TRADE_BACKGROUNDS = new Set(["artisan", "charlatan", "criminal", "merchant"]);
@@ -44,7 +45,7 @@ export function sellHolding(saveGame, itemId, quantity = 1) {
 }
 
 export function resolveMerchantItem(id) {
-  return getConsumableById(id) || getUniqueById(id) || getWeaponById(id) || getArmorById(id) || null;
+  return getConsumableById(id) || getUniqueById(id) || getWeaponById(id) || getArmorById(id) || getRingById(id) || null;
 }
 
 function resalePrice(value, percentage) { return Math.max(1, Math.floor(Number(value) * percentage / 100)); }

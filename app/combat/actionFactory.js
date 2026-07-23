@@ -15,8 +15,9 @@ const DEFAULT_ATTACK_BONUS = 0;
 export function createWeaponAction(weaponRecord, options = {}) {
   if (!weaponRecord) return null;
   const baseDamageType = options.damageType || weaponRecord.damageType || inferWeaponDamageType(weaponRecord);
+  const enhancementBonus = weaponRecord.enhancementBonus || weaponRecord.modifiers?.enhancementBonus || 0;
   const flatUntypedBonus = getFlatUntypedWeaponDamageBonus(weaponRecord);
-  const damageBonus = (options.damageBonus ?? 0) + flatUntypedBonus;
+  const damageBonus = (options.damageBonus ?? 0) + enhancementBonus + flatUntypedBonus;
   const damage = options.damage || addDamageBonus(weaponRecord.damageFormula || weaponRecord.damage, damageBonus);
   const range = options.range ?? getWeaponRangeSquares(weaponRecord);
   const damageRiders = createWeaponDamageRiders(weaponRecord, baseDamageType);
@@ -36,7 +37,7 @@ export function createWeaponAction(weaponRecord, options = {}) {
     type: "weapon_attack",
     cost: mapUseTimeToCost(options.cost || weaponRecord.actionCost || weaponRecord.useTime || "action"),
     range,
-    attackBonus: options.attackBonus ?? DEFAULT_ATTACK_BONUS,
+    attackBonus: (options.attackBonus ?? DEFAULT_ATTACK_BONUS) + enhancementBonus,
     damage,
     damageType: baseDamageType,
     damageRiders,
@@ -136,12 +137,12 @@ export function createSpellAction(spellRecord, options = {}) {
   if (!spellRecord || spellRecord.hooks?.ui?.hideInCombat) return null;
   if (spellRecord.dialogueRelated && !hasCombatSpellHooks(spellRecord)) return null;
   const hooks = spellRecord.hooks || {};
-  const damage = getSpellDamage(spellRecord, options);
+  const damage = addSpellcastingModifier(getSpellDamage(spellRecord, options), spellRecord.hooks?.damage, options);
   const damageType = resolveSpellDamageType(hooks.damage, options);
   const damageTypeChoices = spellDamageTypeChoices(hooks.damage);
   const effects = options.effects || createEffectsFromSpell(spellRecord, options);
   const spellExtras = createSpellActionExtras(spellRecord, options);
-  const combatObject = createCombatObjectFromSpell(spellRecord);
+  const combatObject = createCombatObjectFromSpell(spellRecord, options);
   const teleport = createTeleportActionFromSpell(spellRecord);
   const harmful = Boolean(
     hooks.attack ||
@@ -156,10 +157,13 @@ export function createSpellAction(spellRecord, options = {}) {
     cost: mapCastingToCost(spellRecord.casting),
     range: getSpellRangeSquares(spellRecord),
     maxTargets: spellTargetCount(spellRecord, options),
-    description: describeSpell(spellRecord),
+    description: spellRecord.text,
     concentration: spellRecord.concentration === true,
     sourceSpellId: spellRecord.id,
-    spellLevel: spellRecord.level,
+    spellLevel: options.slotLevel ?? spellRecord.level,
+    baseSpellLevel: spellRecord.level,
+    saveOnSuccess: hooks.save?.onSave || null,
+    usesExactSpellSlot: options.usesExactSpellSlot === true,
     reactionPolicy: createReactionPolicyFromSpell(spellRecord),
     requiresSight: spellRecord.target?.requiresSight === true,
     requiresSpeech: spellRecord.components?.v === true,
@@ -174,29 +178,30 @@ export function createSpellAction(spellRecord, options = {}) {
   };
 
   if (combatObject) {
-    return compactAction({
+    return finalizeSpellAction(compactAction({
       ...base,
       type: "spell_object",
       requiresTarget: true,
       object: combatObject,
+      ...spellExtras,
       spellSaveDC: options.spellSaveDC ?? DEFAULT_SPELL_SAVE_DC,
       targeting: combatObject.placement === "cell_path" ? createCellPathTargeting(combatObject) : createTargetingFromArea(spellRecord.area),
-      tags: { ...base.tags, harmful: false },
-    });
+      tags: { ...base.tags, harmful },
+    }), spellRecord);
   }
 
   if (teleport) {
-    return compactAction({
+    return finalizeSpellAction(compactAction({
       ...base,
       ...teleport,
       tags: { ...base.tags, harmful: false },
-    });
+    }), spellRecord);
   }
 
   if (hooks.autoHit) {
     if (!damage || !hooks.damage?.type) return null;
-    const hits = hooks.darts || hooks.hits || 1;
-    return compactAction({
+    const hits = scaledSpellHitCount(spellRecord, hooks.darts || hooks.hits || 1, options.slotLevel);
+    return finalizeSpellAction(compactAction({
       ...base,
       type: "spell_auto_damage",
       requiresTarget: true,
@@ -209,25 +214,30 @@ export function createSpellAction(spellRecord, options = {}) {
       allowRepeatedTargets: hits > 1,
       requireExactTargetCount: hits > 1,
       tags: { ...base.tags, harmful: true },
-    });
+    }), spellRecord);
   }
 
   if (hooks.healing) {
-    const healing = options.healing || hooks.healing.dice;
+    const healing = addSpellcastingModifier(
+      scaleSpellFormulaForSlot(options.healing || hooks.healing.dice, spellRecord, options.slotLevel),
+      hooks.healing,
+      options
+    );
     if (!healing) return null;
     const requiresTarget = spellRecord.target?.type !== "self";
-    return compactAction({
+    return finalizeSpellAction(compactAction({
       ...base,
       type: "spell_self_heal",
       requiresTarget,
       healing,
+      effects,
       tags: { ...base.tags, harmful: false },
-    });
+    }), spellRecord);
   }
 
   if (isAreaSpell(spellRecord)) {
     if ((!damage || !hooks.damage?.type) && !effects.length) return null;
-    return compactAction({
+    return finalizeSpellAction(compactAction({
       ...base,
       type: "spell_area_save",
       requiresTarget: spellExtras.selfCenteredArea ? false : true,
@@ -240,12 +250,12 @@ export function createSpellAction(spellRecord, options = {}) {
       effects,
       targeting: createTargetingFromArea(spellRecord.area),
       tags: { ...base.tags, savingThrow: true, harmful: true },
-    });
+    }), spellRecord);
   }
 
   if (hooks.save) {
     if ((!damage || !hooks.damage?.type) && !effects.length) return null;
-    return compactAction({
+    return finalizeSpellAction(compactAction({
       ...base,
       type: "spell_save",
       saveAbility: normalizeAbility(hooks.save.ability || options.saveAbility),
@@ -256,13 +266,13 @@ export function createSpellAction(spellRecord, options = {}) {
       ...spellExtras,
       effects,
       tags: { ...base.tags, savingThrow: true, harmful: true },
-    });
+    }), spellRecord);
   }
 
   if (hooks.attack) {
     if (!damage || !hooks.damage?.type) return null;
     const repeatAttacks = spellExtras.repeatAttacks || 1;
-    return compactAction({
+    return finalizeSpellAction(compactAction({
       ...base,
       type: "spell_attack",
       attackBonus: options.attackBonus ?? DEFAULT_ATTACK_BONUS,
@@ -276,11 +286,11 @@ export function createSpellAction(spellRecord, options = {}) {
       requireExactTargetCount: repeatAttacks > 1,
       effects: effects.map((effect) => ({ ...effect, trigger: "hit" })),
       tags: { ...base.tags, attackRoll: true, ranged: base.range > 1, melee: base.range <= 1, harmful: true },
-    });
+    }), spellRecord);
   }
 
   if (effects.length) {
-    return compactAction({
+    return finalizeSpellAction(compactAction({
       ...base,
       type: "spell_effect",
       requiresTarget: spellRecord.target?.type !== "self",
@@ -292,10 +302,44 @@ export function createSpellAction(spellRecord, options = {}) {
         target: spellRecord.target?.type === "self" ? "self" : effect.target,
       })),
       tags: { ...base.tags, harmful },
-    });
+    }), spellRecord);
   }
 
   return null;
+}
+
+function scaleSpellFormulaForSlot(formula, spellRecord, slotLevel) {
+  if (!formula || spellRecord.scaling?.type !== "slot") return formula;
+  const levelsAbove = Math.max(0, Number(slotLevel ?? spellRecord.level) - spellRecord.level);
+  if (!levelsAbove) return formula;
+  const text = spellRecord.scaling?.slot?.text || "";
+  const flatTempHp = text.match(/\+(\d+)\s+temp(?:orary)?\s+hp.*per slot/i);
+  if (flatTempHp) return addFlatBonus(formula, Number(flatTempHp[1]) * levelsAbove);
+  const flatMatch = text.match(/\+(\d+) (?:healing|hit points?).*per slot level above/i);
+  if (flatMatch && /^\d+$/.test(String(formula))) return String(Number(formula) + Number(flatMatch[1]) * levelsAbove);
+  const match = text.match(/\+(\d*)d(\d+).*per slot(?: level)? above/i);
+  if (!match) return formula;
+  return addDamageDice(formula, Number(match[1] || 1) * levelsAbove, Number(match[2]));
+}
+
+function addFlatBonus(formula, amount) {
+  const match = String(formula).match(/^(.*?)([+-]\d+)?$/);
+  if (!match) return formula;
+  const total = Number(match[2] || 0) + amount;
+  return `${match[1]}${total > 0 ? "+" : ""}${total || ""}`;
+}
+
+function addSpellcastingModifier(formula, hook, options) {
+  if (!formula || !(hook?.addMod === true || hook?.modFrom === "spellcasting")) return formula;
+  const modifier = Number(options.spellcastingModifier) || 0;
+  if (!modifier) return formula;
+  return `${formula}${modifier > 0 ? "+" : ""}${modifier}`;
+}
+
+function addDamageDice(formula, addedCount, sides) {
+  const match = String(formula).match(/^(\d+)d(\d+)(.*)$/i);
+  if (!match || Number(match[2]) !== sides) return formula;
+  return `${Number(match[1]) + addedCount}d${sides}${match[3]}`;
 }
 
 function spellTargetCount(spellRecord, options = {}) {
@@ -303,8 +347,19 @@ function spellTargetCount(spellRecord, options = {}) {
   if (repeatAttacks > 1) return repeatAttacks;
   const hits = spellRecord?.hooks?.autoHit ? (spellRecord.hooks.darts || spellRecord.hooks.hits || 1) : 1;
   if (hits > 1) return hits;
-  const count = Number(spellRecord?.target?.count);
+  const count = scaledSpellTargetCount(spellRecord, Number(spellRecord?.target?.count), options.slotLevel);
   return Number.isFinite(count) && count > 1 && spellRecord?.area?.shape === "none" ? count : null;
+}
+
+function scaledSpellHitCount(spellRecord, base, slotLevel) {
+  const levelsAbove = Math.max(0, Number(slotLevel ?? spellRecord.level) - spellRecord.level);
+  return /\+1 dart per slot/i.test(spellRecord.scaling?.slot?.text || "") ? base + levelsAbove : base;
+}
+
+function scaledSpellTargetCount(spellRecord, base, slotLevel) {
+  if (!Number.isFinite(base)) return base;
+  const levelsAbove = Math.max(0, Number(slotLevel ?? spellRecord.level) - spellRecord.level);
+  return /(?:affect|target) \+1 creature per slot/i.test(spellRecord.scaling?.slot?.text || "") ? base + levelsAbove : base;
 }
 
 function repeatAttacksFromEffect(applyEffect, casterLevel = 1) {
@@ -498,16 +553,98 @@ function mapUseTimeToCost(useTime = "action") {
   return "action";
 }
 
-function describeSpell(spellRecord) {
-  const parts = [
-    `${spellRecord.name}`,
-    spellRecord.concentration ? "CONCENTRATION" : null,
-    spellRecord.level === 0 ? "Cantrip" : `Level ${spellRecord.level}`,
-    spellRecord.school,
-    spellRecord.source,
-    spellRecord.text,
-  ].filter(Boolean);
-  return parts.join(" | ");
+function finalizeSpellAction(action, spellRecord) {
+  action.description = describeCompiledSpellAction(action, spellRecord);
+  return action;
+}
+
+function describeCompiledSpellAction(action, spellRecord) {
+  let description = String(spellRecord.text || spellRecord.name || "").trim();
+  if (!(action.spellLevel > action.baseSpellLevel)) return description;
+
+  const baseDamage = spellRecord.hooks?.damage?.dice || nestedBaseDamage(spellRecord.hooks?.applyEffect);
+  const compiledDamage = action.damage || nestedCompiledDamage(action);
+  if (baseDamage && compiledDamage && compiledDamage !== baseDamage) {
+    const withModifier = new RegExp(`${escapeRegExp(baseDamage)}\\s*(?:\\+|plus)\\s*(?:your\\s+)?spellcasting ability modifier`, "gi");
+    if (withModifier.test(description)) description = description.replace(withModifier, compiledDamage);
+    else description = replaceAllLiteral(description, baseDamage, compiledDamage);
+  }
+
+  const baseHealing = spellRecord.hooks?.healing?.dice;
+  if (baseHealing && action.healing) {
+    const withModifier = new RegExp(`${escapeRegExp(baseHealing)}\\s*(?:\\+|plus)\\s*(?:your\\s+)?spellcasting ability modifier`, "gi");
+    if (withModifier.test(description)) description = description.replace(withModifier, action.healing);
+    else if (action.healing !== baseHealing) description = replaceAllLiteral(description, baseHealing, action.healing);
+  }
+
+  const scaledNoun = scalingCountNoun(spellRecord.scaling?.slot?.text);
+  const scaledCount = scaledNoun === "dart" ? action.hits : action.maxTargets;
+  if (scaledNoun && Number.isFinite(scaledCount)) {
+    const replaced = scaledNoun === "dart"
+      ? replaceCountBeforeNoun(description, scaledNoun, scaledCount)
+      : replaceUpToCreatureCount(description, scaledCount);
+    description = replaced === description
+      ? `Targets: ${numberWord(scaledCount)} ${scaledCount === 1 ? scaledNoun : `${scaledNoun}s`}. ${description}`
+      : replaced;
+  }
+
+  const tempHp = (action.effects || []).find((effect) => effect.type === "temp_hp" && Number.isFinite(effect.amount));
+  if (tempHp) description = description.replace(/\b\d+\s+temporary hit points?/i, (match) => match.replace(/\d+/, String(tempHp.amount)));
+  const retaliation = (action.effects || []).find((effect) => effect.damageRetaliation?.damage)?.damageRetaliation;
+  if (retaliation) description = description.replace(/\b\d+\s+cold damage\b/i, `${retaliation.damage} cold damage`);
+  const maxHp = (action.effects || []).find((effect) => effect.type === "max_hp_bonus" && Number.isFinite(effect.amount));
+  if (maxHp) description = description.replace(/\bincrease by \d+\b/i, `increase by ${maxHp.amount}`);
+  const dispel = (action.effects || []).find((effect) => effect.type === "dispel_magic");
+  if (Number.isFinite(dispel?.maximumAutomaticSpellLevel)) {
+    description = description.replace(/Spells of \d+(?:st|nd|rd|th) level or lower/i, `Spells of ${ordinal(dispel.maximumAutomaticSpellLevel)} level or lower`);
+  }
+
+  return `Cast using a level ${action.spellLevel} slot. ${description}`;
+}
+
+function nestedBaseDamage(payload) {
+  return payload?.damage?.dice || payload?.ticks?.find((tick) => tick.damage?.dice)?.damage?.dice || null;
+}
+
+function nestedCompiledDamage(action) {
+  return action.object?.effects?.find((effect) => effect.damage)?.damage
+    || action.effects?.find((effect) => effect.action?.damage)?.action?.damage
+    || null;
+}
+
+function replaceUpToCreatureCount(text, count) {
+  const pattern = /\bup to (\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve) creatures\b/i;
+  return text.replace(pattern, `up to ${numberWord(count)} creatures`);
+}
+
+function ordinal(value) {
+  const mod100 = value % 100;
+  const suffix = mod100 >= 11 && mod100 <= 13 ? "th" : ({ 1: "st", 2: "nd", 3: "rd" }[value % 10] || "th");
+  return `${value}${suffix}`;
+}
+
+function scalingCountNoun(text = "") {
+  const match = String(text).match(/\+1\s+(dart|creature|target)\b/i);
+  return match ? match[1].toLowerCase() : null;
+}
+
+function replaceCountBeforeNoun(text, noun, count) {
+  const number = numberWord(count);
+  const plural = count === 1 ? noun : `${noun}s`;
+  const pattern = new RegExp(`\\b(\\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\\s+${noun}s?\\b`, "i");
+  return text.replace(pattern, `${number} ${plural}`);
+}
+
+function numberWord(value) {
+  return ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"][value] || String(value);
+}
+
+function replaceAllLiteral(text, from, to) {
+  return text.replace(new RegExp(escapeRegExp(from), "gi"), to);
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function normalizeAbility(ability) {

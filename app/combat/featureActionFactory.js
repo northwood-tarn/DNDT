@@ -18,6 +18,11 @@ export function createFeatureAction(feature, option, context = {}) {
     resourceId,
     uses: resource ? { max: resource.max, remaining: resource.current ?? resource.max, recovery: resource.recovery } : null,
     description: resolvedOption.description || feature.description || "",
+    choiceParentResourceId: resolvedOption.choiceParentResourceId || null,
+    choiceParentName: resolvedOption.choiceParentName || null,
+    choiceParentDescription: resolvedOption.choiceParentDescription || null,
+    choiceLabel: resolvedOption.choiceLabel || null,
+    secondaryChoice: resolvedOption.secondaryChoice ? structuredClone(resolvedOption.secondaryChoice) : null,
     tags: {
       feature: true,
       harmful: resolvedOption.harmful === true || resolvedOption.targetFilter?.team === "enemies" || Boolean(resolvedOption.damage || resolvedOption.damageByTargetProperty),
@@ -82,7 +87,7 @@ export function createFeatureAction(feature, option, context = {}) {
     pactWeaponDamageBonus: structuredClone(resolvedOption.pactWeaponDamageBonus || null),
     activeEffectOnResolve: structuredClone(resolvedOption.activeEffectOnResolve || null),
     selfCondition: structuredClone(resolvedOption.selfCondition || null),
-    damageByTargetProperty: structuredClone(resolvedOption.damageByTargetProperty || null),
+    damageByTargetProperty: resolveDamageByTargetProperty(resolvedOption.damageByTargetProperty, context),
     targeting: structuredClone(resolvedOption.targeting || null),
     selfCenteredArea: resolvedOption.targeting?.mode === "nearby_actors" || null,
     targetFilter: structuredClone(resolvedOption.targetFilter || null),
@@ -159,6 +164,19 @@ function resolveDamage(option, context) {
     .map((entry) => resolveFormula(entry.add, context))
     .filter(Boolean);
   return [base, ...additions].filter(Boolean).join("+") || null;
+}
+
+function resolveDamageByTargetProperty(payload, context) {
+  if (!payload) return null;
+  const bonusDice = (payload.scaling || [])
+    .filter((entry) => !Number.isFinite(entry.minLevel) || (context.level || 1) >= entry.minLevel)
+    .reduce((total, entry) => total + (Number(entry.addDice) || 0), 0);
+  const addDice = (formula) => String(formula || "").replace(/^(\d+)d(\d+)$/i, (_match, count, sides) => `${Number(count) + bonusDice}d${sides}`);
+  return {
+    ...structuredClone(payload),
+    default: addDice(payload.default),
+    values: Object.fromEntries(Object.entries(payload.values || {}).map(([key, formula]) => [key, addDice(formula)])),
+  };
 }
 
 function normalizeAbility(ability) {

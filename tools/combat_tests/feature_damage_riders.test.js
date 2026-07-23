@@ -67,6 +67,7 @@ function testLanternJudgingFlame() {
   const sheet = resolveCharacterSheet(createEmptyCharacterDraft({
     identity: { characterName: "Lantern Cleric", level: 11, classId: "cleric", subclassId: "lantern_domain" },
     abilities: { strength: 10, dexterity: 10, constitution: 12, intelligence: 10, wisdom: 16, charisma: 10 },
+    gear: { weaponIds: ["clerics_holy_symbol"] },
   }), {}, { allowNonCreationLevel: true });
   const cleric = resolvedSheetToCombatActor(sheet, { id: "judging_cleric", position: { x: 1, y: 1 } });
   cleric.actions.push(testAttack({

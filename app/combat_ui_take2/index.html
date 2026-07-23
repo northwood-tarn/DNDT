@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Combat UI</title>
+    <link rel="stylesheet" href="./combatUi.css">
+  </head>
+  <body>
+    <div class="window-drag-region" aria-hidden="true"></div>
+    <section class="combat-ui-strip">
+      <div class="combat-ui-fog combat-ui-fog-one" aria-hidden="true"></div>
+      <div class="combat-ui-fog combat-ui-fog-two" aria-hidden="true"></div>
+      <button class="combat-ui-character-toggle" type="button" aria-label="Collapse character information" aria-expanded="true"></button>
+      <button class="combat-ui-log-toggle" type="button" aria-label="Collapse combat log" aria-expanded="true"></button>
+      <nav class="combat-action-menu" aria-label="Combat actions">
+        <button class="is-active" type="button" data-combat-mode="movement" aria-current="true">Movement</button>
+        <button type="button" data-combat-mode="action">Action</button>
+        <button type="button" data-combat-mode="bonus_action">Bonus Action</button>
+        <button type="button" data-combat-command="end_turn">End Turn</button>
+        <button class="combat-settings-button" type="button" aria-label="Combat settings" title="Combat settings">⚙</button>
+      </nav>
+      <section class="combat-context-menu" aria-live="polite" aria-label="Combat choices" hidden>
+        <button class="combat-context-back" type="button" hidden aria-label="Back">‹</button>
+        <div class="combat-context-options"></div>
+        <p class="combat-context-status" role="status"></p>
+      </section>
+      <section class="combat-ui-character" aria-label="Character combat information">
+        <img class="combat-ui-portrait" alt="">
+        <div class="combat-ui-comparisons">
+          <section class="combat-ui-column combat-ui-column-a">
+          <h2 id="combatCharacterName"></h2>
+          <div class="combat-ui-vitals combat-ui-vitals-a">
+            <div class="combat-ui-hp-group">
+              <span class="combat-ui-hp-prefix">HP</span>
+              <div class="combat-ui-hp"><span class="combat-ui-hp-current"></span><span class="combat-ui-hp-label">—</span><span class="combat-ui-temp-hp" hidden></span></div>
+            </div>
+          </div>
+          <div class="combat-ui-statuses">
+            <ul id="combatConditions" class="combat-ui-condition-list"></ul>
+          </div>
+          </section>
+        </div>
+      </section>
+      <aside class="combat-ui-log" aria-label="Combat log">
+        <h2>Combat Log</h2>
+        <ol></ol>
+      </aside>
+    </section>
+    <script type="module" src="./combatUi.js"></script>
+  </body>
+</html>

@@ -74,6 +74,7 @@ function validateModifiers(errors, item) {
       item.modifiers.damageBonuses.forEach((bonus, index) => validateDamageBonus(errors, id, bonus, index));
     }
   }
+  if (item.modifiers.enhancementBonus !== undefined) validatePositiveNumber(errors, id, "modifiers.enhancementBonus", item.modifiers.enhancementBonus);
   if (item.modifiers.acBonus !== undefined) validatePositiveNumber(errors, id, "modifiers.acBonus", item.modifiers.acBonus);
 }
 
@@ -103,6 +104,7 @@ function validateWeaponRecord(errors, item) {
   }
   if (item.value !== undefined) validatePositiveNumber(errors, id, "value", item.value);
   if (typeof item.magical !== "boolean") fail(errors, id, "magical must be boolean");
+  if (!Number.isInteger(item.enhancementBonus) || item.enhancementBonus < 0) fail(errors, id, "enhancementBonus must be a non-negative integer");
   if (!Array.isArray(item.effects)) fail(errors, id, "effects must be an array");
   if (!Array.isArray(item.damageBonuses)) fail(errors, id, "damageBonuses must be an array");
   for (const [index, bonus] of (item.damageBonuses || []).entries()) {

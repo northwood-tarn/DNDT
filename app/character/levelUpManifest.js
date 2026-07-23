@@ -2,7 +2,8 @@ import { getClassById } from "../data/classes.js";
 import { listFeats } from "../data/feats.js";
 import { SPELLS, listSpellsByClass } from "../data/spells.js";
 import { weapons } from "../data/weapons.js";
-import { listDeviceRecipes } from "../data/deviceRecipes.js";
+import { describeDeviceRecipe, listDeviceRecipes } from "../data/deviceRecipes.js";
+import { proficiencyForLevel } from "../rules/proficiency.js";
 import { SKILL_OPTIONS } from "../character_creator/creatorHarnessOptions.js";
 import { createFeatChoicePools, createSpellChoicePools } from "./choicePools.js";
 
@@ -192,7 +193,7 @@ function featureChoiceOptions(classRecord, targetDraft, requirement, level) {
   if (requirement.kind === "device_recipe") {
     return listDeviceRecipes()
       .filter((recipe) => (recipe.minLevel || 1) <= level)
-      .map((recipe) => ({ id: recipe.id, name: recipe.name, description: recipe.text || "" }))
+      .map((recipe) => ({ id: recipe.id, name: recipe.name, description: describeDeviceRecipe(recipe, proficiencyForLevel(level)) }))
       .sort(byName);
   }
   if (requirement.kind === "spell") {

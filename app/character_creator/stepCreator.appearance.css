@@ -1,70 +1,265 @@
-.appearance-selection {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  width: 100%;
-  margin-top: 22px;
+.appearance-workspace {
+  grid-column: 1 / -1;
+  align-self: stretch;
+  min-width: 0;
+  padding-top: 52px;
 }
 
-.appearance-selection[hidden] {
+.appearance-workspace[hidden] {
   display: none;
+}
+
+.creator-preview-shell.is-appearance .preview-left,
+.creator-preview-shell.is-appearance .preview-center,
+.creator-preview-shell.is-appearance .preview-right {
+  display: none;
+}
+
+.appearance-name {
+  width: max-content;
+  min-width: 220px;
+  margin: 0 auto;
+  padding: 0 28px 10px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.48);
+  font-family: var(--font-speaker);
+  font-size: 34px;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.appearance-grid {
+  display: grid;
+  grid-template-columns: 450px 450px minmax(260px, 1fr);
+  align-items: start;
+  justify-content: center;
+  gap: 38px;
+  margin-top: 42px;
+}
+
+.appearance-panel {
+  width: 450px;
+  min-width: 0;
+}
+
+.appearance-copy {
+  max-width: 330px;
+  padding-top: 4px;
+  color: rgba(255, 255, 255, 0.20);
+  font-family: var(--font-prose);
+  font-size: 21px;
+  line-height: 1.28;
+}
+
+.appearance-copy p {
+  margin: 0;
+}
+
+.appearance-selection {
+  display: grid;
+  grid-template-columns: repeat(2, 219px);
+  grid-template-rows: 38px auto 40px;
+  gap: 12px;
+  width: 450px;
+}
+
+.appearance-filter {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 128px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  color: rgba(150, 190, 186, 0.58);
+  font-family: var(--font-speaker);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .appearance-option {
   position: relative;
+  width: 219px;
   min-width: 0;
   padding: 0;
-  border: 1px solid rgba(150, 190, 186, 0.13);
-  border-radius: 0;
-  background: rgba(0, 10, 12, 0.22);
-  color: rgba(150, 190, 186, 0.42);
-  cursor: pointer;
   overflow: hidden;
+  border: 1px solid rgba(150, 190, 186, 0.18);
+  background: rgba(0, 10, 12, 0.18);
+  color: rgba(150, 190, 186, 0.50);
+  cursor: pointer;
   -webkit-app-region: no-drag;
 }
 
 .appearance-option:hover,
 .appearance-option:focus-visible {
-  border-color: rgba(150, 190, 186, 0.34);
+  border-color: rgba(150, 190, 186, 0.42);
   outline: none;
 }
 
 .appearance-option.is-selected {
-  border-color: rgba(150, 190, 186, 0.62);
-  box-shadow: inset 0 0 0 1px rgba(150, 190, 186, 0.18);
+  border-color: rgba(176, 211, 207, 0.80);
+  box-shadow: inset 0 0 0 1px rgba(176, 211, 207, 0.20);
 }
 
-.appearance-option img {
+#portraitSelection .appearance-option > img,
+.miniature-option-stage {
   display: block;
-  width: 100%;
-  aspect-ratio: .721;
+  width: 217px;
+  height: 340px;
+}
+
+#portraitSelection .appearance-option > img {
   object-fit: cover;
 }
 
 .appearance-option-label {
   display: block;
-  padding: 8px 5px 9px;
+  height: 36px;
+  padding: 11px 6px 0;
   font-family: var(--font-speaker);
   font-size: 9px;
   letter-spacing: 0.12em;
-  line-height: 1.2;
+  line-height: 1;
   text-align: center;
   text-transform: uppercase;
 }
 
-.miniature-selection {
-  align-items: end;
-  width: 90%;
-  margin: 20px auto 0;
+.miniature-option-stage {
+  position: relative;
 }
 
-.miniature-selection .appearance-option {
-  background: rgba(0, 10, 12, 0.10);
-}
-
-.miniature-selection .appearance-option img {
-  height: min(52vh, 430px);
-  aspect-ratio: auto;
+.miniature-runtime-image {
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   object-position: center bottom;
+}
+
+.appearance-page-controls {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: 12px;
+  width: 450px;
+  color: rgba(150, 190, 186, 0.56);
+  font-family: var(--font-speaker);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-align: center;
+}
+
+.appearance-page-button {
+  width: 44px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid rgba(150, 190, 186, 0.28);
+  background: rgba(0, 13, 15, 0.78);
+  color: rgba(205, 226, 222, 0.90);
+  font-size: 27px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.appearance-page-button:disabled {
+  opacity: 0.18;
+  cursor: default;
+}
+
+.game-select {
+  position: relative;
+  min-width: 0;
+  font-family: var(--font-speaker);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.game-select-button,
+.game-select-option {
+  width: 100%;
+  border: 1px solid rgba(150, 190, 186, 0.26);
+  background: rgba(0, 13, 15, 0.97);
+  color: rgba(164, 198, 193, 0.76);
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.game-select-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 38px;
+  padding: 8px 11px;
+}
+
+.game-select-button img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  opacity: 0.78;
+  transform: rotate(90deg);
+}
+
+.game-select-options {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% + 3px);
+  right: 0;
+  left: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid rgba(150, 190, 186, 0.32);
+  background: rgba(0, 13, 15, 0.99);
+}
+
+.game-select-options[hidden] {
+  display: none;
+}
+
+.game-select-option {
+  min-height: 34px;
+  padding: 9px 11px;
+  border-width: 0 0 1px;
+}
+
+.game-select-option:hover,
+.game-select-option:focus-visible,
+.game-select-option.is-selected {
+  background: rgba(85, 127, 120, 0.25);
+  color: rgba(218, 234, 231, 0.92);
+  outline: none;
+}
+
+@media (max-width: 1300px) {
+  .appearance-grid {
+    grid-template-columns: 410px 410px minmax(220px, 1fr);
+    gap: 26px;
+  }
+
+  .appearance-panel,
+  .appearance-selection,
+  .appearance-page-controls {
+    width: 410px;
+  }
+
+  .appearance-selection {
+    grid-template-columns: repeat(2, 199px);
+  }
+
+  .appearance-option {
+    width: 199px;
+  }
+
+  #portraitSelection .appearance-option > img,
+  .miniature-option-stage {
+    width: 197px;
+  }
 }

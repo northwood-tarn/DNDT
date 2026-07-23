@@ -27,6 +27,9 @@ import { populateScenarioSelect } from "./scenarioSelectUi.js";
 import { createSummaryUi } from "./summaryUi.js";
 import { createTargetingUi, isAreaTargetingAction } from "./targetingUi.js";
 import { isMultiTargetAction, multiTargetConfirmState, toggleTargetAssignment } from "./targetAssignmentModel.js";
+import { initialiseAudio, audioRuntime } from "../audio/index.js";
+
+await initialiseAudio();
 
 const lifecycleUi = createCombatLifecycleUi();
 await lifecycleUi.hydrate();
@@ -551,10 +554,15 @@ function confirmAction() {
   if (!canPlayerAct(controller.snapshot, actor?.id, aiRunning) || !selectedActionId || isMissingTargetPayload(targetPayload)) return;
   const resolved = controller.resolveAction(actor.id, selectedActionId, actionPayload(targetPayload));
   if (resolved?.ok) {
+    audioRuntime.playEvent(isSpellAction(selectedAction) ? "SPELL_CAST" : "WEAPON_SWING");
     clearSelections();
     targetingUi.reset();
   }
   render();
+}
+
+function isSpellAction(action) {
+  return action?.source === "spell" || action?.kind === "spell" || action?.tags?.includes?.("spell") || Boolean(action?.spellId);
 }
 
 function confirmTargetSelection() {

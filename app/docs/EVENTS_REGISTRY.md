@@ -108,6 +108,11 @@ The old Tiled exploration runtime was retired on 2026-07-08. These events are ke
 ---
 
 ## Audio & FX
+- **`dndt:audio-ended`**
+  Payload: `{ assetId: string, bus: string }`
+  Emitted by: shared audio runtime
+  Listeners: title-screen presentation hooks
+
 - **`fx:request`**  
   Payload: `{ type: "fog"|"rain"|"flash", params: object }`  
   Emitted by: systems/scenes  

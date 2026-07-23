@@ -25,7 +25,7 @@ export function clearConcentrationIfNoLinkedEffects(snapshot, condition, log, re
   if (!stillLinked) endConcentration(snapshot, caster, log, reason);
 }
 
-export function resolveConcentrationCheck(snapshot, actor, damageAmount, dice, log) {
+export function resolveConcentrationCheck(snapshot, actor, damageAmount, dice, log, damageSource = null) {
   if (!actor?.concentration) return;
   const dc = Math.max(10, Math.floor(damageAmount / 2));
   const saveModifier = rollSaveModifier(snapshot, actor, "con", { name: "Concentration", saveAbility: "con" }, dice);
@@ -73,6 +73,20 @@ export function resolveConcentrationCheck(snapshot, actor, damageAmount, dice, l
     success,
   });
   if (!success) endConcentration(snapshot, actor, log, "failed concentration save");
+  if (success && damageSource && actor.concentrationSuccessRetaliation) {
+    const baseAmount = actor.concentrationSuccessRetaliation.damageFrom === "charisma_modifier" ? Math.max(0, actor.abilityMods?.cha || 0) : 0;
+    const damageType = actor.concentrationSuccessRetaliation.damageType || "necrotic";
+    const amount = (damageSource.immunities || []).includes(damageType) ? 0 :
+      (damageSource.resistances || []).includes(damageType) ? Math.floor(baseAmount / 2) : baseAmount;
+    const hpBefore = damageSource.hp;
+    damageSource.hp = Math.max(0, damageSource.hp - amount);
+    damageSource.defeated = damageSource.hp <= 0;
+    log.add("damage.applied", {
+      round: snapshot.round, sourceId: actor.id, sourceName: actor.name, targetId: damageSource.id, targetName: damageSource.name,
+      amount: hpBefore - damageSource.hp, originalAmount: baseAmount, damageModifiers: amount === baseAmount ? [] : ["resistance_or_immunity"], damageType,
+      hpBefore, hpAfter: damageSource.hp, actionName: "Dead Hands Remember",
+    });
+  }
 }
 
 function startConcentration(snapshot, actor, action, log) {
@@ -136,6 +150,7 @@ function endConcentration(snapshot, actor, log, reason) {
       reason,
     });
   }
+  actor.actions = (actor.actions || []).filter((action) => action.grantedByActionId !== concentration.actionId);
   log.add("concentration.end", {
     round: snapshot.round,
     actorId: actor.id,

@@ -1,6 +1,7 @@
 import { CLASSES, findClassByIdOrName } from "../../data/classes.js";
 import { getDeviceRecipeById, listDeviceRecipes } from "../../data/deviceRecipes.js";
 import { getWeaponById } from "../../data/weapons.js";
+import { getSpellcastingFocusById } from "../../data/spellcastingFoci.js";
 import { isDeclarativeFeatureImplemented } from "../featureImplementation.js";
 import { resolveOriginFeat } from "./originFeatResolver.js";
 import { addUniqueAll } from "./resolverUtils.js";
@@ -341,7 +342,9 @@ function resolveWeaponMasteryChoices(sheet, draft, featureId, mastery) {
     });
     return;
   }
-  const valid = chosen.filter((weaponId) => getWeaponById(weaponId)?.mastery);
+  const valid = chosen.filter((weaponId) =>
+    weaponId === "club" || getWeaponById(weaponId)?.mastery || getSpellcastingFocusById(weaponId)?.mastery
+  );
   if (valid.length < count) {
     sheet.metadata.unresolved.push({
       type: "invalid_class_feature_choice_value",

@@ -298,13 +298,12 @@ export default {
                 actionType: "bonus_action",
                 resourceId: "spell_rhythm",
                 requiresTarget: false,
-                effects: [{
-                  type: "grant_action",
-                  trigger: "failed_save",
-                  target: "self",
+                activeEffectOnResolve: {
+                  id: "spell_rhythm_active",
+                  label: "Spell Rhythm",
                   duration: { kind: "rounds", rounds: 10, tick: "turn_end" },
-                  action: { id: "spell_rhythm_followup", name: "Spell Rhythm Follow-up", type: "feature_action", cost: "free", requiresTarget: true }
-                }]
+                  spellRhythm: true
+                }
               }]
             } }
         ],

@@ -1,7 +1,16 @@
 import { getArmorById } from "../../data/armor.js";
+import { getSpellcastingFocusById } from "../../data/spellcastingFoci.js";
+import { getWeaponById, isWeaponProficient } from "../../data/weapons.js";
+import { getFootwearById } from "../../data/footwear.js";
+import { getHeadwearById } from "../../data/headwear.js";
+import { getRingById } from "../../data/rings.js";
 import { ABILITY_IDS } from "../characterDraft.js";
+import { aggregateEquipmentModifiers, resolveEquippedAccessories, resolveEquippedItems } from "../equippedItemRuntime.js";
 
 export function finalizeResolvedSheetFields(sheet) {
+  finalizeEquippedWeaponProficiencies(sheet);
+  finalizeEquippedAccessories(sheet);
+  applyEquipmentAbilityMinimums(sheet);
   normalizeResources(sheet);
   collectFeatureHooks(sheet);
   collectNarrativeTags(sheet);
@@ -11,6 +20,61 @@ export function finalizeResolvedSheetFields(sheet) {
   finalizeSpellcasting(sheet);
   finalizeDevices(sheet);
   finalizeArmorClass(sheet);
+  applyEquipmentDurability(sheet);
+}
+
+function finalizeEquippedAccessories(sheet) {
+  const headwear = getHeadwearById(sheet.equipment.headwearId);
+  const footwear = getFootwearById(sheet.equipment.footwearId);
+  if (sheet.equipment.headwearId && !headwear) sheet.metadata.unresolved.push({ type: "unknown_headwear", id: sheet.equipment.headwearId });
+  if (sheet.equipment.footwearId && !footwear) sheet.metadata.unresolved.push({ type: "unknown_footwear", id: sheet.equipment.footwearId });
+  sheet.equipment.headwearId = headwear?.id || null;
+  sheet.equipment.footwearId = footwear?.id || null;
+  const seen = new Set();
+  sheet.equipment.ringIds = (sheet.equipment.ringIds || []).map(getRingById).filter((ring) => {
+    if (!ring || seen.has(ring.id)) return false;
+    seen.add(ring.id);
+    return true;
+  }).slice(0, 2).map((ring) => ring.id);
+}
+
+function accessoryModifiers(sheet) {
+  return aggregateEquipmentModifiers(resolveEquippedAccessories(sheet));
+}
+
+function applyEquipmentAbilityMinimums(sheet) {
+  for (const [ability, minimum] of Object.entries(accessoryModifiers(sheet).abilityScoreMinimums)) {
+    const entry = sheet.abilities?.[ability];
+    if (!entry || entry.score >= minimum) continue;
+    entry.score = minimum;
+    entry.modifier = Math.floor((minimum - 10) / 2);
+  }
+}
+
+function applyEquipmentDurability(sheet) {
+  const resistances = aggregateEquipmentModifiers(resolveEquippedItems(sheet)).resistances;
+  sheet.durability.resistances = [...new Set([...(sheet.durability.resistances || []), ...resistances])];
+}
+
+function finalizeEquippedWeaponProficiencies(sheet) {
+  const allowed = [];
+  const equippedExclusiveGroups = new Set();
+  for (const weaponId of sheet.equipment.weaponIds || []) {
+    const focus = getSpellcastingFocusById(weaponId);
+    const weapon = getWeaponById(weaponId) || focus;
+    const classFocus = focus && focus.spellcastingClass === sheet.identity.classId;
+    if (classFocus || isWeaponProficient(weapon, sheet.proficiencies.weapons || [])) {
+      if (weapon.exclusiveGroup && equippedExclusiveGroups.has(weapon.exclusiveGroup)) {
+        sheet.metadata.unresolved.push({ type: "exclusive_equipment_conflict", id: weaponId, group: weapon.exclusiveGroup });
+        continue;
+      }
+      if (weapon.exclusiveGroup) equippedExclusiveGroups.add(weapon.exclusiveGroup);
+      allowed.push(weaponId);
+      continue;
+    }
+    sheet.metadata.unresolved.push({ type: "weapon_not_proficient", id: weaponId, classId: sheet.identity.classId });
+  }
+  sheet.equipment.weaponIds = allowed;
 }
 
 function collectNarrativeTags(sheet) {
@@ -67,7 +131,7 @@ function finalizeSavingThrows(sheet) {
 
 function finalizeInitiative(sheet) {
   const dexMod = sheet.abilities.dexterity?.modifier || 0;
-  sheet.combatBasics.initiativeBonus = dexMod + (sheet.combatBasics.initiativeBonus || 0);
+  sheet.combatBasics.initiativeBonus = dexMod + (sheet.combatBasics.initiativeBonus || 0) + accessoryModifiers(sheet).initiativeBonus;
 }
 
 function finalizePassivePerception(sheet) {
@@ -163,14 +227,15 @@ function finalizeArmorClass(sheet) {
   const armorAc = armor ? armor.ac + effectiveDex : 10 + dexMod;
   const shieldBonus = shield?.type === "shield" ? (shield.modifiers?.acBonus || 0) : 0;
   const featureBonus = armorClassFeatureBonus(sheet, armor);
-  sheet.combatBasics.armorClass = armorAc + shieldBonus + featureBonus;
+  const accessoryBonus = accessoryModifiers(sheet).acBonus;
+  sheet.combatBasics.armorClass = armorAc + shieldBonus + featureBonus + accessoryBonus;
   sheet.combatBasics.armorClassSources = armorClassSources({
     armor,
     shield,
     dexMod,
     effectiveDex,
     shieldBonus,
-    featureBonus,
+    featureBonus: featureBonus + accessoryBonus,
   });
 }
 

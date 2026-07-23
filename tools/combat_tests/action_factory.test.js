@@ -101,9 +101,67 @@ function testActionFactoryConsumableOutput() {
   assert.deepEqual(validateCombatAction(greaterPotion), [], "structured healing consumables should validate as combat actions");
 }
 
+function testEveryGeneratedUpcastDescriptionMatchesCompiledAction() {
+  const numberWords = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
+  const containsCount = (text, count) => new RegExp(`\\b(?:${count}|${numberWords[count] || count})\\b`, "i").test(text);
+  const numericEffectValues = (action) => (action?.effects || []).flatMap((effect) => [
+    effect.type === "temp_hp" ? effect.amount : null,
+    effect.type === "max_hp_bonus" ? effect.amount : null,
+    effect.damageRetaliation?.damage,
+  ]).filter((value) => value !== null && value !== undefined);
+  const nestedDamageValues = (action) => [
+    ...(action?.object?.effects || []).map((effect) => effect.damage),
+    ...(action?.effects || []).map((effect) => effect.action?.damage),
+  ].filter(Boolean);
+
+  for (const spell of Object.values(SPELLS)) {
+    if (spell.level < 1) continue;
+    const native = createSpellAction(spell, {
+      slotLevel: spell.level,
+      casterLevel: 17,
+      spellcastingModifier: 3,
+      spellSaveDC: 16,
+      attackBonus: 8,
+      usesExactSpellSlot: true,
+    });
+    if (!native) continue;
+
+    for (let slotLevel = spell.level + 1; slotLevel <= 9; slotLevel += 1) {
+      const upcast = createSpellAction(spell, {
+        slotLevel,
+        casterLevel: 17,
+        spellcastingModifier: 3,
+        spellSaveDC: 16,
+        attackBonus: 8,
+        usesExactSpellSlot: true,
+      });
+      if (!upcast) continue;
+      const context = `${spell.name} at level ${slotLevel}`;
+
+      assert.match(upcast.description, new RegExp(`level ${slotLevel} slot`, "i"), `${context} should identify its slot level`);
+      if (upcast.damage !== native.damage) assert.ok(upcast.description.includes(upcast.damage), `${context} should show ${upcast.damage} damage`);
+      if (upcast.healing !== native.healing) assert.ok(upcast.description.includes(upcast.healing), `${context} should show ${upcast.healing} healing`);
+      if (upcast.hits !== native.hits) assert.ok(containsCount(upcast.description, upcast.hits), `${context} should show ${upcast.hits} hits`);
+      if (upcast.maxTargets !== native.maxTargets && upcast.maxTargets > 1) {
+        assert.ok(containsCount(upcast.description, upcast.maxTargets), `${context} should show ${upcast.maxTargets} targets`);
+      }
+
+      const nativeValues = numericEffectValues(native);
+      for (const value of numericEffectValues(upcast)) {
+        if (!nativeValues.includes(value)) assert.ok(upcast.description.includes(String(value)), `${context} should show scaled effect value ${value}`);
+      }
+      const nativeNestedDamage = nestedDamageValues(native);
+      for (const damage of nestedDamageValues(upcast)) {
+        if (!nativeNestedDamage.includes(damage)) assert.ok(upcast.description.includes(damage), `${context} should show nested ${damage} damage`);
+      }
+    }
+  }
+}
+
 export async function runActionFactoryCombatTests() {
   testActionFactoryWeaponOutput();
   testActionFactorySpellOutput();
   testActionFactorySpellEffects();
   testActionFactoryConsumableOutput();
+  testEveryGeneratedUpcastDescriptionMatchesCompiledAction();
 }

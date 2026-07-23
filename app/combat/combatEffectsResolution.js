@@ -23,7 +23,12 @@ import {
   resolveZeroHpReactionAdjustment,
 } from "./reactions.js";
 import {
+  applyDeathWardEffect,
+  applyDispelMagicEffect,
+  applyGreaterRestorationEffect,
   applyGrantActionEffect,
+  applyLightSourceEffect,
+  applyMaxHpBonusEffect,
   applyModifierEffect,
   applyTempHpEffect,
 } from "./combatActionEffectHandlers.js";
@@ -84,7 +89,7 @@ export function applyCollisionDamage(snapshot, source, target, action, collision
     hpAfter: target.hp,
     collisionSquares,
   });
-  if (amount > 0) resolveConcentrationCheck(snapshot, target, amount, dice, log);
+  if (amount > 0) resolveConcentrationCheck(snapshot, target, amount, dice, log, source);
   markDefeated(snapshot, source, target, hpBefore, log);
 }
 
@@ -142,6 +147,26 @@ function applyActionEffects(snapshot, actor, target, action, log, trigger, dice 
     }
     if (effect.type === "remove_conditions") {
       applyRemoveConditionsEffect(snapshot, actor, target, action, effect, log);
+      continue;
+    }
+    if (effect.type === "light_source") {
+      applyLightSourceEffect(snapshot, actor, target, action, effect, log);
+      continue;
+    }
+    if (effect.type === "max_hp_bonus") {
+      applyMaxHpBonusEffect(snapshot, actor, target, action, effect, log);
+      continue;
+    }
+    if (effect.type === "death_ward") {
+      applyDeathWardEffect(snapshot, actor, target, action, effect, log);
+      continue;
+    }
+    if (effect.type === "dispel_magic") {
+      applyDispelMagicEffect(snapshot, actor, target, action, effect, log);
+      continue;
+    }
+    if (effect.type === "greater_restoration") {
+      applyGreaterRestorationEffect(snapshot, actor, target, action, effect, log);
       continue;
     }
     if (effect.type !== "condition" || !effect.condition) continue;
@@ -309,7 +334,7 @@ export function applyDamageAmount(snapshot, source, target, action, rolled, amou
     hpAfter: target.hp,
   });
 
-  if (appliedAmount > 0) resolveConcentrationCheck(snapshot, target, appliedAmount, dice, log);
+  if (appliedAmount > 0) resolveConcentrationCheck(snapshot, target, appliedAmount, dice, log, source);
   if (appliedAmount > 0 && source?.id && source.id !== target.id && action.tags?.attackRoll === true) {
     if (!target.turnFlags) target.turnFlags = {};
     target.turnFlags.hitsTakenSinceLastTurn = (target.turnFlags.hitsTakenSinceLastTurn || 0) + 1;

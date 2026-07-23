@@ -183,6 +183,7 @@ function testHaloOfDaybreakCreatesPersistentAura() {
   const log = createCombatLog();
   assert.equal(resolveAction(snapshot, actor, "halo_of_daybreak", actor.position, fixedDice(), log), true);
   assert.ok(snapshot.combatObjects.some((object) => object.name === "Halo of Daybreak" && object.followsSource), "Halo of Daybreak should create a source-following combat object");
+  assert.ok(log.events.some((event) => event.type === "object.created" && event.detail.logSummary?.includes("15-ft aura")), "Halo of Daybreak should describe its aura in the combat log");
 }
 
 function assertSaveBonus(snapshot, actor, expected, message) {

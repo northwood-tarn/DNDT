@@ -38,7 +38,7 @@ export default class PreloadScene {
 
     const requestedScene = new URLSearchParams(window.location.search).get('scene');
     routeTo({
-      toScene: ['credits', 'gameOver', 'explorationLauncherPreview'].includes(requestedScene) ? requestedScene : 'mainMenu',
+      toScene: ['credits', 'gameOver', 'explorationLauncherPreview', 'audioTest'].includes(requestedScene) ? requestedScene : 'mainMenu',
       reason: params.reason || 'boot',
       fromScene: 'preload',
     });

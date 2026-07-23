@@ -233,11 +233,13 @@ function testHarnessDivinePowerRestoresSpellSlot() {
   }), {}, { allowNonCreationLevel: true });
   const cleric = resolvedSheetToCombatActor(sheet, { id: "cleric", position: { x: 1, y: 1 } });
   cleric.spellSlots[1].current = 0;
+  cleric.spellSlots[2].current = 0;
   const snapshot = createSnapshotFromScenario(testScenario("harness-divine-power-test", [cleric]));
   const actor = snapshot.actors.find((item) => item.id === "cleric");
 
   assert.equal(resolveAction(snapshot, actor, "harness_divine_power", null, fixedDice(), createCombatLog()), true);
-  assert.equal(actor.spellSlots[1].current, 1, "Harness Divine Power should restore an expended spell slot");
+  assert.equal(actor.spellSlots[1].current, 1, "Harness Divine Power should restore the highest expended eligible spell slot");
+  assert.equal(actor.spellSlots[2].current, 0, "Harness Divine Power should not exceed its maximum eligible slot level");
   assert.equal(actor.resources.find((item) => item.id === "channel_divinity").current, 1, "Harness Divine Power should spend Channel Divinity");
 }
 
@@ -509,6 +511,7 @@ function warlockActor({ level = 11, subclassId = "the_fiend", pactId = "pact_of_
   const sheet = resolveCharacterSheet(createEmptyCharacterDraft({
     identity: { characterName: "Warlock", level, classId: "warlock", subclassId, pactId },
     abilities: { strength: 8, dexterity: 14, constitution: 12, intelligence: 10, wisdom: 10, charisma: 16 },
+    gear: { weaponIds: ["warlocks_gloves"] },
     choices: {
       classChoices: {
         pact: pactId,

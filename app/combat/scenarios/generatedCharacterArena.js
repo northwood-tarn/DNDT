@@ -298,14 +298,15 @@ function createStarterHeroActor(variantId, { id, name, position }) {
 }
 
 function createArenaSwordsman(options = {}) {
+  const enemyHp = options.enemyHp ?? 18;
   return createEnemyCombatActor({
     id: "arena_swordsman",
     name: "Enemy Swordsman",
     role: "swordsman",
     creatureType: "humanoid",
     size: "medium",
-    hp: 18,
-    maxHp: 18,
+    hp: enemyHp,
+    maxHp: enemyHp,
     ac: 14,
     speed: 6,
     initiativeBonus: 1,

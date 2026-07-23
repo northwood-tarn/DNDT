@@ -2,6 +2,10 @@ import { getArmorById } from "../data/armor.js";
 import { getConsumableById } from "../data/consumables.js";
 import { getUniqueById } from "../data/uniques.js";
 import { getWeaponById } from "../data/weapons.js";
+import { getRingById } from "../data/rings.js";
+import { getFootwearById } from "../data/footwear.js";
+import { getHeadwearById } from "../data/headwear.js";
+import { getSpellcastingFocusById } from "../data/spellcastingFoci.js";
 import { normalizeSaveGameState } from "./saveGameState.js";
 
 export function normalizeLootBundle(input = {}, options = {}) {
@@ -54,6 +58,6 @@ function resolveGold(spec, random) {
 
 function resolveItem(id) {
   const legacy = String(id || "").replace(/^item:/, "").replaceAll(".", "_");
-  return getConsumableById(id) || getUniqueById(id) || getArmorById(id) || getWeaponById(id) ||
-    getConsumableById(legacy) || getUniqueById(legacy) || getArmorById(legacy) || getWeaponById(legacy) || null;
+  return getConsumableById(id) || getUniqueById(id) || getArmorById(id) || getWeaponById(id) || getRingById(id) || getFootwearById(id) || getHeadwearById(id) || getSpellcastingFocusById(id) ||
+    getConsumableById(legacy) || getUniqueById(legacy) || getArmorById(legacy) || getWeaponById(legacy) || getRingById(legacy) || getFootwearById(legacy) || getHeadwearById(legacy) || getSpellcastingFocusById(legacy) || null;
 }

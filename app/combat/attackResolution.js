@@ -50,6 +50,25 @@ export function resolveOpportunityAttacks(snapshot, movingActor, from, to, dice,
       reactionAvailable: false,
       reason: "opportunity attack",
     });
+    const substitution = movingActor.equipmentTraits?.opportunityAttackSubstitution;
+    movingActor.combatFlags ??= {};
+    if (substitution && movingActor.combatFlags.lastFootstepUsed !== true) {
+      movingActor.combatFlags.lastFootstepUsed = true;
+      log.add("attack.result", {
+        round: snapshot.round,
+        actorId: actor.id,
+        actorName: actor.name,
+        targetId: movingActor.id,
+        targetName: movingActor.name,
+        actionId: action.id,
+        actionName: action.name,
+        actionType: action.type,
+        hit: false,
+        critical: false,
+        reason: "Ring of the Last Footstep redirected the attack to the wearer's shadow",
+      });
+      continue;
+    }
     resolveAttack(snapshot, actor, movingActor, action, dice, log);
   }
   checkOutcome(snapshot, log);

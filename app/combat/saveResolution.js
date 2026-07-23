@@ -2,6 +2,7 @@ import { classifyCover } from "./cover.js";
 import { conditionName, getConditionRules } from "./effects.js";
 import { actorsInFootprint, buildFootprint } from "./footprints.js";
 import { createCombatObjectFromAction } from "./combatObjects.js";
+import { dispatchActorTrigger } from "./triggers.js";
 import { getActor } from "./combatState.js";
 import { applyDamage, applyDamageAmount, applySaveFailureEffects, rollSaveD20 } from "./combatEffectsResolution.js";
 import { applyLuckyToRoll } from "./luck.js";
@@ -63,6 +64,10 @@ export function resolveSaveSpell(snapshot, actor, target, action, dice, log) {
   if (!success) {
     if (action.damage) applyDamage(snapshot, actor, target, resolveConditionalDamageAction(action, target), dice, log);
     applySaveFailureEffects(snapshot, actor, target, action, log, dice);
+  } else if (action.damage && action.saveOnSuccess === "half") {
+    const damageAction = resolveConditionalDamageAction(action, target);
+    const rolled = dice.rollDamage(damageAction.damage);
+    applyDamageAmount(snapshot, actor, target, damageAction, rolled, Math.floor(Math.max(0, rolled.total) / 2), dice, log);
   }
 }
 
@@ -193,7 +198,7 @@ function areaTargetMatches(actor, target, action) {
   return true;
 }
 
-export function resolveObjectSpell(snapshot, actor, action, targetPayload, log) {
+export function resolveObjectSpell(snapshot, actor, action, targetPayload, log, dice = null) {
   const anchor = targetPayload?.anchor || targetPayload;
   if (!anchor || !Number.isFinite(anchor.x) || !Number.isFinite(anchor.y)) {
     log.add("target.invalid", {
@@ -225,6 +230,7 @@ export function resolveObjectSpell(snapshot, actor, action, targetPayload, log) 
     blocksLineOfSight: object.blocksLineOfSight,
     difficultTerrain: object.difficultTerrain,
   });
+  for (const target of snapshot.actors || []) dispatchActorTrigger(snapshot, "area_created", target, dice, log, { action });
   return true;
 }
 

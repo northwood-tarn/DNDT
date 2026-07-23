@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExplorationAreaBundle",
+  "type": "object",
+  "required": ["schemaVersion", "id", "act", "mode", "background", "navigation", "occlusion", "water"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "id": { "type": "string", "pattern": "^a[0-9]{2}_[a-z0-9_]+$" },
+    "act": { "type": "integer", "minimum": 1 },
+    "mode": { "enum": ["exploration", "grand_exploration"] },
+    "background": { "type": "string", "pattern": "^\\./assets/map_backgrounds/" },
+    "navigation": {
+      "type": "object",
+      "required": ["area", "entryNodeId", "nodes", "edges"],
+      "properties": {
+        "area": { "type": "object" },
+        "entryNodeId": { "type": "string" },
+        "nodes": { "type": "array" },
+        "edges": { "type": "array" }
+      }
+    },
+    "occlusion": { "type": "array" },
+    "water": { "type": "array" }
+  }
+}

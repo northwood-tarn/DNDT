@@ -17,10 +17,12 @@ import { conditionName, getConditionRules, normalizeEffectDuration } from "./eff
 import { removeActiveEffect } from "./modifiers.js";
 import { getConsumableById } from "../data/consumables.js";
 import { spendActionSpellSlot } from "./spellSlots.js";
+import { applyActionResolvedEffects } from "./combatEffectsResolution.js";
 
 export function resolveDash(snapshot, actor, action, log) {
   const before = getMovementRemaining(actor);
-  increaseMovementMax(actor, actor.speed);
+  const equipmentBonus = Math.max(0, Math.ceil((actor?.movementRules?.dashMovementBonusFt || 0) / 5));
+  increaseMovementMax(actor, actor.speed + equipmentBonus);
   if (action.cost === "action" && !actor.economy?.actionAvailable && hasConditionRule(actor, "grantsBonusDash") && hasBonusAction(actor)) {
     spendBonusAction(actor);
   } else {
@@ -30,7 +32,7 @@ export function resolveDash(snapshot, actor, action, log) {
     round: snapshot.round,
     actorId: actor.id,
     actorName: actor.name,
-    addedMovement: actor.speed,
+    addedMovement: actor.speed + equipmentBonus,
     movementBefore: before,
     movementAfter: getMovementRemaining(actor),
   });
@@ -186,9 +188,10 @@ export function resolveConsumable(snapshot, actor, action, dice, log) {
   return true;
 }
 
-export function resolveHealingAction(snapshot, actor, target, action, dice, log) {
+export function resolveHealingAction(snapshot, actor, target, action, dice, log, { spend = true } = {}) {
   const recipient = target || actor;
-  if (recipient.hp >= recipient.maxHp) {
+  const hasResolvedEffects = Array.isArray(action.effects) && action.effects.some((effect) => effect.trigger === "action_resolved");
+  if (recipient.hp >= recipient.maxHp && !hasResolvedEffects) {
     log.add("target.invalid", {
       round: snapshot.round,
       actorId: actor.id,
@@ -212,10 +215,12 @@ export function resolveHealingAction(snapshot, actor, target, action, dice, log)
   const rolled = dice.rollDamage(healingDice);
   const hpBefore = recipient.hp;
   recipient.hp = Math.min(recipient.maxHp, recipient.hp + Math.max(0, rolled.total));
-  spendActionCost(actor, action.cost);
-  spendActionSpellSlot(actor, action);
-  spendActionUse(action);
-  spendResourceUse(actor, action.resourceId);
+  if (spend) {
+    spendActionCost(actor, action.cost);
+    spendActionSpellSlot(actor, action);
+    spendActionUse(action);
+    spendResourceUse(actor, action.resourceId);
+  }
   log.add("healing.roll", {
     round: snapshot.round,
     actorId: actor.id,
@@ -237,6 +242,7 @@ export function resolveHealingAction(snapshot, actor, target, action, dice, log)
     hpAfter: recipient.hp,
     remaining: null,
   });
+  applyActionResolvedEffects(snapshot, actor, recipient, action, log, dice);
   return true;
 }
 

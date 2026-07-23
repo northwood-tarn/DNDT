@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Combat UI v2</title>
+    <link rel="stylesheet" href="./combatUiV2.css">
+  </head>
+  <body>
+    <div class="window-drag-region" aria-hidden="true"></div>
+    <div class="combat-outcome-banner" role="status" aria-live="polite"></div>
+    <aside class="gear-drawer" aria-hidden="true" aria-label="Equipment and inventory">
+      <div class="gear-drawer-fog" aria-hidden="true"></div>
+      <header class="gear-drawer-header">
+        <div>
+          <h1 data-gear-drawer-title>Equipment</h1>
+          <span data-gear-actor-name></span>
+        </div>
+        <button class="gear-drawer-close" type="button" aria-label="Close equipment pane"></button>
+      </header>
+      <nav class="gear-drawer-tabs" aria-label="Equipment panes">
+        <button type="button" data-gear-tab="equipment">Equipment <kbd>E</kbd></button>
+        <button type="button" data-gear-tab="inventory">Inventory <kbd>I</kbd></button>
+      </nav>
+      <div class="gear-drawer-content">
+        <section class="gear-panel" data-gear-panel="equipment"></section>
+        <section class="gear-panel" data-gear-panel="inventory" hidden></section>
+      </div>
+    </aside>
+    <section class="combat-ui-strip">
+      <div class="combat-ui-fog combat-ui-fog-one" aria-hidden="true"></div>
+      <div class="combat-ui-fog combat-ui-fog-two" aria-hidden="true"></div>
+      <button class="combat-ui-character-toggle" type="button" aria-label="Collapse character information" aria-expanded="true"></button>
+      <button class="combat-ui-log-toggle" type="button" aria-label="Combat history unavailable in this presentation" aria-expanded="false"></button>
+      <nav class="combat-action-menu" aria-label="Combat actions">
+        <button class="is-active" type="button" data-combat-mode="movement" aria-current="true">Movement</button>
+        <button type="button" data-combat-mode="action">Action</button>
+        <button type="button" data-combat-mode="bonus_action">Bonus Action</button>
+        <button type="button" data-combat-command="end_turn">End Turn</button>
+      </nav>
+      <button class="combat-settings-button" type="button" aria-label="Combat settings" title="Combat settings">⚙</button>
+      <section class="combat-context-menu" aria-live="polite" aria-label="Combat choices" hidden>
+        <button class="combat-context-back" type="button" hidden aria-label="Back">‹</button>
+        <div class="combat-context-options"></div>
+        <p class="combat-context-status" role="status"></p>
+      </section>
+      <section class="combat-ui-character" aria-label="Character combat information">
+        <img class="combat-ui-portrait" alt="">
+        <div class="combat-ui-comparisons">
+          <section class="combat-ui-column combat-ui-column-a">
+            <h2 id="combatCharacterName"></h2>
+            <div class="combat-ui-vitals combat-ui-vitals-a">
+              <div class="combat-ui-hp-group">
+                <span class="combat-ui-hp-prefix">HP</span>
+                <div class="combat-ui-hp"><span class="combat-ui-hp-current"></span><span class="combat-ui-hp-label">—</span><span class="combat-ui-temp-hp" hidden></span></div>
+              </div>
+            </div>
+            <div class="combat-ui-statuses"><ul id="combatConditions" class="combat-ui-condition-list"></ul></div>
+          </section>
+        </div>
+      </section>
+      <section class="combat-expanded-controls" aria-label="Expanded combat controls" hidden>
+        <div class="combat-economy-slots">
+          <div class="combat-economy-slot combat-movement-slot">
+            <span class="combat-economy-label">Movement</span>
+            <strong>30 ft</strong>
+          </div>
+          <div class="combat-economy-slot combat-action-slot" data-quick-drop="action">
+            <span class="combat-economy-label">Action</span>
+            <strong>Available</strong>
+          </div>
+          <div class="combat-economy-slot combat-bonus-slot" data-quick-drop="bonus">
+            <span class="combat-economy-label">Bonus Action</span>
+            <strong>Available</strong>
+          </div>
+          <button class="combat-expanded-end-turn" type="button">End Turn</button>
+        </div>
+        <div class="combat-quickbar" aria-label="Quick bar">
+          <div class="combat-quickbar-group">
+            <span class="combat-quickbar-label">Actions</span>
+            <div class="combat-quickbar-slots" data-quickbar="action"></div>
+          </div>
+          <div class="combat-quickbar-group combat-quickbar-group-bonus">
+            <span class="combat-quickbar-label">Bonus</span>
+            <div class="combat-quickbar-slots" data-quickbar="bonus"></div>
+          </div>
+        </div>
+        <aside class="combat-quickbar-tooltip" role="tooltip" hidden></aside>
+      </section>
+      <aside class="combat-ui-log" aria-hidden="true"><h2>Combat Log</h2><ol></ol></aside>
+    </section>
+
+    <dialog class="combat-settings-dialog" aria-labelledby="combatSettingsTitle">
+      <div class="combat-settings-frame">
+        <header class="combat-settings-header">
+          <h2 id="combatSettingsTitle">Combat Settings</h2>
+          <button class="combat-settings-close" type="button" aria-label="Close combat settings">×</button>
+        </header>
+        <div class="combat-settings-tabs" role="tablist" aria-label="Combat settings sections">
+          <button type="button" role="tab" id="workspaceTab" aria-controls="workspacePanel" aria-selected="true">External Panes</button>
+          <button type="button" role="tab" id="reactionsTab" aria-controls="reactionsPanel" aria-selected="false" tabindex="-1">Reactions</button>
+        </div>
+        <section id="workspacePanel" class="combat-settings-panel" role="tabpanel" aria-labelledby="workspaceTab">
+          <fieldset class="combat-pane-setting-group">
+            <label class="combat-pane-setting">
+              <input type="checkbox" data-pane-toggle="action-options" data-pane-id="action-options" checked>
+              <span><strong>Action Options</strong></span>
+            </label>
+            <label class="combat-pane-subsetting">
+              <input type="checkbox" data-pane-setting="offerSpellUpcasting" checked>
+              <span>Offer spell upcasting?</span>
+            </label>
+          </fieldset>
+          <label class="combat-pane-setting">
+            <input type="checkbox" data-pane-id="inventory" checked>
+            <span>
+              <strong>Inventory</strong>
+            </span>
+          </label>
+          <label class="combat-pane-setting">
+            <input type="checkbox" data-pane-id="equipment" checked>
+            <span>
+              <strong>Equipment</strong>
+            </span>
+          </label>
+          <label class="combat-pane-setting">
+            <input type="checkbox" data-pane-id="quests" checked>
+            <span>
+              <strong>Quests</strong>
+            </span>
+          </label>
+          <label class="combat-pane-setting combat-fullscreen-setting">
+            <input type="checkbox" data-fullscreen-toggle>
+            <span><strong>Full Screen</strong></span>
+          </label>
+        </section>
+        <section id="reactionsPanel" class="combat-settings-panel" role="tabpanel" aria-labelledby="reactionsTab" hidden></section>
+      </div>
+    </dialog>
+    <script type="module" src="./combatUiV2.js"></script>
+  </body>
+</html>

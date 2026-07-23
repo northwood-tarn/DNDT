@@ -121,11 +121,16 @@ export function formatEvent(event) {
       return `${prefix}${d.actorName} casts ${d.actionName} ${d.shape} at (${d.anchor.x},${d.anchor.y}): ${d.cells.length} cells; targets ${d.targets.length ? d.targets.map((target) => target.name).join(", ") : "none"}.`;
     case "object.created":
       return `${prefix}${d.actorName} creates ${d.objectName} at (${d.anchor.x},${d.anchor.y})${d.blocksLineOfSight ? ", blocking sight" : ""}${d.difficultTerrain ? ", difficult terrain" : ""}.`;
+    case "object.moved":
+      return `${prefix}${d.actorName} moves ${d.objectName} to (${d.to.x},${d.to.y}).`;
     case "object.removed":
       return `${prefix}${d.actionName || d.objectName || d.actionId || "Spell object"} zone ends: ${d.reason}.`;
     case "trigger.fired":
       return `${prefix}${d.sourceName} triggers on ${d.actorName}: ${d.trigger}.`;
     case "effect.applied":
+      if (d.stat === "ac" && Number.isFinite(d.currentAc)) {
+        return `${prefix}${formatSigned(d.amount || 0)} AC from ${d.actionName}. Current AC: ${d.currentAc}.`;
+      }
       return `${prefix}${d.targetName} gains ${d.actionName}: ${modifierEffectText(d)}.`;
     case "effect.removed":
       return `${prefix}${d.actorName || d.targetName || "Actor"} loses ${d.label || d.effectId || "effect"}: ${d.reason}.`;
@@ -155,6 +160,8 @@ export function formatEvent(event) {
       return `${prefix}${d.actorName} uses ${d.label}: ${d.dice} rolled [${d.rolls.join(", ")}] + ${d.modifier} = ${d.total}.`;
     case "healing.applied":
       return `${prefix}${d.targetName || d.actorName} regains ${d.amount} HP (${d.hpBefore} -> ${d.hpAfter}).${Number.isFinite(d.remaining) ? ` ${d.remaining} healing potion(s) remain.` : ""}`;
+    case "temp_hp.applied":
+      return `${prefix}${d.targetName || d.actorName} gains ${d.amount} temporary HP from ${d.actionName}.`;
     case "condition.applied":
       return `${prefix}${d.targetName} gains ${d.label}${d.noSave ? " (no save)" : ""} from ${d.actionName}.`;
     case "condition.removed":

@@ -4,7 +4,7 @@ import {
   spendResourceUse,
 } from "./actor.js";
 import { livingActors } from "./combatState.js";
-import { distance } from "./grid.js";
+import { distance, isWalkable, neighbors } from "./grid.js";
 import { resolveRiderDamageFormula } from "./damageRiders.js";
 import { addActiveEffect } from "./modifiers.js";
 import { isReactionPolicyRelevant, normalizeReactionPolicy } from "./reactionPolicy.js";
@@ -38,6 +38,25 @@ export function resolveDamageReactionAdjustment(snapshot, context, dice, log) {
   const reaction = chooseAutomaticReaction(context.target, "takes_damage", context, (item) => item.damageReduction);
   if (!reaction) return amount;
   spendReactionUse(snapshot, context.target, reaction, log);
+
+  if (reaction.actionKind === "crooked_step") {
+    const from = { ...context.target.position };
+    const destination = neighbors(from)
+      .filter((pos) => isWalkable(snapshot, pos, context.target.id))
+      .sort((a, b) => distance(b, context.source.position) - distance(a, context.source.position))[0];
+    if (destination) {
+      context.target.position = { ...destination };
+      log.add("reaction.resolve", reactionDetail(snapshot, context.target, reaction, {
+        sourceId: context.source?.id,
+        sourceName: context.source?.name,
+        from,
+        to: destination,
+        distanceFt: reaction.distanceFt || 5,
+      }));
+    }
+    logSuppressedReactions(snapshot, context.target, suppressed, reaction, log);
+    return;
+  }
   const formula = resolveRiderDamageFormula(context.target, reaction.damageReduction);
   const rolled = dice.rollDamage(formula);
   const reduction = Math.max(0, rolled.total || 0);
@@ -391,7 +410,7 @@ function basicMeleeAttack(actor) {
 }
 
 function spendReactionUse(snapshot, actor, reaction, log) {
-  spendReaction(actor);
+  if (reaction.consumeReaction !== false) spendReaction(actor);
   spendResourceUse(actor, reaction.resourceId || reaction.id);
   log.add("reaction.spend", {
     round: snapshot.round,

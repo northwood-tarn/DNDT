@@ -32,6 +32,7 @@ let state = {
   lastEnv: null,              // 'bright' | 'dim' | 'dark'
   subscribed: false
 };
+let oilCapacityBonus = 0;
 
 function onMinutesAdvanced(minAdded){
   if (!state.lit) return;
@@ -64,10 +65,14 @@ export function initLanterna(opts={}){
   }
 }
 
-export function getLanterna(){ return { lit: state.lit, oil: state.oil, autoEnabled: state.autoEnabled, lastEnv: state.lastEnv }; }
+export function getLanterna(){ return { lit: state.lit, oil: state.oil, maxOil: DEFAULT_OIL + oilCapacityBonus, autoEnabled: state.autoEnabled, lastEnv: state.lastEnv }; }
 
-export function addOil(minutes){ state.oil = Math.max(0, state.oil + Math.max(0, Math.floor(minutes||0))); }
-export function setOil(minutes){ state.oil = Math.max(0, Math.floor(minutes||0)); }
+export function setOilCapacityBonus(minutes = 0) {
+  oilCapacityBonus = Math.max(0, Math.floor(minutes || 0));
+  state.oil = Math.min(state.oil, DEFAULT_OIL + oilCapacityBonus);
+}
+export function addOil(minutes){ state.oil = Math.min(DEFAULT_OIL + oilCapacityBonus, Math.max(0, state.oil + Math.max(0, Math.floor(minutes||0)))); }
+export function setOil(minutes){ state.oil = Math.min(DEFAULT_OIL + oilCapacityBonus, Math.max(0, Math.floor(minutes||0))); }
 
 export function lightLanterna(manual=false){
   if (state.oil <= 0) { logSystem("The lanterna is dry. You need oil."); return false; }

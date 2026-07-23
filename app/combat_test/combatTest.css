@@ -287,6 +287,24 @@ label {
   transform: translateX(-50%) rotate(31deg) scaleY(0.72);
 }
 
+.actor-miniature-base.has-authored-base {
+  left: 50%;
+  bottom: -2%;
+  width: 78%;
+  height: 28%;
+  border: 0;
+  border-radius: 0;
+  background: center bottom / contain no-repeat;
+  box-shadow: none;
+  transform: translateX(-50%);
+}
+
+.actor-miniature-hero .actor-miniature-base.has-authored-base,
+.actor-miniature-enemy .actor-miniature-base.has-authored-base {
+  border: 0;
+  box-shadow: none;
+}
+
 .actor-miniature-hero .actor-miniature-base {
   border-color: rgba(232, 170, 74, 0.86);
   box-shadow: 0 9px 17px rgba(0, 0, 0, 0.5), 0 0 12px rgba(232, 170, 74, 0.22), inset 0 -2px 4px rgba(0, 0, 0, 0.62);

@@ -1,0 +1,496 @@
+{
+  "audioConfigVersion": 1,
+  "assets": {
+    "MUSIC_INTRO": {
+      "id": "MUSIC_INTRO",
+      "name": "Intro Theme",
+      "path": "assets/audio/intro_theme.mp3",
+      "category": "music"
+    },
+    "AMBIENCE_BELLS": {
+      "id": "AMBIENCE_BELLS",
+      "name": "Distant Bells",
+      "path": "assets/audio/0_bells.mp3",
+      "category": "ambience"
+    },
+    "UI_LIGHTER": {
+      "id": "UI_LIGHTER",
+      "name": "Lighter",
+      "path": "assets/audio/lighter.mp3",
+      "category": "ui"
+    },
+    "CHARACTER_CREATION_TIGRAN_RAIN_SHADOW": {
+      "id": "CHARACTER_CREATION_TIGRAN_RAIN_SHADOW",
+      "name": "character creation (Tigran Rain Shadow)",
+      "path": "assets/audio/character_creation_Tigran_Rain_Shadow.mp3",
+      "category": "music"
+    },
+    "THE_BLACK_SEA_1878": {
+      "id": "THE_BLACK_SEA_1878",
+      "name": "The Black Sea, 1878",
+      "path": "assets/audio/The_Black_Sea_1878.mp3",
+      "category": "ambience"
+    },
+    "0_BELLS_2": {
+      "id": "0_BELLS_2",
+      "name": "0_bells_2",
+      "path": "assets/audio/0_bells_2_2.mp3",
+      "category": "music"
+    },
+    "THE_BLACK_SEA_1878_2": {
+      "id": "THE_BLACK_SEA_1878_2",
+      "name": "The_Black_Sea_1878_2",
+      "path": "assets/audio/The_Black_Sea_1878_2_2.mp3",
+      "category": "music"
+    },
+    "0_BELLS_2_2": {
+      "id": "0_BELLS_2_2",
+      "name": "0_bells_2_2",
+      "path": "assets/audio/0_bells_2_2_2.mp3",
+      "category": "ambience"
+    },
+    "CHARACTER_CREATION_TIGRAN_RAIN_SHADOW_2": {
+      "id": "CHARACTER_CREATION_TIGRAN_RAIN_SHADOW_2",
+      "name": "character creation (Tigran Rain Shadow)",
+      "path": "assets/audio/character_creation_Tigran_Rain_Shadow_3.mp3",
+      "category": "music"
+    },
+    "DEATH_STAB": {
+      "id": "DEATH_STAB",
+      "name": "death_stab",
+      "path": "assets/audio/death_stab_3.mp3",
+      "category": "music"
+    }
+  },
+  "areas": {
+    "mainMenu": {
+      "id": "mainMenu",
+      "name": "Main Menu",
+      "type": "exploration",
+      "placeholder": false,
+      "music": {
+        "assetId": "MUSIC_INTRO",
+        "volume": 0.9,
+        "loop": false,
+        "loopMode": "none",
+        "fadeInMs": 500,
+        "fadeOutMs": 800
+      },
+      "ambience": null,
+      "dialogue": []
+    },
+    "test_exploration": {
+      "id": "test_exploration",
+      "name": "Test Exploration Area",
+      "type": "exploration",
+      "placeholder": true,
+      "music": null,
+      "ambience": {
+        "assetId": "AMBIENCE_BELLS",
+        "volume": 0.35,
+        "loop": true,
+        "loopMode": "loop",
+        "fadeInMs": 900,
+        "fadeOutMs": 700
+      },
+      "dialogue": [
+        {
+          "id": "test_dialogue",
+          "name": "Test Dialogue",
+          "assetId": "UI_LIGHTER",
+          "volume": 0.7,
+          "interrupt": true,
+          "duck": true
+        }
+      ]
+    },
+    "test_combat": {
+      "id": "test_combat",
+      "name": "Test Combat Area",
+      "type": "combat",
+      "placeholder": true,
+      "music": {
+        "assetId": "MUSIC_INTRO",
+        "volume": 0.75,
+        "loop": true,
+        "loopMode": "loop",
+        "fadeInMs": 500,
+        "fadeOutMs": 500
+      },
+      "ambience": null,
+      "dialogue": []
+    },
+    "prologue": {
+      "id": "prologue",
+      "name": "Prologue",
+      "type": "exploration",
+      "placeholder": false,
+      "music": {
+        "assetId": "THE_BLACK_SEA_1878_2",
+        "volume": 1,
+        "loop": true,
+        "loopMode": "loop",
+        "fadeInMs": 800,
+        "fadeOutMs": 800
+      },
+      "ambience": {
+        "assetId": "0_BELLS_2_2",
+        "volume": 1,
+        "loop": false,
+        "loopMode": "infrequent",
+        "fadeInMs": 800,
+        "fadeOutMs": 800
+      },
+      "dialogue": []
+    },
+    "gameOver": {
+      "id": "gameOver",
+      "name": "Death",
+      "type": "exploration",
+      "placeholder": false,
+      "music": {
+        "assetId": "DEATH_STAB",
+        "volume": 1,
+        "loop": true,
+        "loopMode": "loop",
+        "fadeInMs": 800,
+        "fadeOutMs": 800
+      },
+      "ambience": null,
+      "dialogue": []
+    },
+    "emberStops": {
+      "id": "emberStops",
+      "name": "Ember Stops",
+      "type": "exploration",
+      "placeholder": false,
+      "music": null,
+      "ambience": null,
+      "dialogue": []
+    },
+    "epilogue": {
+      "id": "epilogue",
+      "name": "Epilogue",
+      "type": "exploration",
+      "placeholder": false,
+      "music": null,
+      "ambience": null,
+      "dialogue": []
+    },
+    "credits": {
+      "id": "credits",
+      "name": "Credits",
+      "type": "exploration",
+      "placeholder": false,
+      "music": null,
+      "ambience": null,
+      "dialogue": []
+    },
+    "characterSelect": {
+      "id": "characterSelect",
+      "name": "Character Creation",
+      "type": "exploration",
+      "placeholder": false,
+      "music": {
+        "assetId": "CHARACTER_CREATION_TIGRAN_RAIN_SHADOW_2",
+        "volume": 1,
+        "loop": true,
+        "loopMode": "loop",
+        "fadeInMs": 800,
+        "fadeOutMs": 800
+      },
+      "ambience": null,
+      "dialogue": []
+    }
+  },
+  "events": {
+    "UI_CONFIRM": {
+      "id": "UI_CONFIRM",
+      "name": "UI Confirm",
+      "category": "UI",
+      "bus": "ui",
+      "variants": [
+        "UI_LIGHTER"
+      ],
+      "volume": 0.45,
+      "cooldownMs": 80,
+      "maxInstances": 2,
+      "playbackRateMin": 1,
+      "playbackRateMax": 1,
+      "loop": false,
+      "loopMode": "none"
+    },
+    "UI_CANCEL": {
+      "id": "UI_CANCEL",
+      "name": "UI Cancel",
+      "category": "UI",
+      "bus": "ui",
+      "variants": [],
+      "volume": 1,
+      "playbackRateMin": 1,
+      "playbackRateMax": 1,
+      "cooldownMs": 0,
+      "maxInstances": 4,
+      "loop": false,
+      "loopMode": "none"
+    },
+    "UI_OPEN": {
+      "id": "UI_OPEN",
+      "name": "UI Open",
+      "category": "UI",
+      "bus": "ui",
+      "variants": [],
+      "volume": 1,
+      "playbackRateMin": 1,
+      "playbackRateMax": 1,
+      "cooldownMs": 0,
+      "maxInstances": 4,
+      "loop": false,
+      "loopMode": "none"
+    },
+    "UI_CLOSE": {
+      "id": "UI_CLOSE",
+      "name": "UI Close",
+      "category": "UI",
+      "bus": "ui",
+      "variants": [],
+      "volume": 1,
+      "playbackRateMin": 1,
+      "playbackRateMax": 1,
+      "cooldownMs": 0,
+      "maxInstances": 4,
+      "loop": false,
+      "loopMode": "none"
+    },
+    "PLAYER_HIT": {
+      "id": "PLAYER_HIT",
+      "name": "Player Hit",
+      "category": "Player",
+      "bus": "effects",
+      "variants": [],
+      "volume": 1,
+      "playbackRateMin": 1,
+      "playbackRateMax": 1,
+      "cooldownMs": 0,
+      "maxInstances": 4,
+      "loop": false,
+      "loopMode": "none"
+    },
+    "PLAYER_DEATH": {
+      "id": "PLAYER_DEATH",
+      "name": "Player Death",
+      "category": "Player",
+      "bus": "effects",
+      "variants": [],
+      "volume": 1,
+      "playbackRateMin": 1,
+      "playbackRateMax": 1,
+      "cooldownMs": 0,
+      "maxInstances": 4,
+      "loop": false,
+      "loopMode": "none"
+    },
+    "ENEMY_HIT": {
+      "id": "ENEMY_HIT",
+      "name": "Enemy Hit",
+      "category": "Enemies",
+      "bus": "effects",
+      "variants": [],
+      "volume": 1,
+      "playbackRateMin": 1,
+      "playbackRateMax": 1,
+      "cooldownMs": 0,
+      "maxInstances": 4,
+      "loop": false,
+      "loopMode": "none"
+    },
+    "ENEMY_DEATH": {
+      "id": "ENEMY_DEATH",
+      "name": "Enemy Death",
+      "category": "Enemies",
+      "bus": "effects",
+      "variants": [],
+      "volume": 1,
+      "playbackRateMin": 1,
+      "playbackRateMax": 1,
+      "cooldownMs": 0,
+      "maxInstances": 4,
+      "loop": false,
+      "loopMode": "none"
+    },
+    "WEAPON_SWING": {
+      "id": "WEAPON_SWING",
+      "name": "Weapon Swing",
+      "category": "Weapons",
+      "bus": "effects",
+      "variants": [],
+      "volume": 1,
+      "playbackRateMin": 1,
+      "playbackRateMax": 1,
+      "cooldownMs": 0,
+      "maxInstances": 4,
+      "loop": false,
+      "loopMode": "none"
+    },
+    "SPELL_CAST": {
+      "id": "SPELL_CAST",
+      "name": "Spell Cast",
+      "category": "Spells",
+      "bus": "effects",
+      "variants": [],
+      "volume": 1,
+      "playbackRateMin": 1,
+      "playbackRateMax": 1,
+      "cooldownMs": 0,
+      "maxInstances": 4,
+      "loop": false,
+      "loopMode": "none"
+    },
+    "SPELL_IMPACT": {
+      "id": "SPELL_IMPACT",
+      "name": "Spell Impact",
+      "category": "Spells",
+      "bus": "effects",
+      "variants": [],
+      "volume": 1,
+      "playbackRateMin": 1,
+      "playbackRateMax": 1,
+      "cooldownMs": 0,
+      "maxInstances": 4,
+      "loop": false,
+      "loopMode": "none"
+    },
+    "DOOR_OPEN": {
+      "id": "DOOR_OPEN",
+      "name": "Door Open",
+      "category": "Objects",
+      "bus": "effects",
+      "variants": [],
+      "volume": 1,
+      "playbackRateMin": 1,
+      "playbackRateMax": 1,
+      "cooldownMs": 0,
+      "maxInstances": 4,
+      "loop": false,
+      "loopMode": "none"
+    },
+    "DOOR_CLOSE": {
+      "id": "DOOR_CLOSE",
+      "name": "Door Close",
+      "category": "Objects",
+      "bus": "effects",
+      "variants": [],
+      "volume": 1,
+      "playbackRateMin": 1,
+      "playbackRateMax": 1,
+      "cooldownMs": 0,
+      "maxInstances": 4,
+      "loop": false,
+      "loopMode": "none"
+    },
+    "CHEST_OPEN": {
+      "id": "CHEST_OPEN",
+      "name": "Chest Open",
+      "category": "Objects",
+      "bus": "effects",
+      "variants": [],
+      "volume": 1,
+      "playbackRateMin": 1,
+      "playbackRateMax": 1,
+      "cooldownMs": 0,
+      "maxInstances": 4,
+      "loop": false,
+      "loopMode": "none"
+    },
+    "SAVE_COMPLETE": {
+      "id": "SAVE_COMPLETE",
+      "name": "Save Complete",
+      "category": "System",
+      "bus": "ui",
+      "variants": [
+        "UI_LIGHTER"
+      ],
+      "volume": 0.35,
+      "playbackRateMin": 1,
+      "playbackRateMax": 1,
+      "cooldownMs": 0,
+      "maxInstances": 4,
+      "loop": false,
+      "loopMode": "none"
+    },
+    "LOAD_COMPLETE": {
+      "id": "LOAD_COMPLETE",
+      "name": "Load Complete",
+      "category": "System",
+      "bus": "ui",
+      "variants": [],
+      "volume": 1,
+      "playbackRateMin": 1,
+      "playbackRateMax": 1,
+      "cooldownMs": 0,
+      "maxInstances": 4,
+      "loop": false,
+      "loopMode": "none"
+    },
+    "LONG_REST_COMPLETE": {
+      "id": "LONG_REST_COMPLETE",
+      "name": "Long Rest Complete",
+      "category": "System",
+      "bus": "effects",
+      "variants": [],
+      "volume": 1,
+      "playbackRateMin": 1,
+      "playbackRateMax": 1,
+      "cooldownMs": 0,
+      "maxInstances": 4,
+      "loop": false,
+      "loopMode": "none"
+    },
+    "LEVEL_UP": {
+      "id": "LEVEL_UP",
+      "name": "Level Up",
+      "category": "System",
+      "bus": "effects",
+      "variants": [],
+      "volume": 1,
+      "playbackRateMin": 1,
+      "playbackRateMax": 1,
+      "cooldownMs": 0,
+      "maxInstances": 4,
+      "loop": false,
+      "loopMode": "none"
+    }
+  },
+  "mixerDefaults": {
+    "master": {
+      "volume": 1,
+      "muted": false
+    },
+    "music": {
+      "volume": 0.9,
+      "muted": false
+    },
+    "ambience": {
+      "volume": 0.9,
+      "muted": false
+    },
+    "effects": {
+      "volume": 0.9,
+      "muted": false
+    },
+    "dialogue": {
+      "volume": 1,
+      "muted": false
+    },
+    "ui": {
+      "volume": 0.9,
+      "muted": false
+    }
+  },
+  "ducking": {
+    "music": 0.35,
+    "ambience": 0.45,
+    "fadeDownMs": 180,
+    "restoreMs": 350
+  }
+}

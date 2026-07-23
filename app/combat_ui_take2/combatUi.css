@@ -1,0 +1,761 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  --combat-text: rgba(224, 250, 246, 0.62);
+  --combat-location: rgba(255, 255, 255, 0.10);
+  --combat-speaker: rgba(255, 255, 255, 0.30);
+  --combat-skill: #634a72;
+  --combat-class: #845b02;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+.window-drag-region {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 64px;
+  -webkit-app-region: drag;
+}
+
+.combat-action-menu {
+  position: absolute;
+  top: 16px;
+  left: 450px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  transform: none;
+  -webkit-app-region: no-drag;
+}
+
+.combat-action-menu button {
+  position: relative;
+  padding: 0 0 7px;
+  border: 0;
+  background: transparent;
+  color: var(--combat-speaker);
+  font-family: "Avenir Light", "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.combat-action-menu button::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: var(--combat-text);
+  opacity: 0;
+}
+
+.combat-action-menu button:hover,
+.combat-action-menu button:focus-visible,
+.combat-action-menu button.is-active {
+  color: var(--combat-text);
+  outline: none;
+}
+
+.combat-action-menu button.is-active::after {
+  opacity: 0.6;
+}
+
+.combat-action-menu button.is-spent,
+.combat-action-menu button.is-spent:hover,
+.combat-action-menu button.is-spent:focus-visible,
+.combat-action-menu button.is-spent.is-active {
+  color: var(--combat-location);
+}
+
+.combat-action-menu button.is-spent::after {
+  opacity: 0;
+}
+
+.combat-action-menu .combat-settings-button {
+  position: relative;
+  top: -5px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: var(--combat-speaker);
+  font-size: 17px;
+  letter-spacing: 0;
+  line-height: 18px;
+  text-align: center;
+  opacity: 0.62;
+}
+
+.combat-action-menu .combat-settings-button::before,
+.combat-action-menu .combat-settings-button::after {
+  content: none;
+}
+
+.combat-action-menu .combat-settings-button:hover,
+.combat-action-menu .combat-settings-button:focus-visible {
+  opacity: 1;
+}
+
+.combat-context-menu {
+  position: absolute;
+  top: 48px;
+  right: 360px;
+  bottom: 12px;
+  left: 450px;
+  z-index: 19;
+  color: var(--combat-speaker);
+  font-family: "Avenir Light", "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-app-region: no-drag;
+}
+
+.combat-context-menu[hidden] {
+  display: none;
+}
+
+.combat-context-options {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+}
+
+.combat-context-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 3px 22px;
+  min-height: 20px;
+}
+
+.combat-spell-level-row {
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  gap: 10px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.combat-spell-level-row button {
+  white-space: nowrap;
+}
+
+.combat-spell-level-row button.is-pipped-spell-level {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-right: 2px;
+  padding-left: 2px;
+}
+
+.combat-cast-level-row {
+  align-items: center;
+  gap: 12px;
+}
+
+.combat-cast-level-label {
+  color: var(--combat-location);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.combat-spell-level-name {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.combat-spell-slot-pips {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.combat-spell-slot-pip {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--combat-location);
+}
+
+.combat-spell-slot-pip.is-available {
+  border-color: var(--combat-text);
+  background: var(--combat-text);
+  opacity: 0.62;
+}
+
+.combat-context-options button,
+.combat-context-back {
+  padding: 3px 0;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  color: var(--combat-speaker);
+  font: inherit;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  line-height: 1.15;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.combat-context-options button:hover,
+.combat-context-options button:focus-visible,
+.combat-context-back:hover,
+.combat-context-back:focus-visible {
+  border-bottom-color: var(--combat-text);
+  color: var(--combat-text);
+  outline: none;
+}
+
+.combat-context-options button.is-selected {
+  border-bottom-color: var(--combat-text);
+  color: var(--combat-text);
+}
+
+.combat-context-options button.is-upcast-toggle::before,
+.combat-context-options button.is-upcast-toggle::after {
+  content: "✦";
+  display: inline-block;
+  margin: 0 0.45em;
+  color: var(--combat-location);
+  font-size: 0.7em;
+  vertical-align: 0.12em;
+}
+
+.combat-context-options button.is-upcast-toggle:hover::before,
+.combat-context-options button.is-upcast-toggle:hover::after,
+.combat-context-options button.is-upcast-toggle:focus-visible::before,
+.combat-context-options button.is-upcast-toggle:focus-visible::after,
+.combat-context-options button.is-upcast-toggle.is-selected::before,
+.combat-context-options button.is-upcast-toggle.is-selected::after {
+  color: var(--combat-text);
+}
+
+.combat-context-options button:disabled,
+.combat-context-options button.is-disabled {
+  border-bottom-color: transparent;
+  color: var(--combat-location);
+  cursor: default;
+}
+
+.combat-context-back {
+  display: none;
+}
+
+.combat-context-status {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  min-height: 28px;
+  margin: 0;
+  overflow: hidden;
+  color: var(--combat-speaker);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-align: left;
+  white-space: pre-line;
+}
+
+.combat-ui-strip {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 25vh;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  background: #000;
+  isolation: isolate;
+}
+
+.combat-ui-strip::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: 0;
+  left: 0;
+  height: 3px;
+  z-index: 1;
+  background: var(--combat-text);
+  opacity: 0.28;
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+.combat-ui-fog {
+  position: absolute;
+  inset: -45% -12%;
+  z-index: -1;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 0.055;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.combat-ui-fog-one {
+  background-image: url("../assets/fog/fog_01.png");
+  animation: fog-drift-one 72s ease-in-out infinite alternate;
+}
+
+.combat-ui-fog-two {
+  background-image: url("../assets/fog/fog_05.png");
+  opacity: 0.035;
+  animation: fog-drift-two 96s ease-in-out infinite alternate;
+}
+
+.combat-ui-portrait {
+  display: block;
+  flex: 0 0 auto;
+  width: auto;
+  height: calc(100% - 10px);
+  margin: 5px 0 5px 25px;
+}
+
+.combat-ui-character {
+  display: flex;
+  align-items: stretch;
+  transition: transform 260ms ease;
+}
+
+.combat-ui-character.is-collapsed {
+  transform: none;
+}
+
+.combat-ui-character.is-collapsed .combat-ui-portrait,
+.combat-ui-character.is-collapsed .combat-ui-statuses,
+.combat-ui-character.is-collapsed .combat-ui-ac {
+  display: none;
+}
+
+.combat-ui-character.is-collapsed .combat-ui-comparisons {
+  margin-left: 0;
+}
+
+.combat-ui-character.is-collapsed .combat-ui-column {
+  width: max-content;
+  padding-right: 25px;
+  padding-left: 25px;
+}
+
+.combat-ui-character.is-collapsed .combat-ui-column h2 {
+  font-size: 19.44px;
+  text-align: center;
+}
+
+.combat-ui-character.is-collapsed .combat-ui-vitals {
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.combat-ui-character.is-collapsed .combat-ui-ac,
+.combat-ui-character.is-collapsed .combat-ui-hp-prefix {
+  height: auto;
+  padding: 0;
+  border: 0;
+}
+
+.combat-ui-character.is-collapsed .combat-ui-hp-group {
+  flex: 0 0 auto;
+  gap: 5px;
+}
+
+.combat-ui-character.is-collapsed .combat-ui-hp {
+  flex: 0 0 auto;
+  width: auto;
+  height: auto;
+  border: 0;
+}
+
+.combat-ui-character.is-collapsed .combat-ui-hp-current {
+  display: none;
+}
+
+.combat-ui-character.is-collapsed .combat-ui-hp-label {
+  position: static;
+  width: auto;
+  color: var(--combat-speaker);
+  text-align: left;
+  transform: none;
+}
+
+.combat-ui-character.is-collapsed .combat-ui-temp-hp {
+  position: static;
+  margin-left: 5px;
+}
+
+.combat-ui-comparisons {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: stretch;
+  gap: 38px;
+  margin-left: 28px;
+  padding: 15px 0 12px;
+}
+
+.combat-ui-column {
+  position: relative;
+  flex: 0 0 var(--combat-block-width, 232px);
+  min-width: 0;
+  width: var(--combat-block-width, 232px);
+  padding-right: 18px;
+  color: var(--combat-text);
+  font-family: "Avenir Light", "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.combat-ui-column::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -10px;
+  bottom: 0;
+  width: 1px;
+  background: var(--combat-text);
+  opacity: 0.2;
+  filter: blur(1px);
+}
+
+.combat-ui-character-toggle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  width: 7px;
+  height: 13px;
+  padding: 0;
+  border: 0;
+  border-radius: 0 7px 7px 0;
+  background: var(--combat-text);
+  opacity: 0.58;
+  cursor: pointer;
+  transform: none;
+  -webkit-app-region: no-drag;
+}
+
+.combat-ui-character-toggle::before {
+  content: none;
+}
+
+.combat-ui-character-toggle:hover,
+.combat-ui-character-toggle:focus-visible {
+  opacity: 1;
+  outline: none;
+}
+
+.combat-ui-log {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  bottom: 0;
+  width: 310px;
+  padding: 18px 0 12px 30px;
+  color: var(--combat-speaker);
+  font-family: "Avenir Light", "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  transition: transform 260ms ease;
+}
+
+.combat-ui-log.is-collapsed {
+  transform: translateX(calc(100% + 19px));
+}
+
+.combat-ui-log::after {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 0;
+  bottom: 12px;
+  width: 1px;
+  background: var(--combat-text);
+  opacity: 0.2;
+  filter: blur(1px);
+}
+
+.combat-ui-log-toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: auto;
+  z-index: 4;
+  width: 7px;
+  height: 13px;
+  padding: 0;
+  border: 0;
+  border-radius: 7px 0 0 7px;
+  background: var(--combat-text);
+  opacity: 0.58;
+  cursor: pointer;
+  transform: none;
+  -webkit-app-region: no-drag;
+}
+
+.combat-ui-log-toggle::before {
+  content: none;
+}
+
+.combat-ui-log-toggle:hover,
+.combat-ui-log-toggle:focus-visible {
+  opacity: 1;
+  outline: none;
+}
+
+.combat-ui-log h2 {
+  margin: 0 0 12px;
+  color: var(--combat-speaker);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.17em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.combat-ui-log ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  line-height: 1.65;
+  max-height: calc(100% - 25px);
+  overflow: hidden;
+}
+
+.combat-ui-log li {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.combat-ui-log li span {
+  color: var(--combat-text);
+}
+
+.combat-ui-column h2,
+.combat-ui-column h3,
+.combat-ui-column p,
+.combat-ui-column ul {
+  margin: 0;
+}
+
+.combat-ui-column h2 {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--combat-speaker);
+  font-family: "Avenir Light", "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 38.88px;
+  font-weight: 300;
+  letter-spacing: 0.035em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.combat-ui-vitals {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.combat-ui-hp-group {
+  display: flex;
+  flex: 1 1 100%;
+  min-width: 0;
+}
+
+.combat-ui-hp {
+  position: relative;
+  flex: 1;
+  height: 25px;
+  overflow: visible;
+  border: 1px solid var(--combat-location);
+  color: var(--combat-text);
+}
+
+.combat-ui-hp-label {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  color: var(--combat-text);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  text-transform: uppercase;
+  text-align: center;
+  transform: translateY(-50%);
+}
+
+.combat-ui-hp-current {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+  background: var(--combat-text);
+  opacity: 0.35;
+}
+
+.combat-ui-temp-hp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  z-index: 3;
+  top: 3px;
+  right: 3px;
+  min-width: 32px;
+  height: 17px;
+  padding: 0 5px;
+  border: 1px solid var(--combat-text);
+  background: rgba(224, 250, 246, 0.1);
+  color: var(--combat-text);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.combat-ui-temp-hp[hidden] {
+  display: none;
+}
+
+.combat-ui-hp-prefix {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  height: 25px;
+  padding: 0 7px;
+  border: 1px solid var(--combat-location);
+  border-right: 0;
+  color: var(--combat-speaker);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.combat-ui-statuses {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 19px;
+}
+
+.combat-ui-statuses h3 {
+  margin-bottom: 6px;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.17em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.combat-ui-statuses ul {
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  column-gap: 0;
+  row-gap: 0;
+  width: 100%;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.combat-ui-statuses li {
+  position: relative;
+  cursor: default;
+  outline: none;
+  opacity: 0.6;
+}
+
+.combat-ui-statuses li + li::before {
+  content: "·";
+  margin: 0 7px;
+  color: var(--combat-speaker);
+}
+
+.combat-ui-statuses li:nth-child(3n + 1)::before {
+  display: none;
+}
+
+.combat-ui-statuses li:hover,
+.combat-ui-statuses li:focus-visible {
+  z-index: 20;
+  opacity: 1;
+}
+
+.combat-condition-tooltip {
+  position: absolute;
+  bottom: calc(100% + 9px);
+  left: 0;
+  display: none;
+  width: 260px;
+  padding: 9px 11px;
+  border: 1px solid var(--combat-location);
+  background: rgba(0, 4, 4, 0.96);
+  color: var(--combat-text);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  text-transform: none;
+  white-space: normal;
+}
+
+.combat-ui-statuses li:hover .combat-condition-tooltip,
+.combat-ui-statuses li:focus-visible .combat-condition-tooltip {
+  display: block;
+}
+
+.combat-ui-condition-list .is-benefit {
+  color: var(--combat-class);
+}
+
+.combat-ui-condition-list .is-condition {
+  color: var(--combat-skill);
+}
+
+.combat-ui-column-a {
+  font-family: "Avenir Light", "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.035em;
+}
+
+.combat-ui-column-a h3 {
+  color: var(--combat-location);
+}
+
+@keyframes fog-drift-one {
+  from { transform: translate3d(-4%, 1%, 0) scale(1.04); }
+  to { transform: translate3d(5%, -2%, 0) scale(1.1); }
+}
+
+@keyframes fog-drift-two {
+  from { transform: translate3d(4%, -2%, 0) scale(1.08); }
+  to { transform: translate3d(-5%, 3%, 0) scale(1.02); }
+}

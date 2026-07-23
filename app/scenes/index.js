@@ -15,6 +15,7 @@ import BootScene from "./BootScene.js";
 import PreloadScene from "./PreloadScene.js";
 import GrandExplorationScene from "./GrandExplorationScene.js";
 import MerchantScene from "./MerchantScene.js";
+import AudioTestScene from "./AudioTestScene.js";
 
 export const SCENES = {
   mainMenu: "mainMenu",
@@ -31,6 +32,7 @@ export const SCENES = {
   explorationLauncherPreview: "explorationLauncherPreview",
   intro: "intro",
   systemCutscene: "systemCutscene",
+  audioTest: "audioTest",
 };
 
 // Core scenes
@@ -53,3 +55,4 @@ registerScene("credits", CreditsScene);
 registerScene("explorationLauncherPreview", ExplorationLauncherPreviewScene);
 registerScene("intro", IntroScene);
 registerScene("systemCutscene", SystemCutsceneScene);
+registerScene("audioTest", AudioTestScene);

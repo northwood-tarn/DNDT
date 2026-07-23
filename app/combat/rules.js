@@ -4,7 +4,7 @@ import { getActionTags } from "./actionTags.js";
 import { distance, hasLineOfSight, isWalkable } from "./grid.js";
 import { canUseMovementMode, getMovementStepCost } from "./movementRules.js";
 import { canSeeActor } from "./perception.js";
-import { combatObjectsAt, hasCombatObjectLineOfSight } from "./combatObjects.js";
+import { blockingContainmentBoundary, combatObjectsAt, hasCombatObjectLineOfSight } from "./combatObjects.js";
 import { canSpendSpellSlotThisTurn } from "./spellSlots.js";
 
 export function canUseAction(actor, action) {
@@ -28,12 +28,19 @@ export function canUseAction(actor, action) {
     return blocked(`${action.cost || "action"} already used`);
   }
   const tags = getActionTags(action);
+  if (tags.spell && !action.itemGrantedSpell && actor.spellcastingFocus?.requiredType && !actor.spellcastingFocus.equippedTypes?.includes(actor.spellcastingFocus.requiredType)) {
+    return blocked(`requires an equipped ${focusTypeLabel(actor.spellcastingFocus.requiredType)}`);
+  }
   const requirement = action.requirement || action.requirements || {};
   if (requirement.equippedShield && !actor.equipment?.shieldId) return blocked("requires an equipped shield");
   if (requirement.attackActionThisTurn && actor.turnFlags?.attackActionResolved !== true) return blocked("requires an attack action earlier this turn");
   if (tags.requiresSpeech && hasConditionMechanic(actor, "cannotSpeak")) return blocked("cannot speak");
   if (tags.requiresHands && hasConditionMechanic(actor, "cannotUseHands")) return blocked("cannot use hands");
   return allowed();
+}
+
+function focusTypeLabel(type) {
+  return ({ holy_symbol: "holy symbol", warlock_gloves: "Warlock's Pact Gloves", wizard_staff: "Wizard's Staff" })[type] || "spellcasting focus";
 }
 
 function getResourceUses(actor, resourceId) {
@@ -50,6 +57,8 @@ export function canMoveTo(snapshot, actor, to) {
   if (combatObjectsAt(snapshot, to).some((object) => object.blocksMovement)) {
     return blocked("blocked by combat object");
   }
+  const boundary = blockingContainmentBoundary(snapshot, actor.position, to);
+  if (boundary) return blocked(`cannot cross ${boundary.name}'s boundary`);
   if (distance(actor.position, to) !== 1) return blocked("movement must be orthogonal one square at a time");
   const cost = getMovementStepCost(snapshot, actor, actor.position, to);
   if (getMovementRemaining(actor) < cost) return blocked("no movement remaining");

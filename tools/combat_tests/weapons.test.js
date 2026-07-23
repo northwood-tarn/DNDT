@@ -1,6 +1,7 @@
 import { createNickAttackAction, createWeaponAction, indexRecordsById } from "../../app/combat/actionFactory.js";
 import { weapons } from "../../app/data/weapons.js";
 import { validateCombatAction } from "../../app/combat/actionSchema.js";
+import { processOngoingEffects } from "../../app/combat/conditionLifecycle.js";
 import { assert, createCombatLog, createEnemyCombatActor, makeHarnessSnapshot, resolveAction } from "./helpers.js";
 
 const WEAPONS = indexRecordsById(weapons);
@@ -12,6 +13,7 @@ export async function runWeaponCombatTests() {
   testWeaponMasteryActionMetadata();
   testVexAppliesIncomingAttackAdvantage();
   testVexIsConsumedByNextIncomingAttack();
+  testVexExpiresAtSourceTurnEndNotTargetTurnEnd();
   testSapAppliesOutgoingAttackDisadvantage();
   testSapIsConsumedByNextOutgoingAttack();
   testSlowReducesSpeed();
@@ -41,13 +43,15 @@ function testHomebrewWeaponFactoryDamageBonuses() {
   const flaming = createWeaponAction(WEAPONS.flaming_longsword, { attackBonus: 5 });
   const accurate = createWeaponAction(WEAPONS.bow_of_accuracy, { attackBonus: 5 });
 
-  assert.equal(flaming.damage, "1d8", "typed homebrew damage should not be folded into base weapon damage");
+  assert.equal(flaming.attackBonus, 6, "+1 weapons should add their enhancement bonus to attack rolls");
+  assert.equal(flaming.damage, "1d8+1", "+1 weapons should add their enhancement bonus to base damage");
   assert.equal(flaming.damageRiders.length, 1, "typed homebrew damage should become a generic damage rider");
   assert.equal(flaming.damageRiders[0].damage, "1d6", "homebrew weapon rider should carry bonus damage dice");
   assert.equal(flaming.damageRiders[0].damageType, "fire", "homebrew weapon rider should carry bonus damage type");
   assert.deepEqual(validateCombatAction(flaming), [], "homebrew weapon action should validate");
 
-  assert.equal(accurate.damage, "1d8+1", "flat untyped homebrew damage should fold into base weapon damage");
+  assert.equal(accurate.attackBonus, 6, "+1 weapons should retain their enhancement bonus alongside existing effects");
+  assert.equal(accurate.damage, "1d8+2", "enhancement and existing flat untyped damage should both apply");
   assert.equal(accurate.damageRiders, undefined, "flat untyped homebrew damage should not create a rider");
   assert.deepEqual(validateCombatAction(accurate), [], "flat damage homebrew weapon action should validate");
 }
@@ -62,7 +66,7 @@ function testHomebrewWeaponDamageRiderResolution() {
   const dice = {
     rollD20: () => ({ roll: 10, total: 10, usedLucky: false, secondRoll: null }),
     rollDamage: (diceText) => {
-      if (diceText === "1d8") return { total: 5, rolls: [5], modifier: 0, dice: diceText };
+      if (diceText === "1d8+1") return { total: 6, rolls: [5], modifier: 1, dice: diceText };
       if (diceText === "1d6") return { total: 3, rolls: [3], modifier: 0, dice: diceText };
       return { total: 0, rolls: [], modifier: 0, dice: diceText };
     },
@@ -116,6 +120,27 @@ function testVexIsConsumedByNextIncomingAttack() {
   resolveAction(snapshot, hero, "hammer", enemy.id, fixedWeaponDice(), createCombatLog());
 
   assert.equal(enemy.activeEffects.some((effect) => effect.label === "Rapier Vex"), false, "Vex should be consumed by the next incoming attack");
+}
+
+function testVexExpiresAtSourceTurnEndNotTargetTurnEnd() {
+  const snapshot = makeHarnessSnapshot();
+  const hero = snapshot.actors.find((actor) => actor.id === "hero");
+  const enemy = snapshot.actors.find((actor) => actor.id === "enemy");
+  snapshot.initiative = [hero.id, enemy.id];
+  snapshot.turnIndex = 0;
+  enemy.position = { x: 1, y: 2 };
+  hero.actions = [createWeaponAction(WEAPONS.rapier, { id: "rapier", attackBonus: 20 })];
+  const log = createCombatLog();
+
+  resolveAction(snapshot, hero, "rapier", enemy.id, fixedWeaponDice(), log);
+  processOngoingEffects(snapshot, enemy, "turn_end", fixedWeaponDice(), log);
+  assert.ok(enemy.activeEffects.some((effect) => effect.label === "Rapier Vex"), "Vex should survive the target's turn end");
+
+  processOngoingEffects(snapshot, hero, "turn_end", fixedWeaponDice(), log);
+  assert.ok(enemy.activeEffects.some((effect) => effect.label === "Rapier Vex"), "Vex should survive the end of the turn in which it was applied");
+
+  processOngoingEffects(snapshot, hero, "turn_end", fixedWeaponDice(), log);
+  assert.equal(enemy.activeEffects.some((effect) => effect.label === "Rapier Vex"), false, "Vex should expire at the source actor's turn end");
 }
 
 function testSapAppliesOutgoingAttackDisadvantage() {

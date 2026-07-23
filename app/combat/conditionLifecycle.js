@@ -184,18 +184,22 @@ export function processCombatObjectDurations(snapshot, actor, timing, log) {
 }
 
 function processActiveEffectDurations(snapshot, actor, timing, log) {
-  for (const effect of [...(actor.activeEffects || [])]) {
-    const duration = advanceConditionDuration(effect, timing);
-    if (!duration.expired) continue;
-    removeActiveEffect(actor, effect.id);
-    log.add("effect.removed", {
-      round: snapshot.round,
-      actorId: actor.id,
-      actorName: actor.name,
-      effectId: effect.id,
-      label: effect.label || effect.id,
-      reason: duration.reason,
-    });
+  for (const holder of snapshot.actors || []) {
+    for (const effect of [...(holder.activeEffects || [])]) {
+      const sourceAnchored = effect.duration?.anchor === "source";
+      if (sourceAnchored ? effect.sourceActorId !== actor.id : holder.id !== actor.id) continue;
+      const duration = advanceConditionDuration(effect, timing);
+      if (!duration.expired) continue;
+      removeActiveEffect(holder, effect.id);
+      log.add("effect.removed", {
+        round: snapshot.round,
+        actorId: holder.id,
+        actorName: holder.name,
+        effectId: effect.id,
+        label: effect.label || effect.id,
+        reason: duration.reason,
+      });
+    }
   }
 }
 

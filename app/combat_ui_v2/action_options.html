@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Action Options</title>
+    <link rel="stylesheet" href="./actionOptions.css">
+  </head>
+  <body>
+    <div class="pane-fog pane-fog-one" aria-hidden="true"></div>
+    <div class="pane-fog pane-fog-two" aria-hidden="true"></div>
+    <header class="pane-topbar">
+      <nav class="pane-tabs" aria-label="External panes"></nav>
+      <button class="pane-close" type="button" aria-label="Close pane"></button>
+    </header>
+    <header class="pane-titlebar">
+      <div>
+        <h1 data-pane-title>Action Options</h1>
+        <span class="pane-kicker" data-actor-name></span>
+      </div>
+    </header>
+    <main class="pane-scroll">
+      <section class="pane-panel" data-pane-panel="action-options">
+        <details class="economy-section">
+          <summary><span>Action</span><small>Available</small></summary>
+          <div class="category-list" data-action-options="action"></div>
+        </details>
+        <details class="economy-section">
+          <summary><span>Bonus Action</span><small>Available</small></summary>
+          <div class="category-list" data-action-options="bonus"></div>
+        </details>
+      </section>
+      <section class="pane-panel" data-pane-panel="inventory" hidden></section>
+      <section class="pane-panel" data-pane-panel="equipment" hidden></section>
+      <section class="pane-panel" data-pane-panel="quests" hidden></section>
+    </main>
+    <aside class="pane-description" aria-live="polite" hidden></aside>
+    <div class="pane-resize-cue" aria-hidden="true"></div>
+    <script type="module" src="./actionOptions.js"></script>
+  </body>
+</html>

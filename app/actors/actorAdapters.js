@@ -80,6 +80,8 @@ export function resolvedSheetToActorDefinition(sheet, combatActor, options = {})
       token: combatActor?.token || null,
       portraitId: sheet.metadata?.presentation?.portraitId || null,
       miniatureId: sheet.metadata?.presentation?.miniatureId || null,
+      miniatureBaseId: sheet.metadata?.presentation?.miniatureBaseId || null,
+      miniatureBaseAsset: sheet.metadata?.presentation?.miniatureBaseAsset || null,
     },
     mechanics: {
       maxHp: sheet.durability.maxHp,
@@ -120,7 +122,13 @@ export function combatActorToActorDefinition(actor, options = {}) {
       size: actor.size || null,
       level: actor.level ?? null,
     },
-    presentation: { token: actor.token || null },
+    presentation: {
+      token: actor.token || null,
+      portraitId: actor.portraitId || null,
+      miniatureId: actor.miniatureId || null,
+      miniatureBaseId: actor.miniatureBaseId || null,
+      miniatureBaseAsset: actor.miniatureBaseAsset || null,
+    },
     mechanics: {
       maxHp: actor.maxHp,
       armorClass: actor.ac,

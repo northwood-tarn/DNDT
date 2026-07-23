@@ -9,6 +9,7 @@
 import { getArea } from "../areas/index.js";
 import { setState } from "../state/stateStore.js";
 import { emit } from "./events.js";
+import { audioRuntime } from "../audio/index.js";
 
 /**
  * @typedef {"mainMenu" | "dialogue" | "exploration" | "combat" | "gameOver" | "systemCutscene"} SceneName
@@ -102,6 +103,15 @@ export function changeScene(nameOrObj, data) {
 
   currentScene = scene;
   currentSceneName = typeof nameOrObj === "string" ? nameOrObj : currentSceneName;
+
+  const audioContextId = data?.areaId || currentSceneName;
+  if (currentSceneName === "mainMenu") {
+    audioRuntime.stopAreaAudio().catch((error) => console.warn("[sceneRouter] Audio stop failed:", error));
+  } else if (audioRuntime.config.areas[audioContextId]) {
+    audioRuntime.transitionToArea(audioContextId).catch((error) => console.warn("[sceneRouter] Audio transition failed:", error));
+  } else {
+    audioRuntime.stopAreaAudio().catch((error) => console.warn("[sceneRouter] Audio stop failed:", error));
+  }
 
   // Debug: inspect prototype of the scene being started
   const proto = Object.getPrototypeOf(currentScene);

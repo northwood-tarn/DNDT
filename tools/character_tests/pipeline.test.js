@@ -139,7 +139,7 @@ function resolvesGeneralFeatEffects() {
       charisma: 14,
     },
     choices: { featChoices: { medium_armor_master: { ability: ["dexterity"] } } },
-    gear: { weaponIds: ["dagger"], armorId: "half_plate", shieldId: null, inventory: [], attunedItemIds: [] },
+    gear: { weaponIds: [], armorId: "half_plate", shieldId: null, inventory: [], attunedItemIds: [] },
   });
   const greatWeaponDraft = createEmptyCharacterDraft({
     identity: { characterName: "Test Heavy", level: 4, backgroundId: "great_weapon_master" },
@@ -154,7 +154,7 @@ function resolvesGeneralFeatEffects() {
   });
   const shieldMasterDraft = createEmptyCharacterDraft({
     identity: { characterName: "Test Shield", level: 4, backgroundId: "shield_master" },
-    gear: { weaponIds: ["longsword"], armorId: "chain_mail", shieldId: "shield", inventory: [], attunedItemIds: [] },
+    gear: { weaponIds: [], armorId: "chain_mail", shieldId: "shield", inventory: [], attunedItemIds: [] },
   });
 
   const resilientSheet = resolveCharacterSheet(resilientDraft, { backgrounds: testBackgrounds }, { allowNonCreationLevel: true });
@@ -730,7 +730,8 @@ function preservesDraftGearAndSpellsWithoutResolvingMechanics() {
 
   const sheet = resolveCharacterSheet(draft);
   assert.equal(sheet.proficiencyBonus, 2);
-  assert.deepEqual(sheet.equipment.weaponIds, ["dagger"]);
+  assert.deepEqual(sheet.equipment.weaponIds, []);
+  assert.equal(sheet.metadata.unresolved.some((entry) => entry.type === "weapon_not_proficient" && entry.id === "dagger"), true);
   assert.deepEqual(sheet.equipment.inventory, [{ id: "healing_potion", quantity: 2 }]);
   assert.deepEqual(sheet.spellcasting.knownSpellIds, ["fire_bolt"]);
   assert.deepEqual(sheet.spellcasting.preparedSpellIds, ["detect_magic"]);

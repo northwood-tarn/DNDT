@@ -8,7 +8,12 @@ export function roll(diceStr) {
 }
 
 export function rollWithDetail(diceStr) {
-  const match = diceStr.match(/(\d*)d(\d+)([+-]\d+)?/);
+  const formula = String(diceStr).trim();
+  if (/^[+-]?\d+$/.test(formula)) {
+    const total = Number(formula);
+    return { total, rolls: [], modifier: total };
+  }
+  const match = formula.match(/^(\d*)d(\d+)([+-]\d+)?$/);
   if (!match) {
     console.warn("Invalid dice format:", diceStr);
     return { total: 0, rolls: [], modifier: 0 };

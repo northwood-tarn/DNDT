@@ -4,6 +4,7 @@ import {
   resolvedSheetToActorDefinition,
 } from "../actors/actorAdapters.js";
 import { resolveActorToCombatActor } from "../actors/actorContract.js";
+import { getSpellcastingFocusById } from "../data/spellcastingFoci.js";
 
 export const CHARACTER_RECORD_VERSION = 2;
 export const DEFAULT_CHARACTER_SLOT = "active";
@@ -122,6 +123,7 @@ export function createCharacterRuntimeState(actor) {
     spellSlots: structuredClone(actor.spellSlots || {}),
     resources: structuredClone(actor.resources || []),
     inventory: structuredClone(actor.inventory || []),
+    equipment: structuredClone(actor.equipment || {}),
     conditions: structuredClone(actor.conditions || []),
     activeEffects: structuredClone(actor.activeEffects || []),
     marks: structuredClone(actor.marks || []),
@@ -140,6 +142,12 @@ export function applyRuntimeStateToCombatActor(actor, runtime) {
     spellSlots: structuredClone(runtime.spellSlots || actor.spellSlots || {}),
     resources: structuredClone(runtime.resources || actor.resources || []),
     inventory: structuredClone(runtime.inventory || actor.inventory || []),
+    equipment: structuredClone(runtime.equipment || actor.equipment || {}),
+    actions: structuredClone(actor.actions || []).filter((action) => {
+      if (!action.consumesEquippedItemId) return true;
+      const equipment = runtime.equipment || actor.equipment || {};
+      return equipment.headwearId === action.consumesEquippedItemId || (equipment.itemIds || []).includes(action.consumesEquippedItemId);
+    }),
     conditions: structuredClone(runtime.conditions || []),
     activeEffects: structuredClone(runtime.activeEffects || actor.activeEffects || []),
     marks: structuredClone(runtime.marks || []),
@@ -249,7 +257,7 @@ function recoverCombatActor(actor, restType) {
   const recovered = structuredClone(actor);
   if (restType === "long_rest") {
     recovered.hp = recovered.maxHp;
-    recovered.tempHp = 0;
+    recovered.tempHp = equippedLongRestTempHp(recovered);
     recovered.defeated = false;
     recovered.conditions = [];
     recovered.activeEffects = (recovered.activeEffects || []).filter((effect) => effect.persistThroughLongRest);
@@ -262,6 +270,10 @@ function recoverCombatActor(actor, restType) {
   recovered.resources = recoverResources(recovered.resources || [], restType);
   recovered.spellSlots = recoverSpellSlots(recovered.spellSlots || {}, restType);
   return recovered;
+}
+
+function equippedLongRestTempHp(actor) {
+  return Math.max(0, ...(actor.equipment?.weaponIds || []).map((id) => getSpellcastingFocusById(id)?.mechanics?.longRestTempHp || 0));
 }
 
 function recoverResources(resources, restType) {

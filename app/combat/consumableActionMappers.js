@@ -6,7 +6,7 @@ export function createActionFromConsumable(consumableRecord, options = {}) {
     name: options.name || consumableRecord.name,
     cost: mapCombatCost(options.cost || consumableRecord.combatCost),
     itemId: consumableRecord.id,
-    description: consumableRecord.inspectText || consumableRecord.name,
+    description: consumableRecord.combatText || consumableRecord.name,
     consumeOnResolve: consumableRecord.consumedOnUse !== false,
   };
 

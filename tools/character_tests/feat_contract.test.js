@@ -50,7 +50,7 @@ function testFeatResolvesCleanly(feat) {
         hitDie: 8,
         hp: { level1: { base: 8, addCon: true } },
         armor: ["light", "medium", "heavy", "shield"],
-        weapons: ["simple", "martial"],
+        weapons: ["Simple weapons", "Martial weapons"],
         tools: [],
         savingThrows: ["Strength", "Constitution"],
         spellcasting: {

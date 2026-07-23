@@ -1,6 +1,7 @@
 // app/main.js (ESM)
 import { attachExitListener, routeTo } from "./engine/sceneRouter.js";
 import { installSystemMenu } from "./ui/SystemMenu.js";
+import { initialiseAudio } from "./audio/index.js";
 import "./scenes/index.js";
 
 installSystemMenu();
@@ -103,3 +104,4 @@ async function startGame() {
 }
 
 startGame();
+initialiseAudio().catch((error) => console.warn("Audio runtime initialisation failed:", error));

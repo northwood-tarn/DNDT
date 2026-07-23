@@ -1,6 +1,7 @@
 import { BACKGROUND_LIST } from "../../data/backgrounds.js";
 import { CLASS_LIST } from "../../data/classes.js";
-import { listDeviceRecipes } from "../../data/deviceRecipes.js";
+import { describeDeviceRecipe, listDeviceRecipes } from "../../data/deviceRecipes.js";
+import { proficiencyForLevel } from "../../rules/proficiency.js";
 import { getFeatById } from "../../data/feats.js";
 import { SPECIES_LIST } from "../../data/species.js";
 import { SPELLS } from "../../data/spells.js";
@@ -720,7 +721,7 @@ function genericRequirementOptions(requirement) {
     return listDeviceRecipes({
       ids: requirement.options || [],
       level: state.draft.identity.level || 1,
-    }).map((recipe) => ({ id: recipe.id, name: recipe.name, meta: `Level ${recipe.minLevel} recipe`, description: recipe.text }));
+    }).map((recipe) => ({ id: recipe.id, name: recipe.name, meta: `Level ${recipe.minLevel} recipe`, description: describeDeviceRecipe(recipe, proficiencyForLevel(state.draft.identity.level || 1)) }));
   }
   return (requirement.options || []).map((option) => {
     if (typeof option === "string") return { id: option, name: titleCase(option), meta: requirement.kind };

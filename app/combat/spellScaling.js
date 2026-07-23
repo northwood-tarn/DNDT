@@ -1,7 +1,21 @@
 export function getScaledSpellDamage(spellRecord, options = {}) {
   const conditional = conditionalDamageFromEffect(spellRecord.hooks?.applyEffect);
   const baseDamage = options.damage || conditional?.base || spellRecord.hooks?.damage?.dice || firstTierDamage(spellRecord.hooks?.damage?.diceByTier) || null;
-  return scaleCantripDamage(baseDamage, spellRecord, options.casterLevel);
+  const cantripDamage = scaleCantripDamage(baseDamage, spellRecord, options.casterLevel);
+  return scaleStandardSlotDamage(cantripDamage, spellRecord, options.slotLevel);
+}
+
+function scaleStandardSlotDamage(damage, spellRecord, slotLevel) {
+  if (!damage || spellRecord.scaling?.type !== "slot") return damage;
+  const levelsAbove = Math.max(0, Number(slotLevel ?? spellRecord.level) - spellRecord.level);
+  if (!levelsAbove) return damage;
+  const text = spellRecord.scaling?.slot?.text || "";
+  const perTwoSlots = /(?:per|for every) 2 slot levels/i.test(text);
+  const steps = perTwoSlots ? Math.floor(levelsAbove / 2) : levelsAbove;
+  if (!steps) return damage;
+  const match = text.match(/\+(\d*)d(\d+)/i);
+  if (!match) return damage;
+  return addDice(damage, `+${Number(match[1] || 1) * steps}d${match[2]}`);
 }
 
 export function createSpellActionExtrasFromScaling(spellRecord, options = {}) {

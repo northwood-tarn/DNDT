@@ -9,6 +9,7 @@ import {
   scriptedDice,
 } from "./helpers.js";
 import { combatObjectCells } from "../../app/combat/combatObjects.js";
+import { canMoveTo } from "../../app/combat/rules.js";
 import { createSpellAction } from "../../app/combat/actionFactory.js";
 import { formatEvent } from "../../app/combat/combatLog.js";
 import { canSeeActor } from "../../app/combat/perception.js";
@@ -408,6 +409,77 @@ function testCureWoundsTargetsChosenAlly() {
   assert.equal(ally.hp, 15, "Cure Wounds should heal the selected ally");
 }
 
+function testAcBuffLogsModifierAndCurrentAc() {
+  const { snapshot, hero, log } = spellHarness();
+  hero.actions.push(createSpellAction(SPELLS.shield_of_faith, { spellSaveDC: 13 }));
+
+  assert.equal(resolveAction(snapshot, hero, "shield_of_faith", hero.id, scriptedDice(), log), true);
+  const applied = log.events.find((event) => event.type === "effect.applied" && event.detail?.stat === "ac");
+  assert.ok(applied);
+  assert.equal(applied.detail.amount, 2);
+  assert.equal(applied.detail.currentAc, 17);
+  assert.match(formatEvent(applied), /\+2 AC from Shield of Faith\. Current AC: 17\./);
+}
+
+function testAidRaisesCurrentAndMaximumHpForEachChosenTarget() {
+  const { snapshot, hero, enemy, log } = spellHarness();
+  const ally = { ...structuredClone(enemy), id: "ally", name: "Ally", team: "heroes", hp: 10, maxHp: 10, position: { x: 1, y: 0 } };
+  snapshot.actors.push(ally);
+  hero.actions.push(createSpellAction(SPELLS.aid, { slotLevel: 4, spellSaveDC: 13 }));
+
+  assert.equal(resolveAction(snapshot, hero, "aid", { targetIds: [hero.id, ally.id] }, scriptedDice(), log), true);
+  assert.equal(hero.maxHp, 35, "4th-level Aid should add 15 to maximum HP");
+  assert.equal(hero.hp, 35, "4th-level Aid should add the same amount to current HP");
+  assert.equal(ally.maxHp, 25);
+  assert.equal(ally.hp, 25);
+}
+
+function testHealRestoresHpAndCleansesConditions() {
+  const { snapshot, hero, log } = spellHarness();
+  hero.hp = 1;
+  hero.conditions = [{ id: "poisoned", label: "Poisoned" }];
+  hero.actions.push(createSpellAction(SPELLS.heal, { slotLevel: 6, spellSaveDC: 13 }));
+
+  assert.equal(resolveAction(snapshot, hero, "heal", hero.id, scriptedDice({ damage: 70 }), log), true);
+  assert.equal(hero.hp, hero.maxHp);
+  assert.equal(hero.conditions.some((condition) => condition.id === "poisoned"), false);
+}
+
+function testDeathWardPreventsOneLethalDamageEventWithoutSpendingReaction() {
+  const { snapshot, hero, enemy, log } = spellHarness();
+  enemy.position = { x: 1, y: 0 };
+  hero.actions.push(createSpellAction(SPELLS.death_ward, { spellSaveDC: 13 }));
+  assert.equal(resolveAction(snapshot, hero, "death_ward", hero.id, scriptedDice(), log), true);
+  assert.equal(hero.activeEffects.some((effect) => effect.type === "death_ward"), true, "Death Ward should be visible while armed");
+  const reactionBefore = hero.economy.reactionAvailable;
+
+  enemy.actions.push({ id: "lethal", name: "Lethal", type: "weapon_attack", cost: "action", range: 1, attackBonus: 100, damage: "50", damageType: "slashing", tags: { harmful: true, melee: true } });
+  assert.equal(resolveAction(snapshot, enemy, "lethal", hero.id, scriptedDice({ d20: [10], damage: 50 }), log), true);
+  assert.equal(hero.hp, 1);
+  assert.equal(hero.economy.reactionAvailable, reactionBefore, "Death Ward is automatic and does not consume a reaction");
+  assert.equal(hero.activeEffects.some((effect) => effect.type === "death_ward"), false, "Death Ward should disappear after it triggers");
+}
+
+function testPersistentClericSpellFollowupActions() {
+  const spiritual = spellHarness();
+  spiritual.enemy.position = { x: 1, y: 0 };
+  spiritual.hero.actions.push(createSpellAction(SPELLS.spiritual_weapon, { attackBonus: 20, spellcastingModifier: 3, slotLevel: 2 }));
+  assert.equal(resolveAction(spiritual.snapshot, spiritual.hero, "spiritual_weapon", spiritual.enemy.id, scriptedDice({ d20: [10], damage: 7 }), spiritual.log), true);
+  const strike = spiritual.hero.actions.find((action) => action.id === "spiritual_weapon_persistent_attack");
+  assert.ok(strike, "Spiritual Weapon should grant its repeatable strike");
+  spiritual.hero.economy.bonusActionAvailable = true;
+  assert.equal(resolveAction(spiritual.snapshot, spiritual.hero, strike.id, spiritual.enemy.id, scriptedDice({ d20: [10], damage: 6 }), spiritual.log), true);
+
+  const dawn = spellHarness();
+  dawn.hero.actions.push(createSpellAction(SPELLS.dawn, { spellSaveDC: 13, slotLevel: 5 }));
+  assert.equal(resolveAction(dawn.snapshot, dawn.hero, "dawn", { anchor: { x: 3, y: 0 }, cells: [{ x: 3, y: 0 }] }, scriptedDice({ d20: [20], damage: 20 }), dawn.log), true);
+  const moveDawn = dawn.hero.actions.find((action) => action.id === "dawn_move_area");
+  assert.ok(moveDawn, "Dawn should grant its bonus-action move");
+  dawn.hero.economy.bonusActionAvailable = true;
+  assert.equal(resolveAction(dawn.snapshot, dawn.hero, moveDawn.id, { anchor: { x: 4, y: 0 } }, scriptedDice(), dawn.log), true);
+  assert.deepEqual(dawn.snapshot.combatObjects[0].position, { x: 4, y: 0 });
+}
+
 function spellHarness() {
   const snapshot = makeHarnessSnapshot();
   const hero = snapshot.actors[0];
@@ -422,6 +494,66 @@ function spellHarness() {
   hero.saves.wis = 2;
   enemy.saves.wis = 0;
   return { snapshot, hero, enemy, log };
+}
+
+function testMaraHighLevelDamageSpellsResolve() {
+  const cone = spellHarness();
+  cone.hero.actions.push(createSpellAction(SPELLS.cone_of_cold, { spellSaveDC: 13, slotLevel: 5, usesExactSpellSlot: true }));
+  cone.hero.spellSlots = { 5: { max: 1, current: 1, used: 0 } };
+  assert.equal(resolveAction(cone.snapshot, cone.hero, "cone_of_cold", {
+    anchor: cone.enemy.position,
+    cells: [cone.enemy.position],
+  }, scriptedDice({ d20: [1], damage: 36 }), cone.log), true);
+  assert.equal(cone.enemy.hp, 0, "Cone of Cold should resolve its 60-foot CON-save cone damage");
+
+  const chain = spellHarness();
+  const second = structuredClone(chain.enemy);
+  second.id = "enemy_two";
+  second.name = "Enemy Two";
+  second.position = { x: 4, y: 0 };
+  second.hp = second.maxHp = 40;
+  chain.enemy.hp = chain.enemy.maxHp = 40;
+  chain.snapshot.actors.push(second);
+  chain.hero.actions.push(createSpellAction(SPELLS.chain_lightning, { spellSaveDC: 13, slotLevel: 6, usesExactSpellSlot: true }));
+  chain.hero.spellSlots = { 6: { max: 1, current: 1, used: 0 } };
+  assert.equal(resolveAction(chain.snapshot, chain.hero, "chain_lightning", [chain.enemy.id, second.id], scriptedDice({ d20: [20, 1], damage: [40, 40] }), chain.log), true);
+  assert.equal(chain.enemy.hp, 20, "Chain Lightning should deal half damage on a successful DEX save");
+  assert.equal(second.hp, 0, "Chain Lightning should deal full damage on a failed DEX save");
+}
+
+function testForcecageCreatesContainmentBoundary() {
+  const { snapshot, hero, enemy, log } = spellHarness();
+  hero.actions.push(createSpellAction(SPELLS.forcecage, { spellSaveDC: 13, slotLevel: 7, usesExactSpellSlot: true }));
+  hero.spellSlots = { 7: { max: 1, current: 1, used: 0 } };
+  assert.equal(resolveAction(snapshot, hero, "forcecage", {
+    anchor: enemy.position,
+    cells: [enemy.position, { x: 4, y: 0 }, { x: 3, y: 1 }, { x: 4, y: 1 }],
+  }, scriptedDice(), log), true);
+  const cage = snapshot.combatObjects.find((object) => object.sourceActionId === "forcecage");
+  assert.ok(cage, "Forcecage should create a persistent combat object");
+  assert.equal(cage.blocksBoundaryMovement, true);
+  assert.equal(cage.blocksTeleport, true);
+  assert.equal(cage.teleportSaveAbility, "cha");
+  assert.equal(cage.duration.rounds, 600, "Forcecage should persist for one hour");
+  startTurn(snapshot, enemy, log, scriptedDice());
+  assert.equal(canMoveTo(snapshot, enemy, { x: 2, y: 0 }).ok, false, "a trapped creature should not cross the Forcecage boundary");
+  const withinCage = canMoveTo(snapshot, enemy, { x: 3, y: 1 });
+  assert.equal(withinCage.ok, true, `Forcecage should not falsely prevent movement within the cage: ${withinCage.reason}`);
+
+  enemy.actions.push({
+    id: "cage_escape_teleport",
+    name: "Escape Teleport",
+    type: "spell_teleport",
+    cost: "action",
+    range: 6,
+    requiresTarget: true,
+    requiresSight: false,
+    targeting: { shape: "radius", radiusSquares: 6, radiusFt: 30 },
+  });
+  enemy.saves.cha = 0;
+  assert.equal(resolveAction(snapshot, enemy, "cage_escape_teleport", { x: 1, y: 0 }, scriptedDice({ d20: [1] }), log), false);
+  assert.deepEqual(enemy.position, { x: 3, y: 0 }, "a failed Charisma save should leave the teleporter inside Forcecage");
+  assert.equal(enemy.economy.actionAvailable, false, "a failed teleport escape should still spend the attempted action");
 }
 
 export async function runSpellMechanicCombatTests() {
@@ -447,4 +579,11 @@ export async function runSpellMechanicCombatTests() {
   testSelfCenteredAreaSpellsFilterTargets();
   testCleansingSpellRemovesRegisteredCondition();
   testCureWoundsTargetsChosenAlly();
+  testAcBuffLogsModifierAndCurrentAc();
+  testAidRaisesCurrentAndMaximumHpForEachChosenTarget();
+  testHealRestoresHpAndCleansesConditions();
+  testDeathWardPreventsOneLethalDamageEventWithoutSpendingReaction();
+  testPersistentClericSpellFollowupActions();
+  testMaraHighLevelDamageSpellsResolve();
+  testForcecageCreatesContainmentBoundary();
 }

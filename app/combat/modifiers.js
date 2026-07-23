@@ -237,6 +237,7 @@ function matchesEquipmentCondition(effect, actor) {
   const condition = effect.condition;
   if (!condition || typeof condition !== "object") return true;
   if (condition.equippedArmorType && actor?.equipment?.armorType !== condition.equippedArmorType) return false;
+  if (condition.actorCondition && !(actor?.conditions || []).some((entry) => (typeof entry === "string" ? entry : entry.id) === condition.actorCondition)) return false;
   return true;
 }
 

@@ -10,8 +10,12 @@ export const EFFECT_TRIGGERS = new Set([
   "enter_area",
   "leave_area",
   "damage_taken",
+  "area_created",
 ]);
-export const EFFECT_TYPES = new Set(["condition", "modifier", "damage", "grant_action", "temp_hp", "forced_movement", "remove_conditions"]);
+export const EFFECT_TYPES = new Set([
+  "condition", "modifier", "damage", "grant_action", "temp_hp", "forced_movement", "remove_conditions",
+  "light_source", "max_hp_bonus", "death_ward", "dispel_magic", "greater_restoration",
+]);
 export const EFFECT_TIMINGS = new Set(["turn_start", "turn_end"]);
 export const MODIFIER_STATS = new Set([
   "ac",
@@ -85,6 +89,12 @@ export function normalizeEffect(effect) {
     distanceSquares: Number.isFinite(effect.distanceSquares) ? effect.distanceSquares : 0,
     collisionDamage: effect.collisionDamage || null,
     collisionDamageType: effect.collisionDamageType || null,
+    brightFt: Number(effect.brightFt) || 0,
+    dimFt: Number(effect.dimFt) || 0,
+    maxRemoved: Number(effect.maxRemoved) || null,
+    removeExhaustion: Number(effect.removeExhaustion) || 0,
+    removeAbilityOrMaxHpReduction: effect.removeAbilityOrMaxHpReduction === true,
+    maximumAutomaticSpellLevel: Number(effect.maximumAutomaticSpellLevel) || 0,
     save: effect.save ? structuredClone(effect.save) : null,
     sourceActorOnly: effect.sourceActorOnly === true,
     targetSourceActorOnly: effect.targetSourceActorOnly === true,
@@ -102,6 +112,7 @@ export function createConditionInstance(effect, source, action) {
     id: effect.condition,
     label: conditionName(effect.condition),
     sourceActionId: action.id,
+    sourceSpellLevel: action.spellLevel ?? null,
     sourceActorId: source.id,
     sourceReach: effect.sourceReach ?? action.sourceReach ?? action.range ?? null,
     spellSaveDC: action.spellSaveDC ?? null,
@@ -142,6 +153,10 @@ export function advanceConditionDuration(condition, timing) {
 
   if (duration.kind === "rounds") {
     if (duration.tick !== timing) return { expired: false };
+    if (duration.skipNextTick === true) {
+      duration.skipNextTick = false;
+      return { expired: false };
+    }
     duration.remaining = Math.max(0, (duration.remaining ?? duration.rounds ?? 0) - 1);
     if (duration.remaining > 0) return { expired: false };
     return {
@@ -212,6 +227,8 @@ function normalizeRoundDuration(duration) {
     rounds,
     remaining: Math.max(1, Math.floor(Number(duration.remaining ?? rounds))),
     tick,
+    ...(duration.anchor === "source" ? { anchor: "source" } : {}),
+    ...(duration.skipNextTick === true ? { skipNextTick: true } : {}),
   };
 }
 

@@ -4,6 +4,9 @@ export function copyDraftEquipment(sheet, draft) {
     weaponIds: [...draft.gear.weaponIds],
     armorId: draft.gear.armorId,
     shieldId: draft.gear.shieldId,
+    headwearId: draft.gear.headwearId || null,
+    ringIds: [...(draft.gear.ringIds || [])].slice(0, 2),
+    footwearId: draft.gear.footwearId || null,
     inventory: structuredClone(draft.gear.inventory),
     attunedItemIds: [...draft.gear.attunedItemIds],
   };

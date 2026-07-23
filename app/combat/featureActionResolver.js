@@ -8,7 +8,7 @@ import { actorsInFootprint, buildFootprint } from "./footprints.js";
 import { actorAt, hasLineOfSight, inBounds, isMovementBlocked, distance } from "./grid.js";
 import { applyLuckyToRoll } from "./luck.js";
 import { applyMark } from "./marks.js";
-import { addActiveEffect } from "./modifiers.js";
+import { addActiveEffect, removeActiveEffect } from "./modifiers.js";
 import { rollSaveModifier } from "./modifiers.js";
 
 export function resolveFeatureAction(snapshot, actor, action, targetId, dice, log) {
@@ -145,6 +145,8 @@ function resolveFeatureObjectAction(snapshot, actor, action, targetPayload, log)
     cells: object.cells || null,
     shape: object.shape,
     radiusSquares: object.radiusSquares,
+    duration: structuredClone(object.duration || null),
+    logSummary: object.logSummary || action.object?.logSummary || null,
   });
   return true;
 }
@@ -155,6 +157,62 @@ function applyFeatureSideEffects(snapshot, actor, action, dice, log) {
   applySelfCondition(actor, action);
   applyActiveEffect(actor, action);
   applyPactWeaponDamageBonus(actor, action);
+  applyDeviceSelfEffect(snapshot, actor, action, log);
+}
+
+function applyDeviceSelfEffect(snapshot, actor, action, log) {
+  const effect = action.deviceEffect;
+  if (effect?.kind !== "weapon_damage_buff") return;
+
+  if (effect.exclusiveFamilyOnTarget) {
+    for (const activeEffect of [...(actor.activeEffects || [])]) {
+      if (activeEffect.deviceEffectFamily === effect.exclusiveFamilyOnTarget) {
+        removeActiveEffect(actor, activeEffect.id);
+      }
+    }
+  }
+
+  const durationRounds = resolveDeviceDurationRounds(effect.durationRounds, actor);
+  const id = `${action.id}_weapon_damage_buff`;
+  const added = addActiveEffect(actor, {
+    id,
+    label: action.name,
+    sourceActionId: action.id,
+    sourceActorId: actor.id,
+    deviceEffectFamily: effect.exclusiveFamilyOnTarget || null,
+    duration: normalizeEffectDuration({
+      kind: "rounds",
+      rounds: durationRounds,
+      remaining: durationRounds,
+      tick: "turn_end",
+    }),
+    damageRider: {
+      trigger: "source_hits_with_attack_roll",
+      damage: effect.bonusDamage,
+      damageType: effect.damageType,
+      actionTags: ["weapon"],
+    },
+  });
+  log.add("effect.applied", {
+    round: snapshot.round,
+    sourceId: actor.id,
+    sourceName: actor.name,
+    targetId: actor.id,
+    targetName: actor.name,
+    actionName: action.name,
+    effectId: id,
+    stat: "weapon damage",
+    die: effect.bonusDamage,
+    alreadyPresent: !added,
+  });
+}
+
+function resolveDeviceDurationRounds(value, actor) {
+  if (Number.isFinite(value)) return Math.max(1, value);
+  const proficiencyBonus = Number(actor?.proficiencyBonus) || 1;
+  const match = String(value || "").trim().match(/^proficiency_bonus(?:\s*\+\s*(\d+))?$/);
+  if (match) return proficiencyBonus + Number(match[1] || 0);
+  return 1;
 }
 
 function applyDashGrant(snapshot, actor, action, log) {
@@ -198,6 +256,7 @@ function applySelfCondition(actor, action) {
     sourceActorId: actor.id,
     duration: normalizeEffectDuration(action.selfCondition.duration || action.duration),
     damageRetaliation: structuredClone(action.selfCondition.damageRetaliation || null),
+    endsOn: structuredClone(action.selfCondition.endsOn || []),
   });
 }
 
@@ -357,7 +416,10 @@ function getActionRange(action) {
 
 function resolveSpellSlotRestore(snapshot, actor, action, log) {
   const amount = Number(action.resourceRestore?.amount ?? action.amount ?? 1) || 1;
-  const restored = restoreSpellSlots(actor, amount);
+  const maxLevel = action.resourceRestore?.maxLevelFormula === "half_proficiency_bonus_rounded_up"
+    ? Math.ceil((actor.proficiencyBonus || 0) / 2)
+    : Number(action.resourceRestore?.maxLevel) || Number.POSITIVE_INFINITY;
+  const restored = restoreSpellSlots(actor, amount, action.resourceRestore?.level, maxLevel);
   if (!restored.length) {
     log.add("target.invalid", {
       round: snapshot.round,
@@ -380,15 +442,17 @@ function resolveSpellSlotRestore(snapshot, actor, action, log) {
   return true;
 }
 
-function restoreSpellSlots(actor, amount) {
+function restoreSpellSlots(actor, amount, selectedLevel = null, maxLevel = Number.POSITIVE_INFINITY) {
   const slots = actor.spellSlots || {};
   const restored = [];
   const levels = Object.keys(slots)
     .map((level) => Number(level))
-    .filter(Number.isFinite)
+    .filter((level) => Number.isFinite(level) && level <= maxLevel)
     .sort((a, b) => b - a);
+  if (Number.isFinite(selectedLevel) && !levels.includes(selectedLevel)) return restored;
   for (let remaining = amount; remaining > 0; remaining -= 1) {
     const level = levels.find((slotLevel) => {
+      if (Number.isFinite(selectedLevel) && slotLevel !== selectedLevel) return false;
       const slot = slots[slotLevel];
       return slot && Number.isFinite(slot.max) && Number.isFinite(slot.current) && slot.current < slot.max;
     });
@@ -516,13 +580,43 @@ function resolveFeatureSave(snapshot, actor, target, action, dice, log) {
   });
 
   const damage = resolveFeatureDamage(action, target);
+  let damageAmount = 0;
   if (damage) {
     const rolled = dice.rollDamage(damage);
-    const halvesOnSuccess = action.save?.onSuccess === "half";
+    const halvesOnSuccess = action.save?.onSuccess === "half" || action.save?.onSave === "half";
     const amount = success && halvesOnSuccess ? Math.floor(Math.max(0, rolled.total) / 2) : success ? 0 : Math.max(0, rolled.total);
+    damageAmount = amount;
     if (amount > 0) applyDamageAmount(snapshot, actor, target, action, rolled, amount, dice, log);
   }
+  applyDeviceTargetEffect(snapshot, actor, target, action, damageAmount, log);
   if (!success) applySaveFailureEffects(snapshot, actor, target, action, log, dice);
+}
+
+function applyDeviceTargetEffect(snapshot, actor, target, action, damageAmount, log) {
+  if (action.deviceEffect?.kind !== "frost_slow" || damageAmount <= 0) return;
+  const id = `${action.id}_frost_slow_${target.id}`;
+  const added = addActiveEffect(target, {
+    id,
+    label: "Frost Slow",
+    sourceActionId: action.id,
+    sourceActorId: actor.id,
+    type: "modifier",
+    stat: "speed",
+    amount: -2,
+    duration: normalizeEffectDuration({ kind: "rounds", rounds: 1, remaining: 1, tick: "turn_end" }),
+  });
+  log.add("effect.applied", {
+    round: snapshot.round,
+    sourceId: actor.id,
+    sourceName: actor.name,
+    targetId: target.id,
+    targetName: target.name,
+    actionName: action.name,
+    effectId: id,
+    stat: "speed",
+    amount: -2,
+    alreadyPresent: !added,
+  });
 }
 
 function resolveFeatureDamage(action, target) {

@@ -12,6 +12,7 @@ const ACTION_TYPES = new Set([
   "spell_object",
   "spell_teleport",
   "spell_effect",
+  "relic_revivify",
   "self_heal",
   "spell_self_heal",
   "consumable",

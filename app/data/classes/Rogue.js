@@ -393,8 +393,12 @@ export default {
               actionOptions: [{
                 id: "catastrophic_charge",
                 name: "Catastrophic Charge",
+                description: "Throw an empowered prepared device up to 30 feet. It detonates in a 20-foot radius and rolls twice the device's normal damage dice.",
                 actionType: "action",
                 resourceId: "catastrophic_charge",
+                additionalResourceIds: ["prepared_devices"],
+                secondaryChoice: { sourceTag: "device", baseChoicesOnly: true },
+                tags: ["device"],
                 rangeFt: 30,
                 targeting: { shape: "radius", radiusFt: 20 },
                 damage: { dice: "empowered_device_damage", type: "same_as_device" }
