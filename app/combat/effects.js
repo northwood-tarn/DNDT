@@ -14,7 +14,7 @@ export const EFFECT_TRIGGERS = new Set([
 ]);
 export const EFFECT_TYPES = new Set([
   "condition", "modifier", "damage", "grant_action", "temp_hp", "forced_movement", "remove_conditions",
-  "light_source", "max_hp_bonus", "death_ward", "dispel_magic", "greater_restoration",
+  "light_source", "max_hp_bonus", "death_ward", "dispel_magic", "greater_restoration", "aura",
 ]);
 export const EFFECT_TIMINGS = new Set(["turn_start", "turn_end"]);
 export const MODIFIER_STATS = new Set([
@@ -74,14 +74,22 @@ export function normalizeEffect(effect) {
     amount: Number.isFinite(effect.amount) ? effect.amount : 0,
     amountFormula: effect.amountFormula || null,
     multiplier: Number.isFinite(effect.multiplier) ? effect.multiplier : 1,
+    mode: effect.mode || null,
     die: effect.die || null,
     ability: effect.ability ? String(effect.ability).toLowerCase() : null,
+    tags: Array.isArray(effect.tags) ? [...effect.tags] : [],
+    conditionIds: Array.isArray(effect.conditionIds) ? [...effect.conditionIds] : [],
+    damageTypes: Array.isArray(effect.damageTypes) ? [...effect.damageTypes] : [],
+    damageTypeChoices: Array.isArray(effect.damageTypeChoices) ? [...effect.damageTypeChoices] : [],
     damageType: effect.damageType || null,
     frequency: effect.frequency || null,
     target: effect.target || "target",
     damage: effect.damage || null,
     action: effect.action ? structuredClone(effect.action) : null,
+    aura: effect.aura ? structuredClone(effect.aura) : null,
     damageRider: effect.damageRider ? structuredClone(effect.damageRider) : null,
+    remainingHits: Number.isFinite(effect.remainingHits) ? effect.remainingHits : null,
+    removeWhenSpent: effect.removeWhenSpent === true,
     damageRetaliation: effect.damageRetaliation ? structuredClone(effect.damageRetaliation) : null,
     ongoingEffects: Array.isArray(effect.ongoingEffects) ? structuredClone(effect.ongoingEffects) : [],
     end: effect.end ? structuredClone(effect.end) : null,

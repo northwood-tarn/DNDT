@@ -110,6 +110,9 @@ function endConcentration(snapshot, actor, log, reason) {
   const concentration = actor.concentration;
   actor.concentration = null;
   for (const target of snapshot.actors) {
+    target.auras = (target.auras || []).filter((aura) =>
+      aura.sourceActorId !== actor.id || aura.sourceFeatureId !== concentration.actionId
+    );
     const before = target.conditions?.length || 0;
     target.conditions = (target.conditions || []).filter((condition) =>
       condition.sourceActorId !== actor.id || condition.sourceActionId !== concentration.actionId

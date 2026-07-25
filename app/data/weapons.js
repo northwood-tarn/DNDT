@@ -365,11 +365,11 @@ const legacyWeaponRecords = [
     "consumeOnUse": false,
     "useTime": "action",
     "type": "melee",
-    "damage": "1d6",
+    "damage": "1d8",
     "effect": "+1 radiant damage",
     "modifiers": { "enhancementBonus": 1, "damageBonuses": [ { "amount": 1, "type": "radiant" } ] },
     "properties": [
-      "versatile"
+      "two-handed"
     ],
     "mastery": "topple",
     "value": 400,

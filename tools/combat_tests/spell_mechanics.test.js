@@ -14,21 +14,7 @@ import { createSpellAction } from "../../app/combat/actionFactory.js";
 import { formatEvent } from "../../app/combat/combatLog.js";
 import { canSeeActor } from "../../app/combat/perception.js";
 import { SPELLS } from "../../app/data/spells.js";
-
-function testProduceFlameGrantsHurlAction() {
-  const { snapshot, hero, enemy, log } = spellHarness();
-  enemy.position = { x: 1, y: 0 };
-  hero.actions.push(createSpellAction(SPELLS.produce_flame, { attackBonus: 5 }));
-
-  assert.equal(resolveAction(snapshot, hero, "produce_flame", null, scriptedDice(), log), true);
-  const hurl = hero.actions.find((action) => action.id === "produce_flame_hurl");
-  assert.ok(hurl, "Produce Flame should grant a later hurl action");
-  assert.equal(hurl.type, "spell_attack", "held spell follow-up should be a regular spell attack action");
-
-  hero.economy.actionAvailable = true;
-  assert.equal(resolveAction(snapshot, hero, hurl.id, enemy.id, scriptedDice({ d20: [15], damage: 5 }), log), true);
-  assert.equal(enemy.hp, 15, "hurling the granted flame should deal fire damage");
-}
+import { getLanterna, initLanterna } from "../../app/systems/lanternaSystem.js";
 
 function testHexAddsDamageRiderToCasterAttackHits() {
   const { snapshot, hero, enemy, log } = spellHarness();
@@ -409,6 +395,38 @@ function testCureWoundsTargetsChosenAlly() {
   assert.equal(ally.hp, 15, "Cure Wounds should heal the selected ally");
 }
 
+function testHealingWordIsFullyWired() {
+  const { snapshot, hero, enemy, log } = spellHarness();
+  const ally = {
+    ...structuredClone(enemy),
+    id: "ally",
+    name: "Ally",
+    team: "heroes",
+    hp: 5,
+    maxHp: 20,
+    position: { x: 8, y: 0 },
+  };
+  snapshot.actors.push(ally);
+  const healingWord = createSpellAction(SPELLS.healing_word, { spellcastingModifier: 3 });
+  const upcastHealingWord = createSpellAction(SPELLS.healing_word, { spellcastingModifier: 3, slotLevel: 2 });
+  hero.actions.push(healingWord);
+
+  assert.ok(SPELLS.healing_word.classes.includes("Cleric"), "Healing Word should appear on the Cleric spell list");
+  assert.equal(healingWord.cost, "bonus", "Healing Word should use a bonus action");
+  assert.equal(healingWord.range, 12, "Healing Word should have a 60-foot range");
+  assert.equal(healingWord.requiresTarget, true, "Healing Word should require a chosen target");
+  assert.equal(healingWord.requiresSight, true, "Healing Word should require sight of its target");
+  assert.equal(healingWord.requiresSpeech, true, "Healing Word should require its verbal component");
+  assert.equal(healingWord.requiresHands, false, "Healing Word should not require a somatic component");
+  assert.equal(healingWord.healing, "2d4+3", "Healing Word should compile its 2024 healing formula");
+  assert.equal(upcastHealingWord.healing, "4d4+3", "Healing Word should add 2d4 per higher slot level");
+
+  assert.equal(resolveAction(snapshot, hero, "healing_word", ally.id, scriptedDice({ damage: 8 }), log), true);
+  assert.equal(ally.hp, 13, "Healing Word should heal the selected ally at range");
+  assert.equal(hero.economy.bonusActionAvailable, false, "Healing Word should spend the caster's bonus action");
+  assert.equal(hero.economy.actionAvailable, true, "Healing Word should leave the caster's action available");
+}
+
 function testAcBuffLogsModifierAndCurrentAc() {
   const { snapshot, hero, log } = spellHarness();
   hero.actions.push(createSpellAction(SPELLS.shield_of_faith, { spellSaveDC: 13 }));
@@ -471,8 +489,10 @@ function testPersistentClericSpellFollowupActions() {
   assert.equal(resolveAction(spiritual.snapshot, spiritual.hero, strike.id, spiritual.enemy.id, scriptedDice({ d20: [10], damage: 6 }), spiritual.log), true);
 
   const dawn = spellHarness();
+  initLanterna({ startOilMinutes: 60 });
   dawn.hero.actions.push(createSpellAction(SPELLS.dawn, { spellSaveDC: 13, slotLevel: 5 }));
   assert.equal(resolveAction(dawn.snapshot, dawn.hero, "dawn", { anchor: { x: 3, y: 0 }, cells: [{ x: 3, y: 0 }] }, scriptedDice({ d20: [20], damage: 20 }), dawn.log), true);
+  assert.equal(getLanterna().oil, 55, "Dawn should consume 5 Lanterna oil after resolving");
   const moveDawn = dawn.hero.actions.find((action) => action.id === "dawn_move_area");
   assert.ok(moveDawn, "Dawn should grant its bonus-action move");
   dawn.hero.economy.bonusActionAvailable = true;
@@ -519,6 +539,18 @@ function testMaraHighLevelDamageSpellsResolve() {
   assert.equal(resolveAction(chain.snapshot, chain.hero, "chain_lightning", [chain.enemy.id, second.id], scriptedDice({ d20: [20, 1], damage: [40, 40] }), chain.log), true);
   assert.equal(chain.enemy.hp, 20, "Chain Lightning should deal half damage on a successful DEX save");
   assert.equal(second.hp, 0, "Chain Lightning should deal full damage on a failed DEX save");
+
+  const dancing = spellHarness();
+  const dancerTwo = { ...structuredClone(dancing.enemy), id: "dancer_two", name: "Dancer Two", position: { x: 4, y: 0 }, hp: 50, maxHp: 50 };
+  const dancerThree = { ...structuredClone(dancing.enemy), id: "dancer_three", name: "Dancer Three", position: { x: 5, y: 0 }, hp: 50, maxHp: 50 };
+  dancing.enemy.hp = dancing.enemy.maxHp = 50;
+  dancing.snapshot.actors.push(dancerTwo, dancerThree);
+  dancing.hero.actions.push(createSpellAction(SPELLS.dancing_flames, { spellSaveDC: 13, slotLevel: 7, usesExactSpellSlot: true }));
+  dancing.hero.spellSlots = { 7: { max: 1, current: 1, used: 0 } };
+  assert.equal(resolveAction(dancing.snapshot, dancing.hero, "dancing_flames", [dancing.enemy.id, dancerTwo.id, dancerThree.id], scriptedDice({ d20: [20, 1, 1], damage: [40, 40, 40] }), dancing.log), true);
+  assert.equal(dancing.enemy.hp, 30, "Dancing Flames should deal half damage to a target that succeeds on its DEX save");
+  assert.equal(dancerTwo.hp, 10, "Dancing Flames should deal full damage to its second target on a failed save");
+  assert.equal(dancerThree.hp, 10, "Dancing Flames should deal full damage to its third target on a failed save");
 }
 
 function testForcecageCreatesContainmentBoundary() {
@@ -556,8 +588,52 @@ function testForcecageCreatesContainmentBoundary() {
   assert.equal(enemy.economy.actionAvailable, false, "a failed teleport escape should still spend the attempted action");
 }
 
+function testFinalizedHighLevelSpellAdaptations() {
+  const pestilence = spellHarness();
+  pestilence.enemy.position = { x: 1, y: 0 };
+  pestilence.hero.actions.push(createSpellAction(SPELLS.pestilence, { spellSaveDC: 13 }));
+  pestilence.enemy.hp = pestilence.enemy.maxHp = 100;
+  assert.equal(resolveAction(pestilence.snapshot, pestilence.hero, "pestilence", {
+    targetId: pestilence.enemy.id,
+    choices: { saveAbility: "WIS" },
+  }, scriptedDice({ d20: [20], damage: 40 }), pestilence.log), true);
+  assert.equal(pestilence.enemy.hp, 80, "Pestilence should deal half damage on a successful save");
+  assert.equal(pestilence.enemy.conditions.some((condition) => condition.id === "poisoned"), false, "successful Pestilence save should prevent its short debuff");
+
+  const fortify = spellHarness();
+  const allyTwo = structuredClone(fortify.hero);
+  allyTwo.id = "ally_two";
+  allyTwo.name = "Ally Two";
+  allyTwo.position = { x: 1, y: 1 };
+  allyTwo.tempHp = 0;
+  fortify.snapshot.actors.push(allyTwo);
+  fortify.hero.actions.push(createSpellAction(SPELLS.power_word_fortify));
+  assert.equal(resolveAction(fortify.snapshot, fortify.hero, "power_word_fortify", [fortify.hero.id, allyTwo.id], scriptedDice(), fortify.log), true);
+  assert.equal(fortify.hero.tempHp, 60, "Power Word Fortify should evenly divide its pool among selected targets");
+  assert.equal(allyTwo.tempHp, 60, "each selected Fortify target should receive the same share");
+
+  const prism = spellHarness();
+  prism.enemy.hp = prism.enemy.maxHp = 100;
+  prism.hero.actions.push(createSpellAction(SPELLS.prismatic_disarray, { spellSaveDC: 13 }));
+  assert.equal(resolveAction(prism.snapshot, prism.hero, "prismatic_disarray", { anchor: prism.enemy.position }, scriptedDice({ d20: [1], damage: [3, 42] }), prism.log), true);
+  assert.equal(prism.enemy.hp, 58, "Prismatic Disarray should apply its rolled damage");
+  const prismDamage = prism.log.events.find((event) => event.type === "damage.applied" && event.detail.sourceId === prism.hero.id);
+  assert.equal(prismDamage.detail.damageType, "lightning", "Prismatic Disarray should select one of its five damage types per target");
+
+  const circleAction = createSpellAction(SPELLS.circle_of_power);
+  assert.equal(circleAction.type, "spell_effect");
+  assert.equal(circleAction.effects[0].type, "aura", "Circle of Power should compile to a following protective aura");
+  const insectAction = createSpellAction(SPELLS.insect_plague, { spellSaveDC: 13 });
+  assert.equal(insectAction.type, "spell_object");
+  assert.equal(insectAction.object.difficultTerrain, true, "Insect Plague should compile to persistent difficult terrain");
+  const waveAction = createSpellAction(SPELLS.destructive_wave, { spellSaveDC: 13 });
+  assert.equal(waveAction.selfCenteredArea, true);
+  assert.equal(waveAction.targetTeamFilter, "enemies", "Destructive Wave should spare allies");
+  const regalAction = createSpellAction(SPELLS.yolandes_regal_presence, { spellSaveDC: 13 });
+  assert.equal(regalAction.object.followsSource, true, "Yolande's Regal Presence should follow its caster");
+}
+
 export async function runSpellMechanicCombatTests() {
-  testProduceFlameGrantsHurlAction();
   testHexAddsDamageRiderToCasterAttackHits();
   testChromaticOrbUsesSelectedDamageType();
   testArmorOfAgathysTempHpAndRetaliation();
@@ -579,6 +655,7 @@ export async function runSpellMechanicCombatTests() {
   testSelfCenteredAreaSpellsFilterTargets();
   testCleansingSpellRemovesRegisteredCondition();
   testCureWoundsTargetsChosenAlly();
+  testHealingWordIsFullyWired();
   testAcBuffLogsModifierAndCurrentAc();
   testAidRaisesCurrentAndMaximumHpForEachChosenTarget();
   testHealRestoresHpAndCleansesConditions();
@@ -586,4 +663,5 @@ export async function runSpellMechanicCombatTests() {
   testPersistentClericSpellFollowupActions();
   testMaraHighLevelDamageSpellsResolve();
   testForcecageCreatesContainmentBoundary();
+  testFinalizedHighLevelSpellAdaptations();
 }

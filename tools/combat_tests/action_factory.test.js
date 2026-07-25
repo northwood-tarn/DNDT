@@ -4,6 +4,8 @@ import { createConsumableAction, createSpellAction, createWeaponAction, indexRec
 import { consumables } from "../../app/data/consumables.js";
 import { SPELLS } from "../../app/data/spells.js";
 import { weapons } from "../../app/data/weapons.js";
+import { canUseAction } from "../../app/combat/rules.js";
+import { initLanterna } from "../../app/systems/lanternaSystem.js";
 
 const CONSUMABLES = indexRecordsById(consumables);
 const WEAPONS = indexRecordsById(weapons);
@@ -37,6 +39,13 @@ function testActionFactorySpellOutput() {
   assert.equal(chromaticOrb.damageType, "acid", "choice-damage spells should default to their first listed damage type");
   assert.deepEqual(chromaticOrb.damageTypeChoices, ["acid", "cold", "fire", "lightning", "poison", "thunder"]);
   assert.deepEqual(validateCombatAction(chromaticOrb), [], "choice-damage spell output should validate");
+
+  assert.equal(createSpellAction(SPELLS.faerie_fire).lanternaOilCost, 1, "Faerie Fire should cost 1 Lanterna oil");
+  assert.equal(createSpellAction(SPELLS.dawn).lanternaOilCost, 5, "Dawn should cost 5 Lanterna oil");
+  assert.equal(createSpellAction(SPELLS.sunbeam).lanternaOilCost, 6, "Sunbeam should cost 6 Lanterna oil");
+  initLanterna({ startOilMinutes: 0 });
+  assert.equal(canUseAction({ hp: 1 }, createSpellAction(SPELLS.faerie_fire)).ok, false, "light spells should be blocked without enough Lanterna oil");
+  initLanterna({ startOilMinutes: 60 });
 }
 
 function testActionFactorySpellEffects() {

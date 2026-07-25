@@ -261,6 +261,10 @@ function featureMatchesCondition(feature, sheet, draft) {
 
 function applyFeatureEffects(sheet, draft, feature, featureId, level) {
   const effects = feature.effects || {};
+  for (const spell of effects.spells || []) {
+    if (spell.mode === "prepared") addUniqueAll(sheet.spellcasting.preparedSpellIds, [spell.id]);
+    else addUniqueAll(sheet.spellcasting.knownSpellIds, [spell.id]);
+  }
   for (const resource of effects.resources || []) {
     const max = resolveResourceMax(resource.max, sheet, feature);
     sheet.resources.push({

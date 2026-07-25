@@ -104,7 +104,7 @@ The External Panes tab may eventually include controls such as:
 - Restore a pane that is offscreen
 - Reset the combat workspace to its default layout
 
-A checked pane uses an attached or detached external Electron window. An unchecked pane remains available under the laptop presentation rules and opens over the right third of the main map when invoked. This choice is independent for every pane, allowing hybrid external/laptop arrangements.
+A checked pane uses an attached or detached external Electron window. An unchecked pane remains available under the laptop presentation rules and opens over the right quarter of the main map when invoked. This choice is independent for every pane, allowing hybrid external/laptop arrangements.
 
 Fullscreen is an option within External Panes, but it is available only when every pane is unchecked. Checking any external pane exits fullscreen immediately and prevents fullscreen from being enabled again until all external-pane checkboxes are clear.
 

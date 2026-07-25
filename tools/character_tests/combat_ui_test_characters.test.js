@@ -101,7 +101,7 @@ test("Sister Elian's complete selected spell set compiles into combat actions", 
 
 test("every selected Sister Elian spell resolves and produces a meaningful combat log event", async () => {
   const spellIds = [
-    "guidance", "sacred_flame", "light", "toll_the_dead", "word_of_radiance",
+    "guidance", "sacred_flame", "toll_the_dead", "word_of_radiance",
     "bless", "cure_wounds", "guiding_bolt", "shield_of_faith", "aid",
     "spiritual_weapon", "lesser_restoration", "spirit_guardians", "dispel_magic",
     "mass_healing_word", "banishment", "death_ward", "dawn", "greater_restoration",

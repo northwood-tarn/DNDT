@@ -3,7 +3,7 @@
 Baseline: every non-homebrew, non-adapted spell in `app/data/spells.js` should match the 2024 PHB / Free Basic Rules spell where that spell exists there. `source` is the existing metadata field; this audit treats `source: "PHB"` as "must be 2024-compatible" and treats `Homebrew`, `PHB (adapted)`, and `PHB (tweaked)` as intentionally non-canonical until separately reviewed.
 
 Primary references used in this pass:
-- Roll20 D&D 2024 compendium spell pages, e.g. Sleep, Hex, Guidance, Sacred Flame, Poison Spray, Blade Ward, Resistance, Thorn Whip, Vicious Mockery, Chromatic Orb, Chill Touch, Produce Flame, False Life, Cure Wounds, Ray of Sickness.
+- Roll20 D&D 2024 compendium spell pages, e.g. Sleep, Hex, Guidance, Sacred Flame, Poison Spray, Blade Ward, Resistance, Thorn Whip, Vicious Mockery, Chromatic Orb, Chill Touch, False Life, Cure Wounds, Ray of Sickness.
 - D&D Beyond spell pages where accessible for current/legacy contrast.
 
 ## Corrections Applied To `spells.js`
@@ -20,7 +20,6 @@ These records were updated in the spell data after the initial audit. Some hooks
 | `chill_touch` | Old ranged spell attack shape. | Touch range, melee spell attack, 1d10 necrotic, no healing until end of caster's next turn. |
 | `thorn_whip` | Hook says ranged spell attack; material component absent/incorrect. | 30 ft range but melee spell attack; material component is thorny plant stem; pull up to 10 ft on hit. |
 | `vicious_mockery` | Damage is 1d4. | Damage is 1d6 psychic in 2024. |
-| `produce_flame` | Old direct attack model. | Bonus Action, Self, 10 minutes. Creates flame/light first; later Magic action hurls it up to 60 ft for ranged spell attack. |
 | `blade_ward` | Old resistance-to-weapon-damage model. | Concentration up to 1 minute; attackers subtract 1d4 from attack rolls against caster. |
 | `resistance` | Old saving throw bonus model. | Touch, choose damage type; first matching damage each turn is reduced by 1d4. |
 | `false_life` | Uses 1d4+4 and timed duration. | Instantaneous; grants 2d4+4 temporary HP. Higher slots add flat +5 temp HP per slot above 1. |
@@ -71,8 +70,7 @@ These records were updated in the spell data after the initial audit. Some hooks
 
 These records are not 2024 PHB-compatible as written and should not remain plain `source: "PHB"` unless corrected:
 
-- `minor_illusion`: explicitly marked dialogue-only and combat-hidden. That is an implementation restriction, not canonical PHB behavior.
-- `minor_magic`: appears to be a homebrew consolidation of Prestidigitation/Druidcraft/Thaumaturgy-style effects, not a PHB spell named Minor Magic.
+- `minor_magic`: is a homebrew consolidation of harmless rudimentary magical effects, not a PHB spell named Minor Magic.
 - `witch_bolt`: already labelled `PHB (adapted)` and should stay out of the canonical bucket.
 - `sanctuary`, `command`: already labelled `PHB (tweaked)`.
 - `armor_of_agathys`, `banishment`, `wall_of_force`, `far_step`, `synaptic_static`: already labelled adapted or non-PHB expansion and should stay out of the canonical PHB bucket unless explicitly targeted.

@@ -12,6 +12,7 @@ This is the canonical reference for the external Action Options workspace and it
 - The attached external host initially matches the main combat window's full height.
 - Host tabs share the available width evenly and use subdued embedded pane chrome.
 - The Action Options hierarchy is tabs, title, active actor name, Action, then Bonus Action.
+- In the large-viewport display schema, the canonical right-hand pane group contains `Equipment` as its active first tab and `Action Options` as its second tab. The two headings divide the available tab area evenly, excluding the dedicated drag grip and shortcut control, and remain independently detachable or regroupable.
 - Actor identity, actions, resources, spell slots, weapons, and descriptions come from combat scenario data rather than character-specific UI literals.
 - Weapon Sets contains two sets with two icon positions each.
 - Action categories are Weapon Sets, Spells, Channel Divinity, Tactics, Abilities, and Consumables where applicable. Prepared Saboteur devices and inventory items are Consumables; permanent class, subclass, species, and lineage powers are Abilities.
@@ -19,6 +20,7 @@ This is the canonical reference for the external Action Options workspace and it
 - Parent abilities are the quick-bar assignments. Quick Rigging and Double Rig occupy Bonus Action positions; Catastrophic Charge occupies an Action position and opens its item choice when invoked.
 - Quick-bar drops are economy-typed at drag time and at drop time, preventing Action and Bonus Action assignments from crossing slot types. Hovering an assigned slot reveals its name and description in one line across the top of the combat display; staged choices include the selected item in that line.
 - Consumable availability comes from actor inventory and resources. Depleted consumables leave Action Options, while an existing quick-bar assignment becomes unavailable and explains that the actor has none left. Catastrophic Charge consumes both its own use and its selected prepared device.
+- Weapon attacks may be assigned to Action quickslots directly from equipped weapon and weapon-capable casting-focus tiles as well as from Action Options.
 - A staged parent's description applies to its heading and second-stage choices. A parent cannot appear as one of its own choices.
 - Character-relative device text resolves proficiency-based durations and dice before it reaches any combat UI.
 - Native spells precede a softer indented Upcast group at each casting level.

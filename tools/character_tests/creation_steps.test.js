@@ -442,7 +442,7 @@ function completeWizardHarnessDraft() {
     identity: { characterName: "Harness Wizard", level: 4, speciesId: "elf", lineageId: "high", backgroundId: "sage", classId: "wizard", subclassId: "necromancer" },
     gear: { weaponIds: ["quarterstaff"], armorId: null, shieldId: null, inventory: [], attunedItemIds: [] },
     spells: {
-      knownSpellIds: ["fire_bolt", "mage_hand", "prestidigitation", "ray_of_frost", "acid_splash", "frostbite"],
+      knownSpellIds: ["fire_bolt", "mage_hand", "minor_magic", "ray_of_frost", "acid_splash", "frostbite"],
       preparedSpellIds: ["magic_missile", "mage_armor", "sleep", "burning_hands", "chromatic_orb"],
     },
     choices: {

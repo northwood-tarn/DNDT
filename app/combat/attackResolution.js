@@ -1,4 +1,4 @@
-import { getActionUses, hasCondition, hasReaction, removeCondition, spendReaction } from "./actor.js";
+import { getActionUses, hasCondition, hasReaction, removeCondition, spendReaction, syncContextualActions } from "./actor.js";
 import { checkOutcome, livingActors } from "./combatState.js";
 import { classifyCover } from "./cover.js";
 import { conditionName, getConditionRules } from "./effects.js";
@@ -183,10 +183,61 @@ export function resolveAttack(snapshot, actor, target, action, dice, log) {
     applyDamage(snapshot, actor, target, action, dice, log, { critical, attackRoll });
     applyHitEffects(snapshot, actor, target, action, log, dice);
     applyCleaveOnHit(snapshot, actor, target, action, dice, log);
+    grantPostHitSmiteActions(snapshot, actor, target, action, critical, log);
   } else {
     applyGrazeOnMiss(snapshot, actor, target, action, dice, log);
     resolveReactionTriggers(snapshot, "missed_by_melee_attack", { source: actor, target, action }, dice, log, { resolveAttack, applyDamageAmount });
   }
+}
+
+function grantPostHitSmiteActions(snapshot, actor, target, triggeringAction, critical, log) {
+  if ((snapshot.initiative?.length && snapshot.initiative[snapshot.turnIndex] !== actor.id) || target.hp <= 0) return;
+  const tags = getActionTags(triggeringAction);
+  const templates = (actor.actions || []).filter((action) =>
+    action.postHitOnly === true &&
+    !action.contextual &&
+    (action.postHitActionTags || []).every((tag) => tags[tag] === true) &&
+    (!(action.postHitRequiresAnyActionTag || []).length || action.postHitRequiresAnyActionTag.some((tag) => tags[tag] === true))
+  );
+  if (!templates.length) return;
+  const contextual = templates.map((action) => ({
+    ...structuredClone(action),
+    id: `${action.id}:post_hit`,
+    contextual: true,
+    postHitTargetId: target.id,
+    postHitCritical: critical === true,
+  }));
+  const freeResource = (actor.resources || []).find((resource) => resource.id === "paladins_smite_free" && (resource.current ?? resource.max ?? 0) > 0);
+  const native = templates.find((action) => action.sourceSpellId === "divine_smite" && action.baseSpellLevel === action.spellLevel);
+  if (freeResource && native) {
+    contextual.unshift({
+      ...structuredClone(native),
+      id: "divine_smite:free:post_hit",
+      name: "Divine Smite (Paladin's Smite)",
+      contextual: true,
+      postHitTargetId: target.id,
+      postHitCritical: critical === true,
+      usesExactSpellSlot: false,
+      resourceId: "paladins_smite_free",
+      freeCastResourceId: "paladins_smite_free",
+    });
+  }
+  actor.turnFlags ??= {};
+  actor.turnFlags.contextualActions = [
+    ...(actor.turnFlags.contextualActions || []).filter((action) => action.type !== "spell_post_hit"),
+    ...contextual,
+  ];
+  syncContextualActions(actor);
+  log.add("action.granted", {
+    round: snapshot.round,
+    sourceId: actor.id,
+    sourceName: actor.name,
+    targetId: target.id,
+    targetName: target.name,
+    actionId: contextual[0].id,
+    actionName: "Divine Smite",
+    sourceActionId: triggeringAction.id,
+  });
 }
 
 function applyCleaveOnHit(snapshot, actor, target, action, dice, log) {

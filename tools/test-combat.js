@@ -21,6 +21,7 @@ import { runEnemyCombatTests } from "./combat_tests/enemies.test.js";
 import { runEnemyGroupSmokeTests } from "./combat_tests/enemy_group_smoke.test.js";
 import { runFullEncounterSmokeTests } from "./combat_tests/full_encounter_smoke.test.js";
 import { runMarkCombatTests } from "./combat_tests/marks.test.js";
+import { runPaladinSmiteCombatTests } from "./combat_tests/paladin_smite.test.js";
 import { runReactionCombatTests } from "./combat_tests/reactions.test.js";
 import { runReactionPolicyCombatTests } from "./combat_tests/reaction_policy.test.js";
 import { runRepresentativeBuildSmokeTests } from "./combat_tests/representative_build_smoke.test.js";
@@ -34,6 +35,7 @@ async function main() {
   await runSystemCombatTests();
   await runCombatActionContractTests();
   await runCombatHarnessSmokeTests();
+  await runPaladinSmiteCombatTests();
   await runActionFactoryCombatTests();
   await runScenarioCombatTests();
   await runBuildMatrixSmokeTests();

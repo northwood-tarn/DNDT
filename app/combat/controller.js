@@ -7,6 +7,7 @@ import { runAiTurn } from "./ai.js";
 import { checkOutcome } from "./combatState.js";
 import { rollInitiativeOrder } from "./initiative.js";
 import { isPendingReactionPrompt } from "./reactions.js";
+import { hasAuraTurnStartRecovery } from "./auras.js";
 
 export function createCombatController({ scenarioId = DEFAULT_COMBAT_SCENARIO_ID, scenarioOptions = {} } = {}) {
   const log = createCombatLog();
@@ -161,7 +162,7 @@ export function createCombatController({ scenarioId = DEFAULT_COMBAT_SCENARIO_ID
         log.add("round.start", { round: snapshot.round });
       }
       const actor = currentActor(snapshot);
-      if (actor?.hp > 0) return actor;
+      if (actor?.hp > 0 || (actor && hasAuraTurnStartRecovery(snapshot, actor))) return actor;
     }
     checkOutcome(snapshot, log);
     return null;

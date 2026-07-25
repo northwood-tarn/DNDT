@@ -11,20 +11,27 @@
     <div class="combat-outcome-banner" role="status" aria-live="polite"></div>
     <aside class="gear-drawer" aria-hidden="true" aria-label="Equipment and inventory">
       <div class="gear-drawer-fog" aria-hidden="true"></div>
-      <header class="gear-drawer-header">
-        <div>
-          <h1 data-gear-drawer-title>Equipment</h1>
-          <span data-gear-actor-name></span>
-        </div>
-        <button class="gear-drawer-close" type="button" aria-label="Close equipment pane"></button>
-      </header>
-      <nav class="gear-drawer-tabs" aria-label="Equipment panes">
-        <button type="button" data-gear-tab="equipment">Equipment <kbd>E</kbd></button>
-        <button type="button" data-gear-tab="inventory">Inventory <kbd>I</kbd></button>
-      </nav>
       <div class="gear-drawer-content">
-        <section class="gear-panel" data-gear-panel="equipment"></section>
-        <section class="gear-panel" data-gear-panel="inventory" hidden></section>
+        <section class="gear-pane-column" data-gear-column="action-options" hidden>
+          <header class="gear-drawer-header"><div><h1>Action Options</h1><span data-gear-actor-name></span></div><button class="gear-drawer-close is-pane-key" type="button" data-close-gear-panel="action-options" aria-label="Close action options pane">O</button></header>
+          <iframe class="gear-action-options-frame" data-action-options-frame title="Action Options"></iframe>
+        </section>
+        <section class="gear-pane-column" data-gear-column="inventory" hidden>
+          <header class="gear-drawer-header"><div><h1>Inventory</h1><span data-gear-actor-name></span></div><button class="gear-drawer-close is-pane-key" type="button" data-close-gear-panel="inventory" aria-label="Close inventory pane">I</button></header>
+          <div class="gear-panel" data-gear-panel="inventory"></div>
+        </section>
+        <section class="gear-pane-column" data-gear-column="equipment" hidden>
+          <header class="gear-drawer-header"><div><h1>Equipment</h1><span data-gear-actor-name></span></div><button class="gear-drawer-close is-pane-key" type="button" data-close-gear-panel="equipment" aria-label="Close equipment pane">E</button></header>
+          <div class="gear-panel" data-gear-panel="equipment"></div>
+        </section>
+        <section class="gear-pane-column" data-gear-column="character" hidden>
+          <header class="gear-drawer-header"><div><h1>Character</h1><span data-gear-actor-name></span></div><button class="gear-drawer-close is-pane-key" type="button" data-close-gear-panel="character" aria-label="Close character pane">C</button></header>
+          <div class="gear-panel" data-gear-panel="character"></div>
+        </section>
+        <section class="gear-pane-column" data-gear-column="quests" hidden>
+          <header class="gear-drawer-header"><div><h1>Quests</h1><span data-gear-actor-name></span></div><button class="gear-drawer-close is-pane-key" type="button" data-close-gear-panel="quests" aria-label="Close quests pane">Q</button></header>
+          <iframe class="gear-action-options-frame" data-quests-frame title="Quests"></iframe>
+        </section>
       </div>
     </aside>
     <section class="combat-ui-strip">
@@ -101,6 +108,15 @@
           <button type="button" role="tab" id="reactionsTab" aria-controls="reactionsPanel" aria-selected="false" tabindex="-1">Reactions</button>
         </div>
         <section id="workspacePanel" class="combat-settings-panel" role="tabpanel" aria-labelledby="workspaceTab">
+          <label class="combat-display-schema-setting">
+            <span>Display schema</span>
+            <select data-display-schema aria-label="Display schema">
+              <option value="laptop">1 — Laptop</option>
+              <option value="restricted">2 — Restricted visual space</option>
+              <option value="large">3 — Large viewport</option>
+              <option value="full">4 — Full high-information view</option>
+            </select>
+          </label>
           <fieldset class="combat-pane-setting-group">
             <label class="combat-pane-setting">
               <input type="checkbox" data-pane-toggle="action-options" data-pane-id="action-options" checked>
@@ -113,15 +129,15 @@
           </fieldset>
           <label class="combat-pane-setting">
             <input type="checkbox" data-pane-id="inventory" checked>
-            <span>
-              <strong>Inventory</strong>
-            </span>
+            <span><strong>Inventory</strong></span>
           </label>
           <label class="combat-pane-setting">
             <input type="checkbox" data-pane-id="equipment" checked>
-            <span>
-              <strong>Equipment</strong>
-            </span>
+            <span><strong>Equipment</strong></span>
+          </label>
+          <label class="combat-pane-setting">
+            <input type="checkbox" data-pane-id="character">
+            <span><strong>Character</strong></span>
           </label>
           <label class="combat-pane-setting">
             <input type="checkbox" data-pane-id="quests" checked>
@@ -136,6 +152,19 @@
         </section>
         <section id="reactionsPanel" class="combat-settings-panel" role="tabpanel" aria-labelledby="reactionsTab" hidden></section>
       </div>
+    </dialog>
+    <dialog class="combat-display-onboarding" aria-labelledby="displayOnboardingTitle">
+      <form method="dialog" class="combat-display-onboarding-frame">
+        <header>
+          <h2 id="displayOnboardingTitle">Choose Your Display Setup</h2>
+        </header>
+        <p>While you will always be just one keystroke away from any piece of information, what best describes your display situation?</p>
+        <label><input type="radio" name="display-schema" value="laptop" required><span><strong>1. Playing on laptop</strong></span></label>
+        <label><input type="radio" name="display-schema" value="restricted"><span><strong>2. A restricted visual space</strong><small>Allowing for the main game plus one or two extra bits of information.</small></span></label>
+        <label><input type="radio" name="display-schema" value="large"><span><strong>3. A large viewport</strong><small>Showing most information simultaneously.</small></span></label>
+        <label><input type="radio" name="display-schema" value="full"><span><strong>4. A very large display</strong><small>With room for a full high-information view.</small></span></label>
+        <button type="submit">Use This Setup</button>
+      </form>
     </dialog>
     <script type="module" src="./combatUiV2.js"></script>
   </body>

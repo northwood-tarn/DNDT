@@ -32,6 +32,15 @@ export default {
         }
       }
     ],
+    2: [{
+      name: "Paladin's Smite",
+      type: "Special",
+      description: "Divine Smite is always prepared. Once per Long Rest, you can cast it without expending a spell slot.",
+      effects: {
+        spells: [{ id: "divine_smite", mode: "prepared" }],
+        resources: [{ id: "paladins_smite_free", name: "Paladin's Smite", max: 1, recovery: "long_rest" }]
+      }
+    }],
     4: [
       {
         name: "Ability Score Improvement",
@@ -97,6 +106,23 @@ export default {
             type: "condition_prevention",
             conditions: ["frightened"]
           }]
+        }]
+      }
+    }],
+
+    11: [{
+      name: "Greater Radiant Smite",
+      type: "Passive",
+      description: "Whenever you hit with a melee weapon or an Unarmed Strike, the attack deals an extra 1d8 radiant damage.",
+      effects: {
+        damageRiders: [{
+          id: "greater_radiant_smite",
+          name: "Greater Radiant Smite",
+          trigger: "source_hits_with_attack_roll",
+          actionTags: ["melee"],
+          requiresAnyActionTag: ["weapon", "unarmed"],
+          damage: "1d8",
+          damageType: "radiant"
         }]
       }
     }],

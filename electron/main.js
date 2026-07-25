@@ -47,13 +47,26 @@ let win;
 let actionOptionsWin = null;
 let actionOptionsAttached = true;
 const combatPaneState = {
-  'action-options': { visible: true, detached: false },
-  inventory: { visible: true, detached: false },
-  equipment: { visible: true, detached: false },
-  quests: { visible: true, detached: false },
+  'action-options': { visible: false, detached: false },
+  inventory: { visible: false, detached: false },
+  equipment: { visible: false, detached: false },
+  character: { visible: false, detached: false },
+  quests: { visible: false, detached: false },
 };
+const individualExpandedCombatPanes = true;
 const combatPaneSettings = { offerSpellUpcasting: true };
+const DISPLAY_SCHEMAS = new Set(['laptop', 'restricted', 'large', 'full']);
+const requestedDisplaySchema = process.argv.find((argument) => argument.startsWith('--combat-display-schema='))?.slice('--combat-display-schema='.length) || null;
+let combatDisplaySchema = DISPLAY_SCHEMAS.has(requestedDisplaySchema) ? requestedDisplaySchema : null;
 const detachedCombatPaneWindows = new Map();
+const externalCombatPaneGroups = new Map();
+const externalCombatPaneOrder = [];
+const suppressedExternalCloses = new WeakSet();
+const paneMergeTimers = new WeakMap();
+let arrangingExternalPaneWindows = false;
+let combatEnsembleDrag = null;
+let movingCombatEnsemble = false;
+let combatEnsembleReleaseTimer = null;
 let combatPreviewActive = false;
 const combatScenarioId = process.argv.find((argument) => argument.startsWith('--combat-scenario='))?.slice('--combat-scenario='.length) || null;
 let explorationAuthoringServer = null;
@@ -83,7 +96,7 @@ function actionOptionsTargetBounds() {
   return {
     x: mainBounds.x + mainBounds.width,
     y: mainBounds.y,
-    width: Math.round(mainBounds.width / 3),
+    width: Math.round(mainBounds.width / 4),
     height: mainBounds.height,
   };
 }
@@ -105,12 +118,353 @@ function broadcastCombatPaneState() {
   const externalPanesActive = Object.values(combatPaneState).some((state) => state.visible);
   const settingsState = {
     ...combatPaneSettings,
+    displaySchema: combatDisplaySchema,
     fullScreen: Boolean(win && !win.isDestroyed() && win.isFullScreen()),
     fullScreenAvailable: !externalPanesActive,
   };
   for (const target of [win, actionOptionsWin, ...detachedCombatPaneWindows.values()]) {
     if (target && !target.isDestroyed()) target.webContents.send('combat:pane-settings:state', settingsState);
   }
+}
+
+function layoutExternalCombatPanes() {
+  if (!win || win.isDestroyed()) return;
+  const main = win.getBounds();
+  const width = Math.round(main.width / 4);
+  const columns = new Map();
+  for (const groupId of externalCombatPaneOrder) {
+    const group = externalCombatPaneGroups.get(groupId);
+    if (!group?.window || group.window.isDestroyed() || group.free) continue;
+    const column = Number.isInteger(group.column) ? group.column : columns.size;
+    group.column = column;
+    if (!columns.has(column)) columns.set(column, []);
+    columns.get(column).push(group);
+  }
+  arrangingExternalPaneWindows = true;
+  try {
+    for (const [column, groups] of columns) {
+      const x = main.x + main.width + column * width;
+      groups.sort((left, right) => (left.stackOrder || 0) - (right.stackOrder || 0));
+      if (groups.length === 1) {
+        const group = groups[0];
+        const current = group.window.getBounds();
+        const height = group.partialHeight ? Math.max(260, Math.min(group.partialHeight, main.height)) : main.height;
+        group.window.setBounds({ x, y: main.y, width, height: group.partialHeight ? height : main.height }, false);
+        continue;
+      }
+      const topHeight = Math.max(260, Math.min(groups[0].stackHeight || groups[0].window.getBounds().height, main.height - 260));
+      groups[0].stackHeight = topHeight;
+      groups[0].window.setBounds({ x, y: main.y, width, height: topHeight }, false);
+      groups[1].stackHeight = main.height - topHeight;
+      groups[1].window.setBounds({ x, y: main.y + topHeight, width, height: main.height - topHeight }, false);
+    }
+  } finally {
+    arrangingExternalPaneWindows = false;
+  }
+}
+
+function nextExternalPanePlacement() {
+  const main = win.getBounds();
+  const width = Math.round(main.width / 4);
+  const groups = externalCombatPaneOrder
+    .map((id) => externalCombatPaneGroups.get(id))
+    .filter((group) => group && !group.free);
+  const partialTop = groups.find((group) => {
+    if (!group.partialHeight) return false;
+    return groups.filter((candidate) => candidate.column === group.column).length === 1
+      && main.height - group.partialHeight >= 260;
+  });
+  if (partialTop) {
+    partialTop.stackOrder = 0;
+    partialTop.stackHeight = partialTop.partialHeight;
+    delete partialTop.partialHeight;
+    return {
+      column: partialTop.column,
+      stackOrder: 1,
+      stackHeight: main.height - partialTop.stackHeight,
+      bounds: { x: main.x + main.width + partialTop.column * width, y: main.y + partialTop.stackHeight, width, height: main.height - partialTop.stackHeight },
+    };
+  }
+  const column = groups.length ? Math.max(...groups.map((group) => group.column || 0)) + 1 : 0;
+  return { column, stackOrder: 0, stackHeight: main.height, bounds: { x: main.x + main.width + column * width, y: main.y, width, height: main.height } };
+}
+
+function resizeExternalPaneStack(groupId) {
+  if (arrangingExternalPaneWindows || !win || win.isDestroyed()) return;
+  const group = externalCombatPaneGroups.get(groupId);
+  if (!group?.window || group.window.isDestroyed() || group.free) return;
+  const main = win.getBounds();
+  const peers = [...externalCombatPaneGroups.values()]
+    .filter((candidate) => !candidate.free && candidate.column === group.column && candidate.window && !candidate.window.isDestroyed())
+    .sort((left, right) => (left.stackOrder || 0) - (right.stackOrder || 0));
+  const bounds = group.window.getBounds();
+  if (peers.length === 1) {
+    const requestedBottom = bounds.y + bounds.height;
+    group.partialHeight = Math.max(260, Math.min(requestedBottom - main.y, main.height));
+    if (Math.abs(group.partialHeight - main.height) < 8) delete group.partialHeight;
+    layoutExternalCombatPanes();
+    return;
+  }
+  const boundary = group === peers[0] ? bounds.y + bounds.height : bounds.y;
+  peers[0].stackHeight = Math.max(260, Math.min(boundary - main.y, main.height - 260));
+  layoutExternalCombatPanes();
+}
+
+function sendExternalGroup(group, activePaneId = group?.paneIds?.[0]) {
+  if (!group?.window || group.window.isDestroyed()) return;
+  group.activePaneId = group.paneIds.includes(activePaneId) ? activePaneId : group.paneIds[0];
+  group.window.webContents.send('combat:pane-group:state', { paneIds: [...group.paneIds], activePaneId: group.activePaneId });
+}
+
+function externalGroupForPane(paneId) {
+  return [...externalCombatPaneGroups].find(([, group]) => group.paneIds.includes(paneId)) || null;
+}
+
+function mergeCombatPaneIntoGroup(paneId, targetPaneId) {
+  const sourceEntry = externalGroupForPane(paneId);
+  const targetEntry = externalGroupForPane(targetPaneId);
+  if (!sourceEntry || !targetEntry || sourceEntry[0] === targetEntry[0]) return;
+  const [sourceId, source] = sourceEntry;
+  const target = targetEntry[1];
+  source.paneIds = source.paneIds.filter((id) => id !== paneId);
+  target.paneIds = [...target.paneIds, paneId];
+  detachedCombatPaneWindows.set(paneId, target.window);
+  if (!source.paneIds.length) {
+    externalCombatPaneGroups.delete(sourceId);
+    const orderIndex = externalCombatPaneOrder.indexOf(sourceId);
+    if (orderIndex >= 0) externalCombatPaneOrder.splice(orderIndex, 1);
+    if (source.window && !source.window.isDestroyed()) {
+      suppressedExternalCloses.add(source.window);
+      source.window.destroy();
+    }
+  } else {
+    for (const id of source.paneIds) detachedCombatPaneWindows.set(id, source.window);
+    sendExternalGroup(source, source.activePaneId === paneId ? source.paneIds[0] : source.activePaneId);
+  }
+  sendExternalGroup(target, paneId);
+  broadcastCombatPaneState();
+}
+
+function mergeExternalGroupIntoGroup(sourceId, targetId) {
+  if (!sourceId || !targetId || sourceId === targetId) return;
+  const source = externalCombatPaneGroups.get(sourceId);
+  const target = externalCombatPaneGroups.get(targetId);
+  if (!source || !target) return;
+  target.paneIds = [...new Set([...target.paneIds, ...source.paneIds])];
+  for (const paneId of source.paneIds) detachedCombatPaneWindows.set(paneId, target.window);
+  externalCombatPaneGroups.delete(sourceId);
+  const orderIndex = externalCombatPaneOrder.indexOf(sourceId);
+  if (orderIndex >= 0) externalCombatPaneOrder.splice(orderIndex, 1);
+  if (source.window && !source.window.isDestroyed()) {
+    suppressedExternalCloses.add(source.window);
+    source.window.destroy();
+  }
+  sendExternalGroup(target, source.activePaneId || source.paneIds[0]);
+  broadcastCombatPaneState();
+}
+
+function scheduleExternalPaneDrop(groupId, paneWindow) {
+  clearTimeout(paneMergeTimers.get(paneWindow));
+  paneMergeTimers.set(paneWindow, setTimeout(() => {
+    if (!paneWindow || paneWindow.isDestroyed() || !externalCombatPaneGroups.has(groupId)) return;
+    const pointer = screen.getCursorScreenPoint();
+    for (const [targetId, target] of externalCombatPaneGroups) {
+      if (targetId === groupId || !target.window || target.window.isDestroyed()) continue;
+      const bounds = target.window.getBounds();
+      const overTargetHeader = pointer.x >= bounds.x && pointer.x <= bounds.x + bounds.width
+        && pointer.y >= bounds.y && pointer.y <= bounds.y + 72;
+      if (overTargetHeader) {
+        mergeExternalGroupIntoGroup(groupId, targetId);
+        return;
+      }
+    }
+    const main = win && !win.isDestroyed() ? win.getBounds() : null;
+    if (main) {
+      const current = paneWindow.getBounds();
+      const overlapsMainHorizontally = current.x < main.x + main.width && current.x + current.width > main.x;
+      const overTopDock = overlapsMainHorizontally && Math.abs((current.y + current.height) - main.y) <= 48;
+      if (overTopDock) {
+        const group = externalCombatPaneGroups.get(groupId);
+        group.schemaManaged = true;
+        group.dock = 'top';
+        paneWindow.setParentWindow(win);
+        paneWindow.setBounds({ x: main.x, y: main.y - current.height + 1, width: main.width, height: current.height }, false);
+        return;
+      }
+      const group = externalCombatPaneGroups.get(groupId);
+      group.dock = null;
+      if (current.height !== main.height) {
+        group.restoringFullHeight = true;
+        paneWindow.setBounds({ ...current, height: main.height }, false);
+        group.restoringFullHeight = false;
+      }
+    }
+  }, 180));
+}
+
+function captureCombatWorkspace() {
+  if (!win || win.isDestroyed()) return null;
+  return {
+    version: 1,
+    schema: combatDisplaySchema || 'laptop',
+    mainBounds: win.getBounds(),
+    groups: externalCombatPaneOrder.map((groupId) => externalCombatPaneGroups.get(groupId)).filter((group) => group?.window && !group.window.isDestroyed()).map((group) => ({
+      paneIds: [...group.paneIds],
+      activePaneId: group.activePaneId || group.paneIds[0],
+      bounds: group.window.getBounds(),
+    })),
+  };
+}
+
+function restoreCombatWorkspace(workspace) {
+  if (!workspace || workspace.version !== 1 || !DISPLAY_SCHEMAS.has(workspace.schema) || !win || win.isDestroyed()) return false;
+  combatDisplaySchema = workspace.schema;
+  clearExternalCombatPanes();
+  if (validWindowBounds(workspace.mainBounds)) win.setBounds(workspace.mainBounds, false);
+  for (const savedGroup of workspace.groups || []) {
+    const paneIds = [...new Set((savedGroup.paneIds || []).filter((paneId) => combatPaneState[paneId]))];
+    if (!paneIds.length || !validWindowBounds(savedGroup.bounds)) continue;
+    createSchemaPaneGroup(paneIds, savedGroup.bounds);
+    const entry = externalGroupForPane(paneIds[0]);
+    if (entry) sendExternalGroup(entry[1], savedGroup.activePaneId);
+  }
+  broadcastCombatPaneState();
+  return true;
+}
+
+function validWindowBounds(bounds) {
+  return bounds && ['x', 'y', 'width', 'height'].every((key) => Number.isFinite(bounds[key])) && bounds.width >= 160 && bounds.height >= 120;
+}
+
+function removeExternalPane(paneId, destroyEmpty = true) {
+  const groupId = [...externalCombatPaneGroups].find(([, group]) => group.paneIds.includes(paneId))?.[0];
+  const group = groupId ? externalCombatPaneGroups.get(groupId) : null;
+  detachedCombatPaneWindows.delete(paneId);
+  if (!group) return;
+  group.paneIds = group.paneIds.filter((id) => id !== paneId);
+  if (!group.paneIds.length) {
+    externalCombatPaneGroups.delete(groupId);
+    const orderIndex = externalCombatPaneOrder.indexOf(groupId);
+    if (orderIndex >= 0) externalCombatPaneOrder.splice(orderIndex, 1);
+    if (destroyEmpty && group.window && !group.window.isDestroyed()) group.window.destroy();
+  } else {
+    for (const id of group.paneIds) detachedCombatPaneWindows.set(id, group.window);
+    sendExternalGroup(group);
+  }
+  layoutExternalCombatPanes();
+}
+
+function releaseExternalPane(groupId) {
+  if (!win || win.isDestroyed()) return;
+  const group = externalCombatPaneGroups.get(groupId);
+  if (!group || group.free) return;
+  const formerColumn = group.column;
+  group.free = true;
+  delete group.column;
+  delete group.stackOrder;
+  delete group.stackHeight;
+  delete group.partialHeight;
+
+  const peers = [...externalCombatPaneGroups.values()].filter((candidate) => (
+    candidate !== group
+    && !candidate.free
+    && candidate.column === formerColumn
+    && candidate.window
+    && !candidate.window.isDestroyed()
+  ));
+  for (const peer of peers) {
+    peer.stackOrder = 0;
+    peer.stackHeight = win.getBounds().height;
+    delete peer.partialHeight;
+  }
+  layoutExternalCombatPanes();
+}
+
+function clearExternalCombatPanes() {
+  const windows = new Set([...externalCombatPaneGroups.values()].map((group) => group.window));
+  for (const paneWindow of windows) {
+    if (!paneWindow || paneWindow.isDestroyed()) continue;
+    suppressedExternalCloses.add(paneWindow);
+    paneWindow.destroy();
+  }
+  externalCombatPaneGroups.clear();
+  externalCombatPaneOrder.splice(0, externalCombatPaneOrder.length);
+  detachedCombatPaneWindows.clear();
+  for (const state of Object.values(combatPaneState)) {
+    state.visible = false;
+    state.detached = false;
+  }
+}
+
+function createSchemaPaneGroup(paneIds, bounds, options = {}) {
+  const [primaryPaneId, ...additionalPaneIds] = paneIds;
+  detachCombatPane(primaryPaneId);
+  const entry = [...externalCombatPaneGroups].find(([, group]) => group.paneIds.includes(primaryPaneId));
+  if (!entry) return;
+  const group = entry[1];
+  group.free = true;
+  group.schemaManaged = true;
+  group.dock = options.dock || null;
+  group.paneIds = [...paneIds];
+  for (const paneId of additionalPaneIds) {
+    combatPaneState[paneId].visible = true;
+    combatPaneState[paneId].detached = true;
+    detachedCombatPaneWindows.set(paneId, group.window);
+  }
+  group.window.setMinimumSize(Math.min(bounds.width, 260), Math.min(bounds.height, 160));
+  group.window.setMaximumSize(10000, 10000);
+  group.window.setParentWindow(win);
+  group.window.setBounds(bounds, false);
+  sendExternalGroup(group, primaryPaneId);
+}
+
+function displaySchemaGeometry(schema) {
+  const main = win.getBounds();
+  const display = screen.getDisplayNearestPoint({ x: main.x + main.width / 2, y: main.y + main.height / 2 });
+  const area = display.workArea;
+  const side = Math.round(main.width / 4);
+  const availableExtraHeight = Math.max(320, area.height - main.height);
+  const band = Math.max(160, Math.min(Math.round(main.height / 4), Math.floor(availableExtraHeight / 2)));
+  const topBand = schema === 'large' || schema === 'full' ? Math.round(band * 1.25) : band;
+  const bottomBand = schema === 'large' ? Math.round(band * 1.5) : band;
+  const sideCount = schema === 'restricted' || schema === 'large' || schema === 'full' ? 2 : 0;
+  const totalWidth = main.width + side * sideCount;
+  const totalHeight = schema === 'large' ? main.height + topBand + bottomBand : schema === 'full' ? main.height + topBand + band : main.height;
+  const originX = Math.round(area.x + Math.max(0, (area.width - totalWidth) / 2));
+  const originY = Math.round(area.y + Math.max(0, (area.height - totalHeight) / 2));
+  const mainX = originX + (schema === 'restricted' || schema === 'large' || schema === 'full' ? side : 0);
+  const mainY = originY + (schema === 'large' || schema === 'full' ? topBand : 0);
+  win.setPosition(mainX, mainY, false);
+  return { main: { ...main, x: mainX, y: mainY }, side, band, topBand, bottomBand };
+}
+
+function applyCombatDisplaySchema(schema) {
+  if (!DISPLAY_SCHEMAS.has(schema) || !win || win.isDestroyed()) return;
+  combatDisplaySchema = schema;
+  clearExternalCombatPanes();
+  if (actionOptionsWin && !actionOptionsWin.isDestroyed()) actionOptionsWin.hide();
+  const { main, side, band, topBand, bottomBand } = displaySchemaGeometry(schema);
+  if (schema === 'restricted') {
+    createSchemaPaneGroup(['character'], { x: main.x - side, y: main.y, width: side, height: main.height });
+    createSchemaPaneGroup(['action-options', 'inventory', 'quests'], { x: main.x + main.width, y: main.y, width: side, height: main.height });
+  } else if (schema === 'large') {
+    const span = main.width + side;
+    createSchemaPaneGroup(['equipment', 'action-options'], { x: main.x + main.width, y: main.y, width: side, height: main.height });
+    createSchemaPaneGroup(['character'], { x: main.x, y: main.y - topBand + 1, width: span, height: topBand }, { dock: 'top' });
+    createSchemaPaneGroup(['inventory', 'quests'], { x: main.x, y: main.y + main.height, width: span, height: bottomBand });
+  } else if (schema === 'full') {
+    const span = main.width + side * 2;
+    createSchemaPaneGroup(['action-options'], { x: main.x - side, y: main.y, width: side, height: main.height });
+    createSchemaPaneGroup(['equipment'], { x: main.x + main.width, y: main.y, width: side, height: main.height });
+    createSchemaPaneGroup(['character'], { x: main.x - side, y: main.y - topBand + 1, width: span, height: topBand }, { dock: 'top' });
+    createSchemaPaneGroup(['inventory', 'quests'], { x: main.x - side, y: main.y + main.height, width: span, height: band });
+  }
+  startCombatPointerRouting();
+  broadcastCombatPaneState();
+  app.focus({ steal: true });
+  win.show();
+  win.focus();
+  win.moveTop();
 }
 
 function hasAttachedCombatPanes() {
@@ -152,6 +506,7 @@ function createActionOptionsWindow() {
     fullscreenable: false,
     minimizable: false,
     autoHideMenuBar: true,
+    parent: win,
     webPreferences: {
       preload: resolveFromApp('electron', 'preload.js'),
       contextIsolation: true,
@@ -174,7 +529,6 @@ function createActionOptionsWindow() {
   });
   actionOptionsWin.on('will-move', () => {
     actionOptionsAttached = false;
-    actionOptionsWin.setParentWindow(null);
   });
   actionOptionsWin.on('moved', () => {
     if (!actionOptionsWin || actionOptionsWin.isDestroyed() || actionOptionsAttached) return;
@@ -210,17 +564,40 @@ function setCombatPaneVisible(paneId, visible) {
   state.visible = visible === true;
   if (state.visible && win && !win.isDestroyed() && win.isFullScreen()) win.setFullScreen(false);
   if (!state.visible && state.detached) {
-    const detachedWindow = detachedCombatPaneWindows.get(paneId);
-    if (detachedWindow && !detachedWindow.isDestroyed()) detachedWindow.destroy();
-    detachedCombatPaneWindows.delete(paneId);
+    removeExternalPane(paneId);
     state.detached = false;
+  }
+  if (individualExpandedCombatPanes && state.visible) {
+    const existing = detachedCombatPaneWindows.get(paneId);
+    if (existing && !existing.isDestroyed()) {
+      existing.show();
+      existing.focus();
+      broadcastCombatPaneState();
+      return;
+    }
+    state.detached = false;
+    detachCombatPane(paneId);
+    return;
   }
   refreshCombatPaneHost();
 }
 
+function toggleCombatPane(paneId) {
+  const state = combatPaneState[paneId];
+  if (!state) return;
+  setCombatPaneVisible(paneId, !state.visible);
+}
+
 function detachCombatPane(paneId, position = {}) {
   const state = combatPaneState[paneId];
-  if (!state?.visible || state.detached || !win || win.isDestroyed()) return;
+  if (!state || !win || win.isDestroyed()) return;
+  if (state.detached) {
+    const groupedEntry = [...externalCombatPaneGroups].find(([, group]) => group.paneIds.includes(paneId));
+    if (!groupedEntry || groupedEntry[1].paneIds.length < 2) return;
+    removeExternalPane(paneId, false);
+    state.detached = false;
+  }
+  state.visible = true;
   state.detached = true;
 
   const existing = detachedCombatPaneWindows.get(paneId);
@@ -228,11 +605,10 @@ function detachCombatPane(paneId, position = {}) {
   const hostBounds = actionOptionsWin && !actionOptionsWin.isDestroyed() ? actionOptionsWin.getBounds() : actionOptionsTargetBounds();
   const paneWidth = hostBounds.width;
   const paneHeight = hostBounds.height;
+  const placement = nextExternalPanePlacement();
   const detachedWindow = new BrowserWindow({
-    x: Number.isFinite(position.x) ? Math.round(position.x - 90) : hostBounds.x + 32,
-    y: Number.isFinite(position.y) ? Math.round(position.y - 24) : hostBounds.y + 32,
-    width: paneWidth,
-    height: paneHeight,
+    ...placement.bounds,
+    parent: win,
     acceptFirstMouse: true,
     useContentSize: true,
     minWidth: paneWidth,
@@ -254,19 +630,46 @@ function detachCombatPane(paneId, position = {}) {
       devTools: true,
     },
   });
+  const groupId = `${paneId}:${Date.now()}`;
+  const group = { paneIds: [paneId], window: detachedWindow, column: placement.column, stackOrder: placement.stackOrder, stackHeight: placement.stackHeight };
+  externalCombatPaneGroups.set(groupId, group);
+  externalCombatPaneOrder.push(groupId);
   detachedCombatPaneWindows.set(paneId, detachedWindow);
   detachedWindow.loadFile(resolveFromApp('app', 'combat_ui_v2', 'action_options.html'), {
     query: { panel: paneId, ...(combatScenarioId ? { scenario: combatScenarioId } : {}) },
   });
   detachedWindow.once('ready-to-show', () => {
+    layoutExternalCombatPanes();
     detachedWindow.show();
     detachedWindow.focus();
+    sendExternalGroup(group, paneId);
     broadcastCombatPaneState();
   });
+  detachedWindow.on('will-move', () => {
+    group.schemaManaged = false;
+    group.dock = null;
+    releaseExternalPane(groupId);
+  });
+  detachedWindow.on('moved', () => {
+    if (movingCombatEnsemble || group.schemaManaged || !group.free || group.restoringFullHeight || detachedWindow.isDestroyed()) return;
+    scheduleExternalPaneDrop(groupId, detachedWindow);
+  });
+  detachedWindow.on('resize', () => resizeExternalPaneStack(groupId));
   detachedWindow.on('closed', () => {
-    detachedCombatPaneWindows.delete(paneId);
-    state.detached = false;
-    state.visible = false;
+    if (suppressedExternalCloses.has(detachedWindow)) {
+      suppressedExternalCloses.delete(detachedWindow);
+      return;
+    }
+    const liveGroup = externalCombatPaneGroups.get(groupId);
+    for (const id of liveGroup?.paneIds || [paneId]) {
+      detachedCombatPaneWindows.delete(id);
+      combatPaneState[id].detached = false;
+      combatPaneState[id].visible = false;
+    }
+    externalCombatPaneGroups.delete(groupId);
+    const orderIndex = externalCombatPaneOrder.indexOf(groupId);
+    if (orderIndex >= 0) externalCombatPaneOrder.splice(orderIndex, 1);
+    layoutExternalCombatPanes();
     refreshCombatPaneHost();
   });
   refreshCombatPaneHost();
@@ -437,7 +840,7 @@ function createWindow() {
     win.once('ready-to-show', () => {
       if (explorationMapEditor) win.maximize();
       else if (combatPreview) {
-        const paneWidth = Math.round(windowSize.width / 3);
+        const paneWidth = Math.round(windowSize.width / 4);
         const combinedWidth = windowSize.width + paneWidth;
         const displays = screen.getAllDisplays();
         const preferredDisplay = displays
@@ -451,8 +854,11 @@ function createWindow() {
       } else win.center();
       win.show();
       if (combatPreview) {
-        createActionOptionsWindow();
-        startCombatPointerRouting();
+        if (combatDisplaySchema) applyCombatDisplaySchema(combatDisplaySchema);
+        else if (!individualExpandedCombatPanes) {
+          createActionOptionsWindow();
+          startCombatPointerRouting();
+        } else broadcastCombatPaneState();
       }
     });
   } else {
@@ -495,7 +901,9 @@ ipcMain.on('app:quit', () => app.quit());
 ipcMain.on('combat:action-options:set-visible', (_event, visible) => setActionOptionsWindowVisible(visible === true));
 ipcMain.on('combat:action-options:close', () => setActionOptionsWindowVisible(false));
 ipcMain.on('combat:pane:set-visible', (_event, { paneId, visible } = {}) => setCombatPaneVisible(String(paneId || ''), visible === true));
+ipcMain.on('combat:pane:toggle', (_event, { paneId } = {}) => toggleCombatPane(String(paneId || '')));
 ipcMain.on('combat:pane:detach', (_event, { paneId, position } = {}) => detachCombatPane(String(paneId || ''), position));
+ipcMain.on('combat:pane:externalize', (_event, { paneId, position } = {}) => detachCombatPane(String(paneId || ''), position));
 ipcMain.on('combat:pane:close', (_event, { paneId } = {}) => setCombatPaneVisible(String(paneId || ''), false));
 ipcMain.on('combat:pane-host:close', () => {
   for (const state of Object.values(combatPaneState)) {
@@ -507,6 +915,41 @@ ipcMain.on('combat:pane-setting:set', (_event, { key, value } = {}) => {
   if (!(key in combatPaneSettings)) return;
   combatPaneSettings[key] = value === true;
   broadcastCombatPaneState();
+});
+ipcMain.on('combat:display-schema:set', (_event, { schema } = {}) => {
+  applyCombatDisplaySchema(String(schema || ''));
+});
+ipcMain.on('combat:pane:merge', (_event, { paneId, targetPaneId } = {}) => {
+  mergeCombatPaneIntoGroup(String(paneId || ''), String(targetPaneId || ''));
+});
+ipcMain.on('combat:pane-group:set-active', (_event, { paneId } = {}) => {
+  const entry = externalGroupForPane(String(paneId || ''));
+  if (entry) entry[1].activePaneId = String(paneId);
+});
+ipcMain.on('combat:ensemble-drag', (_event, { phase, position } = {}) => {
+  if (!win || win.isDestroyed() || !Number.isFinite(position?.x) || !Number.isFinite(position?.y)) return;
+  if (phase === 'start') {
+    const bounds = win.getBounds();
+    combatEnsembleDrag = { pointerX: position.x, pointerY: position.y, windowX: bounds.x, windowY: bounds.y };
+    movingCombatEnsemble = true;
+    clearTimeout(combatEnsembleReleaseTimer);
+    return;
+  }
+  if (phase === 'move' && combatEnsembleDrag) {
+    movingCombatEnsemble = true;
+    clearTimeout(combatEnsembleReleaseTimer);
+    win.setPosition(
+      Math.round(combatEnsembleDrag.windowX + position.x - combatEnsembleDrag.pointerX),
+      Math.round(combatEnsembleDrag.windowY + position.y - combatEnsembleDrag.pointerY),
+      false,
+    );
+    return;
+  }
+  if (phase === 'end') {
+    combatEnsembleDrag = null;
+    clearTimeout(combatEnsembleReleaseTimer);
+    combatEnsembleReleaseTimer = setTimeout(() => { movingCombatEnsemble = false; }, 120);
+  }
 });
 ipcMain.on('authoring:launch-tool', (_event, tool) => {
   const flags = {
@@ -602,6 +1045,13 @@ seedBundledDemoSaves();
 ipcMain.handle('saveGame', async (_e, { data, slot }) => {
   try {
     slot = safeSaveSlot(slot || 'autosave');
+    data = {
+      ...data,
+      metadata: {
+        ...(data?.metadata || {}),
+        ...(combatPreviewActive ? { combatWorkspace: captureCombatWorkspace() } : {}),
+      },
+    };
     assertSaveGameShape(data);
     const filePath = path.join(saveDir, `${slot}.json`);
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
@@ -619,6 +1069,7 @@ ipcMain.handle('loadGame', async (_e, { slot }) => {
     if (!fs.existsSync(filePath)) return null;
     const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
     assertSaveGameShape(data);
+    if (combatPreviewActive && data.metadata?.combatWorkspace) restoreCombatWorkspace(data.metadata.combatWorkspace);
     return data;
   } catch (err) {
     console.error('loadGame error:', err);

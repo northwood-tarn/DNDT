@@ -26,7 +26,7 @@ const VALID_AREA_SHAPES = new Set(["none", "sphere", "cube", "line", "cone", "cy
 const VALID_SCALING_TYPES = new Set(["none", "slot", "cantrip"]);
 const VALID_ATTACK_TYPES = new Set(["melee_spell", "ranged_spell"]);
 const VALID_DC_FROM = new Set(["spellSaveDC"]);
-const VALID_DAMAGE_KEYS = new Set(["dice", "diceByTier", "type", "choices", "addMod", "perDart"]);
+const VALID_DAMAGE_KEYS = new Set(["dice", "diceByTier", "type", "choices", "randomChoices", "addMod", "perDart"]);
 const VALID_ATTACK_KEYS = new Set(["type", "ability"]);
 const VALID_SAVE_KEYS = new Set(["ability", "dcFrom", "dcBonusFromLevel", "onSave"]);
 
@@ -101,10 +101,13 @@ function validateDamage(errors, id, damage, pathName = "hooks.damage") {
     fail(errors, id, `${pathName}.diceByTier must be an array`);
   }
   validateString(errors, id, `${pathName}.type`, damage.type);
-  validateBoolean(errors, id, `${pathName}.addMod`, damage.addMod);
-  validateBoolean(errors, id, `${pathName}.perDart`, damage.perDart);
+  if ("addMod" in damage) validateBoolean(errors, id, `${pathName}.addMod`, damage.addMod);
+  if ("perDart" in damage) validateBoolean(errors, id, `${pathName}.perDart`, damage.perDart);
   if ("choices" in damage && !Array.isArray(damage.choices)) {
     fail(errors, id, `${pathName}.choices must be an array`);
+  }
+  if ("randomChoices" in damage && !Array.isArray(damage.randomChoices)) {
+    fail(errors, id, `${pathName}.randomChoices must be an array`);
   }
 }
 

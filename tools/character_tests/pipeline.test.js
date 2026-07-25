@@ -21,6 +21,7 @@ export function runCharacterPipelineTests() {
   resolvesLevelThreeSubclassFeaturesWhenExplicitlyAllowed();
   resolvesDeclarativeClassFeatureEffects();
   resolvesWideImpactClassFeatureEffects();
+  resolvesLevelElevenMartialProgression();
   resolvesOriginFeatEffects();
   resolvesGeneralFeatEffects();
   resolvesClassSpecificMagicInitiates();
@@ -290,8 +291,12 @@ function resolvesDeclarativeSpeciesFeatureEffects() {
   assert.equal(orcSheet.features.some((item) => item.effects?.triggeredEffects?.[0]?.id === "relentless_endurance"), true);
 
   const aasimarSheet = resolveCharacterSheet(aasimarDraft);
+  assert.equal(aasimarSheet.features.some((item) =>
+    item.id === "species:aasimar:lanterna_savant" &&
+    item.effects?.modifiers?.some((modifier) => modifier.stat === "lanterna_oil_capacity" && modifier.amount === 10)
+  ), true);
   assert.equal(aasimarSheet.resources.some((item) => item.id === "healing_hands" && item.recovery === "long_rest"), true);
-  assert.equal(aasimarSheet.spellcasting.knownSpellIds.includes("light"), true);
+  assert.equal(aasimarSheet.spellcasting.knownSpellIds.includes("light"), false);
 }
 
 function resolvesSpeciesFeatureChoices() {
@@ -311,7 +316,7 @@ function resolvesSpeciesFeatureChoices() {
 
   const sheet = resolveCharacterSheet(draft);
   assert.equal(sheet.proficiencies.skills.includes("perception"), true);
-  assert.equal(sheet.spellcasting.knownSpellIds.includes("prestidigitation"), true);
+  assert.equal(sheet.spellcasting.knownSpellIds.includes("minor_magic"), true);
   assert.equal(sheet.metadata.unresolved.some((item) => item.type === "missing_species_feature_choice"), false);
 }
 
@@ -560,6 +565,28 @@ function resolvesWideImpactClassFeatureEffects() {
   assert.deepEqual(validateResolvedCharacterSheet(clericSheet), []);
 }
 
+function resolvesLevelElevenMartialProgression() {
+  const fighterTen = resolveCharacterSheet(createEmptyCharacterDraft({
+    identity: { characterName: "Level Ten Fighter", level: 10, classId: "fighter" },
+  }), {}, { allowNonCreationLevel: true });
+  const fighterEleven = resolveCharacterSheet(createEmptyCharacterDraft({
+    identity: { characterName: "Level Eleven Fighter", level: 11, classId: "fighter" },
+  }), {}, { allowNonCreationLevel: true });
+  const paladinEleven = resolveCharacterSheet(createEmptyCharacterDraft({
+    identity: { characterName: "Level Eleven Paladin", level: 11, classId: "paladin" },
+  }), {}, { allowNonCreationLevel: true });
+
+  assert.equal(fighterTen.combatBasics.attackActionAttacks, 2);
+  assert.equal(fighterEleven.combatBasics.attackActionAttacks, 3);
+  assert.equal(resolvedSheetToCombatActor(fighterEleven).attackActionAttacks, 3);
+  assert.equal(
+    paladinEleven.features.some((feature) => feature.effects?.damageRiders?.some((rider) =>
+      rider.id === "greater_radiant_smite" && rider.damage === "1d8" && rider.oncePerTurn !== true
+    )),
+    true
+  );
+}
+
 function resolvesOriginFeatEffects() {
   const alertDraft = createEmptyCharacterDraft({
     identity: {
@@ -616,13 +643,13 @@ function resolvesClassSpecificMagicInitiates() {
       name: "Shrine Guard",
       skillProficiencies: [],
       toolProficiencies: [],
-      originFeat: "magic_initiate_paladin",
+      originFeat: "magic_initiate_cleric",
     },
   };
   const warlockDraft = createEmptyCharacterDraft({
     identity: { characterName: "Test Pact", level: 1, backgroundId: "pact_touched" },
   });
-  const paladinDraft = createEmptyCharacterDraft({
+  const clericDraft = createEmptyCharacterDraft({
     identity: { characterName: "Test Shrine", level: 1, backgroundId: "shrine_guard" },
   });
 
@@ -632,11 +659,11 @@ function resolvesClassSpecificMagicInitiates() {
   assert.equal(warlockSheet.spellcasting.knownSpellIds.includes("hex"), true);
   assert.equal(warlockSheet.resources.some((item) => item.id === "magic_initiate_warlock_hex"), true);
 
-  const paladinSheet = resolveCharacterSheet(paladinDraft, { backgrounds: testBackgrounds });
-  assert.equal(paladinSheet.spellcasting.knownSpellIds.includes("light"), true);
-  assert.equal(paladinSheet.spellcasting.knownSpellIds.includes("guidance"), true);
-  assert.equal(paladinSheet.spellcasting.knownSpellIds.includes("shield_of_faith"), true);
-  assert.equal(paladinSheet.resources.some((item) => item.id === "magic_initiate_paladin_shield_of_faith"), true);
+  const clericSheet = resolveCharacterSheet(clericDraft, { backgrounds: testBackgrounds });
+  assert.equal(clericSheet.spellcasting.knownSpellIds.includes("guidance"), true);
+  assert.equal(clericSheet.spellcasting.knownSpellIds.includes("sacred_flame"), true);
+  assert.equal(clericSheet.spellcasting.knownSpellIds.includes("cure_wounds"), true);
+  assert.equal(clericSheet.resources.some((item) => item.id === "magic_initiate_cleric_cure_wounds"), true);
 }
 
 function reportsMissingOriginFeatChoices() {

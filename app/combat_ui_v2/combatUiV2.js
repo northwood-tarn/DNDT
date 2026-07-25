@@ -2,6 +2,8 @@ import "../combat_ui_take2/combatUi.js";
 import { createCombatGame } from "../combat/api.js";
 import { createActionIconImage } from "./actionIconRegistry.js";
 import { installEquipmentDrawer } from "./equipmentDrawer.js";
+import { getWeaponById } from "../data/weapons.js";
+import { getSpellcastingFocusById } from "../data/spellcastingFoci.js";
 
 const scenarioId = new URLSearchParams(window.location.search).get("scenario");
 if (!scenarioId) throw new Error("Combat UI v2 requires combat scenario state.");
@@ -52,6 +54,8 @@ const paneToggle = document.querySelector('[data-pane-toggle="action-options"]')
 const paneVisibilityInputs = [...document.querySelectorAll("[data-pane-id]")];
 const paneSettingInputs = [...document.querySelectorAll("[data-pane-setting]")];
 const fullscreenToggle = document.querySelector("[data-fullscreen-toggle]");
+const displaySchemaSelect = document.querySelector("[data-display-schema]");
+const displayOnboarding = document.querySelector(".combat-display-onboarding");
 const settingsTabs = [...document.querySelectorAll('[role="tab"]')];
 const settingsPanels = [...document.querySelectorAll('[role="tabpanel"]')];
 const compactEndTurn = document.querySelector('[data-combat-command="end_turn"]');
@@ -59,6 +63,58 @@ const expandedEndTurn = document.querySelector(".combat-expanded-end-turn");
 const quickbarTooltip = document.querySelector(".combat-quickbar-tooltip");
 let bannerTimer = null;
 let routedQuickbarSlot = null;
+let activeDisplaySchema = "laptop";
+let activeInventoryQuickChoice = null;
+let quickbarDragSourceSlot = null;
+const equipmentDragChannel = typeof BroadcastChannel === "function" ? new BroadcastChannel(`dndt-equipment:${presentationActor.id}`) : null;
+
+equipmentDragChannel?.addEventListener("message", (event) => {
+  if (event.data?.type === "item-drag-start") {
+    activeInventoryQuickChoice = quickChoiceForDraggedItem(event.data.drag);
+    highlightQuickbarSlots(activeInventoryQuickChoice?.economy);
+  }
+  if (event.data?.type === "item-drag-end") {
+    activeInventoryQuickChoice = null;
+    highlightQuickbarSlots(null);
+  }
+});
+
+function quickChoiceForDraggedItem(drag) {
+  const itemId = drag?.itemId;
+  const action = presentationActor.actions?.find((candidate) => candidate.itemId === itemId || candidate.id === itemId);
+  if (!action) return drag?.source === "equipment" ? quickWeaponChoice(itemId) : null;
+  const economy = action.cost === "bonus_action" ? "bonus" : action.cost;
+  if (!['action', 'bonus'].includes(economy)) return null;
+  const carriedQuantity = presentationActor.inventory?.find((entry) => entry.id === itemId)?.quantity || 0;
+  const available = drag?.source === "equipment" || carriedQuantity > 0;
+  return {
+    id: action.id,
+    name: action.name,
+    economy,
+    kind: "action",
+    iconId: itemId,
+    iconCategory: "item",
+    description: action.description || action.name,
+    available,
+    unavailableReason: available ? "" : "You currently do not have any of this item to consume",
+  };
+}
+
+function quickWeaponChoice(itemId) {
+  const item = getWeaponById(itemId) || getSpellcastingFocusById(itemId);
+  if (!item || item.canMakeWeaponAttack === false || (!item.damageFormula && !item.functionsAsWeapon)) return null;
+  return {
+    id: item.id,
+    name: item.name,
+    economy: "action",
+    kind: "action",
+    iconId: item.id,
+    iconCategory: "weapon",
+    description: item.inspectText || item.description || item.name,
+    available: true,
+    unavailableReason: "",
+  };
+}
 
 function showQuickbarDescription(slot) {
   if (!slot?.dataset.choice) return;
@@ -106,10 +162,29 @@ function renderQuickbar() {
       slot.className = "combat-quick-slot";
       slot.dataset.slotNumber = String(index + 1);
       slot.setAttribute("aria-label", `${economy === "bonus" ? "Bonus Action" : "Action"} quick slot ${index + 1}, empty`);
+      slot.addEventListener("dragstart", (event) => {
+        if (!slot.dataset.choice) return;
+        const choice = JSON.parse(slot.dataset.choice);
+        quickbarDragSourceSlot = slot;
+        slot.classList.add("is-being-dragged");
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("application/x-dndt-action", JSON.stringify(choice));
+        event.dataTransfer.setData(`application/x-dndt-${choice.economy}`, JSON.stringify(choice));
+        event.dataTransfer.setData("text/plain", JSON.stringify(choice));
+        highlightQuickbarSlots(choice.economy);
+      });
+      slot.addEventListener("dragend", () => {
+        slot.classList.remove("is-being-dragged");
+        quickbarDragSourceSlot = null;
+        highlightQuickbarSlots(null);
+      });
       slot.addEventListener("dragover", (event) => {
-        if (!event.dataTransfer.types.includes(`application/x-dndt-${economy}`)) return;
+        const acceptsAction = event.dataTransfer.types.includes(`application/x-dndt-${economy}`);
+        const acceptsInventoryItem = activeInventoryQuickChoice?.economy === economy;
+        if (!acceptsAction && !acceptsInventoryItem) return;
         event.preventDefault();
-        event.dataTransfer.dropEffect = "copy";
+        event.dataTransfer.dropEffect = quickbarDragSourceSlot ? "move" : "copy";
+        highlightQuickbarSlots(economy);
         slot.classList.add("is-drag-over");
       });
       slot.addEventListener("dragleave", () => slot.classList.remove("is-drag-over"));
@@ -118,16 +193,14 @@ function renderQuickbar() {
         slot.classList.remove("is-drag-over");
         const raw = event.dataTransfer.getData("application/x-dndt-action") || event.dataTransfer.getData("text/plain");
         try {
-          const choice = JSON.parse(raw);
+          const decoded = raw ? JSON.parse(raw) : null;
+          const choice = decoded?.economy ? decoded : activeInventoryQuickChoice;
+          if (!choice) return;
           if (choice.economy !== economy) return;
-          slot.dataset.choiceId = choice.id;
-          slot.dataset.choice = JSON.stringify(choice);
-          const displayName = choice.secondaryChoiceName ? `${choice.name} — ${choice.secondaryChoiceName}` : choice.name;
-          slot.title = displayName;
-          slot.setAttribute("aria-label", `${displayName}, ${economy === "bonus" ? "Bonus Action" : "Action"} quick slot ${index + 1}`);
-          slot.classList.add("is-populated");
-          slot.classList.toggle("is-unavailable", choice.available === false);
-          slot.replaceChildren(createActionIconImage(choice, "combat-quick-icon-art"));
+          const sourceSlot = quickbarDragSourceSlot;
+          populateQuickbarSlot(slot, choice, economy);
+          if (sourceSlot && sourceSlot !== slot) clearQuickbarSlot(sourceSlot);
+          highlightQuickbarSlots(null);
         } catch (_error) {
           // Pane-tab drags also use text/plain and are intentionally ignored here.
         }
@@ -144,6 +217,36 @@ function renderQuickbar() {
   }
 }
 
+function populateQuickbarSlot(slot, choice, economy) {
+  slot.dataset.choiceId = choice.id;
+  slot.dataset.choice = JSON.stringify(choice);
+  const displayName = choice.secondaryChoiceName ? `${choice.name} — ${choice.secondaryChoiceName}` : choice.name;
+  slot.title = displayName;
+  slot.setAttribute("aria-label", `${displayName}, ${economy === "bonus" ? "Bonus Action" : "Action"} quick slot ${slot.dataset.slotNumber}`);
+  slot.draggable = true;
+  slot.classList.add("is-populated");
+  slot.classList.toggle("is-unavailable", choice.available === false);
+  slot.replaceChildren(createActionIconImage(choice, "combat-quick-icon-art"));
+}
+
+function clearQuickbarSlot(slot) {
+  delete slot.dataset.choiceId;
+  delete slot.dataset.choice;
+  slot.removeAttribute("title");
+  slot.draggable = false;
+  slot.classList.remove("is-populated", "is-unavailable", "is-being-dragged");
+  const economy = slot.closest("[data-quickbar]")?.dataset.quickbar || "action";
+  slot.setAttribute("aria-label", `${economy === "bonus" ? "Bonus Action" : "Action"} quick slot ${slot.dataset.slotNumber}, empty`);
+  slot.replaceChildren();
+}
+
+function highlightQuickbarSlots(economy) {
+  for (const group of document.querySelectorAll("[data-quickbar]")) {
+    const viable = Boolean(economy && group.dataset.quickbar === economy);
+    for (const slot of group.querySelectorAll(".combat-quick-slot")) slot.classList.toggle("is-viable-drop", viable);
+  }
+}
+
 window.api?.onCombatPointerPosition?.(({ inside, x, y } = {}) => {
   const slot = inside ? document.elementFromPoint(x, y)?.closest?.(".combat-quick-slot") : null;
   if (slot === routedQuickbarSlot) return;
@@ -152,10 +255,14 @@ window.api?.onCombatPointerPosition?.(({ inside, x, y } = {}) => {
   else hideQuickbarDescription();
 });
 
-function setExpandedVisible(visible) {
-  expandedControls.hidden = !visible;
-  document.body.classList.toggle("has-action-options", visible);
+function setActionOptionsVisible(visible) {
   paneToggle.checked = visible;
+}
+
+function syncCentralPresentation() {
+  const expanded = activeDisplaySchema !== "laptop";
+  expandedControls.hidden = !expanded;
+  document.body.classList.toggle("has-action-options", expanded);
 }
 
 function selectSettingsTab(selectedTab) {
@@ -182,20 +289,41 @@ paneSettingInputs.forEach((input) => input.addEventListener("change", () => {
   window.api?.setCombatPaneSetting?.(input.dataset.paneSetting, input.checked);
 }));
 fullscreenToggle.addEventListener("change", () => window.api?.setFullscreen?.(fullscreenToggle.checked));
+displaySchemaSelect.addEventListener("change", () => {
+  localStorage.setItem("dndt.combatDisplaySchema", displaySchemaSelect.value);
+  window.api?.setCombatDisplaySchema?.(displaySchemaSelect.value);
+});
+displayOnboarding.addEventListener("submit", (event) => {
+  const selected = new FormData(event.currentTarget).get("display-schema");
+  if (!selected) return;
+  localStorage.setItem("dndt.combatDisplaySchema", selected);
+  displaySchemaSelect.value = selected;
+  window.api?.setCombatDisplaySchema?.(selected);
+});
 expandedEndTurn.addEventListener("click", () => compactEndTurn.click());
-window.api?.onCombatActionOptionsVisibility?.(setExpandedVisible);
+window.api?.onCombatActionOptionsVisibility?.(setActionOptionsVisible);
 window.api?.onCombatPaneState?.((state) => {
   for (const input of paneVisibilityInputs) input.checked = state?.[input.dataset.paneId]?.visible === true;
-  setExpandedVisible(state?.["action-options"]?.visible === true);
+  setActionOptionsVisible(state?.["action-options"]?.visible === true);
 });
 window.api?.onCombatPaneSettings?.((settings) => {
   for (const input of paneSettingInputs) input.checked = settings?.[input.dataset.paneSetting] === true;
   fullscreenToggle.checked = settings?.fullScreen === true;
   fullscreenToggle.disabled = settings?.fullScreenAvailable !== true;
+  if (settings?.displaySchema) {
+    activeDisplaySchema = settings.displaySchema;
+    syncCentralPresentation();
+    displaySchemaSelect.value = settings.displaySchema;
+    localStorage.setItem("dndt.combatDisplaySchema", settings.displaySchema);
+  } else {
+    const storedSchema = localStorage.getItem("dndt.combatDisplaySchema");
+    if (storedSchema) window.api?.setCombatDisplaySchema?.(storedSchema);
+    else if (!displayOnboarding.open) displayOnboarding.showModal();
+  }
 });
 
 renderQuickbar();
-setExpandedVisible(true);
+syncCentralPresentation();
 new MutationObserver(updateColourContext).observe(contextOptions, { childList: true, subtree: true });
 new MutationObserver(announceLatestOutcome).observe(logList, { childList: true, subtree: true });
 updateColourContext();

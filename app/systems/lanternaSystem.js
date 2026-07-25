@@ -12,7 +12,7 @@
 // - Oil is consumed only by exploration-time minutes (frozen during combat).
 //
 // Public API:
-//   initLanterna({ startOilMinutes=60 }?)
+//   initLanterna({ startOilMinutes=100 }?)
 //   getLanterna() -> { lit, oil, autoEnabled, lastEnv }
 //   lightLanterna(manual=false), extinguishLanterna(manual=false), toggleLanterna()
 //   addOil(minutes), setOil(minutes)
@@ -22,7 +22,7 @@ import { addListener, removeListener, getTime } from "./timeSystem.js";
 function formatHours(mins){ const h = Math.max(0, mins)/60; const r=Math.round(h*10)/10; return (Math.abs(r - Math.round(r))<1e-6)? String(Math.round(r)) : String(r); }
 import { logSystem } from "../engine/log.js";
 
-const DEFAULT_OIL = 60; // minutes per fresh fill; tune via initLanterna
+const DEFAULT_OIL = 100;
 let state = {
   lit: false,
   oil: DEFAULT_OIL,

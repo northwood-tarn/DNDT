@@ -183,7 +183,7 @@ function choicesFor(spec) {
     classChoices.saboteur_cookbook_recipes = ["fire_paper", "poison_vial"];
     classChoices.saboteur_advanced_recipes = ["spell_soot", "greater_fire_paper"];
   }
-  if (spec.classId === "wizard" && spec.level >= 9) classChoices.jesters_book_spell = "magic_missile";
+  if (spec.classId === "wizard" && spec.level >= 9) classChoices.jesters_book_spell = "magic_missile_jester";
   if (spec.subclassId === "battlemage") classChoices.arcane_armament_weapon = "longsword";
   if (spec.classId === "warlock" && spec.level >= 3) {
     classChoices.pact = "pact_of_the_blade";

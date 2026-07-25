@@ -1,5 +1,12 @@
 import { createEmptyCharacterDraft } from "./characterDraft.js";
 import { createCharacterRecord } from "./characterRepository.js";
+import { armor } from "../data/armor.js";
+import { consumables } from "../data/consumables.js";
+import { footwear } from "../data/footwear.js";
+import { headwear } from "../data/headwear.js";
+import { rings } from "../data/rings.js";
+import { spellcastingFoci } from "../data/spellcastingFoci.js";
+import { weapons } from "../data/weapons.js";
 
 const TEST_CHARACTER_IDS = ["battlemage", "saboteur", "lantern_cleric"];
 
@@ -54,7 +61,7 @@ const BUILDERS = {
       backgroundAbilityScores: ["intelligence", "constitution"],
       classChoices: {
         arcane_armament_weapon: "longsword",
-        jesters_book_spell: "magic_missile",
+        jesters_book_spell: "magic_missile_jester",
       },
     },
     gear: {
@@ -152,14 +159,14 @@ const BUILDERS = {
       backgroundAbilityScores: ["wisdom", "constitution"],
     },
     gear: {
-      weaponIds: ["mace", "clerics_holy_symbol"],
-      armorId: "half_plate",
-      shieldId: "shield",
-      inventory: [{ id: "healing_potion", quantity: 2 }],
+      weaponIds: [],
+      armorId: null,
+      shieldId: null,
+      inventory: completeCanonicalItemInventory(),
       attunedItemIds: [],
     },
     spells: {
-      knownSpellIds: ["guidance", "sacred_flame", "light", "toll_the_dead", "word_of_radiance"],
+      knownSpellIds: ["guidance", "sacred_flame", "toll_the_dead", "word_of_radiance"],
       preparedSpellIds: [
         "bless", "cure_wounds", "guiding_bolt", "shield_of_faith",
         "aid", "spiritual_weapon", "lesser_restoration",
@@ -179,3 +186,16 @@ const BUILDERS = {
     },
   }),
 };
+
+function completeCanonicalItemInventory() {
+  const records = [
+    ...weapons,
+    ...armor,
+    ...rings,
+    ...headwear,
+    ...footwear,
+    ...spellcastingFoci,
+    ...consumables,
+  ];
+  return [...new Set(records.map((item) => item.id))].map((id) => ({ id, quantity: 1 }));
+}

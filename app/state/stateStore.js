@@ -10,6 +10,7 @@ import { getRingById } from "../data/rings.js";
 import { getFootwearById } from "../data/footwear.js";
 import { getHeadwearById } from "../data/headwear.js";
 import { getSpellcastingFocusById } from "../data/spellcastingFoci.js";
+import { SPECIES } from "../data/species.js";
 import { setOilCapacityBonus } from "../systems/lanternaSystem.js";
 
 const state = {
@@ -132,6 +133,18 @@ function mergeModifiers(target, item) {
   }
 }
 
+function mergeSpeciesModifiers(target, player) {
+  const speciesId = player?.speciesId || player?.identity?.speciesId || player?.resolvedSheet?.identity?.speciesId || null;
+  const species = speciesId ? SPECIES[speciesId] : null;
+  for (const feature of species?.features || []) {
+    for (const modifier of feature.effects?.modifiers || []) {
+      if (modifier.stat === "lanterna_oil_capacity" && Number.isFinite(modifier.amount)) {
+        target.lanternaOilCapacityBonus += modifier.amount;
+      }
+    }
+  }
+}
+
 export function derivePlayerStats(inputState = state) {
   const player = inputState?.player || {};
   const eq = player.equipment || {};
@@ -183,6 +196,7 @@ export function derivePlayerStats(inputState = state) {
     mergeModifiers(agg, item);
     if (item.mechanics) agg.equipmentMechanics.push({ sourceItemId: item.id, ...structuredClone(item.mechanics) });
   }
+  mergeSpeciesModifiers(agg, player);
 
   // Armor Class
   const dex = getAbilityScore(player, "dex");

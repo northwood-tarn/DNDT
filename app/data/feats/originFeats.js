@@ -103,22 +103,6 @@ export const ORIGIN_FEATS_BY_ID = {
     tags: ["spellcasting", "legacy_variant"]
   }),
 
-  magic_initiate_paladin: originFeat({
-    id: "magic_initiate_paladin",
-    name: "Magic Initiate (Paladin)",
-    source: FEAT_SOURCES.DNDT_HOMEBREW,
-    description: "You know Light and Guidance, and you can cast Shield of Faith once per Long Rest without a slot.",
-    effects: {
-      spellGrants: [
-        { spellId: "light", level: 0 },
-        { spellId: "guidance", level: 0 },
-        { spellId: "shield_of_faith", level: 1, freeCastResourceId: "magic_initiate_paladin_shield_of_faith" }
-      ],
-      resources: [{ id: "magic_initiate_paladin_shield_of_faith", name: "Shield of Faith Free Cast", max: 1, recovery: "long_rest" }]
-    },
-    tags: ["spellcasting", "legacy_variant"]
-  }),
-
   savage_attacker: originFeat({
     id: "savage_attacker",
     name: "Savage Attacker",

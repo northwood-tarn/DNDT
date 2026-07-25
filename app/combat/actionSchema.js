@@ -12,6 +12,7 @@ const ACTION_TYPES = new Set([
   "spell_object",
   "spell_teleport",
   "spell_effect",
+  "spell_post_hit",
   "relic_revivify",
   "self_heal",
   "spell_self_heal",
@@ -38,6 +39,11 @@ export function validateCombatAction(action) {
   if (["weapon_attack", "melee_attack", "spell_attack"].includes(action.type)) {
     requireNumber(action, "range", errors);
     requireNumber(action, "attackBonus", errors);
+    requireString(action, "damage", errors);
+    requireString(action, "damageType", errors);
+  }
+  if (action.type === "spell_post_hit") {
+    requireNumber(action, "range", errors);
     requireString(action, "damage", errors);
     requireString(action, "damageType", errors);
   }
@@ -123,7 +129,7 @@ function validateDamageTypeChoices(action) {
   if (!Array.isArray(action.damageTypeChoices) || action.damageTypeChoices.some((item) => typeof item !== "string" || !item)) {
     return [`${action.id || "action"}.damageTypeChoices must be an array of damage type strings`];
   }
-  if (action.damageType && !action.damageTypeChoices.includes(action.damageType)) {
+  if (action.damageType && !action.damageTypeChoices.includes(action.damageType) && !Array.isArray(action.damageParts)) {
     return [`${action.id || "action"}.damageType must be one of damageTypeChoices`];
   }
   return [];

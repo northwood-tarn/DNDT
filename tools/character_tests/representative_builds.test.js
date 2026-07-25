@@ -112,7 +112,7 @@ function choicesForBackground(backgroundId, identity) {
     choices.classChoices = { rogue_expertise_skills: ["stealth", "deception"] };
   }
   if (identity.classId === "wizard" && (identity.level || 1) >= 9) {
-    choices.classChoices = { ...(choices.classChoices || {}), jesters_book_spell: "magic_missile" };
+    choices.classChoices = { ...(choices.classChoices || {}), jesters_book_spell: "magic_missile_jester" };
   }
   if (identity.classId === "warlock" && (identity.level || 1) >= 3) {
     choices.classChoices = { ...(choices.classChoices || {}), pact: "pact_of_the_blade" };

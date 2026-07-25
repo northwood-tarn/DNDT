@@ -6,10 +6,13 @@ import { canUseMovementMode, getMovementStepCost } from "./movementRules.js";
 import { canSeeActor } from "./perception.js";
 import { blockingContainmentBoundary, combatObjectsAt, hasCombatObjectLineOfSight } from "./combatObjects.js";
 import { canSpendSpellSlotThisTurn } from "./spellSlots.js";
+import { getLanterna } from "../systems/lanternaSystem.js";
 
 export function canUseAction(actor, action) {
   if (!actor || actor.hp <= 0) return blocked("actor is not able to act");
   if (!action) return blocked("action is missing");
+  if (action.postHitOnly && !action.contextual) return blocked("requires a qualifying hit");
+  if (Number(action.lanternaOilCost) > getLanterna().oil) return blocked(`requires ${action.lanternaOilCost} Lanterna oil`);
   if (getActionUses(action) <= 0) return blocked("no uses remaining");
   if (action.resourceId && getResourceUses(actor, action.resourceId) <= 0) return blocked("no resource uses remaining");
   for (const resourceId of action.additionalResourceIds || []) {

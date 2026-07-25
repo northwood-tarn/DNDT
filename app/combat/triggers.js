@@ -4,6 +4,7 @@ import { combatObjectsAffectingActor } from "./combatObjects.js";
 import { applyDamageAmount, rollSaveD20 } from "./combatEffectsResolution.js";
 import { conditionName, createConditionInstance } from "./effects.js";
 import { addActiveEffect, rollSaveModifier } from "./modifiers.js";
+import { resolveForcedMovement } from "./forcedMovement.js";
 
 export function dispatchActorTrigger(snapshot, trigger, actor, dice, log, context = {}) {
   if (!actor || actor.hp <= 0) return;
@@ -54,6 +55,14 @@ function applyTriggeredEffect(snapshot, source, actor, effect, dice, log, contex
       damage: effect.damage,
       damageType: effect.damageType || "untyped",
     }, rolled, amount, dice, log);
+    if (!saveResult?.success && effect.conditionOnFail) {
+      addCondition(actor, createConditionInstance({ type: "condition", condition: effect.conditionOnFail, duration: null }, sourceActor(source), { id: source.sourceActionId || source.id, name: source.name }));
+      log.add("condition.applied", { round: snapshot.round, sourceId: source.id, sourceName: source.name, targetId: actor.id, targetName: actor.name, condition: effect.conditionOnFail, label: conditionName(effect.conditionOnFail), actionName: source.name, noSave: true });
+    }
+    if (!saveResult?.success && effect.pushOnFailFt > 0) {
+      const movement = resolveForcedMovement(snapshot, sourceActorPosition(snapshot, source), actor, { direction: "away_from_source", distanceSquares: Math.floor(effect.pushOnFailFt / 5) });
+      if (movement.movedSquares) log.add("forced.move", { round: snapshot.round, actorId: source.sourceActorId || source.id, actorName: source.name, targetId: actor.id, targetName: actor.name, from: movement.from, to: movement.to, reason: source.name, movedSquares: movement.movedSquares });
+    }
     log.add("trigger.fired", triggerDetail(snapshot, source, actor, effect, context));
     return;
   }
@@ -208,6 +217,10 @@ function sourceActor(source) {
     tags: source.tags || [],
     creatureType: source.creatureType || null,
   };
+}
+
+function sourceActorPosition(snapshot, source) {
+  return (snapshot.actors || []).find((actor) => actor.id === (source.sourceActorId || source.id))?.position || source.position || { x: 0, y: 0 };
 }
 
 function auraSourceFromEffect(effect) {

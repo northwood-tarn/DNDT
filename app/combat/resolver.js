@@ -42,12 +42,14 @@ import {
 } from "./combatResolution.js";
 import { blockingContainmentBoundary, combatObjectContains, combatObjectsAt } from "./combatObjects.js";
 import { applyDamageAmount, rollSaveD20 } from "./combatEffectsResolution.js";
+import { rollRiderDamage } from "./damageRolls.js";
 import { rollSaveModifier } from "./modifiers.js";
 import { canMoveTo, canTargetAction, canUseAction } from "./rules.js";
 import { applySpellCastEndEffects } from "./spellCastEndEffects.js";
 import { spendActionSpellSlot } from "./spellSlots.js";
 import { resolveTeleport } from "./teleportAction.js";
 import { resolveCompoundWeaponAttack } from "./weaponMasteryActions.js";
+import { getLanterna, setOil } from "../systems/lanternaSystem.js";
 export { checkOutcome, currentActor, getActor, livingActors } from "./combatState.js";
 
 export function startTurn(snapshot, actor, log, dice = null) {
@@ -245,6 +247,25 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
     cleanupInvalidSourceConditions(snapshot, log);
     return resolved;
   }
+  if (action.type === "spell_post_hit") {
+    const target = getActor(snapshot, targetActorId(targetId));
+    if (!action.contextual || !target || target.id !== action.postHitTargetId) return false;
+    let damage = action.damage;
+    const creatureType = String(target.creatureType || "").toLowerCase();
+    if ((action.bonusAgainstCreatureTypes || []).includes(creatureType) && action.bonusDamage === "1d8") {
+      const match = String(damage).match(/^(\d+)d8$/);
+      if (match) damage = `${Number(match[1]) + 1}d8`;
+    }
+    const rolled = rollRiderDamage(damage, dice, { critical: action.postHitCritical === true });
+    applyDamageAmount(snapshot, actor, target, { ...action, damage }, rolled, Math.max(0, rolled.total), dice, log);
+    spendActionCost(actor, action.cost);
+    spendActionLinkedResources(actor, action);
+    actor.turnFlags.contextualActions = (actor.turnFlags.contextualActions || []).filter((item) => item.type !== "spell_post_hit");
+    syncContextualActions(actor);
+    afterResolvedAction(snapshot, actor, action, log);
+    checkOutcome(snapshot, log);
+    return true;
+  }
   if (action.type === "self_heal") {
     const resolved = resolveSelfHeal(snapshot, actor, action, dice, log);
     cleanupInvalidSourceConditions(snapshot, log);
@@ -346,11 +367,16 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
     }
     beginConcentrationForCast(snapshot, actor, action, log);
     const startEventIndex = log.events.length;
+    const tempHpShare = action.tempHpPool ? Math.floor(action.tempHpPool / selectedTargets.length) : null;
     for (const [index, target] of selectedTargets.entries()) {
       const gate = resolveTargetSaveGate(snapshot, actor, target, action, dice, log);
       if (!gate.ok) continue;
       if (action.type === "spell_effect") {
-        applyActionResolvedEffects(snapshot, actor, target, action, log);
+        const resolvedAction = tempHpShare == null ? action : {
+          ...action,
+          effects: action.effects.map((effect) => effect.type === "temp_hp" ? { ...effect, amount: tempHpShare } : effect),
+        };
+        applyActionResolvedEffects(snapshot, actor, target, resolvedAction, log);
       } else if (action.type === "spell_self_heal") {
         resolveHealingAction(snapshot, actor, target, action, dice, log, { spend: false });
       } else if (action.type === "spell_save") {
@@ -469,6 +495,8 @@ function spendActionLinkedResources(actor, action) {
   spendActionSpellSlot(actor, action);
   spendResourceUse(actor, action.resourceId);
   for (const resourceId of action.additionalResourceIds || []) spendResourceUse(actor, resourceId);
+  const oilCost = Math.max(0, Math.floor(Number(action.lanternaOilCost) || 0));
+  if (oilCost) setOil(getLanterna().oil - oilCost);
 }
 
 function afterResolvedAction(snapshot, actor, action, log) {
@@ -765,12 +793,25 @@ function uniqueActors(targets) {
 
 function actionWithTargetChoices(action, targetPayload) {
   const choices = targetPayload?.choices || {};
-  if (!choices.damageType) return action;
-  if (!Array.isArray(action?.damageTypeChoices) || !action.damageTypeChoices.includes(choices.damageType)) return action;
-  return {
-    ...action,
-    damageType: choices.damageType,
-  };
+  let resolved = action;
+  if (choices.damageType && Array.isArray(action?.damageTypeChoices) && action.damageTypeChoices.includes(choices.damageType)) {
+    resolved = {
+      ...resolved,
+      damageType: choices.damageType,
+      damageParts: Array.isArray(resolved.damageParts)
+        ? resolved.damageParts.map((part) => part.damageTypeChoices?.includes(choices.damageType) ? { ...part, damageType: choices.damageType } : part)
+        : resolved.damageParts,
+    };
+  }
+  if (choices.saveAbility && Array.isArray(action?.saveAbilityChoices) && action.saveAbilityChoices.includes(String(choices.saveAbility).toUpperCase())) {
+    resolved = {
+      ...resolved,
+      effects: resolved.effects.map((effect) => effect.type === "modifier" && effect.stat === "save"
+        ? { ...effect, ability: String(choices.saveAbility).toLowerCase() }
+        : effect),
+    };
+  }
+  return resolved;
 }
 
 function isAreaSaveAction(action, targetPayload) {

@@ -73,6 +73,14 @@ export const SPECIES = {
     resistances: ["radiant", "necrotic"],
     features: [
       feature({
+        id: "lanterna_savant",
+        name: "Lanterna Savant",
+        description: "You are particularly skilled at ekeing out the last drops of lanterna oil. Your maximum of oil at full is 110 instead of 100.",
+        effects: {
+          modifiers: [{ id: "lanterna_savant", stat: "lanterna_oil_capacity", amount: 10 }]
+        }
+      }),
+      feature({
         id: "healing_hands",
         name: "Healing Hands",
         description: "As an action, restore HP equal to your Proficiency Bonus.",
@@ -81,7 +89,6 @@ export const SPECIES = {
           actionOptions: [{ id: "healing_hands", actionType: "action", healingFormula: "proficiency_bonus" }]
         }
       }),
-      feature({ id: "light_bearer", name: "Light Bearer", description: "You know the Light cantrip.", grantsSpellId: "light" }),
       feature({
         id: "celestial_revelation",
         name: "Celestial Revelation",
@@ -202,7 +209,7 @@ export const SPECIES = {
       })
     ],
     lineages: {
-      high: lineage({ id: "high", name: "High", features: [feature({ id: "high_elf_magic_1", name: "High Elf Magic", description: "You know Prestidigitation.", grantsSpellId: "prestidigitation" })] }),
+      high: lineage({ id: "high", name: "High", features: [feature({ id: "high_elf_magic_1", name: "High Elf Magic", description: "You know Minor Magic.", grantsSpellId: "minor_magic" })] }),
       wood: lineage({ id: "wood", name: "Wood" }),
       drow: lineage({ id: "drow", name: "Drow" })
     }
@@ -220,7 +227,7 @@ export const SPECIES = {
       effects: { modifiers: [{ id: "gnomish_cunning", stat: "save", abilities: ["intelligence", "wisdom", "charisma"], mode: "advantage" }] }
     })],
     lineages: {
-      forest: lineage({ id: "forest", name: "Forest", features: [feature({ id: "forest_gnome_magic_1", name: "Forest Gnome Magic", description: "You know Minor Illusion.", grantsSpellId: "minor_illusion" })] }),
+      forest: lineage({ id: "forest", name: "Forest" }),
       rock: lineage({ id: "rock", name: "Rock", features: [feature({ id: "rock_gnome_magic_1", name: "Rock Gnome Magic", description: "You know Mending.", grantsSpellId: "mending" })] })
     }
   }),

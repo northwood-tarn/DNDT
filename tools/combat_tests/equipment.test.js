@@ -5,11 +5,17 @@ import { getArmorById } from "../../app/data/armor.js";
 import { assert } from "./helpers.js";
 
 export async function runEquipmentCombatTests() {
+  testLanternaSavantDerivedStats();
   testArmorAndShieldDerivedStats();
   testNarrativeUniqueLookup();
   testCanonicalRings();
   testRingDerivedStats();
   testLockedBaseArmorIcons();
+}
+
+function testLanternaSavantDerivedStats() {
+  const aasimar = derivePlayerStats({ player: { speciesId: "aasimar", equipment: {} } });
+  assert.equal(aasimar.lanternaOilCapacityBonus, 10, "Lanterna Savant should add 10 to Aasimar oil capacity");
 }
 
 function testLockedBaseArmorIcons() {

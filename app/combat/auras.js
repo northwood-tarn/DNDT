@@ -46,6 +46,12 @@ export function hasAuraConditionPrevention(snapshot, actor, conditionId, context
   )) || null;
 }
 
+export function hasAuraTurnStartRecovery(snapshot, actor) {
+  return combatAuraEffectsAffectingActor(snapshot, actor).some((effect) =>
+    effect.type === "healing_floor" && (Number(effect.amount) || 1) > 0
+  );
+}
+
 function isInsideAura(source, actor, aura) {
   if (!Number.isFinite(aura.radiusSquares)) return false;
   return distance(source.position, actor.position) <= aura.radiusSquares;

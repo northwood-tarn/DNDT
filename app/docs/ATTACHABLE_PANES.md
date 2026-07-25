@@ -14,7 +14,7 @@ The initial motivating case is the combat Action Options pane, particularly for 
 
 The default external surface on the right of the main combat window is a shared pane host rather than an Action Options-only window.
 
-The cog labels its pane-management tab `External Panes`. A checked pane uses the external host or a detached window. An unchecked pane remains available under laptop rules, opening over the right third of the main map when invoked. This decision is per pane, so hybrid layouts are supported. Fullscreen is available only when every pane is in laptop mode; externalising any pane exits and disables fullscreen.
+The cog labels its pane-management tab `External Panes`. A checked pane uses the external host or a detached window. An unchecked pane remains available under laptop rules, opening over the right quarter of the main map when invoked. This decision is per pane, so hybrid layouts are supported. Fullscreen is available only when every pane is in laptop mode; externalising any pane exits and disables fullscreen.
 
 Its visible tabs may include:
 

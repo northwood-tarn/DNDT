@@ -8,7 +8,7 @@ import {
   createConditionInstance,
   getConditionRules,
 } from "./effects.js";
-import { hasAuraConditionPrevention } from "./auras.js";
+import { combatAuraEffectsAffectingActor, hasAuraConditionPrevention } from "./auras.js";
 import { resolveDamageAmount } from "./damage.js";
 import {
   collectFeatureDamageRiders,
@@ -139,6 +139,29 @@ function applyActionEffects(snapshot, actor, target, action, log, trigger, dice 
     }
     if (effect.type === "temp_hp") {
       applyTempHpEffect(snapshot, actor, target, action, effect, log);
+      continue;
+    }
+    if (effect.type === "aura" && effect.aura) {
+      if (!Array.isArray(target.auras)) target.auras = [];
+      const aura = {
+        ...structuredClone(effect.aura),
+        sourceFeatureId: action.id,
+        sourceActorId: actor.id,
+        duration: effect.duration ? structuredClone(effect.duration) : null,
+      };
+      const existing = target.auras.find((item) => item.id === aura.id);
+      if (existing) Object.assign(existing, aura);
+      else target.auras.push(aura);
+      log.add("effect.applied", {
+        round: snapshot.round,
+        sourceId: actor.id,
+        sourceName: actor.name,
+        targetId: target.id,
+        targetName: target.name,
+        effectId: aura.id,
+        label: aura.name,
+        actionName: action.name,
+      });
       continue;
     }
     if (effect.type === "forced_movement") {
@@ -375,6 +398,16 @@ function applyDamageRiders(snapshot, source, target, action, dice, log, { critic
     }, dice, log, { critical });
     if (result.triggered) consumeActiveEffectRider(snapshot, source, effect, log);
   }
+  for (const effect of combatAuraEffectsAffectingActor(snapshot, source)) {
+    const rider = effect.damageRider;
+    if (!rider || rider.trigger !== "source_hits_with_attack_roll") continue;
+    if (Array.isArray(rider.actionTags) && !rider.actionTags.every((tag) => action.tags?.[tag] === true)) continue;
+    applyDamageRider(snapshot, source, target, {
+      id: `${effect.auraId || effect.id}_rider`,
+      name: effect.label || effect.auraId || "Aura rider",
+      ...rider,
+    }, dice, log, { critical, sourceAction: action });
+  }
   for (const rider of collectFeatureDamageRiders(source, target, action, { trigger: "source_hits_with_attack_roll", critical, snapshot, attackRoll })) {
     if (applyDamageRider(snapshot, source, target, rider, dice, log, { critical, sourceAction: action }).triggered) {
       markFeatureDamageRiderUsed(source, rider);
@@ -421,7 +454,7 @@ function applyDamageRider(snapshot, source, target, rider, dice, log, { critical
     applyActionEffects(snapshot, source, target, {
       id: rider.id,
       name: rider.name,
-      spellSaveDC: sourceAction?.spellSaveDC,
+      spellSaveDC: rider.save?.dc ?? sourceAction?.spellSaveDC,
       effects: rider.effects,
     }, log, "hit", dice);
   }

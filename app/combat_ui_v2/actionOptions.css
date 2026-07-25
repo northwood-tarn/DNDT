@@ -24,6 +24,17 @@ body {
   font-family: "Avenir Light", "Avenir", "Helvetica Neue", sans-serif;
 }
 
+body.is-embedded-pane {
+  display: block;
+  background: transparent;
+}
+
+body.is-embedded-pane .pane-topbar,
+body.is-embedded-pane .pane-titlebar,
+body.is-embedded-pane .pane-resize-cue { display: none; }
+
+body.is-embedded-pane .pane-scroll { height: 100vh; }
+
 body {
   position: relative;
   isolation: isolate;
@@ -77,18 +88,39 @@ body::before {
   background: rgba(0, 0, 0, 0.05);
   cursor: grab;
   user-select: none;
-  -webkit-app-region: drag;
+  -webkit-app-region: no-drag;
 }
 
 .pane-topbar {
   position: relative;
   z-index: 5;
-  display: block;
+  display: flex;
+  align-items: center;
   height: 43px;
   border-bottom: 1px solid rgba(170, 210, 203, 0.08);
   background: rgba(5, 14, 12, 0.44);
   box-shadow: inset 0 -16px 32px rgba(30, 80, 68, 0.07);
   -webkit-app-region: drag;
+}
+
+.pane-window-drag-surface {
+  position: absolute;
+  cursor: grab;
+  user-select: none;
+  -webkit-app-region: drag;
+}
+
+.pane-window-drag-surface:active { cursor: grabbing; }
+
+.pane-window-drag-surface-top {
+  z-index: 2;
+  inset: 0 43px 0 0;
+}
+
+.pane-window-drag-surface-title {
+  z-index: 6;
+  inset: 0;
+  -webkit-app-region: no-drag;
 }
 
 .pane-titlebar::after {
@@ -117,6 +149,31 @@ body::before {
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+
+.pane-title-key {
+  position: relative;
+  z-index: 4;
+  display: none;
+  place-items: center;
+  width: 43px;
+  height: 43px;
+  margin-right: -10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: rgba(215, 231, 227, 0.52);
+  font: 13px/1 "Avenir Light", "Avenir", sans-serif;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+
+body.has-inline-pane-key {
+  grid-template-rows: 78px minmax(0, 1fr) auto;
+}
+
+body.has-inline-pane-key .pane-topbar { display: none; }
+body.has-inline-pane-key .pane-title-key { display: grid; }
 
 .pane-close {
   position: absolute;
@@ -155,23 +212,69 @@ body::before {
   transform: rotate(-45deg);
 }
 
+.pane-close.is-pane-key {
+  color: rgba(215, 231, 227, 0.52);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+
+.pane-close.is-pane-key::before,
+.pane-close.is-pane-key::after { display: none; }
+
 .pane-tabs {
   position: relative;
   z-index: 3;
   display: flex;
+  flex: 1 1 auto;
   min-width: 0;
   gap: 0;
   height: 43px;
-  padding: 0 43px 0 0;
+  padding: 0;
   overflow-x: auto;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   scrollbar-width: none;
   -webkit-app-region: no-drag;
 }
 
+body.has-pane-tabs {
+  grid-template-rows: 43px minmax(0, 1fr) auto;
+}
+
+body.has-pane-tabs .pane-titlebar { display: none; }
+body.has-pane-tabs .pane-tabs {
+  margin-right: 43px;
+  margin-left: 36px;
+}
+body.has-pane-tabs .pane-window-drag-surface-top {
+  z-index: 4;
+  right: auto;
+  width: 36px;
+}
+
+.pane-single-title {
+  position: relative;
+  z-index: 3;
+  display: none;
+  padding-left: 18px;
+  color: rgba(225, 244, 241, 0.62);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+body.has-compact-titlebar {
+  grid-template-rows: 43px minmax(0, 1fr) auto;
+}
+
+body.has-compact-titlebar .pane-titlebar { display: none; }
+body.has-compact-titlebar .pane-single-title { display: block; }
+
 .pane-tabs::-webkit-scrollbar { display: none; }
 
 .pane-tabs[hidden] { display: none; }
+.pane-panel[hidden] { display: none !important; }
 
 .is-detached-pane .pane-scroll { height: auto; }
 
@@ -455,12 +558,14 @@ body::before {
   pointer-events: none;
 }
 
+.hide-pane-resize-cue .pane-resize-cue { display: none; }
+
 .pane-description {
   position: relative;
   z-index: 12;
-  min-height: 20vh;
-  max-height: calc(100vh - 201px);
-  height: auto;
+  min-height: 0;
+  max-height: none;
+  height: 20vh;
   overflow-y: auto;
   padding: 18px 24px 22px;
   border-top: 0;
@@ -504,10 +609,13 @@ body::before {
 
 .weapon-sets {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px;
-  padding: 2px 0 14px 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-left: -20px;
+  padding: 2px 0 14px;
 }
+
+.weapon-set { min-width: 0; }
 
 .weapon-set-heading {
   display: block;
@@ -518,12 +626,18 @@ body::before {
   text-transform: uppercase;
 }
 
-.weapon-set-slots { display: flex; gap: 7px; }
+.weapon-set-slots {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+  min-width: 0;
+}
 
 .weapon-set-slot {
   position: relative;
-  width: 68px;
-  height: 68px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
   border: 1px solid rgba(172, 207, 201, 0.20);
   background: rgba(4, 12, 10, 0.34);
 }
@@ -539,7 +653,6 @@ body::before {
 
 .weapon-set-slot.is-two-handed-occupancy .action-icon-art {
   opacity: 0.7;
-  transform: rotate(180deg);
 }
 
 .weapon-set-slot.is-off-hand .action-icon-base-layer {
@@ -551,7 +664,7 @@ body::before {
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
-  width: 72px;
+  width: 100%;
   overflow: hidden;
   color: rgba(220, 240, 236, 0.45);
   font-size: 7px;
@@ -562,6 +675,11 @@ body::before {
 }
 
 .pane-description[hidden] { display: none; }
+.is-action-options-pane .pane-description[hidden] {
+  display: block;
+  visibility: hidden;
+  pointer-events: none;
+}
 
 .pane-description p {
   margin: 8px 0 0;

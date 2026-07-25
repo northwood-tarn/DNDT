@@ -78,6 +78,8 @@ export function createCombatObjectFromSpell(spellRecord, options = {}) {
       damageType: tick.damage.type || "untyped",
       save: tick.save || (spellRecord.hooks?.save ? { ...spellRecord.hooks.save, dc: null } : null),
       affects: payload.targetTeam || "all",
+      conditionOnFail: tick.conditionOnFail ? normalizeConditionId(tick.conditionOnFail) : null,
+      pushOnFailFt: Number(tick.pushOnFailFt) || 0,
     });
   }
 
@@ -133,6 +135,24 @@ export function createSpellActionExtras(spellRecord, options = {}) {
     ...(String(applyEffect?.kind || "").toLowerCase() === "chain_targets"
       ? { linkedTargetRange: feetToSquares(applyEffect.secondaryRangeFt || 30) }
       : {}),
+    ...(Array.isArray(spellRecord.hooks?.damage?.randomChoices)
+      ? { randomDamageTypeChoices: [...spellRecord.hooks.damage.randomChoices] }
+      : {}),
+    ...(String(applyEffect?.kind || "").toLowerCase() === "temp_hp_pool"
+      ? { tempHpPool: Number(applyEffect.amount) || 0 }
+      : {}),
+    ...(Array.isArray(applyEffect?.saveAbilityChoices)
+      ? { saveAbilityChoices: [...applyEffect.saveAbilityChoices] }
+      : {}),
+    ...(applyEffect?.primaryDamage?.dice && applyEffect?.secondaryDamageChoice?.dice
+      ? {
+          damageParts: [
+            { damage: applyEffect.primaryDamage.dice, damageType: applyEffect.primaryDamage.type },
+            { damage: applyEffect.secondaryDamageChoice.dice, damageType: applyEffect.secondaryDamageChoice.choices?.[0], damageTypeChoices: [...(applyEffect.secondaryDamageChoice.choices || [])] },
+          ],
+          damageTypeChoices: [...(applyEffect.secondaryDamageChoice.choices || [])],
+        }
+      : {}),
   };
 }
 
@@ -179,6 +199,97 @@ function createConditionEffect(payload, spellRecord, options = {}) {
 
 function specialEffectFromEffect(payload, spellRecord, options = {}) {
   const kind = String(payload?.kind || "").toLowerCase();
+  if (kind === "weapon_enchantment") {
+    const slotLevel = Number(options.slotLevel || spellRecord.level);
+    const secondTier = Number(payload.secondTierSlot || 4);
+    const thirdTier = Number(payload.thirdTierSlot || 6);
+    const bonus = slotLevel >= thirdTier ? 3 : slotLevel >= secondTier ? 2 : Number(payload.attackBonus || 1);
+    const damageDice = slotLevel >= 7 ? "3d4" : slotLevel >= 5 ? "2d4" : payload.damageDice;
+    return {
+      type: "modifier",
+      trigger: "action_resolved",
+      target: "target",
+      stat: "attack_roll",
+      amount: bonus,
+      tags: ["weapon"],
+      duration: spellDuration(spellRecord.duration),
+      damageTypeChoices: [...(payload.damageTypeChoices || [])],
+      damageRider: {
+        trigger: "source_hits_with_attack_roll",
+        actionTags: ["weapon"],
+        damage: damageDice || String(bonus),
+        damageType: damageDice
+          ? options.damageType || payload.damageTypeChoices?.[0] || payload.damageType || "fire"
+          : "same_as_action",
+      },
+    };
+  }
+  if (kind === "smite_charge") {
+    return {
+      type: "modifier",
+      trigger: "action_resolved",
+      target: "self",
+      stat: "attack_roll",
+      amount: 0,
+      duration: spellDuration(spellRecord.duration),
+      remainingHits: 1,
+      removeWhenSpent: true,
+      damageRider: {
+        trigger: "source_hits_with_attack_roll",
+        actionTags: ["melee", "weapon"],
+        damage: payload.damage,
+        damageType: payload.damageType,
+        save: payload.save ? { ...payload.save, dc: options.spellSaveDC } : null,
+        effects: (payload.effects || []).map((effect) => ({
+          ...effect,
+          trigger: "hit",
+          duration: effect.duration || { kind: "rounds", remaining: 1, tick: "turn_end", anchor: "target" },
+        })),
+      },
+    };
+  }
+  if (kind === "support_aura") {
+    return {
+      type: "aura",
+      trigger: "action_resolved",
+      target: "self",
+      duration: spellDuration(spellRecord.duration),
+      aura: {
+        id: spellRecord.id,
+        name: spellRecord.name,
+        radiusSquares: feetToSquares(payload.radiusFt || 30),
+        affects: "self_and_allies",
+        effects: structuredClone(payload.effects || []),
+      },
+    };
+  }
+  if (kind === "protective_save_aura") {
+    return {
+      type: "aura",
+      trigger: "action_resolved",
+      target: "self",
+      duration: spellDuration(spellRecord.duration),
+      aura: {
+        id: spellRecord.id,
+        name: spellRecord.name,
+        radiusSquares: feetToSquares(payload.radiusFt || 30),
+        affects: "self_and_allies",
+        effects: [
+          { type: "modifier", trigger: "passive", stat: "save", mode: "advantage", tags: ["spell", "magical_effect"] },
+          { type: "save_evasion", trigger: "passive", tags: ["spell", "magical_effect"] },
+        ],
+      },
+    };
+  }
+  if (kind === "temp_hp_pool") {
+    return { type: "temp_hp", trigger: "action_resolved", target: "target", amount: Number(payload.amount) || 0 };
+  }
+  if (kind === "pestilence_debuff") {
+    return [
+      { type: "condition", trigger: "failed_save", condition: "poisoned", duration: durationFromEffect(payload, spellRecord) },
+      { type: "modifier", trigger: "failed_save", stat: "save", mode: "disadvantage", ability: "con", target: "target", duration: durationFromEffect(payload, spellRecord) },
+    ];
+  }
   if (kind === "light") {
     return { type: "light_source", trigger: "action_resolved", target: "target", brightFt: payload.brightFt || 20, dimFt: payload.dimFt || 20, duration: spellDuration(spellRecord.duration) };
   }
@@ -481,6 +592,7 @@ function bonusModifier(stat, payload, spellRecord, die, sign) {
 
 function conditionFromEffect(payload) {
   const kind = String(payload?.kind || "").toLowerCase();
+  if (["pestilence_debuff", "area_around_caster"].includes(kind) && payload?.condition) return normalizeConditionId(payload.condition);
   if (kind === "disadvantage_next_attack" || kind === "disadvantage_next_weapon_attack") return "next_attack_disadvantage";
   if (kind === "advantage_next_attack_against_target") return "next_incoming_attack_advantage";
   if (kind === "entangle_area" && payload.restrainedOnFail) return "restrained";

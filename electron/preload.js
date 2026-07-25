@@ -41,15 +41,27 @@ contextBridge.exposeInMainWorld('api', {
   setCombatActionOptionsVisible: (value) => ipcRenderer.send('combat:action-options:set-visible', value === true),
   closeCombatActionOptions: () => ipcRenderer.send('combat:action-options:close'),
   setCombatPaneVisible: (paneId, value) => ipcRenderer.send('combat:pane:set-visible', { paneId, visible: value === true }),
+  toggleCombatPane: (paneId) => ipcRenderer.send('combat:pane:toggle', { paneId }),
   detachCombatPane: (paneId, position) => ipcRenderer.send('combat:pane:detach', { paneId, position }),
+  externalizeCombatPane: (paneId, position) => ipcRenderer.send('combat:pane:externalize', { paneId, position }),
   closeCombatPane: (paneId) => ipcRenderer.send('combat:pane:close', { paneId }),
   closeCombatPaneHost: () => ipcRenderer.send('combat:pane-host:close'),
   setCombatPaneSetting: (key, value) => ipcRenderer.send('combat:pane-setting:set', { key, value: value === true }),
+  setCombatDisplaySchema: (schema) => ipcRenderer.send('combat:display-schema:set', { schema }),
+  mergeCombatPaneIntoGroup: (paneId, targetPaneId) => ipcRenderer.send('combat:pane:merge', { paneId, targetPaneId }),
+  setCombatPaneGroupActive: (paneId) => ipcRenderer.send('combat:pane-group:set-active', { paneId }),
+  dragCombatEnsemble: (phase, position) => ipcRenderer.send('combat:ensemble-drag', { phase, position }),
   onCombatPaneState: (listener) => {
     if (typeof listener !== 'function') return () => {};
     const wrapped = (_event, state) => listener(state);
     ipcRenderer.on('combat:panes:state', wrapped);
     return () => ipcRenderer.removeListener('combat:panes:state', wrapped);
+  },
+  onCombatPaneGroup: (listener) => {
+    if (typeof listener !== 'function') return () => {};
+    const wrapped = (_event, group) => listener(group);
+    ipcRenderer.on('combat:pane-group:state', wrapped);
+    return () => ipcRenderer.removeListener('combat:pane-group:state', wrapped);
   },
   onCombatActionOptionsVisibility: (listener) => {
     if (typeof listener !== 'function') return () => {};

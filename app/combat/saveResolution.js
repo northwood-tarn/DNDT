@@ -7,6 +7,7 @@ import { getActor } from "./combatState.js";
 import { applyDamage, applyDamageAmount, applySaveFailureEffects, rollSaveD20 } from "./combatEffectsResolution.js";
 import { applyLuckyToRoll } from "./luck.js";
 import { removeActiveEffect, rollSaveModifier } from "./modifiers.js";
+import { combatAuraEffectsAffectingActor } from "./auras.js";
 
 export function resolveSaveSpell(snapshot, actor, target, action, dice, log) {
   const cover = classifyCover(snapshot, actor, target, action);
@@ -235,6 +236,7 @@ export function resolveObjectSpell(snapshot, actor, action, targetPayload, log, 
 }
 
 function resolveAreaSaveAgainstTarget(snapshot, actor, target, action, dice, log) {
+  action = actionWithRandomDamageType(action, dice, log, snapshot, actor, target);
   const saveModifier = rollSaveModifier(snapshot, target, action.saveAbility, action, dice);
   const baseBonus = target.saves?.[action.saveAbility] || 0;
   const bonus = baseBonus + saveModifier.total;
@@ -286,13 +288,36 @@ function resolveAreaSaveAgainstTarget(snapshot, actor, target, action, dice, log
   });
   consumeSaveModifiers(snapshot, target, saveModifier, log, "used on saving throw");
 
-  if (action.damage) {
+  if (Array.isArray(action.damageParts) && action.damageParts.length) {
+    for (const part of action.damageParts) {
+      const damageAction = { ...action, damage: part.damage, damageType: part.damageType };
+      const rolled = dice.rollDamage(damageAction.damage);
+      const evades = success && action.saveOnSuccess === "half" && hasSaveEvasion(snapshot, target, action);
+      const amount = evades ? 0 : success ? Math.floor(Math.max(0, rolled.total) / 2) : Math.max(0, rolled.total);
+      applyDamageAmount(snapshot, actor, target, damageAction, rolled, amount, dice, log);
+    }
+  } else if (action.damage) {
     const damageAction = resolveConditionalDamageAction(action, target);
     const rolled = dice.rollDamage(damageAction.damage);
-    const amount = success ? Math.floor(Math.max(0, rolled.total) / 2) : Math.max(0, rolled.total);
+    const evades = success && action.saveOnSuccess === "half" && hasSaveEvasion(snapshot, target, action);
+    const amount = evades ? 0 : success ? Math.floor(Math.max(0, rolled.total) / 2) : Math.max(0, rolled.total);
     applyDamageAmount(snapshot, actor, target, damageAction, rolled, amount, dice, log);
   }
   if (!success) applySaveFailureEffects(snapshot, actor, target, action, log, dice);
+}
+
+function actionWithRandomDamageType(action, dice, log, snapshot, actor, target) {
+  const choices = action.randomDamageTypeChoices;
+  if (!Array.isArray(choices) || !choices.length || !dice?.rollDamage) return action;
+  const rolled = dice.rollDamage(`1d${choices.length}`);
+  const damageType = choices[Math.max(0, Math.min(choices.length - 1, rolled.total - 1))];
+  log.add("damage.type.random", { round: snapshot.round, actorId: actor.id, actorName: actor.name, targetId: target.id, targetName: target.name, actionName: action.name, damageType });
+  return { ...action, damageType };
+}
+
+function hasSaveEvasion(snapshot, target, action) {
+  const effects = combatAuraEffectsAffectingActor(snapshot, target);
+  return effects.some((effect) => effect.type === "save_evasion" && (!effect.tags?.length || effect.tags.some((tag) => action.tags?.[tag] === true)));
 }
 
 function resolveConditionalDamageAction(action, target) {

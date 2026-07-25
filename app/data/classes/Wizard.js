@@ -76,15 +76,15 @@ export default {
         name: "Jester’s Book of Shortcuts",
         type: "Special",
         description:
-          "At 10th level, you gain access to Jester’s Book of Shortcuts, a marginal spellbook containing unsafe arcane techniques. Choose one spell from the book’s list (False Life, Magic Missile, Burning Hands, Thunderwave). You may cast the chosen spell as a cantrip. When cast this way, the spell is always treated as though cast by a 2nd-level wizard, cannot be upcast, and does not scale with your character level. Like other cantrips, the spell is considered to be always prepared.",
+          "At 10th level, you gain access to Jester’s Book of Shortcuts, a marginal spellbook containing unsafe arcane techniques. Choose one spell from the book’s list (False Life, Magic Missile, Burning Hands, Thunderwave). You may cast the chosen spell as a cantrip using its lowest-level effect. It cannot be upcast and does not scale with your character level. Like other cantrips, it is always prepared.",
         effects: {
           choiceRequirements: [{
             id: "jesters_book_spell",
             kind: "spell",
             count: 1,
-            options: ["false_life", "magic_missile", "burning_hands", "thunderwave"]
+            options: ["false_life_jester", "magic_missile_jester", "burning_hands_jester", "thunderwave_jester"]
           }],
-          modifiers: [{ id: "jesters_book_spell_as_cantrip", target: "chosen_spell_as_cantrip", choiceId: "jesters_book_spell", casterLevel: 2 }]
+          modifiers: [{ id: "jesters_book_spell_as_cantrip", target: "chosen_spell_as_cantrip", choiceId: "jesters_book_spell", fixedSpellLevel: 1, cannotUpcast: true, scalesWithCharacterLevel: false }]
         }
       }
     ],

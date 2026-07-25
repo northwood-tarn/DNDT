@@ -12,12 +12,16 @@ import { clearConcentrationIfNoLinkedEffects, rollConditionSave } from "./combat
 import { applyDamageAmount, rollSaveD20 } from "./combatEffectsResolution.js";
 import { applyLuckyToRoll } from "./luck.js";
 import { cleanupInvalidMarks, removeMark } from "./marks.js";
+import { combatAuraEffectsAffectingActor } from "./auras.js";
 
 export function processOngoingEffects(snapshot, actor, timing, dice, log) {
-  if (!actor || actor.hp <= 0) return;
+  if (!actor) return;
+  processAuraTurnEffects(snapshot, actor, timing, log);
+  if (actor.hp <= 0) return;
   cleanupInvalidSourceConditions(snapshot, log);
   processMarkDurations(snapshot, actor, timing, log);
   processActiveEffectDurations(snapshot, actor, timing, log);
+  processAuraDurations(snapshot, actor, timing, log);
   const conditions = [...(actor.conditions || [])];
   for (const condition of conditions) {
     if (!hasCondition(actor, condition.id)) continue;
@@ -41,6 +45,48 @@ export function processOngoingEffects(snapshot, actor, timing, dice, log) {
     clearConcentrationIfNoLinkedEffects(snapshot, condition, log, "all concentration-linked effects ended");
   }
   processCombatObjectDurations(snapshot, actor, timing, log);
+}
+
+function processAuraDurations(snapshot, actor, timing, log) {
+  for (const holder of snapshot.actors || []) {
+    for (const aura of [...(holder.auras || [])]) {
+      if (aura.sourceActorId !== actor.id) continue;
+      const duration = advanceConditionDuration(aura, timing);
+      if (!duration.expired) continue;
+      holder.auras = (holder.auras || []).filter((item) => item !== aura);
+      log.add("effect.removed", {
+        round: snapshot.round,
+        actorId: holder.id,
+        actorName: holder.name,
+        effectId: aura.id,
+        label: aura.name || aura.id,
+        reason: duration.reason,
+      });
+      clearConcentrationIfNoLinkedEffects(snapshot, {
+        sourceActorId: aura.sourceActorId,
+        sourceActionId: aura.sourceFeatureId,
+      }, log, "aura duration ended");
+    }
+  }
+}
+
+function processAuraTurnEffects(snapshot, actor, timing, log) {
+  if (timing !== "turn_start") return;
+  for (const effect of combatAuraEffectsAffectingActor(snapshot, actor)) {
+    if (effect.type !== "healing_floor" || actor.hp !== 0) continue;
+    const before = actor.hp;
+    actor.hp = Math.min(actor.maxHp, Math.max(actor.hp, Number(effect.amount) || 1));
+    actor.defeated = false;
+    log.add("healing.applied", {
+      round: snapshot.round,
+      sourceId: effect.sourceActorId,
+      targetId: actor.id,
+      targetName: actor.name,
+      actionName: effect.label,
+      amount: actor.hp - before,
+      before,
+    });
+  }
 }
 
 function processConditionOngoingEffects(snapshot, actor, condition, timing, dice, log) {

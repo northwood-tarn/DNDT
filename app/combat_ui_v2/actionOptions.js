@@ -1,7 +1,19 @@
 import { createCombatGame } from "../combat/api.js";
 import { getSpellById } from "../data/spells.js";
+
+const SPELL_ICON_ALIASES = Object.freeze({
+  burning_hands_jester: "burning_hands",
+  false_life_jester: "false_life",
+  magic_missile_jester: "magic_missile",
+  thunderwave_jester: "thunderwave",
+});
 import { getWeaponMastery } from "../data/weaponMasteries.js";
+import { getArmorById } from "../data/armor.js";
+import { getSpellcastingFocusById } from "../data/spellcastingFoci.js";
+import { getWeaponById } from "../data/weapons.js";
 import { actionIconCategory, createActionIconImage } from "./actionIconRegistry.js";
+import { installCharacterPanel, installEquipmentPanelContent } from "./equipmentDrawer.js";
+import { createItemIconImage } from "../ui/itemIconRegistry.js";
 
 const scenarioId = new URLSearchParams(window.location.search).get("scenario");
 if (!scenarioId) throw new Error("Action Options requires combat scenario state.");
@@ -10,19 +22,60 @@ const actor = game.snapshot.actors.find((candidate) => candidate.team === "heroe
 if (!actor) throw new Error("Action Options requires an active player or companion.");
 document.querySelector("[data-actor-name]").textContent = actor.name.split(",", 1)[0];
 const PANE_LABELS = {
-  "action-options": "Actions",
+  "action-options": "Action Options",
   inventory: "Inventory",
   equipment: "Equipment",
+  character: "Character",
   quests: "Quests",
 };
-const detachedPaneId = new URLSearchParams(window.location.search).get("panel");
+const PANE_KEYS = { "action-options": "O", inventory: "I", equipment: "E", character: "C", quests: "Q" };
+const PANE_BY_CODE = { KeyO: "action-options", KeyI: "inventory", KeyE: "equipment", KeyC: "character", KeyQ: "quests" };
+const paneQuery = new URLSearchParams(window.location.search);
+const detachedPaneId = paneQuery.get("panel");
+const embeddedPane = paneQuery.get("embedded") === "1";
+if (embeddedPane) document.body.classList.add("is-embedded-pane");
 const tabList = document.querySelector(".pane-tabs");
 const paneTitle = document.querySelector("[data-pane-title]");
+const paneSingleTitle = document.querySelector("[data-pane-single-title]");
+const ensembleDragSurface = document.querySelector(".pane-window-drag-surface-title");
 const panePanels = [...document.querySelectorAll("[data-pane-panel]")];
 const descriptionPanel = document.querySelector(".pane-description");
+const closeButton = document.querySelector(".pane-close");
+const titleKeyButton = document.querySelector(".pane-title-key");
 let activePaneId = detachedPaneId || "action-options";
+let groupedPaneIds = detachedPaneId ? [detachedPaneId] : [];
 const routedDescriptionActions = new WeakMap();
 let routedDescriptionElement = null;
+let ensembleDragPointerId = null;
+
+function beginEnsembleDrag(event) {
+  if (!detachedPaneId || event.button !== 0) return;
+  event.preventDefault();
+  ensembleDragPointerId = event.pointerId;
+  event.currentTarget.setPointerCapture?.(event.pointerId);
+  window.api?.dragCombatEnsemble?.("start", { x: event.screenX, y: event.screenY });
+}
+
+function moveEnsembleDrag(event) {
+  if (event.pointerId !== ensembleDragPointerId) return;
+  window.api?.dragCombatEnsemble?.("move", { x: event.screenX, y: event.screenY });
+}
+
+function endEnsembleDrag(event) {
+  if (event.pointerId !== ensembleDragPointerId) return;
+  window.api?.dragCombatEnsemble?.("end", { x: event.screenX, y: event.screenY });
+  ensembleDragPointerId = null;
+}
+
+ensembleDragSurface?.addEventListener("pointerdown", beginEnsembleDrag);
+for (const panel of panePanels) {
+  panel.addEventListener("pointerdown", (event) => {
+    if (event.target === panel) beginEnsembleDrag(event);
+  });
+}
+document.addEventListener("pointermove", moveEnsembleDrag);
+document.addEventListener("pointerup", endEnsembleDrag);
+document.addEventListener("pointercancel", endEnsembleDrag);
 let paneSettings = { offerSpellUpcasting: true };
 let currentPaneState = Object.fromEntries(Object.keys(PANE_LABELS).map((paneId) => [paneId, { visible: true, detached: false }]));
 
@@ -48,7 +101,7 @@ function payload(action, secondaryChoice = null) {
     name: action.name,
     economy: economy(action),
     kind: action.tags?.spell ? "spell" : "action",
-    iconId: action.sourceSpellId || secondaryChoice?.id || action.id,
+    iconId: SPELL_ICON_ALIASES[action.sourceSpellId] || action.sourceSpellId || secondaryChoice?.id || action.id,
     iconCategory: actionIconCategory(secondaryChoice || action),
     spellLevel: Number.isFinite(action.spellLevel) ? action.spellLevel : null,
     secondaryChoiceId: secondaryChoice?.id || null,
@@ -149,12 +202,7 @@ function showActionDescription(action, sourceElement) {
     descriptionPanel.append(heading, detail);
   }
   descriptionPanel.hidden = false;
-  window.requestAnimationFrame(() => {
-    const descriptionHeight = Math.ceil(descriptionPanel.getBoundingClientRect().height);
-    document.documentElement.style.setProperty("--pane-description-height", `${descriptionHeight}px`);
-    document.body.classList.add("has-pane-description");
-    window.requestAnimationFrame(() => sourceElement?.scrollIntoView({ block: "nearest" }));
-  });
+  document.body.classList.add("has-pane-description");
 }
 
 function scheduleDescriptionHide() {
@@ -163,7 +211,6 @@ function scheduleDescriptionHide() {
     descriptionPanel.hidden = true;
     descriptionPanel.replaceChildren();
     document.body.classList.remove("has-pane-description");
-    document.documentElement.style.removeProperty("--pane-description-height");
   }, 100);
 }
 
@@ -287,7 +334,7 @@ function abilityList(actions) {
   return container;
 }
 
-function weaponSlot(action, { twoHandedOccupancy = false, offHand = false } = {}) {
+function weaponSlot(action, { twoHandedOccupancy = false, offHand = false, item = null } = {}) {
   const slot = document.createElement("div");
   slot.className = `weapon-set-slot${action ? " is-populated" : ""}${twoHandedOccupancy ? " is-two-handed-occupancy" : ""}${offHand ? " is-off-hand" : ""}`;
   if (!action) {
@@ -298,14 +345,22 @@ function weaponSlot(action, { twoHandedOccupancy = false, offHand = false } = {}
     slot.title = `${action.name} occupies both weapon positions`;
     slot.setAttribute("aria-label", `${action.name}, two-handed weapon occupying this position`);
   } else {
-    slot.draggable = true;
-    slot.tabIndex = 0;
     slot.title = action.name;
     slot.setAttribute("aria-label", action.name);
-    slot.addEventListener("dragstart", (event) => setDragData(event, payload(action)));
-    registerDescriptionHover(slot, action);
+    if (action.type) {
+      slot.draggable = true;
+      slot.tabIndex = 0;
+      slot.addEventListener("dragstart", (event) => setDragData(event, payload(action)));
+      registerDescriptionHover(slot, action);
+    }
   }
-  slot.append(createActionIconImage(action));
+  const itemImage = item ? createItemIconImage(item, "action-icon-base-layer") : null;
+  if (itemImage) {
+    const art = document.createElement("div");
+    art.className = "action-icon-art";
+    art.append(itemImage);
+    slot.append(art);
+  } else slot.append(createActionIconImage(action));
   if (twoHandedOccupancy) return slot;
   const label = document.createElement("span");
   label.textContent = action.name;
@@ -322,20 +377,50 @@ function weaponSets(economyName) {
     const heading = document.createElement("span");
     heading.className = "weapon-set-heading";
     heading.textContent = `Set ${setNumber}`;
+    const equippedSet = actor.equipment?.weaponSetIds?.[setNumber - 1];
+    const equippedShieldId = actor.equipment?.shieldId || null;
+    const equippedIds = Array.isArray(equippedSet)
+      ? [equippedSet[0] || null, equippedSet[1] || equippedShieldId || null]
+      : null;
     const actions = actor.actions.filter((action) => economy(action) === economyName && category(action) === `Weapon Set ${setNumber}`);
     const slots = document.createElement("div");
     slots.className = "weapon-set-slots";
-    const twoHandedAction = actions.find((action) => action.tags?.two_handed === true);
-    const primaryAction = twoHandedAction || actions[0];
-    const occupiesBothPositions = Boolean(twoHandedAction);
-    slots.append(
-      weaponSlot(primaryAction),
-      occupiesBothPositions ? weaponSlot(primaryAction, { twoHandedOccupancy: true }) : weaponSlot(actions[1], { offHand: Boolean(actions[1]) }),
-    );
+    if (equippedIds) {
+      const primaryItem = resolveEquippedHandItem(equippedIds[0]);
+      const secondaryItem = resolveEquippedHandItem(equippedIds[1]);
+      const primaryAction = actionForEquippedItem(equippedIds[0]);
+      const secondaryAction = actionForEquippedItem(equippedIds[1]);
+      const twoHanded = primaryItem?.hands === 2;
+      slots.append(
+        weaponSlot(primaryAction || displayOnlyHandItem(primaryItem), { item: primaryItem }),
+        twoHanded
+          ? weaponSlot(primaryAction || displayOnlyHandItem(primaryItem), { twoHandedOccupancy: true, item: primaryItem })
+          : weaponSlot(secondaryAction || displayOnlyHandItem(secondaryItem), { offHand: Boolean(secondaryItem), item: secondaryItem }),
+      );
+    } else {
+      const twoHandedAction = actions.find((action) => action.tags?.two_handed === true);
+      const primaryAction = twoHandedAction || actions[0];
+      slots.append(
+        weaponSlot(primaryAction),
+        twoHandedAction ? weaponSlot(primaryAction, { twoHandedOccupancy: true }) : weaponSlot(actions[1], { offHand: Boolean(actions[1]) }),
+      );
+    }
     set.append(heading, slots);
     container.append(set);
   }
   return container;
+}
+
+function resolveEquippedHandItem(itemId) {
+  return itemId ? getWeaponById(itemId) || getSpellcastingFocusById(itemId) || getArmorById(itemId) : null;
+}
+
+function actionForEquippedItem(itemId) {
+  return itemId ? actor.actions.find((action) => action.id === itemId) || null : null;
+}
+
+function displayOnlyHandItem(item) {
+  return item ? { id: item.id, name: item.name, iconId: item.id, iconCategory: "weapon", tags: { weapon: true } } : null;
 }
 
 function nativeSpellLevel(action) {
@@ -447,9 +532,20 @@ function renderActionLibraries() {
 function showPane(paneId) {
   if (!PANE_LABELS[paneId]) return;
   activePaneId = paneId;
+  document.body.classList.toggle("is-action-options-pane", paneId === "action-options");
+  if (paneId !== "action-options") {
+    descriptionPanel.hidden = true;
+    descriptionPanel.replaceChildren();
+    document.body.classList.remove("has-pane-description");
+  }
   paneTitle.textContent = paneId === "action-options" ? "Action Options" : PANE_LABELS[paneId];
   for (const panel of panePanels) panel.hidden = panel.dataset.panePanel !== paneId;
   for (const tab of tabList.querySelectorAll(".pane-tab")) tab.setAttribute("aria-selected", String(tab.dataset.paneId === paneId));
+  closeButton.textContent = PANE_KEYS[paneId] || "";
+  closeButton.classList.add("is-pane-key");
+  titleKeyButton.textContent = PANE_KEYS[paneId] || "";
+  paneSingleTitle.textContent = paneId === "action-options" ? "Action Options" : PANE_LABELS[paneId];
+  if (detachedPaneId) window.api?.setCombatPaneGroupActive?.(paneId);
 }
 
 function paneTab(paneId) {
@@ -465,10 +561,19 @@ function paneTab(paneId) {
     tab.classList.add("is-dragging");
     event.dataTransfer.effectAllowed = "move";
     event.dataTransfer.setData("text/plain", paneId);
+    event.dataTransfer.setData("application/x-dndt-pane-tab", paneId);
   });
   tab.addEventListener("dragend", (event) => {
     tab.classList.remove("is-dragging");
-    const outsideWindow = event.screenX < window.screenX || event.screenY < window.screenY || event.screenX > window.screenX + window.outerWidth || event.screenY > window.screenY + window.outerHeight;
+    const edgeTolerance = 16;
+    const outsideWindow = event.screenX <= window.screenX + edgeTolerance
+      || event.screenY <= window.screenY + edgeTolerance
+      || event.screenX >= window.screenX + window.outerWidth - edgeTolerance
+      || event.screenY >= window.screenY + window.outerHeight - edgeTolerance
+      || event.clientX <= edgeTolerance
+      || event.clientY <= edgeTolerance
+      || event.clientX >= window.innerWidth - edgeTolerance
+      || event.clientY >= window.innerHeight - edgeTolerance;
     if (outsideWindow) window.api?.detachCombatPane?.(paneId, { x: event.screenX, y: event.screenY });
   });
   return tab;
@@ -477,12 +582,18 @@ function paneTab(paneId) {
 function renderPaneState(state = currentPaneState) {
   currentPaneState = state;
   if (detachedPaneId) {
-    tabList.hidden = true;
+    tabList.hidden = embeddedPane || groupedPaneIds.length < 2;
+    document.body.classList.toggle("has-pane-tabs", !tabList.hidden);
+    document.body.classList.toggle("has-inline-pane-key", groupedPaneIds.length < 2 && !document.body.classList.contains("is-wide-pane"));
+    syncCompactTitlebar();
+    if (!tabList.hidden) tabList.replaceChildren(...groupedPaneIds.map(paneTab));
     document.body.classList.add("is-detached-pane");
-    showPane(detachedPaneId);
+    if (!groupedPaneIds.includes(activePaneId)) activePaneId = groupedPaneIds[0] || detachedPaneId;
+    showPane(activePaneId);
     return;
   }
   const attachedPaneIds = Object.keys(PANE_LABELS).filter((paneId) => state[paneId]?.visible && !state[paneId]?.detached);
+  document.body.classList.remove("has-inline-pane-key");
   tabList.hidden = false;
   tabList.replaceChildren(...attachedPaneIds.map(paneTab));
   if (!attachedPaneIds.includes(activePaneId)) activePaneId = attachedPaneIds[0] || "action-options";
@@ -490,15 +601,51 @@ function renderPaneState(state = currentPaneState) {
 }
 
 document.querySelector(".pane-close").addEventListener("click", () => {
+  if (embeddedPane) return;
   if (detachedPaneId) window.api?.closeCombatPane?.(activePaneId);
   else window.api?.closeCombatPaneHost?.();
 });
+titleKeyButton.addEventListener("click", () => {
+  if (embeddedPane) return;
+  if (detachedPaneId) window.api?.closeCombatPane?.(activePaneId);
+  else window.api?.closeCombatPaneHost?.();
+});
+document.addEventListener("keydown", (event) => {
+  if (embeddedPane) return;
+  if (event.repeat || event.altKey || event.ctrlKey || event.metaKey) return;
+  const paneId = PANE_BY_CODE[event.code];
+  if (!paneId) return;
+  const target = event.target;
+  if (target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName))) return;
+  event.preventDefault();
+  window.api?.toggleCombatPane?.(paneId);
+}, true);
 descriptionPanel.addEventListener("mouseenter", () => clearTimeout(descriptionHideTimer));
 descriptionPanel.addEventListener("mouseleave", scheduleDescriptionHide);
 document.querySelector(".pane-scroll").addEventListener("mouseleave", scheduleDescriptionHide);
 window.api?.onCombatPaneState?.(renderPaneState);
+window.addEventListener("combat:equipment-changed", renderActionLibraries);
+window.api?.onCombatPaneGroup?.((group) => {
+  if (!detachedPaneId || !Array.isArray(group?.paneIds)) return;
+  groupedPaneIds = group.paneIds.filter((paneId) => PANE_LABELS[paneId]);
+  if (group.activePaneId && groupedPaneIds.includes(group.activePaneId)) activePaneId = group.activePaneId;
+  renderPaneState();
+});
+document.addEventListener("dragover", (event) => {
+  if (!detachedPaneId || !event.dataTransfer.types.includes("application/x-dndt-pane-tab")) return;
+  event.preventDefault();
+  event.dataTransfer.dropEffect = "move";
+});
+document.addEventListener("drop", (event) => {
+  if (!detachedPaneId) return;
+  const paneId = event.dataTransfer.getData("application/x-dndt-pane-tab");
+  if (!paneId || groupedPaneIds.includes(paneId)) return;
+  event.preventDefault();
+  window.api?.mergeCombatPaneIntoGroup?.(paneId, activePaneId || detachedPaneId);
+});
 window.api?.onCombatPaneSettings?.((settings) => {
   paneSettings = { ...paneSettings, ...settings };
+  document.body.classList.toggle("hide-pane-resize-cue", settings.displaySchema === "large" || settings.displaySchema === "full");
   renderActionLibraries();
 });
 window.api?.onCombatPointerPosition?.(({ inside, x, y } = {}) => {
@@ -509,5 +656,20 @@ window.api?.onCombatPointerPosition?.(({ inside, x, y } = {}) => {
   if (element) showActionDescription(routedDescriptionActions.get(element), element);
   else scheduleDescriptionHide();
 });
+function syncPaneAspect() {
+  document.body.classList.toggle("is-wide-pane", window.innerWidth >= 720);
+  document.body.classList.toggle("has-inline-pane-key", Boolean(detachedPaneId && groupedPaneIds.length < 2 && !document.body.classList.contains("is-wide-pane")));
+  syncCompactTitlebar();
+}
+function syncCompactTitlebar() {
+  document.body.classList.toggle("has-compact-titlebar", Boolean(detachedPaneId && document.body.classList.contains("is-wide-pane") && groupedPaneIds.length === 1));
+}
+window.addEventListener("resize", syncPaneAspect);
+syncPaneAspect();
 renderActionLibraries();
+installEquipmentPanelContent(actor, {
+  equipmentPanel: document.querySelector('[data-pane-panel="equipment"]'),
+  inventoryPanel: document.querySelector('[data-pane-panel="inventory"]'),
+});
+installCharacterPanel(actor, document.querySelector('[data-pane-panel="character"]'));
 renderPaneState();

@@ -65,7 +65,6 @@ const implementedFeatIds = new Set([
   "healer",
   "lucky",
   "magic_initiate_cleric",
-  "magic_initiate_paladin",
   "magic_initiate_warlock",
   "magic_initiate_wizard",
   "savage_attacker",

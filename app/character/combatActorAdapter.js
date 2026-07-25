@@ -17,6 +17,13 @@ const ABILITY_ABBREVIATIONS = {
   wisdom: "wis",
   charisma: "cha",
 };
+const SKILL_ABILITIES = {
+  acrobatics: "dexterity", animal_handling: "wisdom", arcana: "intelligence", athletics: "strength",
+  deception: "charisma", history: "intelligence", insight: "wisdom", intimidation: "charisma",
+  investigation: "intelligence", medicine: "wisdom", nature: "intelligence", perception: "wisdom",
+  performance: "charisma", persuasion: "charisma", religion: "intelligence", sleight_of_hand: "dexterity",
+  stealth: "dexterity", survival: "wisdom",
+};
 
 export function resolvedSheetToCombatActor(sheet, options = {}) {
   const equippedFoci = equippedSpellcastingFoci(sheet);
@@ -72,6 +79,11 @@ export function resolvedSheetToCombatActor(sheet, options = {}) {
     movementRules: createEquipmentMovementRules(equippedAccessories),
     skillAdvantages: [...equipmentModifiers.skillAdvantages],
     skillBonuses: structuredClone(equipmentModifiers.skillBonuses),
+    equipmentProficiencies: {
+      weapons: [...(sheet.proficiencies.weapons || [])],
+      armor: [...(sheet.proficiencies.armor || [])],
+    },
+    characterSheet: createCharacterSheetSummary(sheet, spellcastingItemBonus),
     equipmentTraits: createEquipmentTraits(equippedItems),
     equipment: {
       armorId: sheet.equipment.armorId || null,
@@ -88,6 +100,31 @@ export function resolvedSheetToCombatActor(sheet, options = {}) {
     actions: createCombatActionsFromSheet(sheet, { equippedFoci, equippedAccessories, spellcastingItemBonus }),
   });
   return actor;
+}
+
+function createCharacterSheetSummary(sheet, spellcastingItemBonus) {
+  const proficientSkills = new Set(sheet.proficiencies.skills || []);
+  const expertiseSkills = new Set((sheet.proficiencies.expertise || []).filter((entry) => entry.kind === "skill").map((entry) => entry.id));
+  const skills = Object.fromEntries(Object.entries(SKILL_ABILITIES).map(([skill, ability]) => {
+    const abilityModifier = sheet.abilities[ability]?.modifier || 0;
+    const multiplier = expertiseSkills.has(skill) ? 2 : proficientSkills.has(skill) ? 1 : 0;
+    return [skill, { ability, modifier: abilityModifier + (sheet.proficiencyBonus * multiplier), proficient: multiplier > 0, expertise: multiplier === 2 }];
+  }));
+  return {
+    level: sheet.identity.level,
+    className: sheet.identity.className || sheet.identity.classId,
+    subclassName: sheet.identity.subclassName || null,
+    proficiencyBonus: sheet.proficiencyBonus,
+    abilities: structuredClone(sheet.abilities),
+    saves: structuredClone(sheet.combatBasics.saves || {}),
+    skills,
+    spellAttackBonus: sheet.spellcasting.spellAttackBonus || 0,
+    spellSaveDC: sheet.spellcasting.spellSaveDc || 0,
+    spellcastingAbility: sheet.spellcasting.ability || null,
+    savingThrowProficiencies: [...(sheet.proficiencies.savingThrows || [])],
+    baseInitiativeBonus: sheet.abilities.dexterity?.modifier || 0,
+    baseSpeedFt: sheet.combatBasics.speed || 30,
+  };
 }
 
 export function validateResolvedSheetCombatActor(sheet, options = {}) {
@@ -308,10 +345,13 @@ function createWeaponActions(sheet) {
       if (!isWeaponProficient(weapon, sheet.proficiencies.weapons || []) && weapon.spellcastingClass !== sheet.identity.classId) return null;
       if (weapon.exclusiveGroup && exclusiveGroups.has(weapon.exclusiveGroup)) return null;
       if (weapon.exclusiveGroup) exclusiveGroups.add(weapon.exclusiveGroup);
-      return createWeaponAction(weapon, {
-        attackBonus: weaponAttackBonus(sheet, weapon),
-        damageBonus: weaponDamageBonus(sheet, weapon),
-        enableWeaponMastery: isWeaponMastered(sheet, weapon),
+      const actionWeapon = wizardStaffIsOneHanded(sheet, weapon)
+        ? { ...weapon, hands: 1, properties: (weapon.properties || []).filter((property) => property !== "two-handed") }
+        : weapon;
+      return createWeaponAction(actionWeapon, {
+        attackBonus: weaponAttackBonus(sheet, actionWeapon),
+        damageBonus: weaponDamageBonus(sheet, actionWeapon),
+        enableWeaponMastery: isWeaponMastered(sheet, actionWeapon),
       });
     })
     .filter(Boolean);
@@ -319,6 +359,11 @@ function createWeaponActions(sheet) {
     ...weaponRecords,
     ...createNickAttackActions(sheet),
   ];
+}
+
+function wizardStaffIsOneHanded(sheet, weapon) {
+  if (sheet.identity.classId !== "wizard" || weapon.focusType !== "wizard_staff") return false;
+  return (sheet.proficiencies.armor || []).some((entry) => ["shield", "shields"].includes(String(entry).trim().toLowerCase()));
 }
 
 function createNickAttackActions(sheet) {

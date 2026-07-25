@@ -1,10 +1,11 @@
 import { getConditionRules } from "./effects.js";
 import { ignoresDamageResistance } from "./featureHooks.js";
 import { rollDamageReduction } from "./modifiers.js";
+import { combatAuraEffectsAffectingActor } from "./auras.js";
 
 export function resolveDamageAmount(source, target, action, rolledDamage, baseAmount = rolledDamage?.total || 0, snapshot = null, dice = null) {
   const damageType = action?.damageType || action?.collisionDamageType || "untyped";
-  const modifiers = collectDamageModifiers(target, damageType);
+  const modifiers = collectDamageModifiers(target, damageType, snapshot);
   let amount = Math.max(0, baseAmount);
 
   const bypassResistance = ignoresDamageResistance(source, action, damageType);
@@ -36,7 +37,7 @@ export function resolveDamageAmount(source, target, action, rolledDamage, baseAm
   };
 }
 
-function collectDamageModifiers(target, damageType) {
+function collectDamageModifiers(target, damageType, snapshot) {
   const modifiers = {
     resistant: [],
     immune: [],
@@ -56,6 +57,11 @@ function collectDamageModifiers(target, damageType) {
   if (matchesDamageType(target?.immune, damageType)) modifiers.immune.push("actor");
   if (matchesDamageType(target?.immunities, damageType)) modifiers.immune.push("actor");
   if (matchesDamageType(target?.vulnerability, damageType)) modifiers.vulnerable.push("actor");
+  for (const effect of combatAuraEffectsAffectingActor(snapshot, target)) {
+    if (effect.type === "damage_resistance" && matchesDamageType(effect.damageTypes, damageType)) {
+      modifiers.resistant.push(effect.label || effect.auraId || "aura");
+    }
+  }
 
   return modifiers;
 }

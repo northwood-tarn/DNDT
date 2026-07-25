@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <filter id="small-star-bloom" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+    <g id="small-star">
+      <path d="M0 -42 L7 -16 L29 -29 L16 -7 L42 0 L16 7 L29 29 L7 16 L0 42 L-7 16 L-29 29 L-16 7 L-42 0 L-16 -7 L-29 -29 L-7 -16 Z"
+            fill="#ffe85a" opacity="0.3" filter="url(#small-star-bloom)"/>
+      <path d="M0 -40 L7 -15 L27 -27 L15 -7 L40 0 L15 7 L27 27 L7 15 L0 40 L-7 15 L-27 27 L-15 7 L-40 0 L-15 -7 L-27 -27 L-7 -15 Z"
+            fill="#fff8ad" stroke="#fffde8" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M0 -33 L5 -12 L22 -22 L12 -5 L33 0 L12 5 L22 22 L5 12 L0 33 L-5 12 L-22 22 L-12 5 L-33 0 L-12 -5 L-22 -22 L-5 -12 Z"
+            fill="#fffef2"/>
+      <path d="M0 -39 L7 -15 L27 -27 L15 -7 L39 0 L15 7 L27 27 L7 15 L0 39 L-7 15 L-27 27 L-15 7 L-39 0 L-15 -7 L-27 -27 L-7 -15 Z"
+            fill="none" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="8 2 4 1" stroke-linejoin="round" opacity="0.74"/>
+    </g>
+  </defs>
+
+  <!-- Exact locked Radiant Smite source. -->
+  <image href="radiant_smite_geometry.svg" x="0" y="0" width="1024" height="1024"/>
+
+  <!-- Two stars, each approximately 30% of the main star. -->
+  <use href="#small-star" transform="translate(315 735)"/>
+  <use href="#small-star" transform="translate(709 735)"/>
+</svg>

@@ -162,6 +162,7 @@ export function createSpellAction(spellRecord, options = {}) {
     sourceSpellId: spellRecord.id,
     spellLevel: options.slotLevel ?? spellRecord.level,
     baseSpellLevel: spellRecord.level,
+    lanternaOilCost: hooks.costs?.lanternaOil || null,
     saveOnSuccess: hooks.save?.onSave || null,
     usesExactSpellSlot: options.usesExactSpellSlot === true,
     reactionPolicy: createReactionPolicyFromSpell(spellRecord),
@@ -176,6 +177,24 @@ export function createSpellAction(spellRecord, options = {}) {
       requiresHands: spellRecord.components?.s === true,
     },
   };
+
+  if (hooks.postHitSmite) {
+    return finalizeSpellAction(compactAction({
+      ...base,
+      type: "spell_post_hit",
+      requiresTarget: true,
+      range: 1,
+      damage,
+      damageType,
+      postHitOnly: true,
+      postHitActionTags: [...(hooks.postHitSmite.actionTags || ["melee", "weapon"])],
+      postHitRequiresAnyActionTag: [...(hooks.postHitSmite.requiresAnyActionTag || [])],
+      bonusAgainstCreatureTypes: [...(hooks.postHitSmite.bonusAgainstCreatureTypes || [])],
+      bonusDamage: hooks.postHitSmite.bonusDamage || null,
+      allowDefeatedTarget: false,
+      tags: { ...base.tags, harmful: true },
+    }), spellRecord);
+  }
 
   if (combatObject) {
     return finalizeSpellAction(compactAction({
@@ -656,5 +675,6 @@ function feetToSquares(feet) {
 }
 
 function compactAction(action) {
+  if (!action) return null;
   return Object.fromEntries(Object.entries(action).filter(([, value]) => value !== null && value !== undefined));
 }

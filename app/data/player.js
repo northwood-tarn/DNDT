@@ -48,9 +48,6 @@ export function createPlayer(config) {
     knownSpells: config.knownSpells || [],
     features: config.features || [],
     battlesWonThisLevel: 0,
-    sorceryPoints: config.class === "Sorcerer" ? 1 : 0,
-    metamagic: config.class === "Sorcerer" ? config.metamagic || null : null,
-    metamagicPassive: config.class === "Sorcerer" ? ["Subtle", "Careful"] : [],
 
     takeDamage(amount) {
       this.hp = Math.max(0, this.hp - amount);
@@ -64,7 +61,6 @@ export function createPlayer(config) {
 
     longRest() {
       this.hp = this.maxHp;
-      if (this.class === "Sorcerer") this.sorceryPoints = this.level;
       console.log(`${this.name} has taken a long rest.`);
     },
 
@@ -81,7 +77,6 @@ export function createPlayer(config) {
           this.maxHp += 5;
           this.hp = this.maxHp;
           this.battlesWonThisLevel = 0;
-          if (this.class === "Sorcerer") this.sorceryPoints = this.level;
           const newFeatures = getClassFeaturesForLevel(this.class, this.level);
           this.features.push(...newFeatures);
           console.log(`${this.name} has reached level ${this.level}!`);

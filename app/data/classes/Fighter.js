@@ -102,6 +102,14 @@ export default {
         effects: { advancement: [{ type: "ability_score_improvement", choices: ["ability_score", "feat"] }] }
       }
     ],
+    11: [
+      {
+        name: "Extra Attack (2)",
+        type: "Passive",
+        description: "When you take the Attack action, you can make three attacks.",
+        effects: { attackAction: [{ attacks: 3 }] }
+      }
+    ],
     12: [
       {
         name: "Ability Score Improvement",

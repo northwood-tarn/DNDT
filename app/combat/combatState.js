@@ -1,3 +1,5 @@
+import { hasAuraTurnStartRecovery } from "./auras.js";
+
 export function getActor(snapshot, actorId) {
   return snapshot.actors.find((actor) => actor.id === actorId) || null;
 }
@@ -13,8 +15,8 @@ export function currentActor(snapshot) {
 
 export function checkOutcome(snapshot, log) {
   if (snapshot.outcome) return snapshot.outcome;
-  const heroes = livingActors(snapshot, "heroes").length;
-  const enemies = livingActors(snapshot, "enemies").length;
+  const heroes = actorsStillInFight(snapshot, "heroes").length;
+  const enemies = actorsStillInFight(snapshot, "enemies").length;
   if (heroes === 0 || enemies === 0) {
     snapshot.outcome = heroes > 0 ? "victory" : "defeat";
     reviveDefeatedCompanions(snapshot, log);
@@ -24,6 +26,12 @@ export function checkOutcome(snapshot, log) {
     });
   }
   return snapshot.outcome;
+}
+
+function actorsStillInFight(snapshot, team) {
+  return snapshot.actors.filter((actor) =>
+    actor.team === team && (actor.hp > 0 || hasAuraTurnStartRecovery(snapshot, actor))
+  );
 }
 
 function reviveDefeatedCompanions(snapshot, log) {
