@@ -101,7 +101,7 @@ function payload(action, secondaryChoice = null) {
     name: action.name,
     economy: economy(action),
     kind: action.tags?.spell ? "spell" : "action",
-    iconId: SPELL_ICON_ALIASES[action.sourceSpellId] || action.sourceSpellId || secondaryChoice?.id || action.id,
+    iconId: action.iconId || SPELL_ICON_ALIASES[action.sourceSpellId] || action.sourceSpellId || secondaryChoice?.id || action.id,
     iconCategory: actionIconCategory(secondaryChoice || action),
     spellLevel: Number.isFinite(action.spellLevel) ? action.spellLevel : null,
     secondaryChoiceId: secondaryChoice?.id || null,

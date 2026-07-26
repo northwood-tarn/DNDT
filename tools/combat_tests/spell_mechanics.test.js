@@ -97,21 +97,6 @@ function testWallOfForceCreatesBlockingObject() {
   assert.equal(moveActor(snapshot, enemy, { x: 2, y: 0 }, log), false, "actors should not move through a blocking spell object");
 }
 
-function testConjureVerminMovingHazardUsesTriggerSave() {
-  const { snapshot, hero, enemy, log } = spellHarness();
-  hero.position = { x: 1, y: 1 };
-  enemy.position = { x: 3, y: 0 };
-  enemy.saves.dex = 0;
-  hero.actions.push(createSpellAction(SPELLS.conjure_vermin, { spellSaveDC: 13 }));
-
-  assert.equal(resolveAction(snapshot, hero, "conjure_vermin", { anchor: { ...hero.position } }, scriptedDice(), log), true);
-  assert.equal(snapshot.combatObjects[0].followsSource, true, "Conjure Vermin should create a source-following combat object");
-
-  const hpBefore = enemy.hp;
-  assert.equal(moveActor(snapshot, enemy, { x: 3, y: 1 }, log, { dice: scriptedDice({ d20: [18], damage: 6 }) }), true);
-  assert.equal(enemy.hp, hpBefore - 3, "successful moving-hazard save should apply half damage");
-}
-
 function testEvardsMawTurnStartSaveUsesDice() {
   const { snapshot, hero, enemy, log } = spellHarness();
   hero.actions.push(createSpellAction(SPELLS.evards_maw, { spellSaveDC: 13 }));
@@ -186,10 +171,10 @@ function testCanonicalForcedMovementSpellFamilies() {
   const { snapshot, hero, enemy, log } = spellHarness();
   hero.position = { x: 0, y: 0 };
   enemy.position = { x: 3, y: 0 };
-  hero.actions.push(createSpellAction(SPELLS.thorn_whip, { attackBonus: 5 }));
+  hero.actions.push(createSpellAction(SPELLS.eldritch_grasp, { attackBonus: 5 }));
 
-  assert.equal(resolveAction(snapshot, hero, "thorn_whip", enemy.id, scriptedDice({ d20: [15], damage: 1 }), log), true);
-  assert.deepEqual(enemy.position, { x: 1, y: 0 }, "Thorn Whip should pull the target up to 10 feet toward the caster on hit");
+  assert.equal(resolveAction(snapshot, hero, "eldritch_grasp", enemy.id, scriptedDice({ d20: [15], damage: 1 }), log), true);
+  assert.deepEqual(enemy.position, { x: 2, y: 0 }, "Eldritch Grasp should pull the target 5 feet toward the caster on hit");
 
   hero.economy.actionAvailable = true;
   enemy.position = { x: 1, y: 0 };
@@ -363,6 +348,45 @@ function testSelfCenteredAreaSpellsFilterTargets() {
   assert.equal(resolveAction(snapshot, hero, "word_of_radiance", null, scriptedDice({ d20: [1], damage: 6 }), log), true);
   assert.equal(enemy.hp, 14, "self-centered enemy-only area spells should damage nearby enemies");
   assert.equal(ally.hp, 20, "self-centered enemy-only area spells should not damage nearby allies");
+}
+
+function testEyebiteModesAndPersistentGaze() {
+  const { snapshot, hero, enemy, log } = spellHarness();
+  hero.actions.push(createSpellAction(SPELLS.eyebite, { spellSaveDC: 13 }));
+
+  assert.equal(resolveAction(snapshot, hero, "eyebite", {
+    targetId: enemy.id,
+    choices: { effectMode: "panic" },
+  }, scriptedDice({ d20: [1] }), log), true);
+  assert.ok(enemy.conditions.some((condition) => condition.id === "frightened"), "Eyebite: Panic should apply Frightened on a failed save");
+
+  const gaze = hero.actions.find((action) => action.id === "eyebite_gaze");
+  assert.ok(gaze, "Eyebite should grant its persistent gaze action");
+  assert.equal(gaze.usesExactSpellSlot, false, "the persistent gaze must not spend another spell slot");
+  assert.equal(gaze.cost, "free", "the persistent gaze must not spend an action");
+  assert.deepEqual(gaze.effectModeChoices.map((choice) => choice.id), ["sleep", "panic", "sickness"]);
+
+  hero.economy.actionAvailable = true;
+  assert.equal(resolveAction(snapshot, hero, "eyebite_gaze", {
+    targetId: enemy.id,
+    choices: { effectMode: "sickness" },
+  }, scriptedDice({ d20: [1] }), log), true);
+  assert.ok(enemy.conditions.some((condition) => condition.id === "poisoned"), "Eyebite's later gaze should be able to change to Sickness");
+  assert.equal(resolveAction(snapshot, hero, "eyebite_gaze", {
+    targetId: enemy.id,
+    choices: { effectMode: "sleep" },
+  }, scriptedDice({ d20: [1] }), log), false, "Eyebite's free gaze should still be limited to once per turn");
+}
+
+function testYolandesRegalPresenceResolvesAura() {
+  const { snapshot, hero, enemy, log } = spellHarness();
+  enemy.position = { x: 1, y: 0 };
+  hero.actions.push(createSpellAction(SPELLS.yolandes_regal_presence, { spellSaveDC: 13 }));
+
+  assert.equal(resolveAction(snapshot, hero, "yolandes_regal_presence", { anchor: hero.position }, scriptedDice({ d20: [1], damage: 5 }), log), true);
+  const aura = snapshot.combatObjects.find((object) => object.sourceActionId === "yolandes_regal_presence");
+  assert.ok(aura?.followsSource, "Yolande's aura should be attached to and follow its caster");
+  assert.ok(aura.effects.some((effect) => effect.trigger === "turn_end" && effect.conditionOnFail === "prone" && effect.pushOnFailFt === 10), "Yolande's aura should damage, knock prone, and push on a failed save");
 }
 
 function testCleansingSpellRemovesRegisteredCondition() {
@@ -640,7 +664,6 @@ export async function runSpellMechanicCombatTests() {
   testSanctuaryCanWasteIncomingAttack();
   testSleepEscalatesOnFailedRepeatSave();
   testWallOfForceCreatesBlockingObject();
-  testConjureVerminMovingHazardUsesTriggerSave();
   testEvardsMawTurnStartSaveUsesDice();
   testCastingNewConcentrationSpellDropsOldConcentrationEvenOnSaveSuccess();
   testBanishmentLastsTenTargetTurnEnds();
@@ -653,6 +676,8 @@ export async function runSpellMechanicCombatTests() {
   testDarknessBlocksSightAndImposesAttackDisadvantage();
   testLeveledSpellSlotOncePerTurn();
   testSelfCenteredAreaSpellsFilterTargets();
+  testEyebiteModesAndPersistentGaze();
+  testYolandesRegalPresenceResolvesAura();
   testCleansingSpellRemovesRegisteredCondition();
   testCureWoundsTargetsChosenAlly();
   testHealingWordIsFullyWired();

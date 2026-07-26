@@ -152,6 +152,8 @@ export function formatEvent(event) {
       return `${prefix}${d.targetName} makes a ${d.ability.toUpperCase()} save: ${rollText(d)} + ${d.bonus}${coverText(d.cover)} = ${d.total} vs DC ${d.dc}.`;
     case "save.result":
       return `${prefix}${d.success ? "Save succeeds" : "Save fails"} against ${d.spellName}.`;
+    case "legendary_resistance.used":
+      return `${prefix}${d.actorName} uses Legendary Resistance to succeed against ${d.actionName}. ${d.remaining}/${d.maximum} use(s) remain.`;
     case "damage.roll":
       return `${prefix}${d.label}${d.critical ? " critical" : ""}: ${d.dice} rolled [${d.rolls.join(", ")}] ${d.modifierText} = ${d.total}${savageAttackerText(d)}.`;
     case "damage.applied":

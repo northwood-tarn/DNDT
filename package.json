@@ -18,6 +18,7 @@
     "test:state": "node tools/test-state.js",
     "test:character": "node tools/test-character.js",
     "test:combat": "node tools/test-combat.js",
+    "test:spell-wiring": "node tools/test-spell-wiring.js",
     "test:dialogue": "node --test tools/dialogue_tests/*.test.js",
     "test:audio": "node --test tools/audio_tests/*.test.js",
     "preview:dialogue": "node authoring_tools/dialogue_scene_upload/server.mjs",

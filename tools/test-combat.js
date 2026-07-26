@@ -30,9 +30,11 @@ import { runSpellMechanicCombatTests } from "./combat_tests/spell_mechanics.test
 import { runSpeciesFeatureCombatTests } from "./combat_tests/species_features.test.js";
 import { runSystemCombatTests } from "./combat_tests/systems.test.js";
 import { runWeaponCombatTests } from "./combat_tests/weapons.test.js";
+import { runLegendaryResistanceCombatTests } from "./combat_tests/legendary_resistance.test.js";
 
 async function main() {
   await runSystemCombatTests();
+  await runLegendaryResistanceCombatTests();
   await runCombatActionContractTests();
   await runCombatHarnessSmokeTests();
   await runPaladinSmiteCombatTests();

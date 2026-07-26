@@ -8,6 +8,8 @@ import { applyDamage, applyDamageAmount, applySaveFailureEffects, rollSaveD20 } 
 import { applyLuckyToRoll } from "./luck.js";
 import { removeActiveEffect, rollSaveModifier } from "./modifiers.js";
 import { combatAuraEffectsAffectingActor } from "./auras.js";
+import { applyLegendaryResistance } from "./legendaryResistance.js";
+import { spellBlockingGlobe } from "./rules.js";
 
 export function resolveSaveSpell(snapshot, actor, target, action, dice, log) {
   const cover = classifyCover(snapshot, actor, target, action);
@@ -28,7 +30,8 @@ export function resolveSaveSpell(snapshot, actor, target, action, dice, log) {
     },
   });
   const total = saveRoll.roll + bonus;
-  const success = !saveRoll.autoFail && total >= action.spellSaveDC;
+  let success = !saveRoll.autoFail && total >= action.spellSaveDC;
+  ({ success } = applyLegendaryResistance({ snapshot, target, success, action, log, total, dc: action.spellSaveDC }));
 
   log.add("save.roll", {
     round: snapshot.round,
@@ -117,7 +120,8 @@ export function resolveTargetSaveGate(snapshot, actor, target, action, dice, log
     },
   });
   const total = roll.roll + bonus;
-  const success = !roll.autoFail && total >= dc;
+  let success = !roll.autoFail && total >= dc;
+  ({ success } = applyLegendaryResistance({ snapshot, target: actor, success, action: saveAction, effect: gate.condition, log, total, dc }));
   log.add("target_gate.save.roll", {
     round: snapshot.round,
     actorId: actor.id,
@@ -172,7 +176,8 @@ export function resolveAreaSaveSpell(snapshot, actor, action, targetPayload, dic
   const targets = actorsInFootprint(snapshot.actors, cells)
     .map((target) => getActor(snapshot, target.id))
     .filter(Boolean)
-    .filter((target) => areaTargetMatches(actor, target, action));
+    .filter((target) => areaTargetMatches(actor, target, action))
+    .filter((target) => !spellBlockingGlobe(snapshot, actor, action, target));
 
   log.add("area.target", {
     round: snapshot.round,
@@ -254,7 +259,8 @@ function resolveAreaSaveAgainstTarget(snapshot, actor, target, action, dice, log
     },
   });
   const total = saveRoll.roll + bonus;
-  const success = !saveRoll.autoFail && total >= action.spellSaveDC;
+  let success = !saveRoll.autoFail && total >= action.spellSaveDC;
+  ({ success } = applyLegendaryResistance({ snapshot, target, success, action, log, total, dc: action.spellSaveDC }));
 
   log.add("save.roll", {
     round: snapshot.round,

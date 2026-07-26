@@ -10,6 +10,7 @@ import { applyLuckyToRoll } from "./luck.js";
 import { applyMark } from "./marks.js";
 import { addActiveEffect, removeActiveEffect } from "./modifiers.js";
 import { rollSaveModifier } from "./modifiers.js";
+import { applyLegendaryResistance } from "./legendaryResistance.js";
 
 export function resolveFeatureAction(snapshot, actor, action, targetId, dice, log) {
   if (action.actionKind === "disengage") return resolveDisengageFeature(snapshot, actor, action, log);
@@ -546,7 +547,8 @@ function resolveFeatureSave(snapshot, actor, target, action, dice, log) {
     },
   });
   const total = saveRoll.roll + bonus;
-  const success = !saveRoll.autoFail && total >= dc;
+  let success = !saveRoll.autoFail && total >= dc;
+  ({ success } = applyLegendaryResistance({ snapshot, target, success, action, log, total, dc }));
 
   log.add("save.roll", {
     round: snapshot.round,

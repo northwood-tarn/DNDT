@@ -281,6 +281,7 @@ function applyFeatureEffects(sheet, draft, feature, featureId, level) {
   }
   addUniqueAll(sheet.proficiencies.skills, effects.proficiencies?.skills || []);
   addUniqueAll(sheet.proficiencies.tools, effects.proficiencies?.tools || []);
+  addUniqueAll(sheet.proficiencies.weapons, effects.proficiencies?.weapons || []);
   addUniqueAll(sheet.durability.resistances, effects.resistances || []);
   for (const advancement of effects.advancement || []) {
     if (advancement.type === "ability_score_improvement") {

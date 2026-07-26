@@ -264,7 +264,7 @@ export default {
           { name: "Arcane Armament", type: "Passive",
             description: "You gain proficiency with all regular and martial weapons. Choose one weapon you are proficient with as your arcane armament; it remains your armament until you choose to change it after a long rest. You use INT for attack and damage rolls with your arcane armament, instead of STR or DEX. Whenever you cast a leveled spell, the next time you hit with your arcane armament before the end of your next turn it deals extra force damage equal to your proficiency bonus.",
             effects: {
-              proficiencies: { weapons: ["regular", "martial"] },
+              proficiencies: { weapons: ["Simple weapons", "Martial weapons"] },
               choiceRequirements: [{ id: "arcane_armament_weapon", kind: "weapon", count: 1 }],
               modifiers: [
                 { id: "arcane_armament_attack_ability", target: "chosen_weapon_attack_ability", choiceId: "arcane_armament_weapon", ability: "intelligence" },

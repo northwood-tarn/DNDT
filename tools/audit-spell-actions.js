@@ -7,9 +7,17 @@ const DEFAULTS = {
   spellSaveDC: 13,
 };
 
-const rows = Object.values(SPELLS).map((spell) => {
+const rows = Object.values(SPELLS).filter((spell) => spell.active !== false).map((spell) => {
   const action = createSpellAction(spell, DEFAULTS);
   if (!action) {
+    if (spell.hooks?.utility) {
+      return {
+        id: spell.id,
+        name: spell.name,
+        status: "external",
+        reason: `utility resolver: ${spell.hooks.utility.kind}`,
+      };
+    }
     return {
       id: spell.id,
       name: spell.name,
@@ -28,17 +36,20 @@ const rows = Object.values(SPELLS).map((spell) => {
 });
 
 const supported = rows.filter((row) => row.status === "supported");
+const external = rows.filter((row) => row.status === "external");
 const invalid = rows.filter((row) => row.status === "invalid");
 const unsupportedCombat = rows.filter((row) => row.status === "unsupported" && looksCombatRelevant(SPELLS[row.id]));
 const unsupportedNonCombat = rows.filter((row) => row.status === "unsupported" && !looksCombatRelevant(SPELLS[row.id]));
 
 console.log(`[spell-actions] supported: ${supported.length}`);
+console.log(`[spell-actions] wired exploration/dialogue utility spells: ${external.length}`);
 console.log(`[spell-actions] invalid generated actions: ${invalid.length}`);
 console.log(`[spell-actions] unsupported combat-looking spells: ${unsupportedCombat.length}`);
 console.log(`[spell-actions] unsupported non-combat/utility spells: ${unsupportedNonCombat.length}`);
 
 printSection("Invalid Generated Actions", invalid);
 printSection("Unsupported Combat-Looking Spells", unsupportedCombat);
+printSection("Unsupported Non-Combat/Utility Spells", unsupportedNonCombat);
 
 if (invalid.length) process.exitCode = 1;
 

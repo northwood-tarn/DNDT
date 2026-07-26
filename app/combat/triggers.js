@@ -4,6 +4,7 @@ import { combatObjectsAffectingActor } from "./combatObjects.js";
 import { applyDamageAmount, rollSaveD20 } from "./combatEffectsResolution.js";
 import { conditionName, createConditionInstance } from "./effects.js";
 import { addActiveEffect, rollSaveModifier } from "./modifiers.js";
+import { applyLegendaryResistance } from "./legendaryResistance.js";
 import { resolveForcedMovement } from "./forcedMovement.js";
 
 export function dispatchActorTrigger(snapshot, trigger, actor, dice, log, context = {}) {
@@ -163,7 +164,8 @@ function resolveTriggerSave(snapshot, source, actor, effect, dice, log) {
   const baseBonus = actor.saves?.[ability] || 0;
   const bonus = baseBonus + modifier.total;
   const total = roll.roll + bonus;
-  const success = !roll.autoFail && total >= dc;
+  let success = !roll.autoFail && total >= dc;
+  ({ success } = applyLegendaryResistance({ snapshot, target: actor, success, action: { id: source.sourceActionId || source.id, name: source.name, effects: [effect] }, effect, log, total, dc }));
   log.add("save.roll", {
     round: snapshot.round,
     actorId: source.id,

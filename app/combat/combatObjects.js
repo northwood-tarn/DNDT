@@ -18,6 +18,8 @@ export function normalizeCombatObjects(objects = []) {
     difficultTerrain: object.difficultTerrain === true,
     blocksBoundaryMovement: object.blocksBoundaryMovement === true,
     blocksTeleport: object.blocksTeleport === true,
+    blocksSound: object.blocksSound === true,
+    blocksSpellLevelAtMost: Number(object.blocksSpellLevelAtMost) || 0,
     teleportSaveAbility: object.teleportSaveAbility ? String(object.teleportSaveAbility).toLowerCase().slice(0, 3) : null,
     immuneToDispel: object.immuneToDispel === true,
     visual: object.visual || null,

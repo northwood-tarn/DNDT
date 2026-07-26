@@ -6,8 +6,13 @@ import {
 
 export function createEffectsFromSpell(spellRecord, options = {}) {
   const applyEffect = spellRecord.hooks?.applyEffect;
-  if (!applyEffect) return [];
-  const effects = effectPayloads(applyEffect)
+  const legacyMovement = spellRecord.hooks?.forcedMovement;
+  const payloads = [
+    ...(applyEffect ? effectPayloads(applyEffect) : []),
+    ...(legacyMovement?.pullFt ? [{ kind: "pull_toward_caster", distanceFt: legacyMovement.pullFt }] : []),
+    ...(legacyMovement?.pushFt ? [{ kind: "push", distanceFt: legacyMovement.pushFt }] : []),
+  ];
+  const effects = payloads
     .flatMap((payload) => {
       const effect = createConditionEffect(payload, spellRecord, options);
       return Array.isArray(effect) ? effect : [effect];
@@ -44,6 +49,8 @@ export function createCombatObjectFromSpell(spellRecord, options = {}) {
     blocksMovement: payload.blocksMovement === true || kind === "wall",
     blocksLineOfSight: payload.blocksSight === true || payload.blocksLineOfSight === true || kind === "wall",
     blocksProjectiles: payload.blocksProjectiles === true || kind === "wall",
+    blocksSound: payload.blocksSound === true,
+    blocksSpellLevelAtMost: Number(payload.blocksSpellLevelAtMost) || 0,
     difficultTerrain: payload.difficultTerrain === true,
     blocksBoundaryMovement: payload.blocksBoundaryMovement === true || kind === "containment",
     blocksTeleport: payload.blocksTeleport === true,
@@ -70,17 +77,27 @@ export function createCombatObjectFromSpell(spellRecord, options = {}) {
   }
 
   for (const tick of payload.ticks || []) {
-    if (!tick.damage?.dice) continue;
-    object.effects.push({
-      type: "damage",
-      trigger: tick.phase,
-      damage: getScaledSpellDamage(spellRecord, { ...options, damage: tick.damage.dice }),
-      damageType: tick.damage.type || "untyped",
-      save: tick.save || (spellRecord.hooks?.save ? { ...spellRecord.hooks.save, dc: null } : null),
-      affects: payload.targetTeam || "all",
-      conditionOnFail: tick.conditionOnFail ? normalizeConditionId(tick.conditionOnFail) : null,
-      pushOnFailFt: Number(tick.pushOnFailFt) || 0,
-    });
+    if (tick.damage?.dice) {
+      object.effects.push({
+        type: "damage",
+        trigger: tick.phase,
+        damage: getScaledSpellDamage(spellRecord, { ...options, damage: tick.damage.dice }),
+        damageType: tick.damage.type || "untyped",
+        save: tick.save || (spellRecord.hooks?.save ? { ...spellRecord.hooks.save, dc: null } : null),
+        affects: payload.targetTeam || "all",
+        conditionOnFail: tick.conditionOnFail ? normalizeConditionId(tick.conditionOnFail) : null,
+        pushOnFailFt: Number(tick.pushOnFailFt) || 0,
+      });
+    } else if (tick.conditionOnFail) {
+      object.effects.push({
+        type: "condition",
+        trigger: tick.phase,
+        condition: normalizeConditionId(tick.conditionOnFail),
+        duration: spellDuration(spellRecord.duration),
+        save: tick.save || (spellRecord.hooks?.save ? { ...spellRecord.hooks.save, dc: null } : null),
+        affects: payload.targetTeam || "all",
+      });
+    }
   }
 
   if (kind === "aura_hazard" || kind === "area_hazard") {
@@ -144,6 +161,13 @@ export function createSpellActionExtras(spellRecord, options = {}) {
     ...(Array.isArray(applyEffect?.saveAbilityChoices)
       ? { saveAbilityChoices: [...applyEffect.saveAbilityChoices] }
       : {}),
+    ...(Array.isArray(applyEffect?.modeChoices)
+      ? {
+          effectModeChoices: structuredClone(applyEffect.modeChoices),
+          defaultEffectMode: applyEffect.defaultMode || applyEffect.modeChoices[0]?.id || null,
+          effectModeChoiceKey: applyEffect.modeChoiceKey || "effectMode",
+        }
+      : {}),
     ...(applyEffect?.primaryDamage?.dice && applyEffect?.secondaryDamageChoice?.dice
       ? {
           damageParts: [
@@ -199,6 +223,130 @@ function createConditionEffect(payload, spellRecord, options = {}) {
 
 function specialEffectFromEffect(payload, spellRecord, options = {}) {
   const kind = String(payload?.kind || "").toLowerCase();
+  if (kind === "repeatable_healing") {
+    return {
+      type: "grant_action",
+      trigger: "action_resolved",
+      target: "self",
+      duration: spellDuration(spellRecord.duration),
+      action: {
+        id: `${spellRecord.id}_heal`,
+        name: `${spellRecord.name}: Heal`,
+        description: spellRecord.text,
+        type: "spell_self_heal",
+        cost: payload.cost || "bonus",
+        requiresTarget: true,
+        range: feetToSquares(payload.rangeFt || 30),
+        maxTargets: 1,
+        healing: payload.healing || "2d6",
+        sourceSpellId: spellRecord.id,
+        spellLevel: spellRecord.level,
+        baseSpellLevel: spellRecord.level,
+        usesSpellSlot: false,
+        oncePerTurn: true,
+        tags: { spell: true, harmful: false, persistentSpellAction: true },
+      },
+    };
+  }
+  if (kind === "mode_condition") {
+    const choices = structuredClone(payload.modeChoices || []);
+    const defaultMode = payload.defaultMode || choices[0]?.id || null;
+    return {
+      type: "condition",
+      trigger: "failed_save",
+      condition: choices.find((choice) => choice.id === defaultMode)?.condition || choices[0]?.condition,
+      conditionChoices: Object.fromEntries(choices.map((choice) => [choice.id, choice.condition])),
+      effectModeChoiceKey: payload.modeChoiceKey || "effectMode",
+      duration: durationFromEffect(payload, spellRecord),
+    };
+  }
+  if (kind === "retaliation_only") {
+    return {
+      type: "condition",
+      trigger: "action_resolved",
+      target: "self",
+      condition: "fire_shield",
+      duration: spellDuration(spellRecord.duration),
+      damageRetaliation: {
+        trigger: "hit_by_melee",
+        damage: payload.damage?.dice || "2d8",
+        damageType: payload.damage?.type || "fire",
+      },
+    };
+  }
+  if (kind === "investiture_form_action") {
+    const forms = payload.forms || {};
+    const damageTypes = Object.keys(forms).map((form) => form === "flame" ? "fire" : form === "ice" ? "cold" : form === "stone" ? "bludgeoning" : "thunder");
+    return [
+      { type: "condition", trigger: "action_resolved", target: "self", condition: "investiture_of_the_patron", duration: spellDuration(spellRecord.duration) },
+      {
+        type: "grant_action", trigger: "action_resolved", target: "self", duration: spellDuration(spellRecord.duration),
+        action: {
+          id: `${spellRecord.id}_attack`, name: `${spellRecord.name}: Attack`, type: "spell_attack", cost: "action",
+          requiresTarget: true, range: 6, attackBonus: options.attackBonus ?? 0, damage: "2d8", damageType: damageTypes[0] || "fire",
+          damageTypeChoices: damageTypes, sourceSpellId: spellRecord.id, spellLevel: spellRecord.level, baseSpellLevel: spellRecord.level,
+          usesSpellSlot: false, oncePerTurn: true, tags: { spell: true, attackRoll: true, ranged: true, harmful: true, persistentSpellAction: true },
+        },
+      },
+    ];
+  }
+  if (kind === "regeneration") {
+    return {
+      type: "condition",
+      trigger: "action_resolved",
+      target: "target",
+      condition: "regenerating",
+      duration: spellDuration(spellRecord.duration),
+      ongoingEffects: [{ type: "healing", trigger: "turn_start", healing: String(payload.amount || 1), label: spellRecord.name }],
+    };
+  }
+  if (kind === "eyebite_gaze") {
+    const choices = structuredClone(payload.modeChoices || []);
+    const defaultMode = payload.defaultMode || choices[0]?.id || null;
+    const defaultCondition = choices.find((choice) => choice.id === defaultMode)?.condition || choices[0]?.condition || "unconscious";
+    const gazeEffect = {
+      type: "condition",
+      trigger: "failed_save",
+      condition: defaultCondition,
+      conditionChoices: Object.fromEntries(choices.map((choice) => [choice.id, choice.condition])),
+      effectModeChoiceKey: payload.modeChoiceKey || "effectMode",
+      duration: spellDuration(spellRecord.duration),
+    };
+    const repeat = payload.repeatAction || {};
+    return [
+      gazeEffect,
+      {
+        type: "grant_action",
+        trigger: "action_resolved",
+        target: "self",
+        duration: spellDuration(spellRecord.duration),
+        action: {
+          id: repeat.id || `${spellRecord.id}_gaze`,
+          name: repeat.name || `${spellRecord.name}: Gaze`,
+          description: spellRecord.text,
+          type: "spell_save",
+          cost: repeat.cost || "action",
+          requiresTarget: true,
+          range: feetToSquares(repeat.rangeFt || 60),
+          maxTargets: 1,
+          saveAbility: normalizeAbility(spellRecord.hooks?.save?.ability || "WIS"),
+          spellSaveDC: options.spellSaveDC ?? 10,
+          saveOnSuccess: spellRecord.hooks?.save?.onSave || "negates",
+          effectModeChoices: choices,
+          defaultEffectMode: defaultMode,
+          effectModeChoiceKey: payload.modeChoiceKey || "effectMode",
+          effects: [gazeEffect],
+          sourceSpellId: spellRecord.id,
+          spellLevel: spellRecord.level,
+          baseSpellLevel: spellRecord.level,
+          usesExactSpellSlot: false,
+          usesSpellSlot: repeat.usesSpellSlot !== false,
+          oncePerTurn: repeat.oncePerTurn !== false,
+          tags: { spell: true, harmful: true, savingThrow: true, persistentSpellAction: true, requiresSight: true },
+        },
+      },
+    ];
+  }
   if (kind === "weapon_enchantment") {
     const slotLevel = Number(options.slotLevel || spellRecord.level);
     const secondTier = Number(payload.secondTierSlot || 4);
@@ -533,8 +681,9 @@ function modifierFromEffect(payload, spellRecord) {
       stat: "incoming_attack_roll",
       amount: payload.amount || 0,
       die: payload.die || null,
+      mode: payload.mode || null,
       multiplier: -1,
-      target: "self",
+      target: payload.target || "self",
       duration: durationFromEffect(payload, spellRecord),
     };
   }
@@ -546,6 +695,16 @@ function modifierFromEffect(payload, spellRecord) {
       amount: payload.amount || 0,
       die: payload.die || null,
       damageType: payload.damageType || "all",
+      target: "target",
+      duration: durationFromEffect(payload, spellRecord),
+    };
+  }
+  if (kind === "save_advantage") {
+    return {
+      type: "modifier",
+      trigger: "action_resolved",
+      stat: "save",
+      mode: "advantage",
       target: "target",
       duration: durationFromEffect(payload, spellRecord),
     };

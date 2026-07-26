@@ -30,13 +30,28 @@ const ICONS = Object.freeze({
   mace: "../weapons/mace.png",
   fireball: "spell-fireball.png",
   cure_wounds: "spell-cure-wounds.png",
+  counterspell: "../spells/counterspell.png",
+  detect_magic: "../spells/detect_magic.png",
+  dispel_magic: "../spells/dispel_magic.png",
+  divine_smite: "../spells/divine_smite.png",
+  eyebite: "../spells/eyebite.png",
+  minor_magic: "../spells/minor_magic.png",
+  yolandes_regal_presence: "../spells/yolandes_regal_presence.png",
   radiant_smite: "../spells/radiant_smite.png",
   blinding_smite: "../spells/blinding_smite.png",
   staggering_smite: "../spells/staggering_smite.png",
+  greater_radiant_smite: "../spells/greater_radiant_smite.png",
   healing_potion: "consumable-healing-potion.png",
   dash: "tactic-dash.png",
   cunning_action_dash: "tactic-dash.png",
   spell_rhythm: "ability-spell-rhythm.png",
+  action_surge: "../abilities/action_surge.png",
+  breath_weapon_red: "../abilities/breath_weapon_red.png",
+  second_wind: "../abilities/second_wind.png",
+  duelist_flourish: "../abilities/duelist_flourish.png",
+  rage: "../abilities/rage.png",
+  primal_roar: "../abilities/primal_roar.png",
+  savage_momentum: "../abilities/savage_momentum.png",
   device_smoke_vial: "device-smoke-vial.png",
   shield: "reaction-shield.png",
 });
@@ -81,8 +96,9 @@ export function actionIconCategory(action = {}) {
 export function resolveActionIcon(action = {}) {
   const category = actionIconCategory(action);
   const stableId = action.iconId || action.sourceSpellId || action.secondaryChoiceId || action.id;
-  const filename = ICONS[stableId] || CATEGORY_FALLBACKS[category] || CATEGORY_FALLBACKS.ability;
-  return { category, url: new URL(filename, ICON_ROOT).href, isFallback: !ICONS[stableId] };
+  const directSpellIcon = category === "spell" && stableId ? `../spells/${stableId}.png` : null;
+  const filename = ICONS[stableId] || directSpellIcon || CATEGORY_FALLBACKS[category] || CATEGORY_FALLBACKS.ability;
+  return { category, url: new URL(filename, ICON_ROOT).href, isFallback: !ICONS[stableId] && !directSpellIcon };
 }
 
 export function createActionIconImage(action, className = "action-icon-art") {

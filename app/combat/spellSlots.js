@@ -2,6 +2,7 @@ export function actionConsumesSpellSlot(action) {
   return Boolean(
     action?.type?.startsWith("spell_") &&
     Number(action.spellLevel) > 0 &&
+    action.usesSpellSlot !== false &&
     action.forbiddenTranscriptionRepeat !== true &&
     !action.freeCastResourceId
   );

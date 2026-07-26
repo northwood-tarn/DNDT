@@ -69,6 +69,8 @@ export function normalizeEffect(effect) {
     trigger,
     label: effect.label || null,
     condition: effect.condition || null,
+    conditionChoices: effect.conditionChoices ? structuredClone(effect.conditionChoices) : null,
+    effectModeChoiceKey: effect.effectModeChoiceKey || null,
     conditions: Array.isArray(effect.conditions) ? [...effect.conditions] : [],
     stat: effect.stat || null,
     amount: Number.isFinite(effect.amount) ? effect.amount : 0,

@@ -60,7 +60,7 @@ const DRAGONBORN_BREATH_VARIANTS = {
   copper: { damageType: "acid", effects: [{ type: "modifier", trigger: "failed_save", stat: "ac", amount: -1, duration: "turn_start" }] },
   gold: { damageType: "fire", effects: [{ type: "condition", trigger: "failed_save", condition: "burning", duration: "turn_start", ongoingEffects: [{ type: "damage", trigger: "turn_start", damage: "proficiency_bonus", damageType: "fire" }] }] },
   green: { damageType: "poison", effects: [{ type: "condition", trigger: "failed_save", condition: "next_attack_disadvantage", duration: "turn_start" }] },
-  red: { damageType: "fire", effects: [{ type: "condition", trigger: "failed_save", condition: "burning", duration: "turn_start", ongoingEffects: [{ type: "damage", trigger: "turn_start", damage: "proficiency_bonus", damageType: "fire" }] }] },
+  red: { iconId: "breath_weapon_red", damageType: "fire", effects: [{ type: "condition", trigger: "failed_save", condition: "burning", duration: "turn_start", ongoingEffects: [{ type: "damage", trigger: "turn_start", damage: "proficiency_bonus", damageType: "fire" }] }] },
   silver: { damageType: "cold", effects: [{ type: "modifier", trigger: "failed_save", stat: "speed", amount: -2, duration: "turn_start" }] },
   white: { damageType: "cold", effects: [{ type: "modifier", trigger: "failed_save", stat: "speed", amount: -2, duration: "turn_start" }] }
 };
@@ -415,7 +415,7 @@ export const SPECIES = {
     id: "tiefling",
     name: "Tiefling",
     senses: [{ type: "darkvision", rangeFt: 60 }],
-    features: [feature({ id: "otherworldly_presence", name: "Otherworldly Presence", description: "You know Thaumaturgy.", grantsSpellId: "thaumaturgy" })],
+    features: [feature({ id: "otherworldly_presence", name: "Otherworldly Presence", description: "You know Minor Magic.", grantsSpellId: "minor_magic" })],
     lineages: {
       abyssal: lineage({ id: "abyssal", name: "Abyssal", resistances: ["poison"], features: [feature({ id: "abyssal_legacy_1", name: "Abyssal Legacy", description: "You know Poison Spray.", grantsSpellId: "poison_spray" })] }),
       chthonic: lineage({ id: "chthonic", name: "Chthonic", resistances: ["necrotic"], features: [feature({ id: "chthonic_legacy_1", name: "Chthonic Legacy", description: "You know Chill Touch.", grantsSpellId: "chill_touch" })] }),

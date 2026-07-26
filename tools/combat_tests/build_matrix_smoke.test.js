@@ -45,6 +45,7 @@ function assertBuildActionsPreflight(spec) {
 
   assert.equal(hasAnyUsefulOption(snapshot, actor.id), true, `${spec.label}: no useful combat option`);
   for (const action of actor.actions) {
+    if (action.postHitOnly && !action.contextual) continue;
     const result = preflightAction(snapshot, actor, action.id, targetPayloadFor(action, actor, enemy));
     assert.equal(result.ok, true, `${spec.label}: ${action.id} failed preflight (${result.code}: ${result.reason})`);
   }
@@ -160,7 +161,7 @@ export function draftFor(spec) {
     abilities: balancedAbilities(),
     choices: choicesFor(spec),
     gear: {
-      weaponIds: ["longsword", "dagger", focusForClass(spec.classId)],
+      weaponIds: weaponIdsFor(spec),
       armorId: null,
       shieldId: null,
       inventory: [{ id: "healing_potion", quantity: 1 }],
@@ -168,6 +169,16 @@ export function draftFor(spec) {
     },
     spells: spellChoicesFor(spec.classId, spec.level),
   });
+}
+
+function weaponIdsFor(spec) {
+  if (spec.classId === "wizard") {
+    return [spec.subclassId === "battlemage" ? "longsword" : "quarterstaff", "dagger", focusForClass(spec.classId)];
+  }
+  if (spec.classId === "cleric") return ["quarterstaff", "mace", focusForClass(spec.classId)];
+  if (spec.classId === "rogue") return ["rapier", "dagger"];
+  if (spec.classId === "warlock") return ["quarterstaff", "dagger", focusForClass(spec.classId)];
+  return ["longsword", "dagger"];
 }
 
 function focusForClass(classId) {

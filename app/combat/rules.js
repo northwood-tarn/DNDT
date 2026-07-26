@@ -11,6 +11,7 @@ import { getLanterna } from "../systems/lanternaSystem.js";
 export function canUseAction(actor, action) {
   if (!actor || actor.hp <= 0) return blocked("actor is not able to act");
   if (!action) return blocked("action is missing");
+  if (action.oncePerTurn && actor.turnFlags?.actionsResolved?.[action.id]) return blocked(`${action.name} has already been used this turn`);
   if (action.postHitOnly && !action.contextual) return blocked("requires a qualifying hit");
   if (Number(action.lanternaOilCost) > getLanterna().oil) return blocked(`requires ${action.lanternaOilCost} Lanterna oil`);
   if (getActionUses(action) <= 0) return blocked("no uses remaining");
@@ -76,6 +77,8 @@ export function canTargetAction(snapshot, actor, action, target) {
   if (!actor || actor.hp <= 0) return blocked("actor is not able to act");
   if (!action) return blocked("action is missing");
   if (!target || (target.hp <= 0 && !action.allowDefeatedTarget)) return blocked("not a valid target");
+  const globe = spellBlockingGlobe(snapshot, actor, action, target);
+  if (globe) return blocked(`protected by ${globe.name}`);
   if (action.requiresDefeatedTarget && target.hp > 0) return blocked("target is not down");
   if (hasConditionMechanic(target, "untargetable")) return blocked("target cannot be targeted");
   if (isHarmfulAction(action) && target.team === actor.team) return blocked("not a valid enemy target");
@@ -93,12 +96,20 @@ export function canTargetAction(snapshot, actor, action, target) {
         !hasCombatObjectLineOfSight(snapshot, actor.position, target.position))) {
     return blocked("line of sight blocked");
   }
-  if (tags.requiresSight) {
+  if (tags.requiresSight && !(action.allowDefeatedTarget && target.hp <= 0)) {
     const sight = canSeeActor(snapshot, actor, target);
     if (!sight.ok) return sight;
   }
 
   return allowed();
+}
+
+export function spellBlockingGlobe(snapshot, actor, action, target) {
+  if (!action?.tags?.spell || !Number.isFinite(action.spellLevel) || action.spellLevel <= 0 || !target?.position) return null;
+  return combatObjectsAt(snapshot, target.position).find((object) => {
+    if (!object.blocksSpellLevelAtMost || action.spellLevel > object.blocksSpellLevelAtMost) return false;
+    return !combatObjectsAt(snapshot, actor.position).some((sourceObject) => sourceObject.id === object.id);
+  }) || null;
 }
 
 export function isHarmfulAction(action) {

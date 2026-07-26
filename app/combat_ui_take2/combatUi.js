@@ -761,6 +761,7 @@ function compactCombatEvent(event, allEvents = []) {
     return `${lead}${d.actionName}: restored ${restored}.`;
   }
   if (event.type === "condition.applied") return `${lead}${shortCombatName(d.targetName)} gains ${d.label}.`;
+  if (event.type === "legendary_resistance.used") return `${lead}${shortCombatName(d.actorName)} uses Legendary Resistance (${d.remaining}/${d.maximum} left).`;
   if (event.type === "actor.defeated") return `${lead}${shortCombatName(d.targetName)} defeated.`;
   return `${lead}${event.type}.`;
 }
@@ -801,13 +802,13 @@ function shortCombatName(name = "") {
 const COMPACT_LOG_EVENT_TYPES = new Set([
   "combat.start", "round.start", "ui.action", "move", "dash", "dodge", "teleport",
   "feature.action", "object.created", "object.moved", "area.target", "effect.applied", "effect.removed", "action.granted", "attack.result",
-  "damage.applied", "healing.applied", "resource.restore", "condition.applied", "actor.defeated",
+  "damage.applied", "healing.applied", "resource.restore", "condition.applied", "legendary_resistance.used", "actor.defeated",
 ]);
 
 const ACTION_LOG_EVENT_TYPES = new Set([
   "move", "dash", "dodge", "teleport", "feature.action", "object.created", "object.moved", "area.target",
   "effect.applied", "effect.removed", "action.granted", "attack.result", "damage.applied", "healing.applied", "condition.applied",
-  "resource.restore",
+  "resource.restore", "legendary_resistance.used",
 ]);
 
 function selectTopLevelMode(mode) {

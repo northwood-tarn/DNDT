@@ -92,7 +92,7 @@ function reportsBattlemageArcaneArmamentChoice() {
     },
     gear: { weaponIds: ["quarterstaff", "dagger"], armorId: null, shieldId: null, inventory: [], attunedItemIds: [] },
     spells: {
-      knownSpellIds: ["thaumaturgy", "chill_touch", "acid_splash", "blade_ward", "distant_light"],
+      knownSpellIds: ["fire_bolt", "chill_touch", "acid_splash", "blade_ward", "ray_of_frost"],
       preparedSpellIds: ["magic_missile", "burning_hands", "sleep", "thunderwave", "witch_bolt"],
     },
     choices: {
@@ -131,7 +131,7 @@ function reportsAbilityScoreImprovementFeatChoiceQuestions() {
     },
     gear: { weaponIds: ["quarterstaff"], armorId: null, shieldId: null, inventory: [], attunedItemIds: [] },
     spells: {
-      knownSpellIds: ["thaumaturgy", "chill_touch", "fire_bolt", "mage_hand", "ray_of_frost", "acid_splash", "frostbite"],
+      knownSpellIds: ["shocking_grasp", "chill_touch", "fire_bolt", "mage_hand", "ray_of_frost", "acid_splash", "frostbite"],
       preparedSpellIds: ["magic_missile", "mage_armor", "sleep", "burning_hands", "chromatic_orb"],
     },
     choices: {
@@ -201,7 +201,7 @@ function savesCompleteHarnessAsCombatReadyRecord() {
     },
     gear: { weaponIds: ["quarterstaff", "dagger"], armorId: null, shieldId: null, inventory: [], attunedItemIds: [] },
     spells: {
-      knownSpellIds: ["thaumaturgy", "chill_touch", "fire_bolt", "mage_hand", "ray_of_frost", "acid_splash", "frostbite"],
+      knownSpellIds: ["shocking_grasp", "chill_touch", "fire_bolt", "mage_hand", "ray_of_frost", "acid_splash", "frostbite"],
       preparedSpellIds: ["magic_missile", "mage_armor", "sleep", "burning_hands", "chromatic_orb"],
     },
     choices: {
@@ -345,14 +345,14 @@ function exposesSpellChoicePools() {
   const grantedSpellDraft = createEmptyCharacterDraft({
     identity: { characterName: "Granted Spell Test", level: 1, speciesId: "tiefling", lineageId: "chthonic", backgroundId: "sage", classId: "wizard" },
     spells: {
-      knownSpellIds: ["thaumaturgy", "chill_touch", "mage_hand", "fire_bolt", "ray_of_frost"],
+      knownSpellIds: ["acid_splash", "chill_touch", "mage_hand", "fire_bolt", "ray_of_frost"],
       preparedSpellIds: ["magic_missile", "burning_hands"],
     },
   });
   const grantedPools = createSpellChoicePools(grantedSpellDraft);
   const grantedCantrips = grantedPools.pools.find((pool) => pool.id === "known_cantrips");
   const grantedPrepared = grantedPools.pools.find((pool) => pool.id === "prepared_spells");
-  assert.deepEqual(grantedCantrips.selected, ["ray_of_frost"], "species/background cantrips should not consume class cantrip choices");
+  assert.deepEqual(grantedCantrips.selected, ["acid_splash", "ray_of_frost"], "species/background cantrips should not consume class cantrip choices");
   assert.equal(grantedCantrips.grantedSpellIds.includes("fire_bolt"), true);
   assert.equal(grantedCantrips.grantedSpellIds.includes("chill_touch"), true);
   assert.equal(grantedCantrips.grantedSpellDetails.some((detail) => detail.id === "chill_touch" && detail.source), true, "granted class-pool spells should expose source labels");
@@ -485,7 +485,7 @@ function completeClericHarnessDraft() {
     identity: { characterName: "Harness Cleric", level: 1, speciesId: "dwarf", backgroundId: "guide", classId: "cleric" },
     gear: { weaponIds: ["quarterstaff"], armorId: "half_plate", shieldId: "shield", inventory: [], attunedItemIds: [] },
     spells: {
-      knownSpellIds: ["guidance", "sacred_flame", "thaumaturgy"],
+      knownSpellIds: ["guidance", "sacred_flame", "minor_magic"],
       preparedSpellIds: ["bless", "cure_wounds", "guiding_bolt", "shield_of_faith"],
     },
     choices: {

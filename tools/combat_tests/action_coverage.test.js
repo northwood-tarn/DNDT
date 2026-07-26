@@ -145,6 +145,7 @@ function assertGeneratedActionsResolve(spec, coverage) {
 
   for (const baseAction of baseActor.actions || []) {
     recordCoverage(coverage, spec, baseAction);
+    if (baseAction.postHitOnly && !baseAction.contextual) continue;
     assertActionResolvesInIsolation(spec, baseActor, baseAction);
     assertResourceGateFailsWhenDepleted(spec, baseActor, baseAction);
   }

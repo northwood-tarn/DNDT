@@ -2,6 +2,7 @@ import { applyLuckyToRoll } from "./luck.js";
 import { rollSaveModifier } from "./modifiers.js";
 import { rollSaveD20 } from "./combatRolls.js";
 import { weaponMasterySaveDc } from "./weaponMasteryResolution.js";
+import { applyLegendaryResistance } from "./legendaryResistance.js";
 
 export function resolveEffectSave(save, actor, action) {
   if (save.dcFrom !== "weapon_mastery") return save;
@@ -31,7 +32,8 @@ export function resolveInlineSave(snapshot, source, target, effect, dice, log) {
     },
   });
   const total = roll.roll + bonus;
-  const success = !roll.autoFail && total >= dc;
+  let success = !roll.autoFail && total >= dc;
+  ({ success } = applyLegendaryResistance({ snapshot, target, success, action: { name: effect.name, effects: [effect] }, effect, log, total, dc }));
   log.add("save.roll", {
     round: snapshot.round,
     actorId: source.id,

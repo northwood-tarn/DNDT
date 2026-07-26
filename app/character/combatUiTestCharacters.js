@@ -58,7 +58,10 @@ const BUILDERS = {
       charisma: 8,
     },
     choices: {
-      backgroundAbilityScores: ["intelligence", "constitution"],
+      backgroundAbilityScores: [
+        { ability: "intelligence", bonus: 2 },
+        { ability: "constitution", bonus: 1 },
+      ],
       classChoices: {
         arcane_armament_weapon: "longsword",
         jesters_book_spell: "magic_missile_jester",
@@ -72,11 +75,11 @@ const BUILDERS = {
       attunedItemIds: [],
     },
     spells: {
-      knownSpellIds: ["fire_bolt", "mage_hand", "ray_of_frost", "shocking_grasp", "minor_magic"],
+      knownSpellIds: ["fire_bolt", "mage_hand", "ray_of_frost", "shocking_grasp", "minor_magic", "acid_splash", "blade_ward"],
       preparedSpellIds: [
         "magic_missile", "shield", "mage_armor", "burning_hands",
-        "misty_step", "hold_person", "shatter",
-        "counterspell", "fireball", "hypnotic_pattern",
+        "misty_step", "hold_foe", "shatter",
+        "counterspell", "dispel_magic", "fireball", "hypnotic_pattern",
         "banishment", "greater_invisibility",
         "wall_of_force", "cone_of_cold",
         "chain_lightning", "forcecage",

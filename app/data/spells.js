@@ -11,6 +11,7 @@ import { SPELLS_LEVEL_4 } from "./spells/level4.js";
 import { SPELLS_LEVEL_5 } from "./spells/level5.js";
 import { SPELLS_LEVEL_6 } from "./spells/level6.js";
 import { SPELLS_LEVEL_7 } from "./spells/level7.js";
+import { applySpellImplementationOverrides } from "./spellImplementationOverrides.js";
 
 export const SPELL_SCHEMA = {
   "id": "unique_id_string",
@@ -87,7 +88,7 @@ export const SPELL_SCHEMA = {
   }
 };
 
-export const SPELLS = {
+export const SPELLS = applySpellImplementationOverrides({
   ...SPELLS_LEVEL_0,
   ...SPELLS_LEVEL_1,
   ...SPELLS_LEVEL_2,
@@ -96,7 +97,7 @@ export const SPELLS = {
   ...SPELLS_LEVEL_5,
   ...SPELLS_LEVEL_6,
   ...SPELLS_LEVEL_7,
-};
+});
 
 export function getSpellById(id) {
   const spell = SPELLS[id] || null;

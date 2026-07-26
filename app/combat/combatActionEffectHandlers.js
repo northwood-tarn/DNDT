@@ -1,4 +1,5 @@
 import { addActiveEffect, getEffectiveAc } from "./modifiers.js";
+import { endConcentration } from "./concentrationResolution.js";
 
 export function applyModifierEffect(snapshot, actor, target, action, effect, log) {
   const receiver = effect.target === "self" ? actor : target;
@@ -126,7 +127,10 @@ export function applyDispelMagicEffect(snapshot, actor, target, action, effect, 
   const conditions = (receiver.conditions || []).filter((item) => item.sourceActionId && Number(item.sourceSpellLevel || 0) <= maximumLevel);
   receiver.activeEffects = (receiver.activeEffects || []).filter((item) => !effects.includes(item));
   receiver.conditions = (receiver.conditions || []).filter((item) => !conditions.includes(item));
-  log.add("effect.removed", { round: snapshot.round, sourceId: actor.id, sourceName: actor.name, targetId: receiver.id, targetName: receiver.name, actionName: action.name, effectId: "spell_effects", count: effects.length + conditions.length });
+  const concentrationLevel = Number(receiver.concentration?.spellLevel || receiver.concentration?.baseSpellLevel || 0);
+  const endedConcentration = Boolean(receiver.concentration && concentrationLevel <= maximumLevel);
+  if (endedConcentration) endConcentration(snapshot, receiver, log, `${action.name} ended concentration`);
+  log.add("effect.removed", { round: snapshot.round, sourceId: actor.id, sourceName: actor.name, targetId: receiver.id, targetName: receiver.name, actionName: action.name, effectId: "spell_effects", count: effects.length + conditions.length + (endedConcentration ? 1 : 0) });
 }
 
 export function applyGreaterRestorationEffect(snapshot, actor, target, action, effect, log) {

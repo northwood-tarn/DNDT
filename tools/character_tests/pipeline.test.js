@@ -256,7 +256,7 @@ function resolvesSpeciesIntoSheet() {
   assert.equal(sheet.combatBasics.speed, 30);
   assert.deepEqual(sheet.combatBasics.senses, [{ type: "darkvision", rangeFt: 60 }]);
   assert.deepEqual(sheet.durability.resistances, ["fire"]);
-  assert.equal(sheet.features.some((item) => item.id === "species:tiefling:otherworldly_presence" && item.grants.spellId === "thaumaturgy"), true);
+  assert.equal(sheet.features.some((item) => item.id === "species:tiefling:otherworldly_presence" && item.grants.spellId === "minor_magic"), true);
   assert.equal(sheet.features.some((item) => item.id === "species:tiefling.infernal:infernal_legacy_1" && item.grants.spellId === "fire_bolt"), true);
 }
 

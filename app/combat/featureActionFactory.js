@@ -12,6 +12,7 @@ export function createFeatureAction(feature, option, context = {}) {
     : null;
   const base = {
     id: resolvedOption.id,
+    iconId: resolvedOption.iconId || null,
     name: resolvedOption.name || feature.name,
     cost: actionTypeToCost(resolvedOption.actionType),
     requiresTarget: resolvedOption.requiresTarget === true,

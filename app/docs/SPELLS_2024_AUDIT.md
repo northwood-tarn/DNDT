@@ -40,7 +40,6 @@ These records were updated in the spell data after the initial audit. Some hooks
 | `burning_hands` | Looks compatible. | Area targeting already works for cone saves. |
 | `thunderwave` | Looks compatible in broad mechanics. | Push-on-failed-save needs general failed-save movement support. |
 | `charm_person` | Broad condition shape looks compatible. | Needs canonical 2024 text check for awareness/hostility details. |
-| `disguise_self` | Broad utility record looks compatible enough for non-combat. | Not combat-priority. |
 | `detect_magic` | Broad utility record looks compatible enough for non-combat. | Needs exploration resolver later. |
 | `comprehend_languages` | Broad utility record looks compatible enough for non-combat. | Not combat-priority. |
 | `expeditious_retreat` | Broad effect looks compatible. | Needs ongoing bonus-action Dash modifier. |

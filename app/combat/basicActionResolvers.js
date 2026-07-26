@@ -215,6 +215,7 @@ export function resolveHealingAction(snapshot, actor, target, action, dice, log,
   const rolled = dice.rollDamage(healingDice);
   const hpBefore = recipient.hp;
   recipient.hp = Math.min(recipient.maxHp, recipient.hp + Math.max(0, rolled.total));
+  if (action.allowDefeatedTarget && recipient.hp > 0) recipient.defeated = false;
   if (spend) {
     spendActionCost(actor, action.cost);
     spendActionSpellSlot(actor, action);

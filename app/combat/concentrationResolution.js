@@ -95,6 +95,7 @@ function startConcentration(snapshot, actor, action, log) {
   actor.concentration = {
     actionId: action.id,
     actionName: action.name,
+    spellLevel: action.spellLevel ?? action.baseSpellLevel ?? 0,
   };
   log.add("concentration.start", {
     round: snapshot.round,
@@ -105,7 +106,7 @@ function startConcentration(snapshot, actor, action, log) {
   });
 }
 
-function endConcentration(snapshot, actor, log, reason) {
+export function endConcentration(snapshot, actor, log, reason) {
   if (!actor?.concentration) return false;
   const concentration = actor.concentration;
   actor.concentration = null;

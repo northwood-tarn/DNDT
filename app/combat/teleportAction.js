@@ -5,6 +5,7 @@ import { spendActionSpellSlot } from "./spellSlots.js";
 import { rollSaveD20 } from "./combatEffectsResolution.js";
 import { rollSaveModifier } from "./modifiers.js";
 import { applyLuckyToRoll } from "./luck.js";
+import { applyLegendaryResistance } from "./legendaryResistance.js";
 
 export function resolveTeleport(snapshot, actor, action, targetPayload, log, dice = null) {
   const to = targetPayload?.anchor || targetPayload;
@@ -58,12 +59,14 @@ function resolveContainmentEscape(snapshot, actor, action, cage, dice, log) {
     log,
     context: { round: snapshot.round, type: "save", label: saveAction.name, targetNumber: dc, bonus },
   });
-  const success = !roll.autoFail && roll.roll + bonus >= dc;
+  const total = roll.roll + bonus;
+  let success = !roll.autoFail && total >= dc;
+  ({ success } = applyLegendaryResistance({ snapshot, target: actor, success, action: { ...action, name: saveAction.name }, effect: { kind: "containment" }, log, total, dc }));
   log.add("save.roll", {
     round: snapshot.round, actorId: actor.id, actorName: actor.name, spellName: action.name,
     ability, roll: roll.roll, rolls: roll.rolls, mode: roll.mode, reasons: roll.reasons,
     lucky: roll.lucky, bonus, baseBonus, modifierReasons: modifier.reasons, cover: null,
-    effectiveBonus: bonus, total: roll.roll + bonus, dc,
+    effectiveBonus: bonus, total, dc,
   });
   log.add("save.result", {
     round: snapshot.round, actorId: actor.id, actorName: actor.name,

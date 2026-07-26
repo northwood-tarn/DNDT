@@ -2,6 +2,7 @@ import { enemies, getEnemyStats } from "../data/enemies.js";
 import { expandEncounterEnemyRefs, getEncounterById } from "../data/encounters.js";
 import { compileEnemyActions } from "./enemyActionCompiler.js";
 import { combatActorToActorInstance, enemySourceToActorDefinition } from "../actors/actorAdapters.js";
+import { ensureLegendaryResistanceResource } from "./legendaryResistance.js";
 
 export function createEnemyCombatActor(enemyRef, options = {}) {
   const source = resolveEnemySource(enemyRef);
@@ -15,7 +16,7 @@ export function createEnemyCombatActor(enemyRef, options = {}) {
     enableWeaponMastery: options.enableWeaponMastery ?? source.enableWeaponMastery,
     masteredWeaponIds: options.masteredWeaponIds || source.masteredWeaponIds,
   };
-  const resources = structuredClone(options.resources || source.resources || []);
+  const resources = ensureLegendaryResistanceResource(options.resources || source.resources || [], { ...source, ...options });
   const features = structuredClone(options.features || source.features || []);
 
   const actor = {

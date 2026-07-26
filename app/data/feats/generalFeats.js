@@ -404,18 +404,6 @@ export const GENERAL_FEATS_BY_ID = {
     tags: ["ability", "spell", "choice"]
   }),
 
-  ritual_caster: generalFeat({
-    id: "ritual_caster",
-    name: "Ritual Caster",
-    requirements: { anyAbility: ["intelligence", "wisdom", "charisma"], minimumScore: 13 },
-    description: "Improve a spellcasting ability and freely learn one ritual spell.",
-    choices: [
-      { id: "ability", kind: "ability_score", count: 1, options: ["intelligence", "wisdom", "charisma"], amount: 1, scoreCap: 20 },
-      { id: "spells", kind: "spell_list", count: 1, filter: { ritual: true, maxLevel: 1 } }
-    ],
-    tags: ["ability", "spell", "ritual", "choice"]
-  }),
-
   shadow_touched: generalFeat({
     id: "shadow_touched",
     name: "Shadow Touched",

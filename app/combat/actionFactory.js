@@ -249,6 +249,7 @@ export function createSpellAction(spellRecord, options = {}) {
       type: "spell_self_heal",
       requiresTarget,
       healing,
+      allowDefeatedTarget: hooks.healing.allowDefeatedTarget === true,
       effects,
       tags: { ...base.tags, harmful: false },
     }), spellRecord);

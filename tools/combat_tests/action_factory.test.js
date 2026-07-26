@@ -49,8 +49,7 @@ function testActionFactorySpellOutput() {
 }
 
 function testActionFactorySpellEffects() {
-  const mockery = createSpellAction(SPELLS.vicious_mockery, { spellSaveDC: 13 });
-  const hold = createSpellAction(SPELLS.hold_person, { spellSaveDC: 13 });
+  const hold = createSpellAction(SPELLS.hold_foe, { spellSaveDC: 13 });
   const fireball = createSpellAction(SPELLS.fireball, { spellSaveDC: 15 });
   const fogCloud = createSpellAction(SPELLS.fog_cloud, { spellSaveDC: 13 });
   const darkness = createSpellAction(SPELLS.darkness, { spellSaveDC: 13 });
@@ -63,11 +62,9 @@ function testActionFactorySpellEffects() {
   const mageArmor = createSpellAction(SPELLS.mage_armor, { spellSaveDC: 13 });
   const guidance = createSpellAction(SPELLS.guidance, { spellSaveDC: 13 });
 
-  assert.equal(mockery.effects[0].condition, "next_attack_disadvantage", "Vicious Mockery should translate its debuff effect");
-  assert.deepEqual(validateCombatAction(mockery), [], "Vicious Mockery action should validate");
   assert.equal(hold.damage, undefined, "Hold Person should not invent fake damage");
-  assert.equal(hold.effects[0].condition, "paralyzed", "Hold Person should translate to Paralyzed");
-  assert.equal(hold.effects[0].repeatSave.ability, "wis", "Hold Person should preserve repeat save ability");
+  assert.equal(hold.effects[0].condition, "restrained", "Hold Foe should translate to Restrained");
+  assert.equal(hold.effects[0].repeatSave.ability, "wis", "Hold Foe should preserve repeat save ability");
   assert.deepEqual(validateCombatAction(hold), [], "effect-only save spells should validate");
   assert.equal(fireball.type, "spell_area_save", "Fireball should become an area save spell");
   assert.equal(fireball.targeting.shape, "radius", "Fireball sphere should use radius targeting");

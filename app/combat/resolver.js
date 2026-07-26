@@ -44,6 +44,7 @@ import { blockingContainmentBoundary, combatObjectContains, combatObjectsAt } fr
 import { applyDamageAmount, rollSaveD20 } from "./combatEffectsResolution.js";
 import { rollRiderDamage } from "./damageRolls.js";
 import { rollSaveModifier } from "./modifiers.js";
+import { applyLegendaryResistance } from "./legendaryResistance.js";
 import { canMoveTo, canTargetAction, canUseAction } from "./rules.js";
 import { applySpellCastEndEffects } from "./spellCastEndEffects.js";
 import { spendActionSpellSlot } from "./spellSlots.js";
@@ -171,6 +172,17 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
   const action = actionWithTargetChoices(baseAction, targetId);
   if (!action) return false;
 
+  if (action.requiresSpeech && combatObjectsAt(snapshot, actor.position).some((object) => object.blocksSound)) {
+    log.add("target.invalid", {
+      round: snapshot.round,
+      actorId: actor.id,
+      actorName: actor.name,
+      targetName: action.name,
+      reason: "verbal spell components cannot be used inside Silence",
+    });
+    return false;
+  }
+
   const actionLegality = canUseAction(actor, action);
   if (!actionLegality.ok) {
     log.add("target.invalid", {
@@ -183,6 +195,10 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
     return false;
   }
   if (!hasConsumableStock(actor, action, log, snapshot)) return false;
+
+  if (action.sourceSpellId === "counterspell" || action.id === "counterspell") {
+    return resolveCounterspellReaction(snapshot, actor, action, targetId, dice, log);
+  }
 
   if (action.type === "relic_revivify") {
     const target = getActor(snapshot, targetActorId(targetId));
@@ -287,6 +303,10 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
       return false;
     }
     const resolved = resolveHealingAction(snapshot, actor, target, action, dice, log);
+    if (resolved) {
+      markActionResolvedForTurn(actor, action);
+      afterResolvedAction(snapshot, actor, action, log);
+    }
     cleanupInvalidSourceConditions(snapshot, log);
     return resolved;
   }
@@ -313,6 +333,7 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
     spendActionCost(actor, action.cost);
     spendActionLinkedResources(actor, action);
     spendConsumableForAction(actor, action);
+    markActionResolvedForTurn(actor, action);
     afterResolvedAction(snapshot, actor, action, log);
     cleanupInvalidSourceConditions(snapshot, log);
     return true;
@@ -398,6 +419,7 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
         }, dice, log);
       }
     }
+    if (action.type === "spell_save") applyActionResolvedEffects(snapshot, actor, actor, action, log);
     applySpellCastEndEffects(snapshot, actor, action, log, startEventIndex);
     spendActionCost(actor, action.cost);
     spendActionLinkedResources(actor, action);
@@ -457,6 +479,7 @@ export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {
     resolveCompoundWeaponAttack(snapshot, actor, target, action, dice, log, { resolveAttack });
   } else if (action.type === "spell_save") {
     resolveSaveSpell(snapshot, actor, target, action, dice, log);
+    applyActionResolvedEffects(snapshot, actor, target, action, log);
   } else {
     resolveAttack(snapshot, actor, target, action, dice, log);
   }
@@ -497,6 +520,45 @@ function spendActionLinkedResources(actor, action) {
   for (const resourceId of action.additionalResourceIds || []) spendResourceUse(actor, resourceId);
   const oilCost = Math.max(0, Math.floor(Number(action.lanternaOilCost) || 0));
   if (oilCost) setOil(getLanterna().oil - oilCost);
+}
+
+function resolveCounterspellReaction(snapshot, actor, action, payload, dice, log) {
+  const target = getActor(snapshot, targetActorId(payload));
+  if (!target) return false;
+  const legality = canTargetAction(snapshot, actor, action, target);
+  if (!legality.ok) return false;
+  const incomingLevel = Math.max(0, Number(payload?.spellLevel) || 0);
+  const automaticLevel = Number(action.spellLevel || action.baseSpellLevel || 3);
+  let roll = null;
+  let total = null;
+  let success = incomingLevel <= automaticLevel;
+  if (!success) {
+    roll = dice.rollD20({ type: "ability_check", label: action.name });
+    const modifier = Number(actor.spellcastingModifier ?? actor.spellcasting?.modifier ?? Math.max(...Object.values(actor.abilityMods || {}).map(Number).filter(Number.isFinite), 0));
+    total = roll.roll + modifier;
+    success = total >= 10 + incomingLevel;
+  }
+  if (success) {
+    if (typeof payload?.cancelSpell === "function") payload.cancelSpell();
+    if (payload && typeof payload === "object") payload.interrupted = true;
+  }
+  spendActionCost(actor, action.cost);
+  spendActionLinkedResources(actor, action);
+  log.add("spell.countered", {
+    round: snapshot.round,
+    actorId: actor.id,
+    actorName: actor.name,
+    targetId: target.id,
+    targetName: target.name,
+    actionName: action.name,
+    incomingSpellName: payload?.spellName || "spell",
+    incomingSpellLevel: incomingLevel,
+    roll: roll?.roll ?? null,
+    total,
+    dc: success && incomingLevel <= automaticLevel ? null : 10 + incomingLevel,
+    success,
+  });
+  return true;
 }
 
 function afterResolvedAction(snapshot, actor, action, log) {
@@ -711,7 +773,8 @@ function resolveCollapseDamage(snapshot, actor, target, action, object, collapse
   const bonus = baseBonus + saveModifier.total;
   const roll = rollSaveD20(target, { name: action.name, saveAbility: ability }, dice, snapshot, actor);
   const total = roll.roll + bonus;
-  const success = !roll.autoFail && total >= dc;
+  let success = !roll.autoFail && total >= dc;
+  ({ success } = applyLegendaryResistance({ snapshot, target, success, action, effect: collapse, log, total, dc }));
   log.add("save.roll", {
     round: snapshot.round,
     actorId: actor.id,
@@ -808,6 +871,17 @@ function actionWithTargetChoices(action, targetPayload) {
       ...resolved,
       effects: resolved.effects.map((effect) => effect.type === "modifier" && effect.stat === "save"
         ? { ...effect, ability: String(choices.saveAbility).toLowerCase() }
+        : effect),
+    };
+  }
+  const effectModeKey = action?.effectModeChoiceKey || "effectMode";
+  const requestedEffectMode = choices[effectModeKey] || action?.defaultEffectMode;
+  if (requestedEffectMode && Array.isArray(action?.effectModeChoices) && action.effectModeChoices.some((choice) => choice.id === requestedEffectMode)) {
+    resolved = {
+      ...resolved,
+      selectedEffectMode: requestedEffectMode,
+      effects: (resolved.effects || []).map((effect) => effect.conditionChoices?.[requestedEffectMode]
+        ? { ...effect, condition: effect.conditionChoices[requestedEffectMode] }
         : effect),
     };
   }

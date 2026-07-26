@@ -13,6 +13,7 @@ import { applyDamageAmount, rollSaveD20 } from "./combatEffectsResolution.js";
 import { applyLuckyToRoll } from "./luck.js";
 import { cleanupInvalidMarks, removeMark } from "./marks.js";
 import { combatAuraEffectsAffectingActor } from "./auras.js";
+import { applyLegendaryResistance } from "./legendaryResistance.js";
 
 export function processOngoingEffects(snapshot, actor, timing, dice, log) {
   if (!actor) return;
@@ -110,6 +111,19 @@ function processConditionOngoingEffects(snapshot, actor, condition, timing, dice
         damageType: effect.damageType || "untyped",
       }, rolled, amount, dice, log);
       log.add("ongoing.effect", ongoingEffectDetail(snapshot, actor, condition, effect, { amount }));
+    } else if (effect.type === "healing") {
+      const rolled = dice.rollDamage(effect.healing || "1");
+      const before = actor.hp;
+      actor.hp = Math.min(actor.maxHp, actor.hp + Math.max(0, rolled.total));
+      log.add("healing.applied", {
+        round: snapshot.round,
+        sourceId: condition.sourceActorId,
+        targetId: actor.id,
+        targetName: actor.name,
+        actionName: effect.label || conditionName(condition.id),
+        amount: actor.hp - before,
+        before,
+      });
     }
   }
 }
@@ -123,7 +137,8 @@ function resolveOngoingEffectSave(snapshot, actor, condition, effect, dice, log)
   const baseBonus = actor.saves?.[ability] || 0;
   const bonus = baseBonus + saveModifier.total;
   const total = roll.roll + bonus;
-  const success = !roll.autoFail && total >= dc;
+  let success = !roll.autoFail && total >= dc;
+  ({ success } = applyLegendaryResistance({ snapshot, target: actor, success, action: { name: effect.label || conditionName(condition.id), effects: [effect] }, effect, log, total, dc }));
   log.add("save.roll", {
     round: snapshot.round,
     actorId: source.id,
@@ -306,7 +321,8 @@ function resolveConditionRepeatSave(snapshot, actor, condition, dice, log) {
     },
   });
   const total = roll.roll + bonus;
-  const success = !roll.autoFail && total >= repeatSave.dc;
+  let success = !roll.autoFail && total >= repeatSave.dc;
+  ({ success } = applyLegendaryResistance({ snapshot, target: actor, success, action: { name: conditionName(condition.id), effects: [{ trigger: "failed_save", condition: condition.id }] }, effect: { condition: condition.id }, log, total, dc: repeatSave.dc }));
   log.add("condition.save.roll", {
     round: snapshot.round,
     actorId: actor.id,

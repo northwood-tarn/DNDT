@@ -35,6 +35,7 @@ export function validateCombatAction(action) {
   errors.push(...validateDamageRiders(action.damageRiders, action.id || "action"));
   errors.push(...validateReactionPolicy(action.reactionPolicy, `${action.id || "action"}.reactionPolicy`));
   errors.push(...validateDamageTypeChoices(action));
+  errors.push(...validateEffectModeChoices(action));
 
   if (["weapon_attack", "melee_attack", "spell_attack"].includes(action.type)) {
     requireNumber(action, "range", errors);
@@ -131,6 +132,19 @@ function validateDamageTypeChoices(action) {
   }
   if (action.damageType && !action.damageTypeChoices.includes(action.damageType) && !Array.isArray(action.damageParts)) {
     return [`${action.id || "action"}.damageType must be one of damageTypeChoices`];
+  }
+  return [];
+}
+
+function validateEffectModeChoices(action) {
+  if (action.effectModeChoices == null) return [];
+  if (!Array.isArray(action.effectModeChoices) || action.effectModeChoices.length === 0) {
+    return [`${action.id || "action"}.effectModeChoices must be a non-empty array`];
+  }
+  const invalid = action.effectModeChoices.some((choice) => !choice || typeof choice.id !== "string" || !choice.id || typeof choice.name !== "string" || !choice.name);
+  if (invalid) return [`${action.id || "action"}.effectModeChoices must contain id/name objects`];
+  if (action.defaultEffectMode && !action.effectModeChoices.some((choice) => choice.id === action.defaultEffectMode)) {
+    return [`${action.id || "action"}.defaultEffectMode must identify an effectModeChoices entry`];
   }
   return [];
 }

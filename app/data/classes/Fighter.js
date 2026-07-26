@@ -48,12 +48,13 @@ export default {
       },
       {
         name: "Second Wind",
+        iconId: "second_wind",
         type: "Bonus Action",
         uses: "shortRest",
         description: "Regain 1d10 + your level HP.",
         effects: {
           resources: [{ id: "second_wind", name: "Second Wind", max: 1, recovery: "short_rest" }],
-          actionOptions: [{ id: "second_wind", actionType: "bonus_action", healingFormula: "1d10 + level" }]
+          actionOptions: [{ id: "second_wind", iconId: "second_wind", actionType: "bonus_action", healingFormula: "1d10 + level" }]
         }
       }
     ],
@@ -67,6 +68,7 @@ export default {
           resources: [{ id: "action_surge", name: "Action Surge", max: 1, recovery: "short_rest" }],
           actionOptions: [{
             id: "action_surge",
+            iconId: "action_surge",
             name: "Action Surge",
             actionType: "free",
             resourceId: "action_surge",
@@ -187,7 +189,7 @@ export default {
       summary: "Swift, precise fencer who punishes openings and avoids harm.",
       features: {
         3: [
-          { name: "Flourish", type: "Passive",
+          { name: "Flourish", iconId: "duelist_flourish", type: "Passive",
             description: "Once per turn when you hit with a melee attack, you gain +2 AC until the start of your next turn.",
             effects: {
               modifierRiders: [{
@@ -240,12 +242,13 @@ export default {
       summary: "Primal fury in human form: devastates foes in surging rages.",
       features: {
         3: [
-          { name: "Rage", type: "Bonus Action", uses: "longRest:3",
+          { name: "Rage", iconId: "rage", type: "Bonus Action", uses: "longRest:3",
             description: "Enter a 1-minute rage: advantage on STR checks/saves, +2 melee damage with STR, resistance to bludgeoning/piercing/slashing. Ends early if you don’t attack or take damage on your turn.",
             effects: {
               resources: [{ id: "rage", name: "Rage", max: 3, recovery: "long_rest" }],
               actionOptions: [{
                 id: "rage",
+                iconId: "rage",
                 name: "Rage",
                 actionType: "bonus_action",
                 resourceId: "rage",
@@ -297,12 +300,13 @@ export default {
             } }
         ],
         7: [
-          { name: "Primal Roar", type: "Bonus Action", uses: "shortRest:1",
+          { name: "Primal Roar", iconId: "primal_roar", type: "Bonus Action", uses: "shortRest:1",
             description: "While raging, unleash a roar. Creatures of your choice within 10 ft must succeed on a WIS save or be frightened until the end of your next turn.",
             effects: {
               resources: [{ id: "primal_roar", name: "Primal Roar", max: 1, recovery: "short_rest" }],
               actionOptions: [{
                 id: "primal_roar",
+                iconId: "primal_roar",
                 name: "Primal Roar",
                 actionType: "bonus_action",
                 resourceId: "primal_roar",
@@ -321,7 +325,7 @@ export default {
             } }
         ],
         11: [
-          { name: "Savage Momentum", type: "Special",
+          { name: "Savage Momentum", iconId: "savage_momentum", type: "Special",
             description: "Once per rage, when you reduce a creature to 0 HP, immediately make one bonus-action melee attack against another target.",
             effects: {
               triggeredEffects: [{

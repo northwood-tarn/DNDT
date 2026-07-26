@@ -71,6 +71,7 @@ let selectedActionId = null;
 let selectedTargetId = null;
 let selectedTargetIds = [];
 let selectedDamageType = null;
+let selectedEffectMode = null;
 let aiRunning = false;
 let openingHandoffDone = false;
 let animation = null;
@@ -151,6 +152,7 @@ function syncSelection() {
     selectedTargetId = null;
     selectedTargetIds = [];
     selectedDamageType = null;
+    selectedEffectMode = null;
     targetingUi.reset();
   }
 
@@ -288,6 +290,9 @@ function renderActionGroup(actor, playerTurn, cost, label) {
     if (selectedSpellAction?.damageTypeChoices?.length) {
       row.appendChild(createDamageTypeSelect(selectedSpellAction, playerTurn));
     }
+    if (selectedSpellAction?.effectModeChoices?.length) {
+      row.appendChild(createEffectModeSelect(selectedSpellAction, playerTurn));
+    }
   }
 
   group.appendChild(row);
@@ -361,6 +366,17 @@ function createDamageTypeSelect(action, playerTurn) {
   return select;
 }
 
+function createEffectModeSelect(action, playerTurn) {
+  const select = document.createElement("select");
+  select.className = "option-select";
+  select.disabled = !playerTurn;
+  select.replaceChildren(...action.effectModeChoices.map((choice) => new Option(choice.name, choice.id)));
+  select.value = selectedEffectMode || action.defaultEffectMode || action.effectModeChoices[0].id;
+  select.title = "Choose this spell's effect.";
+  select.addEventListener("change", () => { selectedEffectMode = select.value; });
+  return select;
+}
+
 function chooseAction(actor, action) {
   if (selectedActionId === action.id) {
     clearSelections();
@@ -372,11 +388,13 @@ function chooseAction(actor, action) {
   selectedTargetId = null;
   selectedTargetIds = [];
   selectedDamageType = action.damageTypeChoices?.[0] || null;
+  selectedEffectMode = action.defaultEffectMode || action.effectModeChoices?.[0]?.id || null;
   targetingUi.start(action);
   if (!actionRequiresTarget(controller.snapshot, actor.id, action.id)) {
     controller.action(actor.id, action.id, actionPayload(null));
     selectedActionId = null;
     selectedDamageType = null;
+    selectedEffectMode = null;
     targetingUi.reset();
     render();
     return;
@@ -578,6 +596,7 @@ function confirmTargetSelection() {
 function actionPayload(targetId) {
   const choices = {};
   if (selectedDamageType) choices.damageType = selectedDamageType;
+  if (selectedEffectMode) choices.effectMode = selectedEffectMode;
   if (Array.isArray(targetId)) {
     const payload = { targetIds: [...targetId] };
     if (Object.keys(choices).length) payload.choices = choices;
@@ -628,6 +647,7 @@ function clearTransientUi() {
   selectedTargetId = null;
   selectedTargetIds = [];
   selectedDamageType = null;
+  selectedEffectMode = null;
   animation = null;
   openingHandoffDone = false;
   boardRotationQuarterTurns = DEFAULT_BOARD_ROTATION_QUARTER_TURNS;
@@ -746,6 +766,7 @@ function clearSelections() {
   selectedTargetId = null;
   selectedTargetIds = [];
   selectedDamageType = null;
+  selectedEffectMode = null;
 }
 
 function titleCase(value) {
