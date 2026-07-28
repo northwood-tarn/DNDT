@@ -40,6 +40,7 @@ export default {
     1: [
       {
         name: "Weapon Mastery",
+        iconId: "weapon_mastery",
         type: "Passive",
         description: "Choose three weapons whose mastery properties you can use.",
         effects: {
@@ -61,6 +62,7 @@ export default {
     2: [
       {
         name: "Action Surge",
+        iconId: "action_surge",
         type: "Special",
         uses: "shortRest",
         description: "Take one additional action on your turn.",
@@ -81,6 +83,7 @@ export default {
     4: [
       {
         name: "Ability Score Improvement",
+        iconId: "ability_score_improvement",
         type: "Passive",
         description:
           "Increase ability scores or take a feat (engine-defined advancement rule).",
@@ -90,6 +93,7 @@ export default {
     5: [
       {
         name: "Extra Attack",
+        iconId: "extra_attack_plus_1",
         type: "Passive",
         description: "When you take the Attack action, you can make two attacks.",
         effects: { attackAction: [{ attacks: 2 }] }
@@ -98,6 +102,7 @@ export default {
     8: [
       {
         name: "Ability Score Improvement",
+        iconId: "ability_score_improvement",
         type: "Passive",
         description:
           "Increase ability scores or take a feat (engine-defined advancement rule).",
@@ -107,6 +112,7 @@ export default {
     11: [
       {
         name: "Extra Attack (2)",
+        iconId: "extra_attack_plus_2",
         type: "Passive",
         description: "When you take the Attack action, you can make three attacks.",
         effects: { attackAction: [{ attacks: 3 }] }
@@ -115,6 +121,7 @@ export default {
     12: [
       {
         name: "Ability Score Improvement",
+        iconId: "ability_score_improvement",
         type: "Passive",
         description:
           "Increase ability scores or take a feat (engine-defined advancement rule).",
@@ -130,6 +137,7 @@ export default {
         3: [
           {
             name: "Execute",
+            iconId: "champion_execute",
             type: "Special",
             uses: "shortRest",
             description: "When you hit a creature that is below 25% of its max HP, add +2d8 damage.",
@@ -150,7 +158,7 @@ export default {
           }
         ],
         7: [
-          { name: "Second Wind Upgrade", type: "Passive",
+          { name: "Second Wind Upgrade", iconId: "second_wind", type: "Passive",
             description: "When you use Second Wind, you also gain advantage on your next attack before the end of your turn.",
             effects: {
               triggeredEffects: [{
@@ -168,7 +176,7 @@ export default {
             } }
         ],
         11: [
-          { name: "Unyielding Stance", type: "Special",
+          { name: "Unyielding Stance", iconId: "unyielding_stance", type: "Special",
             description: "Once per combat, when you would be reduced to 0 HP, you stay at 1 HP instead.",
             effects: {
               reactions: [{
@@ -206,7 +214,7 @@ export default {
             } }
         ],
         7: [
-          { name: "Evasive Step", type: "Passive",
+          { name: "Evasive Step", iconId: "duelist_evasive_step", type: "Passive",
             description: "When an adjacent enemy misses you with a melee attack, you may make one basic melee weapon attack against it.",
             effects: {
               reactions: [{
@@ -221,7 +229,7 @@ export default {
             } }
         ],
         11: [
-          { name: "Deadly Precision", type: "Passive",
+          { name: "Deadly Precision", iconId: "duelist_deadly_precision", type: "Passive",
             description: "Your critical hits with finesse weapons roll one additional damage die.",
             effects: {
               damageRiders: [{
@@ -269,11 +277,12 @@ export default {
                 damageType: "same_as_action"
               }]
             } },
-          { name: "Reckless Attack", type: "Special",
+          { name: "Reckless Attack", iconId: "reckless_attack", type: "Special",
             description: "On your turn, you can gain advantage on STR melee attacks; attacks against you have advantage until your next turn.",
             effects: {
               actionOptions: [{
                 id: "reckless_attack",
+                iconId: "reckless_attack",
                 name: "Reckless Attack",
                 actionType: "free",
                 requiresTarget: false,
@@ -283,7 +292,7 @@ export default {
                 ]
               }]
             } },
-          { name: "Execute", type: "Action", uses: "longRest:1",
+          { name: "Execute", iconId: "berserker_execute", type: "Action", uses: "longRest:1",
             description: "While raging, once per turn when you hit, deal +1d6 damage to that target. If you had advantage on the attack, +1d6 more.",
             effects: {
               resources: [{ id: "berserker_execute", name: "Execute", max: 1, recovery: "long_rest" }],

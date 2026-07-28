@@ -1,9 +1,11 @@
 import { buildFootprint } from "./footprints.js";
+import { normalizeEffectDuration } from "./effects.js";
 
 export function normalizeCombatObjects(objects = []) {
   return (Array.isArray(objects) ? objects : []).map((object, index) => ({
     id: object.id || `combat_object_${index + 1}`,
     name: object.name || object.id || `Combat Object ${index + 1}`,
+    kind: object.kind || null,
     position: object.position ? { ...object.position } : null,
     origin: object.origin ? { ...object.origin } : null,
     cells: Array.isArray(object.cells) ? object.cells.map((cell) => ({ ...cell })) : null,
@@ -28,8 +30,10 @@ export function normalizeCombatObjects(objects = []) {
     sourceActorId: object.sourceActorId || null,
     sourceTeam: object.sourceTeam || sourceTeamFromObject(object),
     sourceActionId: object.sourceActionId || null,
+    sourceActionTags: object.sourceActionTags ? structuredClone(object.sourceActionTags) : null,
+    safeGeometry: object.safeGeometry === true,
     spellSaveDC: object.spellSaveDC ?? null,
-    duration: object.duration ? structuredClone(object.duration) : null,
+    duration: normalizeEffectDuration(object.duration),
     effects: Array.isArray(object.effects) ? structuredClone(object.effects) : [],
     intensity: normalizeIntensity(object.intensity),
     timers: normalizeTimers(object.timers),
@@ -53,9 +57,26 @@ export function createCombatObjectFromAction(action, anchor, source) {
     sourceActorId: source?.id || null,
     sourceTeam: source?.team || null,
     sourceActionId: action.id,
+    sourceActionTags: structuredClone(action.tags || {}),
+    safeGeometry: action.safeGeometry === true,
     spellSaveDC: action.spellSaveDC ?? null,
+    duration: resolveObjectDuration(object, source),
     effects: resolveObjectEffects(object.effects || [], source, action),
   }])[0];
+}
+
+function resolveObjectDuration(object, source) {
+  const raw = object.duration || (object.durationRounds != null
+    ? { kind: "rounds", rounds: object.durationRounds, tick: "turn_end" }
+    : null);
+  if (!raw || typeof raw !== "object") return raw;
+  const rounds = resolveFormula(raw.rounds ?? raw.remaining, source);
+  if (!Number.isFinite(rounds)) return raw;
+  return {
+    ...raw,
+    rounds,
+    remaining: Number.isFinite(raw.remaining) ? raw.remaining : rounds,
+  };
 }
 
 function normalizeIntensity(intensity) {
@@ -113,6 +134,23 @@ export function combatObjectsAt(snapshot, position) {
 export function combatObjectsAffectingActor(snapshot, actor) {
   if (!actor?.position) return [];
   return combatObjectsAt(snapshot, actor.position);
+}
+
+export function isHealingBlockedByCombatObject(snapshot, actor) {
+  return combatObjectsAffectingActor(snapshot, actor).some((object) =>
+    (object.effects || []).some((effect) =>
+      effect.type === "healing_block" &&
+      (effect.trigger || "passive") === "passive" &&
+      effectAffectsActor(effect, object, actor)
+    )
+  );
+}
+
+function effectAffectsActor(effect, object, actor) {
+  if (!effect.affects || effect.affects === "all") return true;
+  if (effect.affects === "allies") return actor.team === object.sourceTeam;
+  if (effect.affects === "enemies") return actor.team !== object.sourceTeam;
+  return true;
 }
 
 export function blockingContainmentBoundary(snapshot, from, to) {

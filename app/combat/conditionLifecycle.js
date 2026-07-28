@@ -14,6 +14,7 @@ import { applyLuckyToRoll } from "./luck.js";
 import { cleanupInvalidMarks, removeMark } from "./marks.js";
 import { combatAuraEffectsAffectingActor } from "./auras.js";
 import { applyLegendaryResistance } from "./legendaryResistance.js";
+import { isHealingBlockedByCombatObject } from "./combatObjects.js";
 
 export function processOngoingEffects(snapshot, actor, timing, dice, log) {
   if (!actor) return;
@@ -75,6 +76,7 @@ function processAuraTurnEffects(snapshot, actor, timing, log) {
   if (timing !== "turn_start") return;
   for (const effect of combatAuraEffectsAffectingActor(snapshot, actor)) {
     if (effect.type !== "healing_floor" || actor.hp !== 0) continue;
+    if (isHealingBlockedByCombatObject(snapshot, actor)) continue;
     const before = actor.hp;
     actor.hp = Math.min(actor.maxHp, Math.max(actor.hp, Number(effect.amount) || 1));
     actor.defeated = false;
@@ -112,6 +114,7 @@ function processConditionOngoingEffects(snapshot, actor, condition, timing, dice
       }, rolled, amount, dice, log);
       log.add("ongoing.effect", ongoingEffectDetail(snapshot, actor, condition, effect, { amount }));
     } else if (effect.type === "healing") {
+      if (isHealingBlockedByCombatObject(snapshot, actor)) continue;
       const rolled = dice.rollDamage(effect.healing || "1");
       const before = actor.hp;
       actor.hp = Math.min(actor.maxHp, actor.hp + Math.max(0, rolled.total));

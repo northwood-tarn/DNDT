@@ -439,9 +439,10 @@ function applyDamageRider(snapshot, source, target, rider, dice, log, { critical
   }
   const damage = resolveRiderDamageFormula(source, rider.damage);
   const rolled = rollRiderDamage(damage, dice, { critical: rider.critical === false ? false : critical });
-  const amount = saveResult?.success && saveResult.onSave === "half"
+  const savedAmount = saveResult?.success && saveResult.onSave === "half"
     ? Math.floor(Math.max(0, rolled.total) / 2)
     : Math.max(0, rolled.total);
+  const amount = savedAmount * targetDamageMultiplier(target, rider.targetMultipliers);
   applyDamageAmount(snapshot, source, target, {
     id: rider.id,
     name: rider.name,
@@ -459,6 +460,17 @@ function applyDamageRider(snapshot, source, target, rider, dice, log, { critical
     }, log, "hit", dice);
   }
   return { triggered: true, applied: amount > 0 };
+}
+
+function targetDamageMultiplier(target, targetMultipliers) {
+  if (!targetMultipliers || typeof targetMultipliers !== "object") return 1;
+  const tags = new Set([
+    ...(Array.isArray(target?.tags) ? target.tags : []),
+    target?.creatureType,
+  ].filter(Boolean));
+  return Object.entries(targetMultipliers).reduce((multiplier, [tag, value]) =>
+    tags.has(tag) && Number.isFinite(value) ? multiplier * Math.max(0, value) : multiplier
+  , 1);
 }
 
 function applySplashConditionDamage(snapshot, source, primaryTarget, rider, rolled, amount, dice, log, sourceAction) {

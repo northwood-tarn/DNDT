@@ -208,7 +208,7 @@ function resourceDescription(sheet, resourceId) {
 
 function createDeviceAction(sheet, recipe, overrides = {}) {
   const resolvedDescription = describeDeviceRecipe(recipe, sheet.proficiencyBonus);
-  return createFeatureAction(
+  const action = createFeatureAction(
     {
       id: `device:${recipe.id}`,
       name: recipe.name,
@@ -217,18 +217,27 @@ function createDeviceAction(sheet, recipe, overrides = {}) {
     },
     {
       id: `device_${recipe.id}`,
+      iconId: `device_${recipe.id}`,
       name: recipe.name,
       resourceId: "prepared_devices",
       description: resolvedDescription,
       ...(recipe.action || {}),
       ...overrides,
-      tags: { device: true, harmful: Boolean(recipe.action?.damage || recipe.action?.save) },
+      tags: { device: true, harmful: Boolean(recipe.action?.damage || recipe.action?.save || recipe.action?.object) },
     },
     {
       resources: sheet.resources || [],
       resolveFormula: (formula) => resolveFormula(formula, sheet),
       resolveSaveDc: (option) => resolveFeatureSaveDc(option, sheet),
     }
+  );
+  if (hasSafeGeometry(sheet)) action.safeGeometry = true;
+  return action;
+}
+
+function hasSafeGeometry(sheet) {
+  return (sheet.features || []).some((feature) =>
+    (feature.effects?.narrativeTags || []).includes("safe_geometry")
   );
 }
 

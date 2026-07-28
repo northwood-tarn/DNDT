@@ -19,8 +19,9 @@ export const DEVICE_RECIPES = Object.fromEntries([
   saintPaperRecipe(),
   grenadoRecipe({ id: "fire_grenado", name: "Fire Grenado", damageType: "fire" }),
   grenadoRecipe({ id: "frost_grenado", name: "Frost Grenado", damageType: "cold", effect: "frost_slow" }),
-  graveLimeRecipe(),
-  spellSootRecipe(),
+  grenadoRecipe({ id: "acid_grenado", name: "Acid Grenado", damageType: "acid" }),
+  grenadoRecipe({ id: "lightning_grenado", name: "Lightning Grenado", damageType: "lightning" }),
+  graveDirtGrenadoRecipe(),
 ].map((item) => [item.id, item]));
 
 export const DEVICE_RECIPE_LIST = Object.values(DEVICE_RECIPES);
@@ -86,7 +87,7 @@ function paperRecipe({ id, name, damageType, tier, minLevel, damage, duration })
 
 function vialRecipe({ id, name, damageType, saveAbility, effect, tier, minLevel, damage, rangeFt, radiusFt, duration }) {
   const greater = tier === "greater";
-  const damageText = damage ? ` Creatures in the area test ${abilityLabel(saveAbility)} or take ${damage} ${damageType} damage.` : "";
+  const areaText = vialAreaText({ effect, damage, damageType, saveAbility });
   return recipe({
     id: `${greater ? "greater_" : ""}${id}_vial`,
     name: `${greater ? "Greater " : ""}${name} Vial`,
@@ -94,17 +95,26 @@ function vialRecipe({ id, name, damageType, saveAbility, effect, tier, minLevel,
     tier,
     minLevel,
     use: "Action",
-    text: `Thrown ${rangeFt} ft; creates a ${radiusFt}-ft radius area for ${formatDuration(duration)} rounds.${damageText}`,
-    action: areaSave({
-      damage,
-      damageType,
-      saveAbility,
-      rangeFt,
-      radiusFt,
-      duration,
-      objectKind: effect,
-      deviceEffect: { kind: effect, durationRounds: duration, radiusFt },
-    }),
+    text: `Thrown ${rangeFt} ft; creates a ${radiusFt}-ft radius area for ${formatDuration(duration)} rounds. ${areaText}`,
+    action: damage
+      ? areaSave({
+          damage,
+          damageType,
+          saveAbility,
+          rangeFt,
+          radiusFt,
+          duration,
+          objectKind: effect,
+          deviceEffect: { kind: effect, durationRounds: duration, radiusFt },
+        })
+      : persistentArea({
+          rangeFt,
+          radiusFt,
+          duration,
+          objectKind: effect,
+          object: vialCombatObject({ objectKind: effect, damage, damageType, saveAbility, radiusFt, duration }),
+          deviceEffect: { kind: effect, durationRounds: duration, radiusFt },
+        }),
   });
 }
 
@@ -114,7 +124,7 @@ function grenadoRecipe({ id, name, damageType, effect = null }) {
     name,
     family: "grenado",
     tier: "grenado",
-    minLevel: 7,
+    minLevel: 5,
     use: "Action",
     text: `Thrown 20 ft; one target takes proficiency bonus d12 ${damageType} damage (${damageType === "cold" ? "CON" : "DEX"} save half).`,
     action: targetSave({
@@ -189,46 +199,25 @@ function saintPaperRecipe() {
   });
 }
 
-function graveLimeRecipe() {
+function graveDirtGrenadoRecipe() {
   return recipe({
-    id: "grave_lime",
-    name: "Grave Lime",
+    id: "grave_dirt_grenado",
+    name: "Grave Dirt Grenado",
     family: "anti_healing",
     tier: "regular",
     minLevel: 7,
     use: "Action",
     text: "Thrown 30 ft; creates a 10-ft radius area for PB rounds. Creatures in the lime cannot regain hit points while they remain inside.",
-    action: areaSave({
-      damage: null,
-      damageType: null,
-      saveAbility: "constitution",
+    action: persistentArea({
       rangeFt: 30,
       radiusFt: 10,
       duration: "proficiency_bonus",
-      objectKind: "grave_lime_cloud",
+      objectKind: "grave_dirt_cloud",
+      object: {
+        effects: [{ type: "healing_block", trigger: "passive", affects: "all" }],
+        visual: { tint: "grave_dirt" },
+      },
       deviceEffect: { kind: "healing_block_area", durationRounds: "proficiency_bonus", radiusFt: 10 },
-    }),
-  });
-}
-
-function spellSootRecipe() {
-  return recipe({
-    id: "spell_soot",
-    name: "Spell Soot",
-    family: "anti_magic",
-    tier: "regular",
-    minLevel: 7,
-    use: "Action",
-    text: "Thrown 30 ft; scatters spell-ash in a 10-ft radius. Concentrating creatures inside must immediately retest concentration against your device save DC.",
-    action: areaSave({
-      damage: null,
-      damageType: null,
-      saveAbility: "constitution",
-      rangeFt: 30,
-      radiusFt: 10,
-      duration: null,
-      objectKind: "spell_soot_cloud",
-      deviceEffect: { kind: "concentration_retest", dcFrom: "deviceSaveDC" },
     }),
   });
 }
@@ -245,6 +234,7 @@ function recipe(record) {
 }
 
 function areaSave({ actionType = "action", damage, damageType, saveAbility = "dexterity", rangeFt = 20, radiusFt = 5, duration = null, objectKind = null, deviceEffect = null }) {
+  const persistentObject = vialCombatObject({ objectKind, damage, damageType, saveAbility, radiusFt, duration });
   return {
     actionType,
     requiresTarget: true,
@@ -253,9 +243,75 @@ function areaSave({ actionType = "action", damage, damageType, saveAbility = "de
     damage: damage ? { dice: damage, type: damageType } : null,
     targeting: { shape: "radius", radiusSquares: Math.ceil(radiusFt / 5), radiusFt },
     duration,
-    object: objectKind ? { kind: objectKind, radiusFt, durationRounds: duration } : null,
+    object: persistentObject,
     deviceEffect,
   };
+}
+
+function persistentArea({ actionType = "action", rangeFt, radiusFt, duration, objectKind, object = {}, deviceEffect = null }) {
+  return {
+    actionType,
+    requiresTarget: true,
+    rangeFt,
+    targeting: { shape: "radius", radiusSquares: Math.ceil(radiusFt / 5), radiusFt },
+    duration,
+    object: {
+      kind: objectKind,
+      name: object.name || null,
+      shape: "radius",
+      radiusFt,
+      duration: { kind: "rounds", rounds: duration, tick: "turn_end" },
+      ...object,
+    },
+    deviceEffect,
+  };
+}
+
+function vialCombatObject({ objectKind, damage, damageType, saveAbility, radiusFt, duration }) {
+  if (!objectKind) return null;
+  if (objectKind === "sticky_ground") {
+    return {
+      kind: objectKind,
+      shape: "radius",
+      radiusFt,
+      difficultTerrain: true,
+      duration: { kind: "rounds", rounds: duration, tick: "turn_end" },
+      visual: { tint: "tar" },
+      effects: [],
+    };
+  }
+  if (objectKind === "smoke_cloud") {
+    return {
+      kind: objectKind,
+      shape: "radius",
+      radiusFt,
+      blocksLineOfSight: true,
+      duration: { kind: "rounds", rounds: duration, tick: "turn_end" },
+      visual: { tint: "smoke" },
+      effects: [],
+    };
+  }
+  return {
+    kind: objectKind,
+    shape: "radius",
+    radiusFt,
+    duration: { kind: "rounds", rounds: duration, tick: "turn_end" },
+    visual: { tint: "poison" },
+    effects: ["area_created", "enter_area", "turn_start"].map((trigger) => ({
+      type: "damage",
+      trigger,
+      damage,
+      damageType,
+      save: { ability: saveAbility, onSave: "negates" },
+      affects: "all",
+    })),
+  };
+}
+
+function vialAreaText({ effect, damage, damageType, saveAbility }) {
+  if (effect === "sticky_ground") return "The coated ground is difficult terrain.";
+  if (effect === "smoke_cloud") return "The smoke heavily obscures the area and blocks line of sight.";
+  return `A creature exposed when the fumes appear, entering them, or starting its turn there tests ${abilityLabel(saveAbility)} or takes ${damage} ${damageType} damage.`;
 }
 
 function targetSave({ actionType = "action", damage, damageType, saveAbility = "dexterity", rangeFt = 20, deviceEffect = null }) {

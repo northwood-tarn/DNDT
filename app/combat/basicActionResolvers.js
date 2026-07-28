@@ -18,6 +18,7 @@ import { removeActiveEffect } from "./modifiers.js";
 import { getConsumableById } from "../data/consumables.js";
 import { spendActionSpellSlot } from "./spellSlots.js";
 import { applyActionResolvedEffects } from "./combatEffectsResolution.js";
+import { isHealingBlockedByCombatObject } from "./combatObjects.js";
 
 export function resolveDash(snapshot, actor, action, log) {
   const before = getMovementRemaining(actor);
@@ -138,7 +139,7 @@ export function resolveConsumable(snapshot, actor, action, dice, log) {
     });
     return true;
   }
-  if (hasConditionRule(actor, "blocksHealing")) {
+  if (hasConditionRule(actor, "blocksHealing") || isHealingBlockedByCombatObject(snapshot, actor)) {
     log.add("target.invalid", {
       round: snapshot.round,
       actorId: actor.id,
@@ -201,7 +202,7 @@ export function resolveHealingAction(snapshot, actor, target, action, dice, log,
     });
     return false;
   }
-  if (hasConditionRule(recipient, "blocksHealing")) {
+  if (hasConditionRule(recipient, "blocksHealing") || isHealingBlockedByCombatObject(snapshot, recipient)) {
     log.add("target.invalid", {
       round: snapshot.round,
       actorId: actor.id,

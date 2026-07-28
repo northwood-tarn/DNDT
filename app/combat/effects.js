@@ -14,7 +14,7 @@ export const EFFECT_TRIGGERS = new Set([
 ]);
 export const EFFECT_TYPES = new Set([
   "condition", "modifier", "damage", "grant_action", "temp_hp", "forced_movement", "remove_conditions",
-  "light_source", "max_hp_bonus", "death_ward", "dispel_magic", "greater_restoration", "aura",
+  "light_source", "max_hp_bonus", "death_ward", "dispel_magic", "greater_restoration", "aura", "healing_block",
 ]);
 export const EFFECT_TIMINGS = new Set(["turn_start", "turn_end"]);
 export const MODIFIER_STATS = new Set([

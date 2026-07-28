@@ -99,6 +99,7 @@ export function createFeatureAction(feature, option, context = {}) {
     resourceRestore: structuredClone(resolvedOption.resourceRestore || null),
     additionalResourceIds: structuredClone(resolvedOption.additionalResourceIds || []),
     deviceRig: structuredClone(resolvedOption.deviceRig || null),
+    repeatResolutionCount: Math.max(1, Number(resolvedOption.repeatResolutionCount) || 1),
     restoresResource: resolvedOption.restoresResource || null,
     amount: resolvedOption.amount || null,
     mark: structuredClone(resolvedOption.mark || null),

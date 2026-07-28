@@ -11,6 +11,7 @@ export function dispatchActorTrigger(snapshot, trigger, actor, dice, log, contex
   if (!actor || actor.hp <= 0) return;
   const objects = combatObjectsAffectingActor(snapshot, actor);
   for (const object of objects) {
+    if (context.sourceObjectId && object.id !== context.sourceObjectId) continue;
     for (const effect of object.effects || []) {
       if ((effect.trigger || "passive") !== trigger) continue;
       if (!effectAffectsActor(effect, object, actor)) continue;
@@ -32,6 +33,9 @@ function effectRequirementsMet(effect, actor) {
 
 function effectAffectsActor(effect, source, actor) {
   const sourceTeam = effect.sourceTeam || source.sourceTeam;
+  if (effect.type === "damage" && source.safeGeometry === true && source.sourceActionTags?.device === true && actor.team === sourceTeam) {
+    return false;
+  }
   if (!effect.affects || effect.affects === "all") return true;
   if (effect.affects === "allies") return actor.team === sourceTeam;
   if (effect.affects === "enemies") return actor.team !== sourceTeam;
@@ -50,14 +54,15 @@ function applyTriggeredEffect(snapshot, source, actor, effect, dice, log, contex
       log.add("trigger.fired", triggerDetail(snapshot, source, actor, effect, context));
       return;
     }
-    applyDamageAmount(snapshot, sourceActor(source), actor, {
+    applyDamageAmount(snapshot, sourceActor(snapshot, source), actor, {
       id: source.id,
       name: source.name,
       damage: effect.damage,
       damageType: effect.damageType || "untyped",
+      tags: structuredClone(source.sourceActionTags || {}),
     }, rolled, amount, dice, log);
     if (!saveResult?.success && effect.conditionOnFail) {
-      addCondition(actor, createConditionInstance({ type: "condition", condition: effect.conditionOnFail, duration: null }, sourceActor(source), { id: source.sourceActionId || source.id, name: source.name }));
+      addCondition(actor, createConditionInstance({ type: "condition", condition: effect.conditionOnFail, duration: null }, sourceActor(snapshot, source), { id: source.sourceActionId || source.id, name: source.name }));
       log.add("condition.applied", { round: snapshot.round, sourceId: source.id, sourceName: source.name, targetId: actor.id, targetName: actor.name, condition: effect.conditionOnFail, label: conditionName(effect.conditionOnFail), actionName: source.name, noSave: true });
     }
     if (!saveResult?.success && effect.pushOnFailFt > 0) {
@@ -121,7 +126,7 @@ function applyTriggeredEffect(snapshot, source, actor, effect, dice, log, contex
       log.add("trigger.fired", triggerDetail(snapshot, source, actor, effect, context));
       return;
     }
-    const preventedBy = hasAuraConditionPrevention(snapshot, actor, effect.condition, { source: sourceActor(source) });
+    const preventedBy = hasAuraConditionPrevention(snapshot, actor, effect.condition, { source: sourceActor(snapshot, source) });
     if (preventedBy) {
       log.add("condition.prevented", {
         round: snapshot.round,
@@ -136,7 +141,7 @@ function applyTriggeredEffect(snapshot, source, actor, effect, dice, log, contex
       });
       return;
     }
-    const condition = createConditionInstance(effect, sourceActor(source), { id: source.sourceActionId || source.id, name: source.name, range: null });
+    const condition = createConditionInstance(effect, sourceActor(snapshot, source), { id: source.sourceActionId || source.id, name: source.name, range: null });
     condition.sourceObjectId = source.id;
     condition.sourceActorId = source.sourceActorId || null;
     addCondition(actor, condition);
@@ -159,7 +164,7 @@ function resolveTriggerSave(snapshot, source, actor, effect, dice, log) {
   if (!dice?.rollD20) return { success: false, onSave: effect.save.onSave };
   const ability = String(effect.save.ability || "").toLowerCase();
   const dc = effect.save.dc ?? effect.spellSaveDC ?? source.spellSaveDC;
-  const roll = rollSaveD20(actor, { name: source.name, saveAbility: ability }, dice, snapshot, sourceActor(source));
+  const roll = rollSaveD20(actor, { name: source.name, saveAbility: ability }, dice, snapshot, sourceActor(snapshot, source));
   const modifier = rollSaveModifier(snapshot, actor, ability, { name: source.name, saveAbility: ability }, dice);
   const baseBonus = actor.saves?.[ability] || 0;
   const bonus = baseBonus + modifier.total;
@@ -211,8 +216,8 @@ function triggerDetail(snapshot, source, actor, effect, context) {
   };
 }
 
-function sourceActor(source) {
-  return {
+function sourceActor(snapshot, source) {
+  return (snapshot.actors || []).find((actor) => actor.id === source.sourceActorId) || {
     id: source.sourceActorId || source.id,
     name: source.name,
     team: source.team || null,

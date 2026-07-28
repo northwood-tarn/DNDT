@@ -4,6 +4,7 @@ import { installSystemMenu } from "../ui/SystemMenu.js";
 import { getSpellById } from "../data/spells.js";
 import { getWeaponMastery } from "../data/weaponMasteries.js";
 import { getCondition } from "../data/conditions.js";
+import { createCatastrophicChargeVariant } from "../combat/deviceActions.js";
 
 installSystemMenu({ combat: true });
 
@@ -249,41 +250,17 @@ function resourceChoiceDescription(actor, resourceId, description) {
 }
 
 function preparedActionDevices(actor) {
-  return actor.actions.filter((action) => isPreparedDeviceAction(action) && action.cost === "action");
+  return actor.actions.filter((action) => isPreparedDeviceAction(action) && action.id.startsWith("device_"));
 }
 
 function catastrophicChargeButton(actor, charge, device) {
   return menuButton(device.name, () => {
     if (!charge || !canSelectCombatAction(combatGame.snapshot, actor.id, charge.id)) return;
-    const variant = catastrophicChargeVariant(charge, device);
+    const variant = createCatastrophicChargeVariant(charge, device);
     actor.actions.push(variant);
     resolveWithoutTargeting(variant);
     actor.actions = actor.actions.filter((action) => action.id !== variant.id);
   }, { description: device.description });
-}
-
-function catastrophicChargeVariant(charge, device) {
-  return {
-    ...structuredClone(charge),
-    id: `${charge.id}:${device.id}`,
-    name: `Catastrophic Charge: ${device.name}`,
-    description: `${charge.description}\n${device.description}`,
-    damage: doubleDamageDice(device.damage),
-    damageType: device.damageType,
-    saveAbility: device.saveAbility,
-    save: structuredClone(device.save),
-    spellSaveDC: device.spellSaveDC,
-    targeting: { shape: "radius", radiusSquares: 4, radiusFt: 20 },
-    object: device.object ? { ...structuredClone(device.object), radiusFt: 20, radiusSquares: 4 } : null,
-    deviceEffect: structuredClone(device.deviceEffect),
-    additionalResourceIds: ["prepared_devices"],
-    tags: { ...(charge.tags || {}), device: true, catastrophicChargeOption: true },
-  };
-}
-
-function doubleDamageDice(formula) {
-  if (!formula) return null;
-  return String(formula).replace(/(\d+)d(\d+)/gi, (_match, count, sides) => `${Number(count) * 2}d${sides}`);
 }
 
 function preparedDeviceBaseCost(actor, variant) {

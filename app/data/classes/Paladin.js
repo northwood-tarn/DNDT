@@ -25,6 +25,7 @@ export default {
     1: [
       {
         name: "Weapon Mastery",
+        iconId: "weapon_mastery",
         type: "Passive",
         description: "Choose two weapons whose mastery properties you can use.",
         effects: {
@@ -34,6 +35,7 @@ export default {
     ],
     2: [{
       name: "Paladin's Smite",
+      iconId: "divine_smite",
       type: "Special",
       description: "Divine Smite is always prepared. Once per Long Rest, you can cast it without expending a spell slot.",
       effects: {
@@ -44,6 +46,7 @@ export default {
     4: [
       {
         name: "Ability Score Improvement",
+        iconId: "ability_score_improvement",
         type: "Passive",
         description:
           "Increase ability scores or take a feat (engine-defined advancement rule).",
@@ -51,7 +54,7 @@ export default {
       }
     ],
     5: [
-      { name: "Extra Attack", type: "Passive",
+      { name: "Extra Attack", iconId: "extra_attack_plus_1", type: "Passive",
         description: "When you take the Attack action, you can make two attacks.",
         effects: { attackAction: [{ attacks: 2 }] } }
     ],
@@ -64,6 +67,7 @@ export default {
       },
       {
         name: "Aura of Protection",
+        iconId: "aura_of_protection",
         type: "Passive",
         note: "You and allies in your aura add your Charisma modifier to saving throws.",
         effects: {
@@ -85,6 +89,7 @@ export default {
     8: [
       {
         name: "Ability Score Improvement",
+        iconId: "ability_score_improvement",
         type: "Passive",
         description:
           "Increase ability scores or take a feat (engine-defined advancement rule).",
@@ -93,6 +98,7 @@ export default {
     ],
     10: [{
       name: "Aura of Courage",
+      iconId: "aura_of_courage",
       type: "Passive",
       note: "You and allies in your aura cannot be frightened.",
       effects: {
@@ -112,6 +118,7 @@ export default {
 
     11: [{
       name: "Greater Radiant Smite",
+      iconId: "greater_radiant_smite",
       type: "Passive",
       description: "Whenever you hit with a melee weapon or an Unarmed Strike, the attack deals an extra 1d8 radiant damage.",
       effects: {
@@ -130,6 +137,7 @@ export default {
     12: [
       {
         name: "Ability Score Improvement",
+        iconId: "ability_score_improvement",
         type: "Passive",
         description:
           "Increase ability scores or take a feat (engine-defined advancement rule).",
@@ -143,7 +151,7 @@ export default {
       summary: "Relentless hunter who brings retribution to the guilty.",
       features: {
         3: [
-          { name: "Vow of Enmity", type: "Bonus Action", uses: "shortRest",
+          { name: "Vow of Enmity", iconId: "vow_of_enmity", type: "Bonus Action", uses: "shortRest",
             description: "Choose a creature within 10 ft; for 1 minute, you have advantage on attack rolls against it.",
             effects: {
               resources: [{ id: "vow_of_enmity", name: "Vow of Enmity", max: 1, recovery: "short_rest" }],
@@ -172,7 +180,7 @@ export default {
             } }
         ],
         7: [
-          { name: "Chains of Vengeance", type: "Passive", 
+          { name: "Chains of Vengeance", iconId: "chains_of_vengeance", type: "Passive",
             description: "When your Vow target moves or attacks, they must make a STR save; on failure, its attack misses and it is restrained until the start of its next turn.",
             effects: {
               triggeredEffects: [{
@@ -185,7 +193,7 @@ export default {
             } }
         ],
         11: [
-          { name: "Relentless Pursuit", type: "Passive",
+          { name: "Relentless Pursuit", iconId: "relentless_pursuit", type: "Passive",
             description: "Your movement increases by 10 ft and opportunity attacks against you are at disadvantage while moving toward your Vow target.",
             effects: {
               modifiers: [
@@ -195,7 +203,7 @@ export default {
             } }
         ],
         13: [
-          { name: "Executioner’s Verdict", type: "Special", uses: "longRest",
+          { name: "Executioner’s Verdict", iconId: "executioners_verdict", type: "Special", uses: "longRest",
             description: "Once per long rest, when you hit your Vow target, deal an extra 6d8 radiant damage.",
             effects: {
               resources: [{ id: "executioners_verdict", name: "Executioner's Verdict", max: 1, recovery: "long_rest" }],
@@ -217,7 +225,7 @@ export default {
       summary: "Fusion of Devotion and Ancients—holy light tempered with verdant mercy.",
       features: {
         3: [
-          { name: "Radiant Smite", type: "Passive",
+          { name: "Radiant Smite", iconId: "radiant_smite", type: "Passive",
             description: "The first time you hit with a melee attack each round, deal an extra 1d6 radiant damage.",
             effects: {
               damageRiders: [{
@@ -232,7 +240,7 @@ export default {
             } }
         ],
         7: [
-          { name: "Sanctified Presence", type: "Passive",
+          { name: "Sanctified Presence", iconId: "sanctified_presence", type: "Passive",
             description: "You and allies within 10 ft have advantage on saves against charm and fear; hostile creatures within 10 ft have disadvantage on saves against charm and fear effects you impose.",
             effects: {
               auras: [
@@ -267,12 +275,12 @@ export default {
             } }
         ],
         11: [
-          { name: "Nature’s Aegis", type: "Passive",
+          { name: "Nature’s Aegis", iconId: "natures_aegis", type: "Passive",
             description: "You gain resistance to necrotic and poison damage.",
             effects: { resistances: ["necrotic", "poison"] } }
         ],
         13: [
-          { name: "Aura of Renewal", type: "Bonus Action", uses: "longRest",
+          { name: "Aura of Renewal", iconId: "aura_of_renewal", type: "Bonus Action", uses: "longRest",
             description: "For 1 minute, the first time each turn you hit a creature, you or an ally within 10 ft regains HP equal to your Charisma modifier.",
             effects: {
               healingRiders: [{
@@ -292,7 +300,7 @@ export default {
       summary: "Heroic exemplar whose prowess inspires daring feats.",
       features: {
         3: [
-          { name: "Athletic Prowess", type: "Passive",
+          { name: "Athletic Prowess", iconId: "athletic_prowess", type: "Passive",
             description: "You have advantage on Athletics and Acrobatics checks; when you Dash, you can jump as part of the move.",
             effects: {
               modifiers: [
@@ -303,7 +311,7 @@ export default {
             } }
         ],
         7: [
-          { name: "Aura of Alacrity", type: "Passive",
+          { name: "Aura of Alacrity", iconId: "aura_of_alacrity", type: "Passive",
             description: "Your speed increases by 10 ft; enemies within 10 ft lose 10 ft of speed.",
             effects: {
               auras: [
@@ -325,7 +333,7 @@ export default {
             } }
         ],
         11: [
-          { name: "Glorious Challenge", type: "Bonus Action", uses: "shortRest",
+          { name: "Glorious Challenge", iconId: "glorious_challenge", type: "Bonus Action", uses: "shortRest",
             description: "Choose a creature within 30 ft; it has disadvantage on attacks against others while it can see you until the end of its next turn.",
             effects: {
               resources: [{ id: "glorious_challenge", name: "Glorious Challenge", max: 1, recovery: "short_rest" }],
@@ -349,7 +357,7 @@ export default {
             } }
         ],
         13: [
-          { name: "Legend’s Surge", type: "Special", uses: "longRest",
+          { name: "Legend’s Surge", iconId: "legends_surge", type: "Special", uses: "longRest",
             description: "Once per long rest, immediately take an additional action on your turn.",
             effects: {
               resources: [{ id: "legends_surge", name: "Legend's Surge", max: 1, recovery: "long_rest" }],

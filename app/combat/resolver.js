@@ -40,7 +40,7 @@ import {
   resolveOpportunityAttacks,
   resolveSaveSpell,
 } from "./combatResolution.js";
-import { blockingContainmentBoundary, combatObjectContains, combatObjectsAt } from "./combatObjects.js";
+import { blockingContainmentBoundary, combatObjectContains, combatObjectsAt, isHealingBlockedByCombatObject } from "./combatObjects.js";
 import { applyDamageAmount, rollSaveD20 } from "./combatEffectsResolution.js";
 import { rollRiderDamage } from "./damageRolls.js";
 import { rollSaveModifier } from "./modifiers.js";
@@ -584,7 +584,7 @@ function applyEquipmentSpellCastEffects(snapshot, actor, action, log) {
   for (const effect of actor.equipmentTraits?.onSpellCast || []) {
     if (effect.kind !== "heal_wearer") continue;
     const amount = effect.amountFrom === "spell_level" ? Math.max(0, Number(action.spellLevel) || 0) : Math.max(0, Number(effect.amount) || 0);
-    if (amount <= 0 || actor.hp >= actor.maxHp) continue;
+    if (amount <= 0 || actor.hp >= actor.maxHp || isHealingBlockedByCombatObject(snapshot, actor)) continue;
     const before = actor.hp;
     actor.hp = Math.min(actor.maxHp, actor.hp + amount);
     log.add("healing.applied", {

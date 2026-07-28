@@ -3,6 +3,7 @@ import { getActionTags } from "./actionTags.js";
 import { conditionName, createConditionInstance, normalizeEffect } from "./effects.js";
 import { distance } from "./grid.js";
 import { addActiveEffect } from "./modifiers.js";
+import { isHealingBlockedByCombatObject } from "./combatObjects.js";
 
 export function applyFeatureEffectRiders({ snapshot, actor, target, action, trigger, dice, log, resolveSave }) {
   for (const rider of collectFeatureEffectRiders(actor, target, action, { trigger })) {
@@ -69,7 +70,7 @@ function activeEffectRiders(source, trigger) {
 
 function applyFeatureHealingRider(snapshot, actor, action, rider, dice, log) {
   const receiver = selectHealingReceiver(snapshot, actor, rider);
-  if (!receiver || receiver.hp >= receiver.maxHp) return;
+  if (!receiver || receiver.hp >= receiver.maxHp || isHealingBlockedByCombatObject(snapshot, receiver)) return;
   const amount = resolveHealingAmount(actor, rider, dice);
   const hpBefore = receiver.hp;
   receiver.hp = Math.min(receiver.maxHp, receiver.hp + Math.max(0, amount));
@@ -91,6 +92,7 @@ function selectHealingReceiver(snapshot, actor, rider) {
   const range = Number.isFinite(rider.rangeSquares) ? rider.rangeSquares : Math.ceil((rider.rangeFt || 0) / 5);
   const candidates = (snapshot.actors || [])
     .filter((candidate) => candidate.team === actor.team && candidate.hp > 0 && candidate.hp < candidate.maxHp)
+    .filter((candidate) => !isHealingBlockedByCombatObject(snapshot, candidate))
     .filter((candidate) => distance(actor.position, candidate.position) <= range);
   candidates.sort((a, b) => (a.hp / a.maxHp) - (b.hp / b.maxHp));
   return candidates[0] || null;

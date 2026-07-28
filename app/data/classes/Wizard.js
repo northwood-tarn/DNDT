@@ -37,6 +37,7 @@ export default {
     4: [
       {
         name: "Ability Score Improvement",
+        iconId: "ability_score_improvement",
         type: "Passive",
         description:
           "Increase ability scores or take a feat (engine-defined advancement rule).",
@@ -65,6 +66,7 @@ export default {
     8: [
       {
         name: "Ability Score Improvement",
+        iconId: "ability_score_improvement",
         type: "Passive",
         description:
           "Increase ability scores or take a feat (engine-defined advancement rule).",
@@ -91,6 +93,7 @@ export default {
     12: [
       {
         name: "Ability Score Improvement",
+        iconId: "ability_score_improvement",
         type: "Passive",
         description:
           "Increase ability scores or take a feat (engine-defined advancement rule).",

@@ -192,7 +192,9 @@ function choicesFor(spec) {
   if (spec.subclassId === "saboteur") {
     classChoices.origin_device = "acid_paper";
     classChoices.saboteur_cookbook_recipes = ["fire_paper", "poison_vial"];
-    classChoices.saboteur_advanced_recipes = ["spell_soot", "greater_fire_paper"];
+    if (spec.level >= 5) classChoices.saboteur_grenado_recipe = "lightning_grenado";
+    if (spec.level >= 8) classChoices.saboteur_free_recipe = "tar_vial";
+    classChoices.saboteur_advanced_recipes = ["grave_dirt_grenado", "greater_fire_paper"];
   }
   if (spec.classId === "wizard" && spec.level >= 9) classChoices.jesters_book_spell = "magic_missile_jester";
   if (spec.subclassId === "battlemage") classChoices.arcane_armament_weapon = "longsword";

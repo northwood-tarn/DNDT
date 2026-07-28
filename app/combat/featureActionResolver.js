@@ -11,6 +11,7 @@ import { applyMark } from "./marks.js";
 import { addActiveEffect, removeActiveEffect } from "./modifiers.js";
 import { rollSaveModifier } from "./modifiers.js";
 import { applyLegendaryResistance } from "./legendaryResistance.js";
+import { dispatchActorTrigger } from "./triggers.js";
 
 export function resolveFeatureAction(snapshot, actor, action, targetId, dice, log) {
   if (action.actionKind === "disengage") return resolveDisengageFeature(snapshot, actor, action, log);
@@ -20,9 +21,13 @@ export function resolveFeatureAction(snapshot, actor, action, targetId, dice, lo
       ["spell_slot", "warlock_spell_slot"].includes(action.resourceRestore?.resourceId)) {
     return resolveSpellSlotRestore(snapshot, actor, action, log);
   }
-  if (action.object) return resolveFeatureObjectAction(snapshot, actor, action, targetId, log);
+  if ((action.repeatResolutionCount || 1) > 1) {
+    return resolveRepeatedFeatureAction(snapshot, actor, action, targetId, dice, log);
+  }
+  if (action.object) return resolveFeatureObjectAction(snapshot, actor, action, targetId, dice, log);
   if (action.targeting?.shape) return resolveFeatureAreaAction(snapshot, actor, action, targetId, dice, log);
-  const targets = selectFeatureTargets(snapshot, actor, action, targetId);
+  const targets = selectFeatureTargets(snapshot, actor, action, targetId)
+    .filter((target) => !safeGeometryExempts(actor, target, action));
   if (!targets.length) {
     log.add("target.invalid", {
       round: snapshot.round,
@@ -55,6 +60,34 @@ export function resolveFeatureAction(snapshot, actor, action, targetId, dice, lo
   return true;
 }
 
+function resolveRepeatedFeatureAction(snapshot, actor, action, targetId, dice, log) {
+  const count = Math.max(2, Math.floor(Number(action.repeatResolutionCount) || 2));
+  const repeatedAction = {
+    ...structuredClone(action),
+    cost: "free",
+    resourceId: null,
+    additionalResourceIds: [],
+    uses: null,
+    deviceRig: null,
+    repeatResolutionCount: 1,
+  };
+  for (let index = 0; index < count; index += 1) {
+    repeatedAction.id = `${action.id}:resolution_${index + 1}`;
+    if (!resolveFeatureAction(snapshot, actor, repeatedAction, targetId, dice, log)) return false;
+  }
+  spendFeatureActionCosts(actor, action);
+  markDeviceRig(actor, action);
+  log.add("feature.repeated", {
+    round: snapshot.round,
+    actorId: actor.id,
+    actorName: actor.name,
+    actionId: action.id,
+    actionName: action.name,
+    resolutions: count,
+  });
+  return true;
+}
+
 function resolveFeatureAreaAction(snapshot, actor, action, targetPayload, dice, log) {
   const anchor = targetPayload?.anchor || targetPayload;
   if (!anchor || !Number.isFinite(anchor.x) || !Number.isFinite(anchor.y)) {
@@ -80,6 +113,7 @@ function resolveFeatureAreaAction(snapshot, actor, action, targetPayload, dice, 
     .filter(Boolean)
     .filter((target) => target.id !== actor.id)
     .filter((target) => target.hp > 0)
+    .filter((target) => !safeGeometryExempts(actor, target, action))
     .filter((target) => targetMatchesTeam(actor, target, action.targetFilter))
     .filter((target) => targetMatchesCreatureFilter(target, action.targetFilter));
 
@@ -116,7 +150,7 @@ function resolveFeatureAreaAction(snapshot, actor, action, targetPayload, dice, 
   return true;
 }
 
-function resolveFeatureObjectAction(snapshot, actor, action, targetPayload, log) {
+function resolveFeatureObjectAction(snapshot, actor, action, targetPayload, dice, log) {
   const anchor = targetPayload?.anchor || targetPayload || actor.position;
   if (!anchor || !Number.isFinite(anchor.x) || !Number.isFinite(anchor.y)) {
     log.add("target.invalid", {
@@ -131,6 +165,9 @@ function resolveFeatureObjectAction(snapshot, actor, action, targetPayload, log)
   if (action.teleportFt && !resolveFeatureTeleport(snapshot, actor, action, anchor, log)) return false;
   const object = createCombatObjectFromAction(action, targetPayload?.cells ? targetPayload : anchor, actor);
   snapshot.combatObjects = [...(snapshot.combatObjects || []), object];
+  for (const target of snapshot.actors || []) {
+    dispatchActorTrigger(snapshot, "area_created", target, dice, log, { action, sourceObjectId: object.id });
+  }
   applyFeatureSideEffects(snapshot, actor, action, null, log);
   spendFeatureActionCosts(actor, action);
   markDeviceRig(actor, action);
@@ -163,11 +200,41 @@ function applyFeatureSideEffects(snapshot, actor, action, dice, log) {
 
 function applyDeviceSelfEffect(snapshot, actor, action, log) {
   const effect = action.deviceEffect;
+  if (effect?.kind === "shield_reaction") {
+    const duration = normalizeEffectDuration("turn_start");
+    const id = `${action.id}_shield`;
+    addActiveEffect(actor, {
+      id,
+      label: action.name,
+      sourceActionId: action.id,
+      sourceActorId: actor.id,
+      type: "modifier",
+      trigger: "passive",
+      target: "self",
+      stat: "ac",
+      amount: Number(effect.acBonus) || 5,
+      duration,
+    });
+    log.add("effect.applied", {
+      round: snapshot.round,
+      sourceId: actor.id,
+      sourceName: actor.name,
+      targetId: actor.id,
+      targetName: actor.name,
+      actionName: action.name,
+      effectId: id,
+      stat: "ac",
+      amount: Number(effect.acBonus) || 5,
+    });
+    return;
+  }
   if (effect?.kind !== "weapon_damage_buff") return;
 
   if (effect.exclusiveFamilyOnTarget) {
     for (const activeEffect of [...(actor.activeEffects || [])]) {
-      if (activeEffect.deviceEffectFamily === effect.exclusiveFamilyOnTarget) {
+      const sameCatastrophicStack = effect.catastrophicStackGroup &&
+        activeEffect.catastrophicStackGroup === effect.catastrophicStackGroup;
+      if (activeEffect.deviceEffectFamily === effect.exclusiveFamilyOnTarget && !sameCatastrophicStack) {
         removeActiveEffect(actor, activeEffect.id);
       }
     }
@@ -181,6 +248,7 @@ function applyDeviceSelfEffect(snapshot, actor, action, log) {
     sourceActionId: action.id,
     sourceActorId: actor.id,
     deviceEffectFamily: effect.exclusiveFamilyOnTarget || null,
+    catastrophicStackGroup: effect.catastrophicStackGroup || null,
     duration: normalizeEffectDuration({
       kind: "rounds",
       rounds: durationRounds,
@@ -192,6 +260,7 @@ function applyDeviceSelfEffect(snapshot, actor, action, log) {
       damage: effect.bonusDamage,
       damageType: effect.damageType,
       actionTags: ["weapon"],
+      targetMultipliers: structuredClone(effect.targetMultipliers || null),
     },
   });
   log.add("effect.applied", {
@@ -634,6 +703,13 @@ function targetMatchesTeam(actor, target, filter = {}) {
   if (filter.team === "enemies") return target.team !== actor.team;
   if (filter.team === "allies") return target.team === actor.team;
   return true;
+}
+
+function safeGeometryExempts(actor, target, action) {
+  return action.safeGeometry === true &&
+    action.tags?.device === true &&
+    Boolean(action.damage || action.damageByTargetProperty) &&
+    target.team === actor.team;
 }
 
 function targetMatchesCreatureFilter(target, filter = {}) {

@@ -253,6 +253,8 @@ function testSaboteurDoubleRigUnlocksFollowupDevice() {
       classChoices: {
         origin_device: "fire_paper",
         saboteur_cookbook_recipes: ["poison_vial", "smoke_vial"],
+        saboteur_grenado_recipe: "lightning_grenado",
+        saboteur_free_recipe: "tar_vial",
         saboteur_advanced_recipes: ["fire_grenado", "makeshift_fan"],
       },
     },

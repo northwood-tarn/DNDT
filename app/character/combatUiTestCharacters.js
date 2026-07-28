@@ -119,6 +119,8 @@ const BUILDERS = {
         rogue_expertise_skills: ["stealth", "investigation"],
         origin_device: "fire_paper",
         saboteur_cookbook_recipes: ["smoke_vial", "thunder_wire"],
+        saboteur_grenado_recipe: "lightning_grenado",
+        saboteur_free_recipe: "tar_vial",
         saboteur_advanced_recipes: ["makeshift_fan", "frost_grenado"],
       },
     },
