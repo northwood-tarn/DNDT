@@ -3,6 +3,7 @@
 // Minimal UI implemented with the existing shell + logSystem; key handling inside caller scene.
 import { logSystem } from "../engine/log.js";
 import { state } from "../state/stateStore.js";
+import { normalizeSaveGameState } from "../state/saveGameState.js";
 
 export const UNDERSIZED_PARTY_WARNING = "Combat and exploration have been balanced with a three-member team in mind. Are you are sure want to venture out with less?";
 
@@ -80,4 +81,45 @@ export function getEmberDepartureCheck(saveGame, options = {}) {
     message: requiresConfirmation ? UNDERSIZED_PARTY_WARNING : null,
     activeCompanionCount,
   };
+}
+
+export function leaveEmber(saveGame, options = {}) {
+  const departure = getEmberDepartureCheck(saveGame, options);
+  if (!departure.allowed) return { ok: false, saveGame, departure, inspiringLeader: null };
+  const normalized = normalizeSaveGameState(saveGame);
+  const result = applyInspiringLeaderDeparture(normalized);
+  return { ok: true, saveGame: result.saveGame, departure, inspiringLeader: result.summary };
+}
+
+function applyInspiringLeaderDeparture(saveGame) {
+  if (saveGame.metadata?.emberLongRestPending !== true) {
+    return { saveGame, summary: null };
+  }
+  const slot = saveGame.party.activeSlot;
+  const record = saveGame.party.characterRecords[slot];
+  const feature = record?.resolvedCharacterSheet?.features?.find((candidate) => (
+    candidate.id === "inspiring_leader" || candidate.grants?.featId === "inspiring_leader"
+  ));
+  const next = structuredClone(saveGame);
+  next.metadata.emberLongRestPending = false;
+  if (!feature || !record?.runtime) return { saveGame: next, summary: null };
+
+  const sheet = record.resolvedCharacterSheet;
+  const chosenAbility = sheet.metadata?.featChoices?.inspiring_leader?.ability || "charisma";
+  const abilityModifier = sheet.abilities?.[chosenAbility]?.modifier || 0;
+  const amount = Math.max(0, (sheet.identity?.level || 1) + abilityModifier);
+  const affected = [];
+  const nextRecord = next.party.characterRecords[slot];
+  nextRecord.runtime.tempHp = Math.max(nextRecord.runtime.tempHp || 0, amount);
+  if (nextRecord.actorInstance?.state) nextRecord.actorInstance.state.tempHp = Math.max(nextRecord.actorInstance.state.tempHp || 0, amount);
+  if (next.party.actorInstances[slot]?.state) next.party.actorInstances[slot].state.tempHp = Math.max(next.party.actorInstances[slot].state.tempHp || 0, amount);
+  affected.push(nextRecord.id);
+
+  for (const companionId of next.party.companions.activeIds) {
+    const companion = next.party.companions.recruited[companionId];
+    if (!companion?.instance?.state) continue;
+    companion.instance.state.tempHp = Math.max(companion.instance.state.tempHp || 0, amount);
+    affected.push(companionId);
+  }
+  return { saveGame: next, summary: { amount, affected } };
 }

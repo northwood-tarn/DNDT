@@ -25,7 +25,11 @@ export function resolveOriginFeat(sheet, draft, featId, source = {}) {
   applyHitPointBonus(sheet, feat.effects?.hitPointBonusPerLevel);
   applyFeatChoices(sheet, draft, feat, source);
 
-  if (feat.effects?.modifiers) grants.modifiers = structuredClone(feat.effects.modifiers);
+  const modifiers = [
+    ...(feat.effects?.modifiers || []),
+    ...resolveProficiencySensitiveSkillAdvantages(sheet, feat),
+  ];
+  if (modifiers.length) grants.modifiers = structuredClone(modifiers);
   if (feat.effects?.featureHooks) grants.featureHooks = structuredClone(feat.effects.featureHooks);
   if (feat.effects?.actionOptions) grants.actionOptions = structuredClone(feat.effects.actionOptions);
   if (feat.effects?.damageRiders) grants.damageRiders = structuredClone(feat.effects.damageRiders);
@@ -35,6 +39,15 @@ export function resolveOriginFeat(sheet, draft, featId, source = {}) {
   if (feat.effects?.freeCastChoices) applyFreeCastChoices(sheet, draft, feat);
 
   return { implemented: true, grants };
+}
+
+function resolveProficiencySensitiveSkillAdvantages(sheet, feat) {
+  const orderedSkills = feat.effects?.proficiencySensitiveSkillAdvantage || [];
+  if (!orderedSkills.length) return [];
+  const proficient = new Set(sheet.proficiencies.skills || []);
+  const firstUnproficient = orderedSkills.find((skill) => !proficient.has(skill));
+  const skills = firstUnproficient ? [firstUnproficient] : orderedSkills;
+  return [{ id: `${feat.id}_skill_advantage`, target: "ability_check", skills, mode: "advantage" }];
 }
 
 function applyProficiencies(sheet, proficiencies = {}) {
@@ -284,5 +297,6 @@ function applySkillOrToolChoices(sheet, values) {
 
 function resolveScalingValue(sheet, value) {
   if (value === "proficiency_bonus") return sheet.proficiencyBonus;
+  if (value === "level") return sheet.identity.level;
   return Number.isFinite(value) ? value : 0;
 }

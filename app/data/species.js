@@ -53,16 +53,16 @@ function species({ id, name, size = "Medium", speed = 30, senses = [], resistanc
 }
 
 const DRAGONBORN_BREATH_VARIANTS = {
-  black: { damageType: "acid", effects: [{ type: "modifier", trigger: "failed_save", stat: "ac", amount: -1, duration: "turn_start" }] },
-  blue: { damageType: "lightning", effects: [{ type: "condition", trigger: "failed_save", condition: "reactions_blocked", duration: "turn_start" }] },
-  brass: { damageType: "fire", effects: [{ type: "condition", trigger: "failed_save", condition: "burning", duration: "turn_start", ongoingEffects: [{ type: "damage", trigger: "turn_start", damage: "proficiency_bonus", damageType: "fire" }] }] },
-  bronze: { damageType: "lightning", effects: [{ type: "condition", trigger: "failed_save", condition: "reactions_blocked", duration: "turn_start" }] },
-  copper: { damageType: "acid", effects: [{ type: "modifier", trigger: "failed_save", stat: "ac", amount: -1, duration: "turn_start" }] },
-  gold: { damageType: "fire", effects: [{ type: "condition", trigger: "failed_save", condition: "burning", duration: "turn_start", ongoingEffects: [{ type: "damage", trigger: "turn_start", damage: "proficiency_bonus", damageType: "fire" }] }] },
-  green: { damageType: "poison", effects: [{ type: "condition", trigger: "failed_save", condition: "next_attack_disadvantage", duration: "turn_start" }] },
+  black: { iconId: "breath_weapon_black", damageType: "acid", effects: [{ type: "modifier", trigger: "failed_save", stat: "ac", amount: -1, duration: "turn_start" }] },
+  blue: { iconId: "breath_weapon_blue", damageType: "lightning", effects: [{ type: "condition", trigger: "failed_save", condition: "reactions_blocked", duration: "turn_start" }] },
+  brass: { iconId: "breath_weapon_brass", damageType: "fire", effects: [{ type: "condition", trigger: "failed_save", condition: "burning", duration: "turn_start", ongoingEffects: [{ type: "damage", trigger: "turn_start", damage: "proficiency_bonus", damageType: "fire" }] }] },
+  bronze: { iconId: "breath_weapon_bronze", damageType: "lightning", effects: [{ type: "condition", trigger: "failed_save", condition: "reactions_blocked", duration: "turn_start" }] },
+  copper: { iconId: "breath_weapon_copper", damageType: "acid", effects: [{ type: "modifier", trigger: "failed_save", stat: "ac", amount: -1, duration: "turn_start" }] },
+  gold: { iconId: "breath_weapon_gold", damageType: "fire", effects: [{ type: "condition", trigger: "failed_save", condition: "burning", duration: "turn_start", ongoingEffects: [{ type: "damage", trigger: "turn_start", damage: "proficiency_bonus", damageType: "fire" }] }] },
+  green: { iconId: "breath_weapon_green", damageType: "poison", effects: [{ type: "condition", trigger: "failed_save", condition: "next_attack_disadvantage", duration: "turn_start" }] },
   red: { iconId: "breath_weapon_red", damageType: "fire", effects: [{ type: "condition", trigger: "failed_save", condition: "burning", duration: "turn_start", ongoingEffects: [{ type: "damage", trigger: "turn_start", damage: "proficiency_bonus", damageType: "fire" }] }] },
-  silver: { damageType: "cold", effects: [{ type: "modifier", trigger: "failed_save", stat: "speed", amount: -2, duration: "turn_start" }] },
-  white: { damageType: "cold", effects: [{ type: "modifier", trigger: "failed_save", stat: "speed", amount: -2, duration: "turn_start" }] }
+  silver: { iconId: "breath_weapon_silver", damageType: "cold", effects: [{ type: "modifier", trigger: "failed_save", stat: "speed", amount: -2, duration: "turn_start" }] },
+  white: { iconId: "breath_weapon_white", damageType: "cold", effects: [{ type: "modifier", trigger: "failed_save", stat: "speed", amount: -2, duration: "turn_start" }] }
 };
 
 export const SPECIES = {

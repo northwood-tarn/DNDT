@@ -252,6 +252,10 @@ export function restSaveGame(saveGame, options = {}) {
   return touchSaveGame({
     ...normalized,
     rests,
+    metadata: {
+      ...normalized.metadata,
+      emberLongRestPending: restType === "long_rest" && options.atEmber === true,
+    },
     party: {
       ...normalized.party,
       characterRecords: {

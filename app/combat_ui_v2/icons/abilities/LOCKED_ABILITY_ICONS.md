@@ -1,13 +1,53 @@
 # Locked ability icons
 
+## Universal movement actions
+
+| Action | Master | Runtime | Master SHA-256 |
+| --- | --- | --- | --- |
+| Dash | `painted_masters/dash.png` | `dash.png` | `2ae755a49abfd2d5af69a5076611b059334663a09ae7467cfc7430b47e77943e` |
+| Hide | `painted_masters/hide.png` | `hide.png` | `5d43620d1091bca557a4f22fbcd64fe59ea712eef79c5368879ab64a36a99107` |
+| Dodge | `painted_masters/dodge.png` | `dodge.png` | `35ef2177a831b0879504a5345ea0041628be2aa5a461405ca9f50d508e8905b1` |
+
+All three masters are the exact selected 1254 × 1254 raster PNGs with corresponding 80 × 80 runtime icons. Universal Dash and Dodge use these images; Cunning Action Dash and Hide route to the same matched set. Preserve these exact sources unless the user explicitly unlocks the named action icon.
+
 ## Ability Score Improvement
 
 - Master: `painted_masters/ability_score_improvement.png`
 - Runtime: `ability_score_improvement.png`
-- Master SHA-256: `df2e9065940a6812370e418e55d8d7df5dd757445e47d8f0c1e7cc99d5f696bb`
+- Master SHA-256: `68526c9f6c95466fdda8c65d22c0d5f867d642f1db0e8466fd4b6333c716d61b`
 - Format: exact selected raster PNG; 1254 × 1254 master and 80 × 80 runtime icon.
 
 Preserve this exact source image unless the user explicitly unlocks the Ability Score Improvement icon.
+
+## Grave Domain Keeper of Souls
+
+- Master: `painted_masters/keeper_of_souls.png`
+- Runtime: `keeper_of_souls.png`
+- Master SHA-256: `7b70464bfb8cb8bd480906dd41f362a614a303855b3b5ae58680cc162a60be55`
+- Format: exact selected raster PNG; 1254 × 1254 master and 80 × 80 runtime icon.
+
+Preserve this exact source image unless the user explicitly unlocks the Keeper of Souls icon.
+
+## Cleric approved icons
+
+| Ability | Master | Runtime | Master SHA-256 |
+| --- | --- | --- | --- |
+| Sear Undead | `painted_masters/sear_undead.png` | `sear_undead.png` | `d1a13c15fe4cee0291d6dea3b638e008159b5d972e7435dda663d0b368118e5b` |
+| Grave’s Rebuke | `painted_masters/graves_rebuke.png` | `graves_rebuke.png` | `fbb2c9253af5b604e4102ae557cefc73667c6766a1dacde4b8b60d7ce77636ab` |
+| Radiance of the Dawn | `painted_masters/radiance_of_the_dawn.png` | `radiance_of_the_dawn.png` | `afeea78c0201863edfd7dc0b09968715ab7581eb39e707ed5bdecec8d41be9d6` |
+| Lantern’s Pulse | `painted_masters/lanterns_pulse.png` | `lanterns_pulse.png` | `37254bd89078ad2b087751654af435c53fbd2c9b2f6cc3304bf3d8149f127ff8` |
+| Warpriest | `painted_masters/warpriest.png` | `warpriest.png` | `f356ec93043833cbbd02adab1d0764545b9cef1ea84443cb6a5e76ca624a1086` |
+| Relentless Advance | `painted_masters/relentless_advance.png` | `relentless_advance.png` | `8c413d0538a3e2d2ca16495c7b2f96b4c844a4b3b2be049beec2216c4127e122` |
+| Turn Undead | `painted_masters/turn_undead.png` | `turn_undead.png` | `bf09d6b8190fcda835b01a77f5b3790432c6e144245e35d58c01730ca9c42792` |
+| Harness Divine Power | `painted_masters/harness_divine_power.png` | `harness_divine_power.png` | `771bc576a1f09becce3c756b857c33fdaca5118eb77404a37b9ddf881d2bbf95` |
+| Reaper’s Shroud | `painted_masters/reapers_shroud.png` | `reapers_shroud.png` | `7741f8e4d7452661c536cec05e3da480837f309fc362b63e5b9502e462bc4d4a` |
+| Halo of Daybreak | `painted_masters/halo_of_daybreak.png` | `halo_of_daybreak.png` | `e547270cd329c484b29e3307436b1e14111bd8c2313f110aff75101466186b41` |
+| Guided Strike | `painted_masters/guided_strike.png` | `guided_strike.png` | `9168511ee80d4b4f5f964e9b22d6f7e015e49e89815f00517ca6357112e09743` |
+| Divine Strike | `painted_masters/divine_strike.png` | `divine_strike.png` | `99287b00cbc843d2a1445e02eacadef4452cc93374455c1e9d9516b3523b469e` |
+| Sentinel at Death’s Door | `painted_masters/sentinel_at_deaths_door.png` | `sentinel_at_deaths_door.png` | `5b8aa6e7a381aece1b49873620ca523dfee2fcb9d0349fc62eff3f1443df54dc` |
+| Judging Flame | `painted_masters/judging_flame.png` | `judging_flame.png` | `8616f41d5b82b2af47ab6f1c55efdf39cc0f4c155419701d65b57a4b9967f9f8` |
+
+All fourteen masters are exact selected 1254 × 1254 raster PNGs with corresponding 80 × 80 runtime icons. Preserve these exact source images unless the user explicitly unlocks the named Cleric icon.
 
 ## Red Dragonborn Breath Weapon
 
@@ -167,6 +207,384 @@ Preserve this exact raster source image unless the user explicitly unlocks the B
 - Format: raster PNG; 1254 × 1254 master and 80 × 80 runtime icon.
 
 Preserve these exact raster masters and their corresponding runtime icons unless the user explicitly unlocks the named Rogue icon.
+
+## Wizard Root Abilities
+
+### Arcane Recovery
+
+- Master: `painted_masters/arcane_recovery.png`
+- Runtime: `arcane_recovery.png`
+- Master SHA-256: `e6629a3dc111029381cc2ad989aab5461714ec51b7fb1439bd3cfe4fbb6150bd`
+- Format: raster PNG; 1254 × 1254 master and 80 × 80 runtime icon.
+
+### Arcane Focus
+
+- Master: `painted_masters/arcane_focus.png`
+- Runtime: `arcane_focus.png`
+- Master SHA-256: `e255f640d9d09ea187ecf19a8af8bc23aa36126570a904be37de08c1433822d4`
+- Format: raster PNG; 1254 × 1254 master and 80 × 80 runtime icon.
+
+### Jester’s Book of Shortcuts
+
+- Master: `painted_masters/jesters_book_of_shortcuts.png`
+- Runtime: `jesters_book_of_shortcuts.png`
+- Master SHA-256: `c5b835779ef51fe3e311d6c810a7ea7d2a19bed935c25cd189400e672e33a0d9`
+- Format: raster PNG; 1254 × 1254 master and 80 × 80 runtime icon.
+
+Preserve these exact raster masters and their corresponding runtime icons unless the user explicitly unlocks the named Wizard icon.
+
+## Dirt Wizard Abilities
+
+### Relentless
+
+- Master: `painted_masters/dirt_wizard_relentless.png`
+- Runtime: `dirt_wizard_relentless.png`
+- Master SHA-256: `0ac421ae127841042bd9772a26e2c9998f9f73b4cb8fd9007ccefa64f4f9ff7c`
+- Format: raster PNG; 1254 × 1254 master and 80 × 80 runtime icon.
+
+### Grit of the Marginal
+
+- Master: `painted_masters/grit_of_the_marginal.png`
+- Runtime: `grit_of_the_marginal.png`
+- Master SHA-256: `2158afdd9d03182319bac7641e5df5eb1e37f3ccd100ec83d0ae821b6da010f0`
+- Format: raster PNG; 1254 × 1254 master and 80 × 80 runtime icon.
+
+### Truth in Shards
+
+- Master: `painted_masters/truth_in_shards.png`
+- Runtime: `truth_in_shards.png`
+- Master SHA-256: `e54d94d0c2793769847c600a9cd15577187c38295b3939788785182b718bf323`
+- Format: raster PNG; 1254 × 1254 master and 80 × 80 runtime icon.
+
+### Indomitability
+
+- Master: `painted_masters/dirt_wizard_indomitability.png`
+- Runtime: `dirt_wizard_indomitability.png`
+- Master SHA-256: `60cd54762c5390fab3a259b25586dd4a2326828c43ed4d9bf78d6afa6a5999e2`
+- Format: raster PNG; 1254 × 1254 master and 80 × 80 runtime icon.
+
+Preserve these exact raster masters and their corresponding runtime icons unless the user explicitly unlocks the named Dirt Wizard icon.
+
+## Battlemage Arcane Armament
+
+- Master: `painted_masters/arcane_armament.png`
+- Runtime: `arcane_armament.png`
+- Master SHA-256: `6652dfe9457288f86fbce00fb3c10d5115fa73c10545f0e1c059a3d1f9ce232e`
+- Format: raster PNG; 1254 × 1254 master and 80 × 80 runtime icon.
+
+Preserve this exact raster master and its corresponding runtime icon unless the user explicitly unlocks Arcane Armament.
+
+## Remaining Battlemage Abilities
+
+### Bonded Accuracy +1
+
+- Master: `painted_masters/bonded_accuracy_1.png`
+- Runtime: `bonded_accuracy_1.png`
+- Master SHA-256: `7ce3b409c5f57fbf10d85a3c5496b7ce82013ab0e5ccaa736cee8ba1ab51d485`
+- Format: raster PNG; 1254 × 1254 master and 80 × 80 runtime icon.
+
+### Spell Rhythm
+
+- Master: `painted_masters/spell_rhythm.png`
+- Runtime: `spell_rhythm.png`
+- Master SHA-256: `3a5f2002ad8276405eee2665c399a40d9569d7902163c77f8d84b74060590a1f`
+- Format: raster PNG; 1254 × 1254 master and 80 × 80 runtime icon.
+
+### Bonded Accuracy +2
+
+- Master: `painted_masters/bonded_accuracy_2.png`
+- Runtime: `bonded_accuracy_2.png`
+- Master SHA-256: `959ba36cd060246c993e8c8e59b6bb7312cbbcd60cf316c814296adf45d6cafe`
+- Format: raster PNG; 1254 × 1254 master and 80 × 80 runtime icon.
+
+### Martial Sigils
+
+- Master: `painted_masters/martial_sigils.png`
+- Runtime: `martial_sigils.png`
+- Master SHA-256: `dc21ff9379e3909f2e279ac642c69da55ca27673c908f1cae387114408a20182`
+- Format: raster PNG; 1254 × 1254 master and 80 × 80 runtime icon.
+
+### Crescendo Duel
+
+- Master: `painted_masters/crescendo_duel.png`
+- Runtime: `crescendo_duel.png`
+- Master SHA-256: `48ef5c26efbd2331c06d8f807a01aa0d4b1174de5c294bdb0ca2d2b06b7f8627`
+- Format: raster PNG; 1254 × 1254 master and 80 × 80 runtime icon.
+
+Preserve these exact raster masters and their corresponding runtime icons unless the user explicitly unlocks the named Battlemage icon.
+
+## Necromancer Seal of Mortality
+
+- Master: `painted_masters/seal_of_mortality.png`
+- Runtime: `seal_of_mortality.png`
+- Master SHA-256: `bea71d3766f84317e4d3114a624aa2cb608d6238eae3da5dcfd10f3857e29c81`
+- Format: raster PNG; 1254 × 1254 master and 80 × 80 runtime icon.
+
+Preserve this exact raster master and its corresponding runtime icon unless the user explicitly unlocks Seal of Mortality.
+
+## Necromancer Mortmain
+
+- Master: `painted_masters/mortmain.png`
+- Runtime: `mortmain.png`
+- Master SHA-256: `4b0df7b5800694a2897d87e6ae14edc879bd97dc875194acc56c0313259983e7`
+- Format: raster PNG; 1254 × 1254 master and 80 × 80 runtime icon.
+
+Preserve this exact raster master and its corresponding runtime icon unless the user explicitly unlocks Mortmain.
+
+## Remaining Necromancer Abilities
+
+### Black Aegis
+
+- Master: `painted_masters/black_aegis.png`
+- Runtime: `black_aegis.png`
+- Master SHA-256: `110dfaaaf637ead5f4efb0bfe2be172cc2efc12cb537aeb9a4a6e4dd5c08c201`
+- Format: raster PNG; 1254 × 1254 master and 80 × 80 runtime icon.
+
+### Final Edict
+
+- Master: `painted_masters/final_edict.png`
+- Runtime: `final_edict.png`
+- Master SHA-256: `454597428d3eead6e431dd0201186ee63eec7e00678097cc456d70386362a7e5`
+- Format: raster PNG; 1254 × 1254 master and 80 × 80 runtime icon.
+
+Preserve these exact raster masters and their corresponding runtime icons unless the user explicitly unlocks the named Necromancer icon.
+
+## Pact of the Tessera — Missing Piece
+
+- Master: `painted_masters/missing_piece.png`
+- Runtime: `missing_piece.png`
+- Master SHA-256: `e0f7309d96c2a2dcbd4222e6e1e5c34df854bab8ae5114f4a98ee7837cc2f76c`
+- Format: exact selected raster PNG; 80 × 80.
+
+## Pact of the Tessera — Token of Passage
+
+- Master: `painted_masters/token_of_passage.png`
+- Runtime: `token_of_passage.png`
+- Master SHA-256: `5bdeab517318191a8de64b03a39fd3ea3dad47cf69cdf956d285f44973372d49`
+- Format: exact selected raster PNG; 80 × 80.
+
+## Pact of the Tessera — Mark of Authority
+
+- Master: `painted_masters/mark_of_authority.png`
+- Runtime: `mark_of_authority.png`
+- Master SHA-256: `6f135dc0b07423c5bee67f9d3e201c1651ba01e88a88e6241dc67d5ffeae6fb3`
+- Runtime SHA-256: `7b5b3faf1fcd8e3ba9e63ef2e8aa162216b2b4a0d57f2b5f1110d67d78d72de5`
+- Format: exact selected raster PNG; 80 × 80.
+
+## Pact of the Tessera — Cataclysmic Debt
+
+- Master: `painted_masters/cataclysmic_debt.png`
+- Runtime: `cataclysmic_debt.png`
+- Master SHA-256: `c04bdbc86b8dbc0a7a0674d86d5eb08438919edca92c40b62283b2ef25d355eb`
+- Runtime SHA-256: `6a0340ff7875d73de33c730ba29270769dcc71973072e23153eaebfcc3472b12`
+- Format: exact selected raster PNG; 80 × 80.
+
+Preserve these exact raster files unless the user explicitly unlocks the named Pact of the Tessera icon.
+
+## Pact of the Tome — Book of Shadows
+
+- Master: `painted_masters/book_of_shadows.png`
+- Runtime: `book_of_shadows.png`
+- Master SHA-256: `a8f2ef36236f389794a66fadd31bf46e2c314d2d8693c8d6dea622e6505b776c`
+- Format: exact selected raster PNG; 80 × 80.
+
+## Pact of the Tome — Ominous Insight
+
+- Master: `painted_masters/ominous_insight.png`
+- Runtime: `ominous_insight.png`
+- Master SHA-256: `9156e319efa4e2171850107b96cd3310f3ef4216593dfa53bfcb9470e544af52`
+- Format: exact selected raster PNG; 80 × 80.
+
+## Pact of the Tome — Grimoire Recall
+
+- Master: `painted_masters/grimoire_recall.png`
+- Runtime: `grimoire_recall.png`
+- Master SHA-256: `e3eea602cecde2a767c74aa761740c72ff3584b696ab22938dfbae0b8a232231`
+- Format: exact selected raster PNG; 80 × 80.
+
+## Pact of the Tome — Forbidden Transcription
+
+- Master: `painted_masters/forbidden_transcription.png`
+- Runtime: `forbidden_transcription.png`
+- Master SHA-256: `693c0b21c1b98b9ea182f9adef937dd9079caddfab0941a0f20de5b28deb388c`
+- Format: exact selected raster PNG; 80 × 80.
+
+Preserve these exact raster files unless the user explicitly unlocks the named Pact of the Tome icon.
+
+## The Lantern — Wicklight
+
+- Master: `painted_masters/wicklight.png`
+- Runtime: `wicklight.png`
+- Master SHA-256: `8ed828fa040861a08c8e5197005e8c3ae6302bcc25e0d5822745c935a00217a6`
+- Format: exact selected raster PNG; 80 × 80.
+
+## The Lantern — Borrowed Flame
+
+- Master: `painted_masters/borrowed_flame.png`
+- Runtime: `borrowed_flame.png`
+- Master SHA-256: `81666f1a508d995dbdb77a1e9d186eaf177c2ac61232d1982577c5d7e905232e`
+- Format: exact selected raster PNG; 80 × 80.
+
+## The Lantern — Light Through the Cracks
+
+- Master: `painted_masters/light_through_the_cracks.png`
+- Runtime: `light_through_the_cracks.png`
+- Master SHA-256: `7ffd52cbc8487bbd5b84377aac83825083b92f5b8c20ccb0d0a3be89ae9843b4`
+- Format: exact selected raster PNG; 80 × 80.
+
+## The Lantern — The Door in the Floor
+
+- Master: `painted_masters/the_door_in_the_floor.png`
+- Runtime: `the_door_in_the_floor.png`
+- Master SHA-256: `bfa76055317df0c5dce20435c3a768c9ec6651488cc4abce4a6336532bc600ad`
+- Format: exact selected raster PNG; 80 × 80.
+
+## The Lantern — Last Light
+
+- Master: `painted_masters/last_light.png`
+- Runtime: `last_light.png`
+- Master SHA-256: `0f910eeb69cbf14c57e8d611f77df73050d55680c43f9006f7c65352f9d2fbb1`
+- Format: exact selected raster PNG; 80 × 80.
+
+Preserve these exact raster files unless the user explicitly unlocks the named The Lantern icon.
+
+## The Fiend — Hellish Rebuke
+
+- Master: `painted_masters/fiend_hellish_rebuke.png`
+- Runtime: `fiend_hellish_rebuke.png`
+- Master SHA-256: `d5bd4b15ec8dad7e5632372680c76af2f1ae3bc51f9ba35b190b5b8a043ebc89`
+- Format: exact selected raster PNG; 80 × 80.
+
+## The Fiend — Infernal Resilience
+
+- Master: `painted_masters/infernal_resilience.png`
+- Runtime: `infernal_resilience.png`
+- Master SHA-256: `67e6788340c30a1a530f203c61a7fa2d51586f96951f4cc8cfc5dabb8baaa62e`
+- Format: exact selected raster PNG; 80 × 80.
+
+## The Fiend — Hellish Rebuke — Escalation
+
+- Master: `painted_masters/fiend_hellish_rebuke_escalation.png`
+- Runtime: `fiend_hellish_rebuke_escalation.png`
+- Master SHA-256: `9d07f8d93c11a692901c81a8c53a693d6c0aeeb2990ddf3a1469d96e08f5999a`
+- Format: exact selected raster PNG; 80 × 80.
+
+## The Fiend — Patron's Spear
+
+- Master: `painted_masters/fiend_patrons_spear.png`
+- Runtime: `fiend_patrons_spear.png`
+- Master SHA-256: `ae917b320d82f91c0c26d84ace04e71a169b706508a6ed94aa160239ae3e6020`
+- Format: exact selected raster PNG; 80 × 80.
+
+## The Fiend — Hurl Through Hell
+
+- Master: `painted_masters/hurl_through_hell.png`
+- Runtime: `hurl_through_hell.png`
+- Master SHA-256: `0f72e02cb16941f0d0cd11e4dc3a4e91252739baa999eb9633b3945f7c504d71`
+- Format: exact selected raster PNG; 80 × 80.
+
+Preserve these exact raster files unless the user explicitly unlocks the named The Fiend icon.
+
+## Pact of the Blade — Cursed Weapon
+
+- Master: `painted_masters/cursed_weapon.png`
+- Runtime: `cursed_weapon.png`
+- Master SHA-256: `84d55b31d7289f712632ab581e7e3828405a6a0e701c5f45cab23d1f0603c08d`
+- Format: exact selected raster PNG; 80 × 80.
+
+## Pact of the Blade — Extra Attack
+
+- Master: `painted_masters/pact_weapon_extra_attack.png`
+- Runtime: `pact_weapon_extra_attack.png`
+- Master SHA-256: `76a171bf8ab2b97295cd20f9a8eb0b1b01b206693bc89b6c137fe12bf5a93ac4`
+- Format: exact selected raster PNG; 80 × 80.
+- Canonical Warlock level-5 index source: `painted_masters/pact_weapon_extra_attack.png`; immutable patch is 20 × 18 pixels at `x=30, y=62`.
+
+## Pact of the Blade — Blade Channel
+
+- Master: `painted_masters/blade_channel.png`
+- Runtime: `blade_channel.png`
+- Master SHA-256: `7c5a01d326dd78aa5ce988997b286cf040d6f83ad81f9bef83ba9655972704c7`
+- Format: exact selected raster PNG; 80 × 80.
+
+## Pact of the Blade — Lifedrinker
+
+- Master: `painted_masters/lifedrinker_vampiric.png`
+- Runtime: `lifedrinker_vampiric.png`
+- Master SHA-256: `477cdf90204cfcbdc5d613dde3500ebf8b7b1f7bd47f47e02b9cd50db2a487fd`
+- Format: exact selected raster PNG; 80 × 80.
+
+## Pact of the Blade — Blade Mastery
+
+- Master: `painted_masters/blade_mastery.png`
+- Runtime: `blade_mastery.png`
+- Master SHA-256: `fc5866dcc77a6d19b83d419412ce0bc4d23a3a9d4390fa1d5bedb8ecd4677f17`
+- Format: exact selected raster PNG; 80 × 80.
+
+Preserve these exact raster files unless the user explicitly unlocks the named Pact of the Blade icon. The level-5 index patch is canonical and must not be redrawn, approximated, regenerated, moved, or resized.
+
+## Warlock — Spiral of Retribution
+
+- Master: `painted_masters/spiral_of_retribution.png`
+- Runtime: `spiral_of_retribution.png`
+- Master SHA-256: `03fe804afc645dce89fd393d5cf74ceabac6c5e188d01fd1c1308170976e924d`
+- Format: exact selected raster PNG; 80 × 80.
+- Canonical Warlock level-4 index source: `painted_masters/spiral_of_retribution.png`; immutable patch is 20 × 18 pixels at `x=30, y=62`.
+
+Preserve this exact raster file unless the user explicitly unlocks Warlock — Spiral of Retribution. The level-4 index patch is canonical and must not be redrawn, approximated, regenerated, moved, or resized.
+
+## Warlock — Mystic Arcanum (6th-level spell)
+
+- Master: `painted_masters/mystic_arcanum_6.png`
+- Runtime: `mystic_arcanum_6.png`
+- Master SHA-256: `a99ec0c0df2d0c3a4e91002f17a8e102823afd6c8c763c3ae2af7aa17edee725`
+- Format: exact selected raster PNG; 80 × 80.
+
+## Warlock — Mystic Arcanum (7th-level spell)
+
+- Master: `painted_masters/mystic_arcanum_7.png`
+- Runtime: `mystic_arcanum_7.png`
+- Master SHA-256: `9f67e9c965734357b285b78bbdd093bf9f8923c8409062c121fdfb8556e89302`
+- Format: exact selected raster PNG; 80 × 80.
+
+Preserve these exact raster files unless the user explicitly unlocks the named Warlock Mystic Arcanum icon.
+
+## The Undead — Form of Dread
+
+- Master: `painted_masters/form_of_dread.png`
+- Runtime: `form_of_dread.png`
+- Master SHA-256: `82fedd38eeba4588b04da8caf7e6322bbc3a99f6dbfa6b5fb23770ff0e8fc287`
+- Format: exact selected raster PNG; 80 × 80.
+
+## The Undead — Grave Tether
+
+- Master: `painted_masters/grave_tether.png`
+- Runtime: `grave_tether.png`
+- Master SHA-256: `be6db68340e0f72a4347734bccec8d4ab1f78b0fb98d5afca4742278eaa89185`
+- Format: exact selected raster PNG; 80 × 80.
+
+## The Undead — Patron's Spear
+
+- Master: `painted_masters/undead_patrons_spear.png`
+- Runtime: `undead_patrons_spear.png`
+- Master SHA-256: `e545e3e9697717d155a42a2267b4cad317c2364bfeedf71c2bb3644fca3618f1`
+- Format: exact selected raster PNG; 80 × 80.
+
+## The Undead — Aura of the Grave
+
+- Master: `painted_masters/aura_of_the_grave.png`
+- Runtime: `aura_of_the_grave.png`
+- Master SHA-256: `2947280e895319f6f261830f4ee7db7b6f06455ac38fc5bfd0356521f646b870`
+- Format: exact selected raster PNG; 80 × 80.
+
+## The Undead — Deathless Form
+
+- Master: `painted_masters/deathless_form.png`
+- Runtime: `deathless_form.png`
+- Master SHA-256: `bca9e77a9048105f79f0b1c6b3ce323fceea8d3a1b5f80d936a3cb277d7d5669`
+- Format: exact selected raster PNG; 80 × 80.
+
+Preserve these exact raster files unless the user explicitly unlocks the named The Undead icon.
 
 ## Paladin Aura of Protection
 

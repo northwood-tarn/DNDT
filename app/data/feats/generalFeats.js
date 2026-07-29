@@ -62,7 +62,8 @@ export const GENERAL_FEATS_BY_ID = {
     effects: {
       abilityScoreBonuses: [{ ability: "constitution", amount: 1, cap: 20 }],
       modifiers: [{ id: "durable_death_saves", target: "saving_throw", stat: "save", ability: "death", mode: "advantage" }],
-      actionOptions: [{ id: "durable_recovery", name: "Durable Recovery", actionType: "bonus_action", healing: "hit_die" }]
+      resources: [{ id: "hit_dice", name: "Hit Dice", max: "level", recovery: "long_rest" }],
+      actionOptions: [{ id: "durable_recovery", iconId: "durable_recovery", name: "Durable Recovery", actionType: "bonus_action", resourceId: "hit_dice", healingFormula: "hit_die + constitution_modifier" }]
     },
     tags: ["ability", "survival", "healing"]
   }),
@@ -133,11 +134,9 @@ export const GENERAL_FEATS_BY_ID = {
     id: "inspiring_leader",
     name: "Inspiring Leader",
     requirements: { anyAbility: ["wisdom", "charisma"], minimumScore: 13 },
-    description: "Improve Wisdom or Charisma and grant temporary HP after a rest.",
+    description: "Improve Wisdom or Charisma. After a long rest at an Ember, you and your companions gain temporary HP when you leave it.",
     choices: [{ id: "ability", kind: "ability_score", count: 1, options: ["wisdom", "charisma"], amount: 1, scoreCap: 20 }],
-    effects: {
-      actionOptions: [{ id: "inspiring_leader", name: "Inspiring Leader", actionType: "rest", temporaryHpFormula: "level + chosen_ability_modifier", targetCount: 6 }]
-    },
+    effects: { emberDepartureTemporaryHp: "level + chosen_ability_modifier" },
     tags: ["ability", "support", "temporary_hp"]
   }),
 
@@ -145,11 +144,11 @@ export const GENERAL_FEATS_BY_ID = {
     id: "keen_mind",
     name: "Keen Mind",
     requirements: { ability: "intelligence", minimumScore: 13 },
-    description: "Improve Intelligence, gain or improve a knowledge skill, and take the Study action as a Bonus Action.",
+    description: "Improve Intelligence, gain or improve a knowledge skill, and gain Advantage on Arcana, History, Investigation, Nature, and Religion checks.",
     choices: [{ id: "skill", kind: "skill_expertise", count: 1, options: ["arcana", "history", "investigation", "nature", "religion"] }],
     effects: {
       abilityScoreBonuses: [{ ability: "intelligence", amount: 1, cap: 20 }],
-      actionOptions: [{ id: "keen_mind_study", name: "Study", actionType: "bonus_action", actionKind: "study" }]
+      modifiers: [{ id: "keen_mind_knowledge", target: "ability_check", skills: ["arcana", "history", "investigation", "nature", "religion"], mode: "advantage" }]
     },
     tags: ["ability", "skill", "bonus_action"]
   }),
@@ -218,14 +217,12 @@ export const GENERAL_FEATS_BY_ID = {
     id: "observant",
     name: "Observant",
     requirements: { anyAbility: ["intelligence", "wisdom"], minimumScore: 13 },
-    description: "Improve Intelligence or Wisdom, gain or improve an observation skill, and take Search as a Bonus Action.",
+    description: "Improve Intelligence or Wisdom and gain or improve an observation skill. Gain Advantage on Perception if you lack proficiency, otherwise Investigation; if proficient in both, gain Advantage on both.",
     choices: [
       { id: "ability", kind: "ability_score", count: 1, options: ["intelligence", "wisdom"], amount: 1, scoreCap: 20 },
       { id: "skill", kind: "skill_expertise", count: 1, options: ["insight", "investigation", "perception"] }
     ],
-    effects: {
-      actionOptions: [{ id: "observant_search", name: "Search", actionType: "bonus_action", actionKind: "search" }]
-    },
+    effects: { proficiencySensitiveSkillAdvantage: ["perception", "investigation"] },
     tags: ["ability", "skill", "bonus_action"]
   }),
 
@@ -302,6 +299,7 @@ export const GENERAL_FEATS_BY_ID = {
       abilityScoreBonuses: [{ ability: "strength", amount: 1, cap: 20 }],
       actionOptions: [{
         id: "shield_master_shove",
+        iconId: "shield_master_shove",
         name: "Shield Master Shove",
         actionType: "bonus_action",
         actionKind: "push",
@@ -380,7 +378,7 @@ export const GENERAL_FEATS_BY_ID = {
     choices: [{ id: "ability", kind: "ability_score", count: 1, options: ["intelligence", "wisdom", "charisma"], amount: 1, scoreCap: 20 }],
     effects: {
       spellGrants: [{ spellId: "mage_hand", level: 0 }],
-      actionOptions: [{ id: "telekinetic_shove", name: "Telekinetic Shove", actionType: "bonus_action", rangeFt: 30, save: { ability: "strength", dcFrom: "spellSaveDC", onSave: "negates" }, effects: [{ type: "push", distanceFt: 5 }] }],
+      actionOptions: [{ id: "telekinetic_shove", iconId: "telekinetic_shove", name: "Telekinetic Shove", actionType: "bonus_action", actionKind: "push", rangeFt: 30, distanceFt: 5, save: { ability: "strength", dcFrom: "spellSaveDC", onSave: "negates" } }],
       narrativeTags: ["invisible_mage_hand"]
     },
     tags: ["ability", "spell", "forced_movement"]

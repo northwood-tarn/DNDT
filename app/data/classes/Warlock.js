@@ -26,6 +26,7 @@ export default {
     4: [
       {
         name: "Spiral of Retribution",
+        iconId: "spiral_of_retribution",
         type: "Reaction",
         uses: "longRest:1",
         description: "After you have been hit 3+ times since your last turn, lash out with patron power as a reaction, dealing force damage that scales with proficiency and additional hits.",
@@ -66,6 +67,7 @@ export default {
     ],
     11: [{
       name: "Mystic Arcanum",
+      iconId: "mystic_arcanum_6",
       type: "Special",
       uses: "longRest:1",
       description: "Choose one 6th-level spell as an Arcanum. Cast it once per long rest without expending a slot.",
@@ -87,6 +89,7 @@ export default {
     13: [
       {
         name: "Mystic Arcanum",
+        iconId: "mystic_arcanum_7",
         type: "Special",
         uses: "longRest:1",
         description: "Choose one 7th-level spell as an Arcanum. Cast it once per long rest without expending a slot.",
@@ -106,6 +109,7 @@ export default {
         3: [
           {
             name: "Cursed Weapon",
+            iconId: "cursed_weapon",
             type: "Passive",
             description:
               "At 3rd level, choose an eligible weapon; it manifests and binds to you. It cannot be dismissed, replaced, or exchanged. You use your Charisma modifier for attack and damage rolls with it. It counts as magical for overcoming resistance.",
@@ -121,6 +125,7 @@ export default {
         5: [
           {
             name: "Extra Attack (with pact weapon)",
+            iconId: "pact_weapon_extra_attack",
             type: "Passive",
             description:
               "When you take the Attack action with your pact weapon, you can attack twice instead of once.",
@@ -133,6 +138,7 @@ export default {
         7: [
           {
             name: "Blade Channel",
+            iconId: "blade_channel",
             type: "Bonus Action",
             uses: "shortRest",
             description:
@@ -155,6 +161,7 @@ export default {
         11: [
           {
             name: "Lifedrinker (Vampiric)",
+            iconId: "lifedrinker_vampiric",
             type: "Passive",
             description:
               "When you hit with your pact weapon, you deal extra necrotic damage equal to your Charisma modifier. Once per turn, this necrotic damage is converted into healing, restoring the same number of hit points to you (not above max HP).",
@@ -172,6 +179,7 @@ export default {
         13: [
           {
             name: "Blade Mastery",
+            iconId: "blade_mastery",
             type: "Passive",
             description:
               "Your pact weapon gains a permanent +1 bonus to attack and damage rolls.",
@@ -194,6 +202,7 @@ export default {
         3: [
           {
             name: "Book of Shadows",
+            iconId: "book_of_shadows",
             type: "Passive",
             description:
               "Gain two additional cantrips of your choice from any class list; they are always prepared, use CHA as your casting and count as Warlock cantrips.",
@@ -206,6 +215,7 @@ export default {
         7: [
           {
             name: "Ominous Insight",
+            iconId: "ominous_insight",
             type: "Special",
             uses: "shortRest",
             description:
@@ -219,6 +229,7 @@ export default {
         11: [
           {
             name: "Grimoire Recall",
+            iconId: "grimoire_recall",
             type: "Special",
             uses: "longRest",
             description:
@@ -232,6 +243,7 @@ export default {
         13: [
           {
             name: "Forbidden Transcription",
+            iconId: "forbidden_transcription",
             type: "Special",
             uses: "longRest",
             description:
@@ -253,6 +265,7 @@ export default {
         3: [
           {
             name: "Missing Piece",
+            iconId: "missing_piece",
             type: "Passive",
             description:
               "You always count as having +1 map fragment toward uncovering hidden paths or exploration objectives.",
@@ -264,6 +277,7 @@ export default {
         7: [
           {
             name: "Token of Passage",
+            iconId: "token_of_passage",
             type: "Bonus Action",
             uses: "shortRest",
             description:
@@ -277,6 +291,7 @@ export default {
         11: [
           {
             name: "Mark of Authority",
+            iconId: "mark_of_authority",
             type: "Passive",
             description:
               "The first creature you damage in each combat becomes branded. You have advantage on all attacks against the branded creature while the brand lasts. If you make an attack against a different creature (hit or miss), the brand immediately fades. Incidental area damage to other creatures does not end the brand.",
@@ -294,6 +309,7 @@ export default {
         13: [
           {
             name: "Cataclysmic Debt",
+            iconId: "cataclysmic_debt",
             type: "Special",
             uses: "longRest",
             description:
@@ -339,7 +355,7 @@ export default {
       summary: "Infernal pact warlock who turns hellfire into relentless offense.",
       features: {
         3: [
-          { name: "Hellish Rebuke", type: "Reaction",
+          { name: "Hellish Rebuke", iconId: "fiend_hellish_rebuke", type: "Reaction",
             description: "To avoid pop-up spam, this triggers automatically: the first time you are hit in a combat, the attacker takes 2d10 fire damage (DEX save for half). This consumes your reaction on that round.",
             effects: {
               resources: [{ id: "hellish_rebuke", name: "Hellish Rebuke", max: 1, recovery: "combat" }],
@@ -358,15 +374,15 @@ export default {
             } }
         ],
         7: [
-          { name: "Infernal Resilience", type: "Passive",
+          { name: "Infernal Resilience", iconId: "infernal_resilience", type: "Passive",
             description: "You gain resistance to fire damage.",
             effects: { resistances: ["fire"] } },
-          { name: "Hellish Rebuke — Escalation", type: "Passive",
+          { name: "Hellish Rebuke — Escalation", iconId: "fiend_hellish_rebuke_escalation", type: "Passive",
             description: "Starting at 7th level, Hellish Rebuke can trigger automatically the first two times you are hit in a combat (still consumes your reaction on that round).",
             effects: {
               resources: [{ id: "hellish_rebuke", name: "Hellish Rebuke", max: 2, recovery: "combat" }]
             } },
-          { name: "Patron's Spear", type: "Special", uses: "longRest",
+          { name: "Patron's Spear", iconId: "fiend_patrons_spear", type: "Special", uses: "longRest",
             description: "Once per long rest, when you hit with an attack or spell, your patron erupts through you: deal +5d10 fire damage. Using this ends any concentration you are maintaining.",
             effects: {
               resources: [{ id: "fiend_patrons_spear", name: "Patron's Spear", max: 1, recovery: "long_rest" }],
@@ -382,7 +398,7 @@ export default {
             } }
         ],
         11: [
-          { name: "Hurl Through Hell", type: "Special", uses: "longRest",
+          { name: "Hurl Through Hell", iconId: "hurl_through_hell", type: "Special", uses: "longRest",
             description: "When you hit a creature with an attack, you can banish it to hellish vistas until the end of your next turn (no save). When it returns, it takes 8d10 psychic damage and is frightened of you until the end of your next turn.",
             effects: {
               resources: [{ id: "hurl_through_hell", name: "Hurl Through Hell", max: 1, recovery: "long_rest" }],
@@ -404,7 +420,7 @@ export default {
       summary: "Deathless patron grants fear and necrotic resilience, making you a terror on the field.",
       features: {
         3: [
-          { name: "Form of Dread", type: "Bonus Action", uses: "shortRest",
+          { name: "Form of Dread", iconId: "form_of_dread", type: "Bonus Action", uses: "shortRest",
             description: "Transform for 1 minute: gain 1d10 + Warlock level temporary HP; immune to being frightened; the first time each turn you hit a creature with an attack or spell, it must succeed on a WIS save or be frightened of you until the end of your next turn.",
             effects: {
               resources: [{ id: "form_of_dread", name: "Form of Dread", max: 1, recovery: "short_rest" }],
@@ -430,7 +446,7 @@ export default {
             } }
         ],
         7: [
-          { name: "Grave Tether", type: "Passive",
+          { name: "Grave Tether", iconId: "grave_tether", type: "Passive",
             description: "Once per turn, the first time you deal necrotic damage on your turn, regain HP equal to your Charisma modifier. You also gain resistance to necrotic damage.",
             effects: {
               resistances: ["necrotic"],
@@ -441,7 +457,7 @@ export default {
                 healingFormula: "charisma_modifier"
               }]
             } },
-          { name: "Patron's Spear", type: "Special", uses: "longRest",
+          { name: "Patron's Spear", iconId: "undead_patrons_spear", type: "Special", uses: "longRest",
             description: "Once per long rest, when you hit with an attack or spell, your patron erupts through you: deal +5d10 necrotic damage. Using this ends any concentration you are maintaining.",
             effects: {
               resources: [{ id: "undead_patrons_spear", name: "Patron's Spear", max: 1, recovery: "long_rest" }],
@@ -457,7 +473,7 @@ export default {
             } }
         ],
         11: [
-          { name: "Aura of the Grave (Hybrid Aura)", type: "Passive",
+          { name: "Aura of the Grave (Hybrid Aura)", iconId: "aura_of_the_grave", type: "Passive",
             description: "Radius 10 ft. Self: resistance to nonmagical bludgeoning, piercing, and slashing damage. Enemies: any enemy that starts its turn in the aura must succeed on a WIS save or become frightened until the beginning of its next turn; if already frightened, it also takes 1d6 necrotic damage at the start of its turn.",
             effects: {
               auras: [{
@@ -487,7 +503,7 @@ export default {
             } }
         ],
         13: [
-          { name: "Deathless Form", type: "Action", uses: "longRest",
+          { name: "Deathless Form", iconId: "deathless_form", type: "Action", uses: "longRest",
             description: "For 1 minute: gain resistance to all damage except radiant; gain a fly speed of 30 ft; once per turn when you hit with an attack or spell, deal an extra +2d8 necrotic damage.",
             effects: {
               resources: [{ id: "deathless_form", name: "Deathless Form", max: 1, recovery: "long_rest" }],
@@ -523,6 +539,7 @@ export default {
         3: [
           {
             name: "Wicklight",
+            iconId: "wicklight",
             type: "Passive",
             description: "When you damage a creature with a Warlock spell or cantrip, you may mark it with Wicklight until the start of your next turn. The next attack against that creature ignores Half Cover and Three-Quarters Cover, and the creature cannot benefit from being invisible against that attack.",
             effects: {
@@ -541,6 +558,7 @@ export default {
           },
           {
             name: "Borrowed Flame",
+            iconId: "borrowed_flame",
             type: "Bonus Action",
             uses: "shortRest",
             description: "Once per short rest, gain temporary HP equal to 1d8 + your Charisma modifier and shed bright light for 1 minute. While those temporary HP last, the first enemy that hits you with a melee attack takes radiant damage equal to your Charisma modifier.",
@@ -572,6 +590,7 @@ export default {
         7: [
           {
             name: "Light Through the Cracks",
+            iconId: "light_through_the_cracks",
             type: "Passive",
             description: "Creatures marked by Wicklight have disadvantage on saving throws against your effects that would reveal, restrain, blind, frighten, or banish them. Once per turn when you damage a Wicklit creature, one ally who can see it gains temporary HP equal to your Charisma modifier.",
             effects: {
@@ -595,6 +614,7 @@ export default {
         11: [
           {
             name: "The Door in the Floor",
+            iconId: "the_door_in_the_floor",
             type: "Bonus Action",
             uses: "shortRest",
             description: "Once per short rest, choose a lit space you can see within 30 ft. You teleport to it, or pull a willing ally within 30 ft to it. The arrival space glows until the end of your next turn; enemies entering it or starting their turns there take radiant damage equal to your proficiency bonus.",
@@ -602,6 +622,7 @@ export default {
               resources: [{ id: "door_in_the_floor", name: "The Door in the Floor", max: 1, recovery: "short_rest" }],
               actionOptions: [{
                 id: "door_in_the_floor",
+                iconId: "the_door_in_the_floor",
                 name: "The Door in the Floor",
                 actionType: "bonus_action",
                 resourceId: "door_in_the_floor",
@@ -628,6 +649,7 @@ export default {
         13: [
           {
             name: "Last Light",
+            iconId: "last_light",
             type: "Action",
             uses: "longRest",
             description: "Once per long rest, create a 20-ft-radius lantern field centered on a point you can see within 60 ft. The field carries two charges, each starting at 4d8 and increasing by 1d8 at the start of each of your turns. Allies inside gain temporary HP equal to your Charisma modifier at the start of their turns and shed the blinded and frightened conditions. Enemies inside cannot benefit from invisibility or being hidden. On a later turn before the charge reaches 8d8, you may collapse the field as a bonus action; enemies inside make a Constitution save against your spell save DC, taking radiant damage equal to the manual charge on a failed save, or half on a success. If you do not collapse it first, the overload charge explodes as soon as it reaches 8d8.",

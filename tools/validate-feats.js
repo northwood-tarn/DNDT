@@ -39,7 +39,7 @@ function validateResource(errors, featId, resource, index) {
   const id = `${featId}.effects.resources[${index}]`;
   validateString(errors, id, "id", resource.id);
   validateString(errors, id, "name", resource.name);
-  if (typeof resource.max !== "number" && resource.max !== "proficiency_bonus") errors.push(`${id}: max must be numeric or "proficiency_bonus"`);
+  if (typeof resource.max !== "number" && !["proficiency_bonus", "level"].includes(resource.max)) errors.push(`${id}: max must be numeric, "proficiency_bonus", or "level"`);
   validateString(errors, id, "recovery", resource.recovery);
   if (!VALID_RECOVERY.has(resource.recovery)) errors.push(`${id}: unknown recovery "${resource.recovery}"`);
 }

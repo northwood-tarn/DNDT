@@ -24,12 +24,49 @@ export function runCharacterPipelineTests() {
   resolvesLevelElevenMartialProgression();
   resolvesOriginFeatEffects();
   resolvesGeneralFeatEffects();
+  resolvesMarginalFeatJourneyMechanics();
   resolvesClassSpecificMagicInitiates();
   reportsMissingOriginFeatChoices();
   rejectsInvalidOriginFeatToolChoices();
   resolvesSkillOrToolOriginFeatChoices();
   preservesDraftGearAndSpellsWithoutResolvingMechanics();
   gatesWeaponMasteryAtCombatActorBridge();
+}
+
+function resolvesMarginalFeatJourneyMechanics() {
+  const backgrounds = Object.fromEntries(["durable", "keen_mind", "observant", "telekinetic"].map((id) => [id, {
+    id, name: id, skillProficiencies: id === "observant" ? ["investigation"] : [], toolProficiencies: [], originFeat: id,
+  }]));
+  const make = (backgroundId, featChoices = {}) => resolveCharacterSheet(createEmptyCharacterDraft({
+    identity: { characterName: backgroundId, level: 4, backgroundId, classId: "wizard" },
+    abilities: { strength: 10, dexterity: 12, constitution: 14, intelligence: 16, wisdom: 14, charisma: 14 },
+    choices: { featChoices },
+  }), { backgrounds }, { allowNonCreationLevel: true });
+
+  const durableSheet = make("durable");
+  const durableActor = resolvedSheetToCombatActor(durableSheet);
+  const durable = durableActor.actions.find((action) => action.id === "durable_recovery");
+  assert.equal(durable.type, "self_heal");
+  assert.equal(durable.cost, "bonus");
+  assert.equal(durable.resourceId, "hit_dice");
+  assert.equal(durable.healing, "1d6+2");
+  assert.equal(durableActor.resources.find((resource) => resource.id === "hit_dice").max, 4);
+
+  const keen = resolvedSheetToCombatActor(make("keen_mind", { keen_mind: { skill: ["arcana"] } }));
+  assert.equal(keen.actions.some((action) => action.id === "keen_mind_study"), false);
+  assert.deepEqual(keen.skillAdvantages.filter((skill) => ["arcana", "history", "investigation", "nature", "religion"].includes(skill)).sort(), ["arcana", "history", "investigation", "nature", "religion"]);
+
+  const observant = resolvedSheetToCombatActor(make("observant", { observant: { ability: ["wisdom"], skill: ["perception"] } }));
+  assert.equal(observant.actions.some((action) => action.id === "observant_search"), false);
+  assert.deepEqual(observant.skillAdvantages.filter((skill) => ["perception", "investigation"].includes(skill)).sort(), ["investigation", "perception"]);
+
+  const telekinetic = resolvedSheetToCombatActor(make("telekinetic", { telekinetic: { ability: ["intelligence"] } }));
+  const shove = telekinetic.actions.find((action) => action.id === "telekinetic_shove");
+  assert.equal(shove.type, "push");
+  assert.equal(shove.cost, "bonus");
+  assert.equal(shove.range, 6);
+  assert.equal(shove.distanceSquares, 1);
+  assert.equal(shove.saveAbility, "str");
 }
 
 function gatesWeaponMasteryAtCombatActorBridge() {

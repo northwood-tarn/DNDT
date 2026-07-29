@@ -24,6 +24,7 @@ export default {
     2: [
       {
         name: "Turn Undead (Channel Divinity)",
+        iconId: "turn_undead",
         type: "Action",
         uses: "channelDivinity",
         description:
@@ -51,6 +52,7 @@ export default {
       },
       {
         name: "Harness Divine Power (Channel Divinity)",
+        iconId: "harness_divine_power",
         type: "Action",
         uses: "channelDivinity",
         description:
@@ -82,6 +84,7 @@ export default {
     5: [
       {
         name: "Sear Undead (Channel Divinity)",
+        iconId: "sear_undead",
         type: "Action",
         uses: "channelDivinity",
         description:
@@ -135,7 +138,7 @@ export default {
       summary: "Guardian against profane undeath; punishes necromancy and guides souls.",
       features: {
         3: [
-          { name: "Grave’s Rebuke (Channel Divinity)", type: "Action", uses: "channelDivinity",
+          { name: "Grave’s Rebuke (Channel Divinity)", iconId: "graves_rebuke", type: "Action", uses: "channelDivinity",
             description: "Force one creature within 30 ft that dealt necrotic damage since your last turn to make a CON save; on failure it takes 4d8 radiant damage, all critical hits are suppressed until the end of your next turn, and its next necrotic damage is halved; on success it takes half damage and no riders.",
             effects: {
               actionOptions: [{
@@ -159,7 +162,7 @@ export default {
             } }
         ],
         7: [
-          { name: "Sentinel at Death’s Door", type: "Reaction", uses: "shortRest",
+          { name: "Sentinel at Death’s Door", iconId: "sentinel_at_deaths_door", type: "Reaction", uses: "shortRest",
             description: "When an ally within 30 ft would be critically hit, you cancel the critical (it becomes a normal hit).",
             effects: {
               resources: [{ id: "sentinel_at_deaths_door", name: "Sentinel at Death's Door", max: 1, recovery: "short_rest" }],
@@ -174,7 +177,7 @@ export default {
             } }
         ],
         11: [
-          { name: "Keeper of Souls", type: "Bonus Action",
+          { name: "Keeper of Souls", iconId: "keeper_of_souls", type: "Bonus Action",
             description: "When an enemy dies within 30 ft of you dies, you can elect regain HP equal to your Wisdom modifier (once per round). You can’t benefit from healing spells until the start of your next turn.",
             effects: {
               triggeredEffects: [{
@@ -188,7 +191,7 @@ export default {
             } }
         ],
         13: [
-          { name: "Reaper’s Shroud", type: "Bonus Action", uses: "longRest",
+          { name: "Reaper’s Shroud", iconId: "reapers_shroud", type: "Bonus Action", uses: "longRest",
             description: "For 1 minute, your radiant and necrotic spells deal +1d8 damage, and you gain resistance to necrotic.",
             effects: {
               resources: [{ id: "reapers_shroud", name: "Reaper's Shroud", max: 1, recovery: "long_rest" }],
@@ -218,7 +221,7 @@ export default {
       summary: "Bearer of sacred light; turns darkness into a weapon and shield.",
       features: {
         3: [
-          { name: "Radiance of the Dawn (Channel Divinity)", type: "Action", uses: "channelDivinity",
+          { name: "Radiance of the Dawn (Channel Divinity)", iconId: "radiance_of_the_dawn", type: "Action", uses: "channelDivinity",
             description: "Dispel magical darkness within 30 ft and deal 2d10 + level radiant damage (CON save half) to hostile creatures within 30 ft. Your speed becomes 0 until the end of your next turn.",
             effects: {
               actionOptions: [{
@@ -236,12 +239,13 @@ export default {
             } }
         ],
         7: [
-          { name: "Lantern’s Pulse", type: "Bonus Action", uses: "shortRest",
+          { name: "Lantern’s Pulse", iconId: "lanterns_pulse", type: "Bonus Action", uses: "shortRest",
             description: "Emit a 10‑ft pulse of light; enemies in the area must make a CON save or be blinded until the start of your next turn.",
             effects: {
               resources: [{ id: "lantern_pulse", name: "Lantern's Pulse", max: 1, recovery: "short_rest" }],
               actionOptions: [{
                 id: "lantern_pulse",
+                iconId: "lanterns_pulse",
                 name: "Lantern's Pulse",
                 actionType: "bonus_action",
                 resourceId: "lantern_pulse",
@@ -260,7 +264,7 @@ export default {
             } }
         ],
         11: [
-          { name: "Judging Flame", type: "Passive",
+          { name: "Judging Flame", iconId: "judging_flame", type: "Passive",
             description: "The first time each turn your spell deals radiant damage, add your Wisdom modifier to that damage.",
             effects: {
               damageRiders: [{
@@ -276,7 +280,7 @@ export default {
             } }
         ],
         13: [
-          { name: "Halo of Daybreak", type: "Action", uses: "longRest",
+          { name: "Halo of Daybreak", iconId: "halo_of_daybreak", type: "Action", uses: "longRest",
             description: "Create a 15-ft radius aura of bright light for 1 minute; you and allies inside have advantage on saves vs. fear and charm; enemies that start in the aura take radiant damage equal to your Wisdom modifier. Enemies in the aura have advantage on attack rolls against you.",
             effects: {
               resources: [{ id: "halo_of_daybreak", name: "Halo of Daybreak", max: 1, recovery: "long_rest" }],
@@ -333,7 +337,7 @@ export default {
       summary: "Battle-minded priest who channels divine force through martial prowess.",
       features: {
         3: [
-          { name: "Warpriest (Channel Divinity)", type: "Bonus Action", uses: "channelDivinity",
+          { name: "Warpriest (Channel Divinity)", iconId: "warpriest", type: "Bonus Action", uses: "channelDivinity",
             description: "Spend a Channel Divinity use to make one weapon attack as a bonus action this turn. Until the end of your next turn, you can’t cast spells of 1st level or higher.",
             effects: {
               actionOptions: [{
@@ -350,7 +354,7 @@ export default {
             } }
         ],
         7: [
-          { name: "Guided Strike", type: "Reaction", uses: "shortRest",
+          { name: "Guided Strike", iconId: "guided_strike", type: "Reaction", uses: "shortRest",
             description: "When you miss with an attack, add +5 to the roll after seeing the result.",
             effects: {
               resources: [{ id: "guided_strike", name: "Guided Strike", max: 1, recovery: "short_rest" }],
@@ -365,7 +369,7 @@ export default {
             } }
         ],
         11: [
-          { name: "Divine Strike", type: "Passive",
+          { name: "Divine Strike", iconId: "divine_strike", type: "Passive",
             description: "Once per turn when you hit with a weapon attack, deal an extra 1d8 radiant or force damage.",
             effects: {
               damageRiders: [{
@@ -380,7 +384,7 @@ export default {
             } }
         ],
         13: [
-          { name: "Relentless Advance", type: "Bonus Action", uses: "longRest",
+          { name: "Relentless Advance", iconId: "relentless_advance", type: "Bonus Action", uses: "longRest",
             description: "For 1 minute, you have advantage on melee attack rolls. You can’t take the Dodge action, and opportunity attacks against you have advantage.",
             effects: {
               resources: [{ id: "relentless_advance", name: "Relentless Advance", max: 1, recovery: "long_rest" }],

@@ -77,7 +77,7 @@ export function resolvedSheetToCombatActor(sheet, options = {}) {
     featureHooks: [...structuredClone(sheet.featureHooks || []), ...equippedFoci.flatMap((focus) => structuredClone(focus.mechanics?.featureHooks || []))],
     luck: createLuckProfile(sheet),
     movementRules: createEquipmentMovementRules(equippedAccessories),
-    skillAdvantages: [...equipmentModifiers.skillAdvantages],
+    skillAdvantages: unique([...equipmentModifiers.skillAdvantages, ...createFeatureSkillAdvantages(sheet)]),
     skillBonuses: structuredClone(equipmentModifiers.skillBonuses),
     equipmentProficiencies: {
       weapons: [...(sheet.proficiencies.weapons || [])],
@@ -283,6 +283,8 @@ function createPassiveFeatureEffects(sheet) {
       requiresMark: structuredClone(modifier.requiresMark || null),
       ability: modifier.ability || null,
       abilities: structuredClone(modifier.abilities || []),
+      skill: modifier.skill || null,
+      skills: structuredClone(modifier.skills || []),
       conditionId: modifier.conditionId || null,
       conditionIds: structuredClone(modifier.conditionIds || []),
       damageType: modifier.damageType || null,
@@ -290,6 +292,13 @@ function createPassiveFeatureEffects(sheet) {
       sourceFeatureId: feature.id,
     })))
     .filter((effect) => effect.stat);
+}
+
+function createFeatureSkillAdvantages(sheet) {
+  return (sheet.features || [])
+    .flatMap((feature) => [...(feature.effects?.modifiers || []), ...(feature.grants?.modifiers || [])])
+    .filter((modifier) => modifier.target === "ability_check" && modifier.mode === "advantage")
+    .flatMap((modifier) => modifier.skills || (modifier.skill ? [modifier.skill] : []));
 }
 
 function createLuckProfile(sheet) {
@@ -445,6 +454,7 @@ function createFocusGrantedActions(foci = []) {
   const actions = [];
   if (foci.some((focus) => focus.mechanics?.grantedAction === "restless_suffering_revivify")) actions.push({
     id: "restless_suffering_revivify", name: "Symbol of Restless Suffering: Revivify",
+    iconId: "restless_suffering_revivify",
     description: "Return a fallen ally to life at 1 HP, then take 3d10 unavoidable necrotic damage.",
     type: "relic_revivify", cost: "action", range: 1, requiresTarget: true,
     allowDefeatedTarget: true, requiresDefeatedTarget: true, uses: { max: 1, remaining: 1, recovery: "long_rest" },
@@ -452,6 +462,7 @@ function createFocusGrantedActions(foci = []) {
   });
   if (foci.some((focus) => focus.mechanics?.grantedAction === "staff_of_the_adder_transform")) actions.push({
     id: "staff_of_the_adder_transform", name: "Awaken the Adder",
+    iconId: "staff_of_the_adder",
     description: "For one minute, the staff's attacks deal an additional 1d6 poison damage and prevent Opportunity Attacks until the start of the target's next turn.",
     type: "feature_action", actionKind: "staff_of_the_adder_transform", cost: "action", requiresTarget: false,
     resourceId: "staff_of_the_adder_transform", tags: { spell: false, harmful: false, requiresHands: true },
@@ -496,8 +507,8 @@ function createAccessoryActions(sheet, items = [], spellcastingItemBonus = { att
     const mechanics = item.mechanics || {};
     const resourceId = accessoryResourceId(item);
     if (mechanics.kind === "grant_basic_action") {
-      if (mechanics.action === "dash") return [{ id: `${item.id}:dash`, name: `${item.name}: Dash`, type: "dash", cost: mechanics.cost === "bonus_action" ? "bonus" : "action", requiresTarget: false }];
-      if (mechanics.action === "disengage") return [{ id: `${item.id}:disengage`, name: `${item.name}: Disengage`, type: "feature_action", actionKind: "disengage", cost: mechanics.cost === "bonus_action" ? "bonus" : "action", requiresTarget: false }];
+      if (mechanics.action === "dash") return [{ id: `${item.id}:dash`, iconId: item.id, name: `${item.name}: Dash`, type: "dash", cost: mechanics.cost === "bonus_action" ? "bonus" : "action", requiresTarget: false }];
+      if (mechanics.action === "disengage") return [{ id: `${item.id}:disengage`, iconId: item.id, name: `${item.name}: Disengage`, type: "feature_action", actionKind: "disengage", cost: mechanics.cost === "bonus_action" ? "bonus" : "action", requiresTarget: false }];
     }
     if (mechanics.kind === "grant_spell") {
       const spell = getSpellRecordById(mechanics.spellId);
@@ -530,6 +541,7 @@ function createAccessoryActions(sheet, items = [], spellcastingItemBonus = { att
     if (mechanics.kind === "grant_active_effect") {
       return [createFeatureAction({ id: item.id, name: item.name, description: item.description }, {
         id: `${item.id}:activate`,
+        iconId: item.id,
         name: item.name,
         actionType: mechanics.actionCost,
         resourceId,
@@ -663,6 +675,7 @@ function abbreviateSaves(saves) {
 
 function resolveFormula(formula, sheet) {
   return String(formula || "")
+    .replace(/\bhit_die\b/g, `1${sheet.durability.hitDice || "d8"}`)
     .replace(/\blevel\b/g, String(sheet.identity.level))
     .replace(/\bstrength_modifier\b/g, String(sheet.abilities.strength?.modifier || 0))
     .replace(/\bdexterity_modifier\b/g, String(sheet.abilities.dexterity?.modifier || 0))

@@ -33,7 +33,7 @@ import {
   saveGame,
 } from "../../app/state/saveGameRepository.js";
 import { createRendererSaveGameClient } from "../../app/state/saveGameClient.js";
-import { getEmberDepartureCheck, UNDERSIZED_PARTY_WARNING } from "../../app/systems/emberSystem.js";
+import { getEmberDepartureCheck, leaveEmber, UNDERSIZED_PARTY_WARNING } from "../../app/systems/emberSystem.js";
 import { canLongRest, runLongRest } from "../../app/engine/long_rest.js";
 import { createActorDefinition } from "../../app/actors/actorContract.js";
 import { executeNpcOffer, listAvailableNpcOffers, validateNpcServices } from "../../app/npc/services.js";
@@ -49,6 +49,7 @@ export async function runSaveGameStateTests() {
   tracksWorldFlagsLocationAndEncounterState();
   persistsCombatRuntimeToActiveCharacter();
   recoversCharacterRuntimeOnLongRest();
+  appliesInspiringLeaderWhenLeavingRestedEmber();
   roundTripsThroughMemoryAndBrowserStores();
   persistsCreatorCharacterSaveForCombat();
   levelsUpTheActiveSavedCharacterAtomically();
@@ -57,6 +58,23 @@ export async function runSaveGameStateTests() {
   resolvesCanonicalNpcOffersAtomically();
   resolvesPersistentFixedEncounterTriggers();
   await rendererClientUsesElectronApiAndFallsBackToBrowserStore();
+}
+
+function appliesInspiringLeaderWhenLeavingRestedEmber() {
+  const record = createCharacterRecord(createStarterCharacterDraft("wizard"), { slot: "active" });
+  record.resolvedCharacterSheet.identity.level = 4;
+  record.resolvedCharacterSheet.abilities.charisma.modifier = 2;
+  record.resolvedCharacterSheet.metadata.featChoices = { inspiring_leader: { ability: "charisma" } };
+  record.resolvedCharacterSheet.features.push({ id: "background:leader:origin_feat", grants: { featId: "inspiring_leader" } });
+  let saveGameState = createSaveGameFromCharacterRecord(record);
+  saveGameState = restSaveGame(saveGameState, { restType: "long_rest", atEmber: true });
+  assert.equal(saveGameState.metadata.emberLongRestPending, true);
+  const departure = leaveEmber(saveGameState, { confirmed: true });
+  assert.equal(departure.ok, true);
+  assert.equal(departure.inspiringLeader.amount, 6);
+  assert.equal(getActiveCharacterRecord(departure.saveGame).runtime.tempHp, 6);
+  assert.equal(departure.saveGame.metadata.emberLongRestPending, false);
+  assert.equal(leaveEmber(departure.saveGame, { confirmed: true }).inspiringLeader, null, "the rest benefit should apply only once");
 }
 
 function resolvesPersistentFixedEncounterTriggers() {

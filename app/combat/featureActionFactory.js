@@ -66,6 +66,8 @@ export function createFeatureAction(feature, option, context = {}) {
       distanceSquares: feetToSquares(resolvedOption.distanceFt ?? resolvedOption.distance ?? 5),
       collisionDamage: resolvedOption.collisionDamage || "1d4",
       collisionDamageType: resolvedOption.collisionDamageType || "bludgeoning",
+      saveAbility: normalizeAbility(resolvedOption.save?.ability || resolvedOption.saveAbility),
+      spellSaveDC: resolveFeatureSaveDc(resolvedOption, context),
       requirement: structuredClone(resolvedOption.requirement || resolvedOption.requirements || null),
     };
   }

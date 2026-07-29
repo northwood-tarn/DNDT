@@ -67,8 +67,8 @@ Preserve these exact source images unless the user explicitly unlocks Fireball.
 
 - Master: `painted_masters/fire_bolt.png`
 - Runtime: `fire_bolt.png`
-- Master SHA-256: `2acb84f99edf20e6dfece898ee9132912f63db98cf2df7d8535b6acff0f69dac`
-- Runtime SHA-256: `c2d20cb098623c5b573e45e9c29f4c803bd47d5945dee99d485cb8dd9d3491c3`
+- Master SHA-256: `7e454c6161dd9b75fecafcdb7dc3f574e441e7d4de17764742d94847a9d3b812`
+- Runtime SHA-256: `9bba812891d54b3689a09188857041a8a90ee07e4f49ed9d4f243f202475e146`
 
 Preserve these exact source images unless the user explicitly unlocks Fire Bolt.
 
@@ -103,8 +103,8 @@ Preserve these exact source images unless the user explicitly unlocks Fire Storm
 
 - Master: `painted_masters/ray_of_frost.png`
 - Runtime: `ray_of_frost.png`
-- Master SHA-256: `56df1795861221522a65950e6fef83e69735c2d98ed16a9fabe03b2d486f7b97`
-- Runtime SHA-256: `ffb6f9c4d20f325fe7fd8489e1fe7f6178256152f9a88be9bc72990141a33281`
+- Master SHA-256: `a6df12e0fb6caa0efaa69d472461ddcda1599655eee4f78cc02c6614e19e4846`
+- Runtime SHA-256: `fd50e95de7e7b56f26483c3f9c4f9123c5868c3f72c970eda7b21a82e0dfddb2`
 
 Preserve these exact source images unless the user explicitly unlocks Ray of Frost.
 
@@ -129,8 +129,8 @@ Preserve these exact source images unless the user explicitly unlocks Erupting E
 ## Acid Splash
 - Master: `painted_masters/acid_splash.png`
 - Runtime: `acid_splash.png`
-- Master SHA-256: `0b707256a7adfd0afb4925fc5b8a2e188429a9c299b93d3472048b5f5ab29d44`
-- Runtime SHA-256: `4fbcbd2c2a0f74510aa87d0805ad82f1d23b3f6b22242a8da0eed905e2df9c85`
+- Master SHA-256: `57a7d8bb60fc81a799c276984b2bb91a96daa7b12afbf25fc50ced86e78da790`
+- Runtime SHA-256: `3801b10948b39c94b43234b0d4b826d2cce328471c2fbcd7d277b2dc60ba2fed`
 
 ## Armor of Agathys
 - Master: `painted_masters/armor_of_agathys.png`
@@ -195,8 +195,8 @@ Preserve these exact source images unless the user explicitly unlocks Erupting E
 ## Poison Spray
 - Master: `painted_masters/poison_spray.png`
 - Runtime: `poison_spray.png`
-- Master SHA-256: `6d124ab8903f1c71da8f3ff0fda1d161f3670c363d37f0b4c27ff92016d622b9`
-- Runtime SHA-256: `da4bff65f01818dd0d4d603ccf8beaf2042502c3bb8f3c909089e066b32d785c`
+- Master SHA-256: `1432baf87553a0bc49e0f1743e0bf6c9e8ed492024addb1872b74889900ed1f8`
+- Runtime SHA-256: `4fcbc93015755145a7f43f1411bc9669518bfc6d2dc727ed72134e6ed82de516`
 
 ## Prismatic Disarray
 - Master: `painted_masters/prismatic_disarray.png`
@@ -547,16 +547,16 @@ Preserve this exact source image unless the user explicitly unlocks Sacred Flame
 ## Toll the Dead
 - Master: `painted_masters/toll_the_dead.png`
 - Runtime: `toll_the_dead.png`
-- Master SHA-256: `fbf675bacba940917bcf120814f1d4e72ce8cc5c54724e374e808805d3e628b1`
-- Runtime SHA-256: `8b03b72cbc2f906ba3e5e1cec700e5c1d234195f72dad59cc8c2a6402a9fb02c`
+- Master SHA-256: `0b5af7a79ab43b706c2506775234ecb88edf96ac6186a0070fe89c3d88898311`
+- Runtime SHA-256: `ea8e87bf701c1ac7f1a3dccc71946b0f89df183dbf54fdd7d4569711237a3217`
 
 Preserve this exact source image unless the user explicitly unlocks Toll the Dead.
 
 ## Guiding Bolt
 - Master: `painted_masters/guiding_bolt.png`
 - Runtime: `guiding_bolt.png`
-- Master SHA-256: `42c641fbea7baee8b71e13f6389d002422b46b0b97dbc42133752be51fd96bf1`
-- Runtime SHA-256: `a60fd8241f24e8f21adf871ec712c7ebdc24353e96fc790871b3aefb687c63ed`
+- Master SHA-256: `b6ab67bfbdc947176473db4a76b09921a1aac6c86dc9ae47691df6da2c9f6985`
+- Runtime SHA-256: `b5844fcd215248d549b6d07174cba1359573cc087c9185789ebcca0b3660b640`
 
 Preserve this exact source image unless the user explicitly unlocks Guiding Bolt.
 
@@ -779,7 +779,7 @@ The following raster masters and 80 x 80 runtime icons were approved and locked 
 | `darkness` | `54af70564c28300565ec2b1d98cf4cf913cecd03369cf6de7b23d0e760f316f1` | `50969014b636742f25f365cf2cb5ea7f82e3e7829c7087bd22f1cb55a1fbc08e` |
 | `detect_poison_and_disease` | `a8a0f355e15884921f5c69a3e4189e0fffbf82733528ec0b41b8cd5f7ee50732` | `6359e2cfbaac949026af463ac2353052cf7bb35b58e2322103298569b38fdf02` |
 | `dimension_door` | `90c6d59cff4809633dcd5181c692ba182fae43bdde6af3c2d99eaed5b1bc3765` | `836750a2bc4bfc52b757c8d6a6de99aedebe33624a6c4b8dc7ccb3953c1af4a0` |
-| `disintegrate` | `495efdec0340f049380a725cfe5659c6930d4b92f892252f6faf2b63b7c81690` | `7b2b8d6cee746bda0aab58f3ef8c0bfb9635ca70d234bc60a1e3662e08859607` |
+| `disintegrate` | `1896c04cc433a761b098307abd1e6d4e73c1c49f3e93b16473e790801af697e8` | `0f9c7d0e87ae2c2b8ab7378c0dd756072b7e38ad63a6072e9954c369c6006a19` |
 | `dominate_person` | `fe099d8daa76c775233c06f05aa534337cb1a2887704987f3c32a75189f06239` | `0e0770d2cf8296be30b196151a2ac2e1c3acccc262b5d3421652cf7986e11462` |
 | `dream` | `102a936e9266877fd2b831d4ec763804cefb5a70ef43ef29fcc40e1f4addd684` | `4b38991363fad6f9e6abb0a8747efdad9b05e7e1b0d545d3996751dd95b46350` |
 | `entangle` | `3b693717e5fd76a66d86ee2f4090fc83c33bab10f22357f8a5c7fd08bf068777` | `d9fc90324e000a7daf180fef4891af8e5520c5ffd23c8789759b70847f7a0f48` |
@@ -790,7 +790,7 @@ The following raster masters and 80 x 80 runtime icons were approved and locked 
 | `false_life` | `a7555b32fea6db74d69f2f641fee7c598d2b9146dedf5f0d4529a4edc7b51c50` | `7ee56e849aeec35ff70e7a58f2f895af3058cf0e30c2e2c8f92343654f895bc0` |
 | `far_step` | `b4e1a7beb834dc695a5e7cc1a687c2357cbae8df3ab48ab2c081708de23aaa81` | `18a50f87a7cfffa04236867adf280deaff3f6df8ac0a434f058a325fa34a6e17` |
 | `fear` | `55114cb654af75efa5e8fb571a63d3458426bc5bf237f492f5727351accada59` | `bcc054c56d912ab8813fa3525db14f0405e49021c869e1b2fa3d5713cea3cd2a` |
-| `finger_of_death` | `b9a3862462f9626b2dbb5ed587bfedf48dfd8add1b505d49cce921f843f1c4eb` | `7e3c1e4c3cf318565ae9f6d783fdad6ab8d64db6fa369086dc1b901913179d06` |
+| `finger_of_death` | `033594504efb3b93dffa9301ab1a4524fa8da565bc78c1b1c1525b1c6138cd5d` | `27cde3169e4b5cdd91b036588289cf0b6c87e6fd9ee1ae0e787542223ab6b23e` |
 | `flesh_to_stone` | `4fbd8c537673bb7cdc7f32b322c6954058d72c929cb5076272f5e17fd3d5404b` | `25202c9cc17a2800d827e61b91b5544b325dbdae47e81561f8468a556c3af592` |
 | `fog_cloud` | `60e1d348b09a81f6d22224dad204eb7f079865c06916af003624c017b8000f5e` | `60d291bfbacf74d0a39859764a5d1c88740b793a607e8f95a603ea4fddce348d` |
 | `forcecage` | `360cc2803479db41f51c320f4c8115627f0e0c87fd21f7543612aeb3a4a67588` | `29d029cb0b068ee51edab6aa12786b1d099b3cc315b09af5ddb3804277551a08` |
@@ -844,12 +844,12 @@ These are the exact raster assets for every currently active Wizard spell entry.
 
 | Level | Spell ID | Master SHA-256 or alias | Runtime SHA-256 |
 | --- | --- | --- | --- |
-| 0 | `acid_splash` | `0b707256a7adfd0afb4925fc5b8a2e188429a9c299b93d3472048b5f5ab29d44` | `4fbcbd2c2a0f74510aa87d0805ad82f1d23b3f6b22242a8da0eed905e2df9c85` |
+| 0 | `acid_splash` | `57a7d8bb60fc81a799c276984b2bb91a96daa7b12afbf25fc50ced86e78da790` | `3801b10948b39c94b43234b0d4b826d2cce328471c2fbcd7d277b2dc60ba2fed` |
 | 0 | `blade_ward` | `231a3b867deeeddbf81cce0234d8d11d5420b8758ff4d467846f641745fd8b7f` | `9cef46c20d77e8e327cc277a4e1305635ae919f4a1b33d9e3110630883ca4677` |
 | 0 | `burning_hands_jester` | `alias:burning_hands` | `b86364f3d212ed56bdcd4e81a0c4baee103c5de850082b55b1d0c0d5f7daebb4` |
 | 0 | `chill_touch` | `3f6b52c4e95c0543e6727e9a48270afd715f8875a655a2bf2bce479fe57bdf66` | `a0cbdfdab19aba00fd3027e66162200efc5ad312593b98e3447ce0502b84babf` |
 | 0 | `false_life_jester` | `alias:false_life` | `7ee56e849aeec35ff70e7a58f2f895af3058cf0e30c2e2c8f92343654f895bc0` |
-| 0 | `fire_bolt` | `2acb84f99edf20e6dfece898ee9132912f63db98cf2df7d8535b6acff0f69dac` | `c2d20cb098623c5b573e45e9c29f4c803bd47d5945dee99d485cb8dd9d3491c3` |
+| 0 | `fire_bolt` | `7e454c6161dd9b75fecafcdb7dc3f574e441e7d4de17764742d94847a9d3b812` | `9bba812891d54b3689a09188857041a8a90ee07e4f49ed9d4f243f202475e146` |
 | 0 | `frostbite` | `750804bdb4324bb7c94ed7f95684faffd0fd82ffbbd5e7991b2c7bb098519ee0` | `cfe419f5a9c022232fb161ed15885639f5b88424db491757a687e414705e90e3` |
 | 0 | `infestation` | `dcaef0e4f5461f737696e23ff34e2db6c9cfb38a390c2ef40eaa720e029b57fe` | `f8c9b0d5be4180df6c67e1e73c58389a6570fc4e26756f8de4a7bdedf7a26901` |
 | 0 | `mage_hand` | `5166ae18f453aa9a8efc698199d7efba7cbb78d9c7fe2d22fcad8f6b1f25da71` | `5608c0c4defacd4bbb4c7330587f9f297ac9a6a3922388471874088311f9f67c` |
@@ -857,8 +857,8 @@ These are the exact raster assets for every currently active Wizard spell entry.
 | 0 | `mending` | `ce5a367c477ba5b5030becfb50265f2962838d9568f0c90a3f43404c17ca404a` | `b2f31cf7706d75e24a5582cb6a093f43f88661a9bea93b0d787ceb1b3563ddbc` |
 | 0 | `mind_sliver` | `603b014edf873b090ec12b9c1d6e905f22799cdd6d83a7e92747ae1da2152f8d` | `7232a8dd8ee94e63ba112ffbad5905e0abf6a030008a797593f54aa0d8520f18` |
 | 0 | `minor_magic` | `dc78f471d5a3155fcc5fe8824f545b0983cb005918206076a777ec31f90b4f47` | `644154f1623a0d9e282715f4afe7d1b2496b3ab084e5f2ced0c46cb9286d8dbc` |
-| 0 | `poison_spray` | `6d124ab8903f1c71da8f3ff0fda1d161f3670c363d37f0b4c27ff92016d622b9` | `da4bff65f01818dd0d4d603ccf8beaf2042502c3bb8f3c909089e066b32d785c` |
-| 0 | `ray_of_frost` | `56df1795861221522a65950e6fef83e69735c2d98ed16a9fabe03b2d486f7b97` | `ffb6f9c4d20f325fe7fd8489e1fe7f6178256152f9a88be9bc72990141a33281` |
+| 0 | `poison_spray` | `1432baf87553a0bc49e0f1743e0bf6c9e8ed492024addb1872b74889900ed1f8` | `4fcbc93015755145a7f43f1411bc9669518bfc6d2dc727ed72134e6ed82de516` |
+| 0 | `ray_of_frost` | `a6df12e0fb6caa0efaa69d472461ddcda1599655eee4f78cc02c6614e19e4846` | `fd50e95de7e7b56f26483c3f9c4f9123c5868c3f72c970eda7b21a82e0dfddb2` |
 | 0 | `shocking_grasp` | `69ab03d9fe51e0730541044748431199a406e85cde91939751a4e0891e1164d9` | `b88f3e3f6a4e08abdc2022ff9eb9aa88a79694e3b9bedf72262024d39b9bf6ce` |
 | 0 | `thunderclap` | `d0eb48ade5c7d96dbe830bfd27bf3d986f308a8212d38637d3f4e4a625ab3df2` | `9d181d8492887a4fc2d5122d81544867cdb2ede9791ff65fb0e7b14c9531a48c` |
 | 0 | `thunderwave_jester` | `alias:thunderwave` | `bac9d3280bbadd1bdaf055625e092fb45499e2624648b89b13d7f561de05bb6a` |
@@ -917,7 +917,7 @@ These are the exact raster assets for every currently active Wizard spell entry.
 | 5 | `yolandes_regal_presence` | `2a4c63919219429993d901f5286e2a954a9a14e0d73b096d30803cc39531a89d` | `fbcced791fe6c14fe3bf68724b98e9a9dd27ab8157b04074fdf70d63072bba71` |
 | 6 | `chain_lightning` | `e13abb27d6ed2c47345db433972f1237e41d741bbeb511ee7cea498b25e91397` | `6f616e78239f9ef8b7b1af5d468bfb4cc4179b530266c6f7356637811212dad0` |
 | 6 | `circle_of_death` | `a5a83b860dc442c44386767eedac7818557667042a9a24df678e19da5de7de5d` | `372cf979e956e6966c8540d4bd554771051d23be5906dd6a8f9f44117f2557eb` |
-| 6 | `disintegrate` | `495efdec0340f049380a725cfe5659c6930d4b92f892252f6faf2b63b7c81690` | `7b2b8d6cee746bda0aab58f3ef8c0bfb9635ca70d234bc60a1e3662e08859607` |
+| 6 | `disintegrate` | `1896c04cc433a761b098307abd1e6d4e73c1c49f3e93b16473e790801af697e8` | `0f9c7d0e87ae2c2b8ab7378c0dd756072b7e38ad63a6072e9954c369c6006a19` |
 | 6 | `eyebite` | `f5d0eb9056be4bd560be48c1d6177d4daf2b6ff9a5e516cadd5f5113cf7e6ee0` | `b5cc3ddfb4df1c7eeb627d446c9178a172a86734b64f6427125995a28738599b` |
 | 6 | `globe_of_invulnerability` | `ed1a6ef211186a53a5427809c0d559f4c284742042bb4b1673ac953b651af546` | `5c5ebdd727dad2f304c42f9eb33bd02e9d61f070e01bed57bb83819a83f1d5d8` |
 | 6 | `mass_suggestion` | `3e8f498aa621012aef4f339a1a9dca76224ec598553f6050604ff48fc147d5c4` | `83b0bf0d0dbe24986f20a611cdd6fd6cd0d29fbc124e35620c5f3e8a9b85788c` |
@@ -927,7 +927,7 @@ These are the exact raster assets for every currently active Wizard spell entry.
 | 6 | `sunbeam` | `6f79c3ec9d272cb00d7ea85b9b7a262f9ccd694754c32dd948655438f6d33613` | `67ac171b39dfd99e0f8ebe89fc97c1973f922d4a6fb6c5f171ecfd218a1cbcd9` |
 | 6 | `wall_of_ice` | `179eb9dd3075e1e2b5fd93fd22b27f287b90c4276f2fb49033f7c12aab42bf3c` | `7ac7a7dec2384e5648e45e16004c7a13b118004018849223e125a854cb281377` |
 | 7 | `dancing_flames` | `65088a47198c3aa84ce8f1fce1c8ec970c74c16eb4fe42fad7b54b8db054b050` | `6c0c590df8ab123872b5c0af04b3f10d247f25e68c2a435f408a7ab31422cf15` |
-| 7 | `finger_of_death` | `b9a3862462f9626b2dbb5ed587bfedf48dfd8add1b505d49cce921f843f1c4eb` | `7e3c1e4c3cf318565ae9f6d783fdad6ab8d64db6fa369086dc1b901913179d06` |
+| 7 | `finger_of_death` | `033594504efb3b93dffa9301ab1a4524fa8da565bc78c1b1c1525b1c6138cd5d` | `27cde3169e4b5cdd91b036588289cf0b6c87e6fd9ee1ae0e787542223ab6b23e` |
 | 7 | `forcecage` | `360cc2803479db41f51c320f4c8115627f0e0c87fd21f7543612aeb3a4a67588` | `29d029cb0b068ee51edab6aa12786b1d099b3cc315b09af5ddb3804277551a08` |
 | 7 | `power_word_pain` | `9abbe56fd4830533157c94d65f8ebacf5c9ab5f78f04b10ac7a64ccf6f61ee04` | `00da5dc1892d57173bccfa82b0a6567e969ee20eb044a636790d2421d6aa52bd` |
 | 7 | `prismatic_disarray` | `6ebaeade62d468a6d91bec7ae10167348acf04504338c0e1af676c9123704621` | `92b98470eabc5ecf99312531a19d44260f9e36f5681574f221779fbff15d9fae` |
