@@ -25,15 +25,13 @@ const CATEGORY_LABELS = {
 export function installEquipmentDrawer(actor) {
   const drawer = document.querySelector(".gear-drawer");
   if (!drawer || !actor) return;
-  const actorNames = [...drawer.querySelectorAll("[data-gear-actor-name]")];
   const equipmentPanel = drawer.querySelector('[data-gear-panel="equipment"]');
   const inventoryPanel = drawer.querySelector('[data-gear-panel="inventory"]');
   const characterPanel = drawer.querySelector('[data-gear-panel="character"]');
   const content = drawer.querySelector(".gear-drawer-content");
   const columns = Object.fromEntries([...drawer.querySelectorAll("[data-gear-column]")].map((column) => [column.dataset.gearColumn, column]));
-  const state = installEquipmentPanelContent(actor, { equipmentPanel, inventoryPanel });
+  const state = installEquipmentPanelContent(actor, { equipmentPanel, inventoryPanel, authoritative: true });
   const openOrder = [];
-  let externalPanesActive = false;
 
   const actionFrame = drawer.querySelector("[data-action-options-frame]");
   if (actionFrame) {
@@ -46,7 +44,6 @@ export function installEquipmentDrawer(actor) {
     questsFrame.src = `./action_options.html?panel=quests&embedded=1${scenario ? `&scenario=${encodeURIComponent(scenario)}` : ""}`;
   }
 
-  for (const actorName of actorNames) actorName.textContent = actor.name.split(",", 1)[0];
   installCharacterPanel(actor, characterPanel);
 
   const syncPresentation = () => {
@@ -62,7 +59,7 @@ export function installEquipmentDrawer(actor) {
 
   const open = (panelId) => {
     if (openOrder.includes(panelId)) return;
-    if (openOrder.length >= 4) openOrder.splice(3, 1);
+    if (openOrder.length >= 3) openOrder.splice(2, 1);
     openOrder.push(panelId);
     syncPresentation();
   };
@@ -78,28 +75,33 @@ export function installEquipmentDrawer(actor) {
     else open(panelId);
   };
 
+  const routePanelShortcut = (panelId) => {
+    if (!columns[panelId]) return;
+    if (window.api?.requestInternalCombatPane) window.api.requestInternalCombatPane(panelId);
+    else toggle(panelId);
+  };
+
   for (const button of drawer.querySelectorAll("[data-close-gear-panel]")) {
     button.addEventListener("click", () => close(button.dataset.closeGearPanel));
   }
-  window.api?.onCombatPaneState?.((paneState) => {
-    const nextExternalPanesActive = Object.values(paneState || {}).some((entry) => entry?.visible === true);
-    if (nextExternalPanesActive && !externalPanesActive && openOrder.length) {
-      openOrder.splice(0, openOrder.length);
-      syncPresentation();
-    }
-    externalPanesActive = nextExternalPanesActive;
+  window.api?.onOpenInternalCombatPane?.((panelId) => {
+    if (columns[panelId]) toggle(panelId);
+  });
+  window.api?.onCombatPaneDragState?.((state) => {
+    document.body.classList.toggle("is-pane-drag-target", state?.active === true);
   });
   document.addEventListener("keydown", (event) => {
     if (event.defaultPrevented || event.repeat || event.altKey || event.ctrlKey || event.metaKey || isTypingTarget(event.target)) return;
     const panelId = event.code === "KeyO" ? "action-options" : event.code === "KeyE" ? "equipment" : event.code === "KeyI" ? "inventory" : event.code === "KeyC" ? "character" : event.code === "KeyQ" ? "quests" : null;
     if (!panelId) return;
     event.preventDefault();
-    if (window.api?.toggleCombatPane && externalPanesActive) {
-      window.api.toggleCombatPane(panelId);
-      return;
-    }
-    toggle(panelId);
+    routePanelShortcut(panelId);
   }, true);
+  window.addEventListener("message", (event) => {
+    if (event.source !== actionFrame?.contentWindow && event.source !== questsFrame?.contentWindow) return;
+    if (event.data?.type !== "combat-pane-shortcut") return;
+    routePanelShortcut(event.data.paneId);
+  });
 
   for (const column of Object.values(columns)) {
     const handle = column.querySelector(".gear-drawer-header");
@@ -304,9 +306,10 @@ function formatBonus(value) {
   return `${number >= 0 ? "+" : ""}${number}`;
 }
 
-export function installEquipmentPanelContent(actor, { equipmentPanel, inventoryPanel } = {}) {
+export function installEquipmentPanelContent(actor, { equipmentPanel, inventoryPanel, authoritative = false } = {}) {
   if (!actor || !equipmentPanel || !inventoryPanel) return null;
   const state = createDrawerState(actor);
+  state.authoritative = authoritative;
   state.equipmentPanel = equipmentPanel;
   const render = () => {
     renderEquipment(equipmentPanel, state, render);
@@ -334,6 +337,7 @@ function installEquipmentSync(state) {
       return;
     }
     if (event.data.type === "request-state") {
+      if (!state.authoritative) return;
       state.channel.postMessage({
         type: "equipment-state",
         source: state.syncToken,
@@ -399,12 +403,12 @@ function renderEquipment(panel, state, rerender) {
   body.append(
     equipmentSlot("headwear", "Head", state, rerender, "body-head"),
     equipmentSlot("ring1", "Ring I", state, rerender, "body-ring-left"),
-    equipmentSlot("weapon1a", "Set I · Hand", state, rerender, "body-hand-left"),
+    equipmentSlot("weapon1a", "Main\nHand\u00a0I", state, rerender, "body-hand-left"),
     equipmentSlot("armor", "Armor", state, rerender, "body-armor"),
-    equipmentSlot("weapon1b", "Set I · Off Hand", state, rerender, "body-hand-right"),
+    equipmentSlot("weapon1b", "Off\nHand\u00a0I", state, rerender, "body-hand-right"),
     equipmentSlot("ring2", "Ring II", state, rerender, "body-ring-right"),
-    equipmentSlot("weapon2a", "Set II · Hand", state, rerender, "body-set-two-left"),
-    equipmentSlot("weapon2b", "Set II · Off Hand", state, rerender, "body-set-two-right"),
+    equipmentSlot("weapon2a", "Main\nHand\u00a0II", state, rerender, "body-set-two-left"),
+    equipmentSlot("weapon2b", "Off\nHand\u00a0II", state, rerender, "body-set-two-right"),
     equipmentSlot("footwear", "Footwear", state, rerender, "body-feet"),
   );
   panel.replaceChildren(body);
@@ -424,6 +428,7 @@ function equipmentSlot(slotId, label, state, rerender, layoutClass) {
     ? handSlotIds().filter((handSlot) => handSlot.endsWith("b") && handSlot !== slotId).map((handSlot) => state.equipped[handSlot]).find((id) => isShield(resolveItem(id)))
     : null;
   const item = resolveItem(equippedItemId || mirroredShieldId);
+  slot.classList.toggle("has-item", Boolean(item));
   if (item) {
     const tile = itemTile(item, 1, { compact: true });
     if (isTwoHandedOccupancy(state, slotId, item)) tile.classList.add("is-two-handed-occupancy");
@@ -434,12 +439,8 @@ function equipmentSlot(slotId, label, state, rerender, layoutClass) {
       tile.addEventListener("dragend", () => clearViableSlotHighlights(state));
     }
     well.append(tile);
-  } else {
-    const empty = document.createElement("span");
-    empty.className = "equipment-slot-empty";
-    empty.textContent = "Empty";
-    well.append(empty);
   }
+  well.append(caption);
   well.addEventListener("dragover", (event) => {
     const data = readItemDrag(event);
     if (!data || !slotAccepts(slotId, resolveItem(data.itemId), state)) return;
@@ -458,7 +459,7 @@ function equipmentSlot(slotId, label, state, rerender, layoutClass) {
     syncActorEquipment(state);
     rerender();
   });
-  slot.append(caption, well);
+  slot.append(well);
   return slot;
 }
 
@@ -880,17 +881,25 @@ function setItemDrag(event, data) {
 
 function beginItemDrag(event, data, state) {
   setItemDrag(event, data);
-  if (data.source === "equipment") {
-    const quickbarChoice = quickbarChoiceForEquippedItem(resolveItem(data.itemId));
-    if (quickbarChoice) {
-      const encodedChoice = JSON.stringify(quickbarChoice);
-      event.dataTransfer.effectAllowed = "copyMove";
-      event.dataTransfer.setData("application/x-dndt-action", encodedChoice);
-      event.dataTransfer.setData("text/plain", encodedChoice);
-    }
+  const quickbarChoice = data.source === "equipment" ? quickbarChoiceForEquippedItem(resolveItem(data.itemId)) : null;
+  if (quickbarChoice) {
+    const encodedChoice = JSON.stringify(quickbarChoice);
+    event.dataTransfer.effectAllowed = "copyMove";
+    event.dataTransfer.setData("application/x-dndt-action", encodedChoice);
+    event.dataTransfer.setData("application/x-dndt-action", encodedChoice);
+    event.dataTransfer.setData("text/plain", encodedChoice);
   }
   showViableSlotHighlights(state, data.itemId);
   state.channel?.postMessage({ type: "item-drag-start", source: state.syncToken, drag: data });
+}
+
+export function equipDraggedItem(state, slotId, dragData) {
+  const item = resolveItem(dragData?.itemId);
+  if (!state || !dragData || !slotAccepts(slotId, item, state)) return false;
+  equipItem(state, slotId, dragData);
+  syncActorEquipment(state);
+  state.render?.();
+  return true;
 }
 
 function quickbarChoiceForEquippedItem(item) {

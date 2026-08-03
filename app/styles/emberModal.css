@@ -1,0 +1,498 @@
+@font-face {
+  font-family: "DNDT Libre Baskerville";
+  src: url("../assets/fonts/libre_baskerville/LibreBaskerville-Italic-Variable.ttf") format("truetype");
+  font-style: italic;
+  font-weight: 400 700;
+}
+
+.ember-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  width: 100vw;
+  max-width: none;
+  height: 100vh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: #050706;
+}
+
+.ember-modal[open] { display: block; }
+.ember-modal::backdrop { background: rgba(5, 7, 6, 0.92); }
+
+.ember-modal__fog {
+  position: absolute;
+  inset: -10%;
+  pointer-events: none;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 0.25;
+  will-change: transform;
+}
+
+.ember-modal__fog--one {
+  background-image: url("../assets/fog/fog_01.png");
+  animation: ember-fog-fade 4s ease both, ember-fog-drift-one 72s ease-in-out infinite alternate;
+}
+
+.ember-modal__fog--two {
+  background-image: url("../assets/fog/fog_05.png");
+  mix-blend-mode: screen;
+  animation: ember-fog-fade 4s ease both, ember-fog-drift-two 96s ease-in-out infinite alternate;
+}
+
+.ember-modal__fog--three {
+  background-image: url("../assets/fog/fog_09.png");
+  mix-blend-mode: lighten;
+  animation: ember-fog-fade 4s ease both, ember-fog-drift-three 124s ease-in-out infinite alternate;
+}
+
+.ember-modal__heading {
+  position: absolute;
+  top: 0;
+  right: 46px;
+  left: 46px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 78px;
+  color: rgba(137, 174, 168, 0.66);
+  font: 300 20px/1 "Avenir Light", "Avenir", "Helvetica Neue", sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ember-modal__heading::before,
+.ember-modal__heading::after {
+  content: "";
+  width: clamp(27px, 4vw, 56px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(112, 157, 150, 0.42));
+}
+
+.ember-modal__heading::after { transform: scaleX(-1); }
+
+.ember-modal__heading span { color: rgba(153, 211, 201, 0.46); }
+
+.ember-modal__radial-menu {
+  position: absolute;
+  top: 87px;
+  right: 66.6667%;
+  bottom: 92px;
+  left: 18px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0;
+  opacity: 0;
+  pointer-events: none;
+  animation: ember-menu-arrive 4s ease forwards;
+}
+
+.ember-modal__radial-menu button {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 43px;
+  padding: 8px 0;
+  border: 0;
+  border: 0;
+  background: transparent;
+  color: rgba(222, 241, 237, 0.34);
+  font: 300 clamp(12px, 1vw, 18px)/1.15 "Avenir Light", "Avenir", "Helvetica Neue", sans-serif;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(127, 205, 191, 0.08);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 220ms ease, filter 220ms ease;
+  pointer-events: auto;
+}
+
+.ember-modal__radial-menu button:hover,
+.ember-modal__radial-menu button:focus-visible,
+.ember-modal__radial-menu button.is-selected {
+  color: rgba(237, 251, 248, 0.86);
+  filter: brightness(1.18);
+  text-shadow: 0 0 13px rgba(153, 235, 221, 0.42);
+  outline: none;
+}
+
+.ember-modal__departure.is-level-up-available {
+  animation: ember-level-up-pulse 2.8s ease-in-out infinite;
+}
+
+.ember-modal__spell-workflow,
+.ember-modal__equipment-workflow {
+  position: absolute;
+  top: 78px;
+  right: 46px;
+  bottom: 92px;
+  left: 33.3333%;
+  z-index: 3;
+  color: rgba(220, 240, 236, 0.68);
+  font-family: "Avenir Light", "Avenir", "Helvetica Neue", sans-serif;
+}
+
+.ember-modal__spell-workflow[hidden],
+.ember-modal__equipment-workflow[hidden] { display: none; }
+
+.ember-modal__caster-tabs,
+.ember-modal__equipment-tabs {
+  display: grid;
+  align-items: flex-end;
+  gap: 12px;
+  min-height: 48px;
+  margin-bottom: 18px;
+}
+
+.ember-modal__caster-tabs { grid-template-columns: repeat(var(--ember-caster-count, 1), minmax(0, 1fr)); }
+.ember-modal__equipment-tabs { grid-template-columns: repeat(var(--ember-equipment-count, 1), minmax(0, 1fr)); }
+
+.ember-caster-tab,
+.ember-equipment-tab {
+  position: relative;
+  padding: 8px 0 10px;
+  border: 0;
+  background: transparent;
+  color: rgba(190, 139, 49, 0.48);
+  min-width: 0;
+  overflow: hidden;
+  font: 300 clamp(11px, calc(21px - (var(--ember-caster-count, 1) * 1.6px)), 19px)/1 "Avenir Light", "Avenir", "Helvetica Neue", sans-serif;
+  letter-spacing: 0.08em;
+  text-overflow: clip;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ember-caster-tab::after,
+.ember-equipment-tab::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: rgba(190, 139, 49, 0);
+  transition: background 180ms ease, box-shadow 180ms ease;
+}
+
+.ember-caster-tab:hover,
+.ember-caster-tab:focus-visible,
+.ember-caster-tab.is-active,
+.ember-equipment-tab:hover,
+.ember-equipment-tab:focus-visible,
+.ember-equipment-tab.is-active {
+  color: rgba(211, 164, 76, 0.88);
+  outline: none;
+}
+
+.ember-caster-tab.is-active::after,
+.ember-equipment-tab.is-active::after {
+  background: rgba(211, 164, 76, 0.82);
+  box-shadow: 0 0 8px rgba(190, 139, 49, 0.22);
+}
+
+.ember-equipment-tab {
+  font-size: clamp(10px, calc(19px - (var(--ember-equipment-count, 1) * 1.25px)), 17px);
+}
+
+.ember-modal__equipment-layout {
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr);
+  gap: 30px;
+  height: calc(100% - 66px);
+  min-height: 0;
+}
+
+.ember-modal__equipment-rig {
+  display: grid;
+  grid-template-columns: repeat(4, 61px);
+  grid-template-rows: repeat(5, 61px);
+  align-content: start;
+  justify-content: center;
+  gap: 10px 8px;
+  min-height: 0;
+}
+
+.ember-equipment-slot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 61px;
+  height: 61px;
+  min-width: 61px;
+  overflow: hidden;
+  border: 1px solid rgba(143, 188, 179, 0.14);
+  background: rgba(2, 9, 8, 0.34);
+  cursor: grab;
+}
+
+.ember-equipment-slot.body-head { grid-column: 2 / 4; grid-row: 1; }
+.ember-equipment-slot.body-ring-left { grid-column: 1; grid-row: 2; }
+.ember-equipment-slot.body-ring-right { grid-column: 4; grid-row: 2; }
+.ember-equipment-slot.body-hand-left { grid-column: 1; grid-row: 3; }
+.ember-equipment-slot.body-armor { grid-column: 2 / 4; grid-row: 2 / 4; }
+.ember-equipment-slot.body-hand-right { grid-column: 4; grid-row: 3; }
+.ember-equipment-slot.body-set-two-left { grid-column: 2; grid-row: 4; }
+.ember-equipment-slot.body-set-two-right { grid-column: 3; grid-row: 4; }
+.ember-equipment-slot.body-feet { grid-column: 2 / 4; grid-row: 5; }
+
+.ember-equipment-slot.body-head,
+.ember-equipment-slot.body-armor,
+.ember-equipment-slot.body-feet {
+  justify-self: center;
+}
+
+.ember-equipment-slot span {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  left: 5px;
+  color: rgba(205, 228, 224, 0.48);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: pre-line;
+}
+
+.ember-equipment-item-art {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  opacity: 0.82;
+}
+
+.ember-modal__party-inventory {
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(131, 173, 165, 0.2) transparent;
+}
+
+.ember-inventory-category {
+  border-bottom: 1px solid rgba(153, 195, 187, 0.1);
+}
+
+.ember-inventory-category summary {
+  min-height: 43px;
+  padding: 13px 4px 10px;
+  color: rgba(218, 239, 235, 0.42);
+  font-size: 15px;
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  list-style: none;
+}
+
+.ember-inventory-category summary::-webkit-details-marker { display: none; }
+.ember-inventory-category summary::before { content: "+"; display: inline-block; width: 24px; color: rgba(190, 139, 49, 0.48); }
+.ember-inventory-category[open] summary::before { content: "−"; }
+
+.ember-inventory-category__items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 8px;
+  padding: 7px 4px 20px 28px;
+}
+
+.ember-inventory-item {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 88px;
+  padding: 7px 5px 20px;
+  border: 1px solid rgba(143, 188, 179, 0.14);
+  background: rgba(2, 9, 8, 0.34);
+  cursor: grab;
+}
+
+.ember-equipment-slot:active,
+.ember-inventory-item:active { cursor: grabbing; }
+
+.ember-equipment-slot.is-viable-drop {
+  border-color: rgba(191, 170, 104, 0.52);
+  background: rgba(82, 70, 34, 0.12);
+  box-shadow: 0 0 16px rgba(188, 164, 91, 0.12), inset 0 0 18px rgba(185, 168, 105, 0.08);
+}
+
+.ember-inventory-item-art {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.ember-inventory-item span {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  left: 4px;
+  overflow: hidden;
+  color: rgba(205, 228, 224, 0.5);
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ember-inventory-item small {
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  color: rgba(211, 164, 76, 0.82);
+  font-size: 10px;
+}
+
+.ember-modal__spell-levels {
+  height: calc(100% - 66px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(131, 173, 165, 0.2) transparent;
+}
+
+.ember-spell-level {
+  border-bottom: 1px solid rgba(153, 195, 187, 0.1);
+}
+
+.ember-spell-level summary {
+  min-height: 43px;
+  padding: 13px 4px 10px;
+  color: rgba(218, 239, 235, 0.42);
+  font-size: 15px;
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  list-style: none;
+}
+
+.ember-spell-level summary::-webkit-details-marker { display: none; }
+.ember-spell-level summary::before { content: "+"; display: inline-block; width: 24px; color: rgba(190, 139, 49, 0.48); }
+.ember-spell-level[open] summary::before { content: "−"; }
+.ember-spell-level summary.needs-attention { animation: ember-spell-level-pulse 2.8s ease-in-out infinite; }
+
+.ember-spell-level__body {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 24px;
+  padding: 7px 4px 20px 28px;
+}
+
+.ember-spell-prepared,
+.ember-spell-library {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 8px;
+}
+
+.ember-spell-slot,
+.ember-spell-choice {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  padding: 3px;
+  border: 1px solid rgba(143, 188, 179, 0.16);
+  background: rgba(2, 9, 8, 0.42);
+  cursor: pointer;
+}
+
+.ember-spell-slot.is-empty { background: rgba(2, 9, 8, 0.2); }
+.ember-spell-slot.is-active { border-color: rgba(211, 164, 76, 0.72); box-shadow: 0 0 9px rgba(190, 139, 49, 0.12); }
+.ember-spell-choice.is-selected { opacity: 0.24; }
+.ember-spell-slot:hover,
+.ember-spell-slot:focus-visible,
+.ember-spell-choice:hover,
+.ember-spell-choice:focus-visible { border-color: rgba(195, 231, 224, 0.56); filter: brightness(1.18); outline: none; }
+
+.ember-spell-icon-art,
+.ember-spell-icon-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ember-spell-icon-art { position: relative; overflow: hidden; }
+.ember-spell-icon-art img { position: absolute; inset: 0; object-fit: contain; }
+
+.ember-modal__spell-hover {
+  position: absolute;
+  bottom: 27px;
+  left: 50%;
+  z-index: 4;
+  width: min(720px, 70vw);
+  text-align: center;
+  opacity: 0;
+  transform: translateX(-50%);
+  transition: opacity 160ms ease;
+  pointer-events: none;
+}
+
+.ember-modal__spell-hover-name {
+  color: rgba(225, 244, 240, 0.62);
+  font: 300 17px/1.2 "Avenir Light", "Avenir", "Helvetica Neue", sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ember-modal__spell-hover-description {
+  margin: 7px 0 0;
+  color: rgba(215, 233, 229, 0.5);
+  font: italic 400 13px/1.5 "DNDT Libre Baskerville", "Baskerville", Georgia, serif;
+  font-synthesis: none;
+  letter-spacing: 0.025em;
+}
+
+.ember-modal__spell-hover.is-visible { opacity: 1; }
+
+@keyframes ember-menu-arrive {
+  0%, 62% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes ember-level-up-pulse {
+  0%, 100% { color: rgba(222, 241, 237, 0.34); filter: brightness(1); text-shadow: 0 0 10px rgba(127, 205, 191, 0.06); }
+  50% { color: rgba(239, 253, 250, 0.72); filter: brightness(1.16); text-shadow: 0 0 16px rgba(153, 235, 221, 0.3); }
+}
+
+@keyframes ember-spell-level-pulse {
+  0%, 100% { color: rgba(218, 239, 235, 0.42); text-shadow: none; }
+  50% { color: rgba(237, 250, 247, 0.72); text-shadow: 0 0 12px rgba(151, 218, 205, 0.18); }
+}
+
+@keyframes ember-fog-fade {
+  from { opacity: 0; }
+  to { opacity: 0.25; }
+}
+
+@keyframes ember-fog-drift-one {
+  from { transform: translate3d(-2%, -1%, 0) scale(1.04); }
+  to { transform: translate3d(2%, 1%, 0) scale(1.1); }
+}
+
+@keyframes ember-fog-drift-two {
+  from { transform: translate3d(2%, -2%, 0) scale(1.08); }
+  to { transform: translate3d(-2%, 2%, 0) scale(1.02); }
+}
+
+@keyframes ember-fog-drift-three {
+  from { transform: translate3d(-1%, 2%, 0) scale(1.03); }
+  to { transform: translate3d(2%, -1%, 0) scale(1.09); }
+}

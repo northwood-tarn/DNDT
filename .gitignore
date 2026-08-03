@@ -8,6 +8,7 @@ electron/
 *.framework
 *.zip
 *.log
+authoring_tools/secret_creator/experiments.jsonl
 
 # OS & IDE junk
 .DS_Store

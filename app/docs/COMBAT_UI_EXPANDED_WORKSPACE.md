@@ -114,6 +114,14 @@ The Action Options pane does not display another Settings cog. Its header may ev
 
 Pane visibility is a workspace preference, while reaction configuration is a combat-behaviour preference. They share an entry point for convenience but remain visibly distinct inside it.
 
+Every external pane always supports the same three placement operations:
+
+1. Drag it away from the workspace to stand alone as an independent window.
+2. Drag it beside the main window to dock along that edge without overlapping another pane.
+3. Drag it over an existing pane header to merge into that pane's outline as a tabbed alternative.
+
+Display schemas provide default arrangements only. They must never make a pane immovable, permanently overlap panes, or remove any of these three operations.
+
 ### Right Action Options pane
 
 The right pane is the character's complete combat repertoire. It remains spatially stable while actions are selected, targeted, and resolved.
@@ -348,6 +356,10 @@ Click-to-pick-up should provide an equivalent non-drag interaction for trackpads
 
 ## Commit control
 
+Clicking an icon in Action Options enters targeting mode for that action. The click does not immediately resolve the action; targeting begins first.
+
+Equipped weapons appear under a `Weapons` subheading within both the Action and Bonus Action sections wherever their action economy makes them available.
+
 A populated Action or Bonus Action box has a half-height commit box beneath the main choice.
 
 ```text
@@ -488,3 +500,25 @@ The following directions were considered and rejected for this approach:
 - How optional sentence history is opened and presented.
 - Keyboard and controller equivalents for drag, drop, targeting, and commit.
 - Whether detached panes can exchange drag operations reliably across windows.
+
+## Shared pane behaviour
+
+- Action Options, Inventory, Equipment, Character, and Quests follow the same docking rules.
+- Internally, panes are vertical columns in a 3+1 arrangement: up to three one-third-width menu columns; opening a fourth menu replaces the third column.
+- Every external pane has a vertical presentation for left/right placement and a horizontal presentation for top/bottom placement.
+- A pane opened externally, or dragged from the internal host to the exterior, adopts the orientation and dimensions of the side it is placed against.
+- Changing an external pane from horizontal to side-docked also changes its window geometry: left/right docking adopts the standard side-pane width, while top/bottom docking adopts the standard horizontal-band height. A pane must never retain its previous orientation's thickness and overlap the combat window.
+- Dock intent is determined from the pointer entering broad edge zones of the combat window or an attached pane, not from accidental proximity of a large dragged window's outer rectangle. Missing every anchor zone leaves the pane detached; it must not create an accidental attachment.
+- Starting a pane drag must not immediately unparent and recreate the operating-system window. The pane remains visually continuous while held and becomes standalone only after a drop misses every anchor.
+- O, I, E, C, and Q always summon their pane inside the main combat window's three-column, one-third-width menu host, regardless of which combat pane currently has keyboard focus. The pane may then be dragged outside.
+- If the matching pane is currently external, its shortcut closes it and stops. A subsequent shortcut press summons it inside the main window; closing and internal summoning must never happen on the same keystroke.
+- While a pane is held or moved, eligible attachment windows show a subtle blue-green edge glow. The dragged pane itself is excluded from this feedback.
+- In horizontal Action Options, category headings appear once in the main action library. The far-right Bonus column is a flat stream of labelled bonus options and must not repeat category headings or the upcasting control.
+- The combat window's top and bottom anchor zones span the complete width of its attached side-pane ensemble and take priority over competing side-pane edge zones. A horizontal pane can therefore dock across the top or bottom without threading the pointer between left and right pane stacks.
+- Top/bottom reattachment accepts either the pointer entering that full-width zone or the leading edge of a horizontal pane reaching it. Holding a pane by its top bar must not prevent its lower edge from anchoring to the combat window's top.
+- Docking magnet zones use one third of the former broad-zone depth so a player can deliberately leave a pane unattached. Tab-on-header targeting retains its own direct overlap behavior.
+- When the pointer is outside every connected combat window, a short, softly glowing gold handle appears at the top centre of the connected ensemble's uppermost pane. In laptop mode it remains on the main window's top lip. The handle stays available while approached and drags the main combat window plus every attached pane as one ensemble; detached panes do not move.
+- Dropping one external pane over another pane's header combines them as tabs. Closing or dragging a tab away separates it again.
+- A detached standalone pane may shorten along its orientation when filling that length would make more than one fifth of its visible area empty. An attached pane instead matches the full orienting side.
+- When closing an attached pane changes an attached pane chain, surviving attached panes re-anchor and resize to the combat window's full corresponding side. Detached panes are not resized by this reflow.
+- Top and bottom panes are centred on the combat window and match its width by default. They extend left or right only while an attached pane occupies that side of the workspace. When either side pane closes, the top and bottom panes retract symmetrically to the combat window's width rather than retaining the remaining side extension. Detached panes never affect this horizontal span.

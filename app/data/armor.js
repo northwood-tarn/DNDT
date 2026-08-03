@@ -54,6 +54,23 @@ export const armor = [
     "icon": { "src": "combat_ui_v2/assets/icons/armor/hide_armor.png", "width": 160, "height": 224 }
   },
   {
+    "name": "Scale Mail",
+    "description": "Overlapping metal scales provide practical protection for a shield-bearing combatant.",
+    "uses": "infinite",
+    "useTime": "exploration",
+    "consumeOnUse": false,
+    "dexCap": 2,
+    "stealthDisadvantage": true,
+    "type": "medium",
+    "properties": [
+      "medium"
+    ],
+    "ac": 14,
+    "magical": false,
+    "value": 50,
+    "id": "scale_mail"
+  },
+  {
     "name": "Half Plate",
     "description": "Even a glance at this armor is enough to deter some enemies.",
     "uses": "infinite",

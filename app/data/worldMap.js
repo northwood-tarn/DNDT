@@ -154,7 +154,7 @@ export const WORLD_MAP = {
       act: 3,
       visualRole: "third radiant; vast openness beyond the city",
       summary:
-        "The broad final act area outside the Necropolis: an open plain, grave cluster, Carrow bloom, the bridge to the Escarpment of Eyes, and the route towards the Portal.",
+        "The broad final act area outside the Necropolis: an open plain, grave cluster, Carrow bloom, the low lake of Memphremagog, the bridge to the Escarpment of Eyes, and the route towards the Portal.",
       travelModel: "ember_travel_within_act_area",
       subareas: [
         {
@@ -220,6 +220,19 @@ export const WORLD_MAP = {
           borders: ["escarpment_of_eyes"],
           travelNotes:
             "Route toward the end-game location.",
+          attachedExplorationMaps: [],
+        },
+        {
+          id: "memphremagog",
+          code: "03.06",
+          slug: "endless-plains.memphremagog",
+          name: "Memphremagog",
+          role: "far_northwestern_shallow_lake",
+          placement:
+            "Occupies the far top-left of the Act III area map.",
+          borders: ["endless_plain"],
+          travelNotes:
+            "A vast, low lake crossed here and there by shallow paths.",
           attachedExplorationMaps: [],
         },
       ],

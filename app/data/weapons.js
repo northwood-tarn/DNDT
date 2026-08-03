@@ -431,6 +431,22 @@ const legacyWeaponRecords = [
     "id": "silent_bow"
   },
   {
+    "name": "Javelin",
+    "description": "A light throwing spear balanced for a forceful cast.",
+    "uses": "infinite",
+    "consumeOnUse": false,
+    "useTime": "action",
+    "type": "ranged",
+    "damage": "1d6",
+    "properties": [
+      "range (30/120)",
+      "thrown"
+    ],
+    "mastery": "slow",
+    "value": 1,
+    "id": "javelin"
+  },
+  {
     "name": "Mace",
     "description": "A weighted metal head mounted on a sturdy haft.",
     "uses": "infinite",
@@ -449,6 +465,7 @@ const SIMPLE_WEAPON_IDS = new Set([
   "dagger", "venomous_dagger",
   "handaxe", "exploding_handaxe",
   "quarterstaff", "blessed_quarterstaff", "mace",
+  "javelin",
   "shortbow", "silent_bow",
 ]);
 
@@ -478,7 +495,7 @@ function toCanonicalWeapon(record) {
     proficiencies: [SIMPLE_WEAPON_IDS.has(record.id) ? "simple_weapons" : "martial_weapons"],
     effects: [],
     weaponType: record.type,
-    attackAbility: ranged || record.properties.includes("finesse") ? "dexterity" : "strength",
+    attackAbility: record.id === "javelin" ? "strength" : ranged || record.properties.includes("finesse") ? "dexterity" : "strength",
     damageFormula: record.damage,
     damageType: baseDamageType(record.id),
     range: ranged ? rangeFromProperties(record.properties) : record.properties.includes("reach") ? 2 : 1,
@@ -510,7 +527,7 @@ function canonicalDamageBonus(bonus) {
 }
 
 function baseDamageType(id) {
-  if (["dagger", "venomous_dagger", "rapier", "frost_brand_rapier", "shortsword", "piercing_shortsword", "longbow", "bow_of_accuracy", "shortbow", "silent_bow"].includes(id)) return "piercing";
+  if (["dagger", "venomous_dagger", "javelin", "rapier", "frost_brand_rapier", "shortsword", "piercing_shortsword", "longbow", "bow_of_accuracy", "shortbow", "silent_bow"].includes(id)) return "piercing";
   if (["warhammer", "thunder_hammer", "quarterstaff", "blessed_quarterstaff", "mace", "maul"].includes(id)) return "bludgeoning";
   return "slashing";
 }

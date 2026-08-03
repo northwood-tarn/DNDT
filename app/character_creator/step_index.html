@@ -29,6 +29,10 @@
           spellcheck="false"
           aria-label="Character name"
         >
+        <label id="npcLevelField" class="npc-level-field" hidden>
+          <span>Level</span>
+          <select id="npcLevel" class="creator-field" aria-label="NPC companion level"></select>
+        </label>
         <div id="backgroundDropdown" class="background-dropdown" hidden>
           <button id="backgroundDropdownButton" class="creator-field background-dropdown-button" type="button" aria-label="Choose background" aria-expanded="false"></button>
           <div id="backgroundOptions" class="background-options" role="listbox"></div>
@@ -89,6 +93,13 @@
       </div>
       <div id="detailsBody" class="creator-details-body"></div>
     </aside>
+    <section id="createAnotherPrompt" class="create-another-prompt" role="dialog" aria-modal="true" aria-labelledby="createAnotherTitle" hidden>
+      <p id="createAnotherTitle">Create another character?</p>
+      <div>
+        <button id="createAnotherYes" type="button">Yes</button>
+        <button id="createAnotherNo" type="button">No</button>
+      </div>
+    </section>
     <div id="uiTooltip" class="ui-tooltip" role="tooltip" hidden></div>
     <script type="module" src="./stepCreator.js"></script>
   </body>

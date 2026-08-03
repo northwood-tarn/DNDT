@@ -7,29 +7,30 @@
     <link rel="stylesheet" href="./combatUiV2.css">
   </head>
   <body>
+    <button class="combat-ensemble-handle" type="button" aria-label="Move connected combat windows" hidden></button>
     <div class="window-drag-region" aria-hidden="true"></div>
     <div class="combat-outcome-banner" role="status" aria-live="polite"></div>
     <aside class="gear-drawer" aria-hidden="true" aria-label="Equipment and inventory">
       <div class="gear-drawer-fog" aria-hidden="true"></div>
       <div class="gear-drawer-content">
         <section class="gear-pane-column" data-gear-column="action-options" hidden>
-          <header class="gear-drawer-header"><div><h1>Action Options</h1><span data-gear-actor-name></span></div><button class="gear-drawer-close is-pane-key" type="button" data-close-gear-panel="action-options" aria-label="Close action options pane">O</button></header>
+          <header class="gear-drawer-header"><div><h1>Action Options</h1></div><button class="gear-drawer-close is-pane-key" type="button" data-close-gear-panel="action-options" aria-label="Close action options pane">O</button></header>
           <iframe class="gear-action-options-frame" data-action-options-frame title="Action Options"></iframe>
         </section>
         <section class="gear-pane-column" data-gear-column="inventory" hidden>
-          <header class="gear-drawer-header"><div><h1>Inventory</h1><span data-gear-actor-name></span></div><button class="gear-drawer-close is-pane-key" type="button" data-close-gear-panel="inventory" aria-label="Close inventory pane">I</button></header>
+          <header class="gear-drawer-header"><div><h1>Inventory</h1></div><button class="gear-drawer-close is-pane-key" type="button" data-close-gear-panel="inventory" aria-label="Close inventory pane">I</button></header>
           <div class="gear-panel" data-gear-panel="inventory"></div>
         </section>
         <section class="gear-pane-column" data-gear-column="equipment" hidden>
-          <header class="gear-drawer-header"><div><h1>Equipment</h1><span data-gear-actor-name></span></div><button class="gear-drawer-close is-pane-key" type="button" data-close-gear-panel="equipment" aria-label="Close equipment pane">E</button></header>
+          <header class="gear-drawer-header"><div><h1>Equipment</h1></div><button class="gear-drawer-close is-pane-key" type="button" data-close-gear-panel="equipment" aria-label="Close equipment pane">E</button></header>
           <div class="gear-panel" data-gear-panel="equipment"></div>
         </section>
         <section class="gear-pane-column" data-gear-column="character" hidden>
-          <header class="gear-drawer-header"><div><h1>Character</h1><span data-gear-actor-name></span></div><button class="gear-drawer-close is-pane-key" type="button" data-close-gear-panel="character" aria-label="Close character pane">C</button></header>
+          <header class="gear-drawer-header"><div><h1>Character</h1></div><button class="gear-drawer-close is-pane-key" type="button" data-close-gear-panel="character" aria-label="Close character pane">C</button></header>
           <div class="gear-panel" data-gear-panel="character"></div>
         </section>
         <section class="gear-pane-column" data-gear-column="quests" hidden>
-          <header class="gear-drawer-header"><div><h1>Quests</h1><span data-gear-actor-name></span></div><button class="gear-drawer-close is-pane-key" type="button" data-close-gear-panel="quests" aria-label="Close quests pane">Q</button></header>
+          <header class="gear-drawer-header"><div><h1>Quests</h1></div><button class="gear-drawer-close is-pane-key" type="button" data-close-gear-panel="quests" aria-label="Close quests pane">Q</button></header>
           <iframe class="gear-action-options-frame" data-quests-frame title="Quests"></iframe>
         </section>
       </div>
@@ -37,7 +38,7 @@
     <section class="combat-ui-strip">
       <div class="combat-ui-fog combat-ui-fog-one" aria-hidden="true"></div>
       <div class="combat-ui-fog combat-ui-fog-two" aria-hidden="true"></div>
-      <button class="combat-ui-character-toggle" type="button" aria-label="Collapse character information" aria-expanded="true"></button>
+      <button class="combat-ui-character-toggle" type="button" aria-label="Collapse character information" aria-expanded="true" hidden></button>
       <button class="combat-ui-log-toggle" type="button" aria-label="Combat history unavailable in this presentation" aria-expanded="false"></button>
       <nav class="combat-action-menu" aria-label="Combat actions">
         <button class="is-active" type="button" data-combat-mode="movement" aria-current="true">Movement</button>
@@ -69,20 +70,24 @@
       <section class="combat-expanded-controls" aria-label="Expanded combat controls" hidden>
         <div class="combat-economy-slots">
           <div class="combat-economy-slot combat-movement-slot">
-            <span class="combat-economy-label">Movement</span>
-            <strong>30 ft</strong>
+            <span class="combat-economy-label" data-movement-summary>Movement (30/30)</span>
           </div>
           <div class="combat-economy-slot combat-action-slot" data-quick-drop="action">
             <span class="combat-economy-label">Action</span>
-            <strong>Available</strong>
+            <span class="combat-economy-pip is-full" data-economy-pip="action" aria-label="Action available"></span>
           </div>
           <div class="combat-economy-slot combat-bonus-slot" data-quick-drop="bonus">
             <span class="combat-economy-label">Bonus Action</span>
-            <strong>Available</strong>
+            <span class="combat-economy-pip is-full" data-economy-pip="bonus" aria-label="Bonus Action available"></span>
           </div>
           <button class="combat-expanded-end-turn" type="button">End Turn</button>
         </div>
+        <button class="combat-expanded-options" type="button">Options</button>
         <div class="combat-quickbar" aria-label="Quick bar">
+          <aside class="combat-spell-slots" data-spell-slots hidden>
+            <span class="combat-quickbar-label">Spell Slots</span>
+            <div class="combat-spell-slot-list" data-spell-slot-list></div>
+          </aside>
           <div class="combat-quickbar-group">
             <span class="combat-quickbar-label">Actions</span>
             <div class="combat-quickbar-slots" data-quickbar="action"></div>

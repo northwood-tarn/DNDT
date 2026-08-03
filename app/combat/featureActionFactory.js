@@ -83,6 +83,7 @@ export function createFeatureAction(feature, option, context = {}) {
     damageType: resolvedOption.damage?.type || resolvedOption.damageType || null,
     damageTypeChoices: structuredClone(resolvedOption.damageTypeChoices || null),
     reactionPolicy: structuredClone(resolvedOption.reactionPolicy || null),
+    requirement: structuredClone(resolvedOption.requirement || resolvedOption.requirements || null),
     teleportFt: resolvedOption.teleportFt || null,
     requiresSight: resolvedOption.requiresSight === true,
     temporaryHpFormula: resolvedOption.temporaryHpFormula ? resolveFormula(resolvedOption.temporaryHpFormula, context) : null,

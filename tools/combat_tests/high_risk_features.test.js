@@ -38,6 +38,7 @@ export function runHighRiskFeatureCombatTests() {
   testSentinelAtDeathsDoorSuppressesAllyCritical();
   testSentinelAtDeathsDoorIgnoresNormalAllyHit();
   testSurprisedTargetCriticalAndRiders();
+  testRogueSteadyAimAndUncannyDodge();
   testDefeatTriggerGrantsContextualAttack();
   testPromptedShieldPreventsEffectiveHit();
 }
@@ -118,20 +119,30 @@ function testDoorInTheFloorTeleportsAndLeavesAfterglow() {
 }
 
 function testCataclysmicDebtMarksAndLinksDamage() {
-  const warlock = warlockActor({ pactId: "pact_of_the_tessera", level: 13, id: "tessera_warlock" });
+  const warlock = warlockActor({ subclassId: "the_lantern", pactId: "pact_of_the_tessera", level: 13, id: "tessera_warlock" });
   const first = createEnemyCombatActor("goblin", { id: "first", hp: 20, maxHp: 20, ac: 12, position: { x: 2, y: 1 } });
   const second = createEnemyCombatActor("goblin", { id: "second", hp: 20, maxHp: 20, ac: 12, position: { x: 3, y: 1 } });
-  const snapshot = createSnapshotFromScenario(testScenario("cataclysmic-debt-test", [warlock, first, second]));
+  const saved = createEnemyCombatActor("goblin", { id: "saved", hp: 20, maxHp: 20, ac: 12, position: { x: 4, y: 1 }, saves: { cha: 20 } });
+  const snapshot = createSnapshotFromScenario(testScenario("cataclysmic-debt-test", [warlock, first, second, saved]));
   const actor = snapshot.actors.find((item) => item.id === "tessera_warlock");
   actor.actions.push(meleeAttack({ id: "test_knife", attackBonus: 20, damage: "1d6" }));
-  actor.resources.find((item) => item.id === "fiend_patrons_spear").current = 0;
 
   assert.equal(resolveAction(snapshot, actor, "cataclysmic_debt", null, fixedDice(), createCombatLog()), true);
   assert.equal(hasCondition(snapshot.actors.find((item) => item.id === "first"), "cataclysmic_debt"), true, "Cataclysmic Debt should mark nearby enemies");
+  assert.equal(hasCondition(snapshot.actors.find((item) => item.id === "saved"), "cataclysmic_debt"), false, "A successful Charisma save should avoid the Cataclysmic Debt brand");
   actor.economy.actionAvailable = true;
   assert.equal(resolveAction(snapshot, actor, "test_knife", "first", scriptedDice({ d20: [10], damage: [4, 3] }), createCombatLog()), true);
   assert.equal(snapshot.actors.find((item) => item.id === "first").hp, 13, "Cataclysmic Debt should damage the hit branded target");
   assert.equal(snapshot.actors.find((item) => item.id === "second").hp, 17, "Cataclysmic Debt should echo damage to other branded targets");
+  startTurn(snapshot, actor, createCombatLog(), fixedDice());
+  assert.equal(resolveAction(snapshot, actor, "test_knife", "first", scriptedDice({ d20: [10], damage: [4] }), createCombatLog()), true);
+  assert.equal(snapshot.actors.find((item) => item.id === "first").hp, 9, "A second hit in the same round should deal only normal weapon damage");
+  assert.equal(snapshot.actors.find((item) => item.id === "second").hp, 17, "A second hit in the same round should not repeat linked damage to another branded creature");
+  snapshot.round += 1;
+  startTurn(snapshot, actor, createCombatLog(), fixedDice());
+  assert.equal(resolveAction(snapshot, actor, "test_knife", "first", scriptedDice({ d20: [10], damage: [4, 3] }), createCombatLog()), true);
+  assert.equal(snapshot.actors.find((item) => item.id === "first").hp, 2, "The hit target should take normal and linked damage again in a new round");
+  assert.equal(snapshot.actors.find((item) => item.id === "second").hp, 14, "Linked damage should become available again for every branded creature in a new round");
 }
 
 function testForbiddenTranscriptionRepeatsWarlockSpellWithRetargeting() {
@@ -438,6 +449,33 @@ function testSurprisedTargetCriticalAndRiders() {
   assert.equal(resolveAction(snapshot, snapshot.actors.find((item) => item.id === "assassin"), "dagger", "surprised_target", fixedDice({ d20: 10, damage: 3 }), log), true);
   assert.equal(snapshot.actors.find((item) => item.id === "surprised_target").hp, 12, "surprised-target critical and damage riders should all apply");
   assert.ok(log.events.some((event) => event.type === "attack.result" && event.detail.critical === true), "surprised target hit should become critical");
+}
+
+function testRogueSteadyAimAndUncannyDodge() {
+  const sheet = resolveCharacterSheet(createEmptyCharacterDraft({
+    identity: { characterName: "Rogue", level: 5, classId: "rogue", subclassId: "assassin" },
+    abilities: { strength: 8, dexterity: 16, constitution: 12, intelligence: 10, wisdom: 10, charisma: 14 },
+  }), {}, { allowNonCreationLevel: true });
+  const rogue = resolvedSheetToCombatActor(sheet, { id: "rogue", position: { x: 1, y: 1 } });
+  rogue.actions.push(meleeAttack({ id: "dagger", attackBonus: 20, damage: "1d6", damageType: "piercing" }));
+  const attacker = createEnemyCombatActor("goblin", { id: "attacker", hp: 20, maxHp: 20, position: { x: 2, y: 1 } });
+  attacker.actions = [meleeAttack({ id: "club", attackBonus: 20, damage: "1d6" })];
+  const snapshot = createSnapshotFromScenario(testScenario("rogue-core-feature-test", [rogue, attacker]));
+  const actor = snapshot.actors.find((item) => item.id === "rogue");
+  const log = createCombatLog();
+
+  actor.economy.movementUsed = 1;
+  assert.equal(canUseAction(actor, actor.actions.find((item) => item.id === "steady_aim")).ok, false, "Steady Aim should be unavailable after movement");
+  actor.economy.movementUsed = 0;
+  assert.equal(resolveAction(snapshot, actor, "steady_aim", null, fixedDice(), log), true);
+  assert.ok(actor.activeEffects.some((effect) => effect.id === "steady_aim_advantage"), "Steady Aim should grant advantage on the next attack");
+  assert.equal(hasCondition(actor, "steady_aim_speed_zero"), true, "Steady Aim should set Speed to 0 for the turn");
+
+  const hpBefore = actor.hp;
+  assert.equal(resolveAction(snapshot, snapshot.actors.find((item) => item.id === "attacker"), "club", "rogue", fixedDice({ d20: 10, damage: 5 }), log), true);
+  assert.equal(actor.hp, hpBefore - 2, "Uncanny Dodge should halve incoming attack damage, rounding down");
+  assert.equal(hasReaction(actor), false, "Uncanny Dodge should consume the Rogue's reaction");
+  assert.ok(log.events.some((event) => event.type === "reaction.resolve" && event.detail.reactionId === "uncanny_dodge"), "Uncanny Dodge should be logged");
 }
 
 function testDefeatTriggerGrantsContextualAttack() {

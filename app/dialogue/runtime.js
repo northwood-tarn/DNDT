@@ -1,5 +1,7 @@
 import { applyLootToSaveGame } from "../state/loot.js";
 import { clearStoryFlag, hasStoryFlag, normalizeSaveGameState, setActiveEncounterState, setSaveGameLocation, setStoryFlag } from "../state/saveGameState.js";
+import { acquireSecretClue } from "../secrets/secretState.js";
+import { isSourceClueAvailable } from "../secrets/secretSources.js";
 
 const ACTS = new Set(["1_Greyharbour", "2_Necropolis", "3_Backlands"]);
 
@@ -82,6 +84,14 @@ export function applyEffects(saveGame, effects = [], resolution = {}) {
     switch (effect.effect) {
       case "set.flag": save = setStoryFlag(save, effect.argument, true); break;
       case "clear.flag": save = clearStoryFlag(save, effect.argument); break;
+      case "grant.clue": {
+        const found = findSecretClue(resolution.secretDefinitions, effect.argument);
+        if (!found) throw new Error(`Unknown secret clue: ${effect.argument}`);
+        const acquired = acquireSecretClue(save, found.secret, effect.argument, resolution);
+        save = acquired.saveGame;
+        consequences.push(...acquired.events.map((event) => ({ effect: event.type, text: event.message || null, event })));
+        break;
+      }
       case "give.item": save = applyLootToSaveGame(save, { items: [{ id: effect.argument, quantity: effect.quantity }] }).saveGame; break;
       case "remove.item": save = removeHolding(save, effect.argument, effect.quantity); break;
       case "change.gold": save = changeGold(save, Number(effect.argument)); break;
@@ -120,6 +130,11 @@ export function applyEffects(saveGame, effects = [], resolution = {}) {
   return { saveGame: save, routes, pendingChecks, checkResults, consequences };
 }
 
+function findSecretClue(definitions = [], clueId) {
+  for (const secret of definitions) if (secret.clues?.some((clue) => clue.id === clueId)) return { secret };
+  return null;
+}
+
 export function resolveDialogueSkillCheck(check, input = {}) {
   if (!check?.skill || !Number.isFinite(check?.dc)) throw new Error("A resolved skill check requires a skill and DC");
   const d20 = Number(input.d20);
@@ -137,6 +152,11 @@ export function getDialogueOptions(options = [], saveGame, policy = {}) {
     const missing = (requirements.requiredFlags || []).filter((flag) => !hasStoryFlag(saveGame, flag));
     const forbidden = (requirements.forbiddenFlags || []).filter((flag) => hasStoryFlag(saveGame, flag));
     option.available = missing.length === 0 && forbidden.length === 0;
+    const clueEffects = (option.effects || []).map(normalizeEffect).filter((effect) => effect.effect === "grant.clue");
+    if (clueEffects.length && policy.secretDefinitions) option.available = option.available && clueEffects.some((effect) => {
+      const found = findSecretClue(policy.secretDefinitions, effect.argument);
+      return found && isSourceClueAvailable(saveGame, [found.secret], found.secret.clues.find((clue) => clue.id === effect.argument).source);
+    });
     if (!option.available) option.unavailableReason = option.unavailableReason || "Requirements not met";
     if (!option.available && (option.hidden === true || unavailable === "hidden")) return [];
     return [option];

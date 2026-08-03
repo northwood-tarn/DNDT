@@ -38,6 +38,7 @@ export function canUseAction(actor, action) {
   const requirement = action.requirement || action.requirements || {};
   if (requirement.equippedShield && !actor.equipment?.shieldId) return blocked("requires an equipped shield");
   if (requirement.attackActionThisTurn && actor.turnFlags?.attackActionResolved !== true) return blocked("requires an attack action earlier this turn");
+  if (requirement.noMovementUsedThisTurn && (actor.economy?.movementUsed || 0) > 0) return blocked("requires no movement earlier this turn");
   if (tags.requiresSpeech && hasConditionMechanic(actor, "cannotSpeak")) return blocked("cannot speak");
   if (tags.requiresHands && hasConditionMechanic(actor, "cannotUseHands")) return blocked("cannot use hands");
   return allowed();

@@ -42,14 +42,30 @@ const ICONS = Object.freeze({
   blinding_smite: "../spells/blinding_smite.png",
   staggering_smite: "../spells/staggering_smite.png",
   greater_radiant_smite: "../spells/greater_radiant_smite.png",
-  healing_potion: "consumable-healing-potion.png",
+  healing_potion: "../consumables/healing_potion.png",
+  greater_healing_potion: "../consumables/greater_healing_potion.png",
+  superior_healing_potion: "../consumables/superior_healing_potion.png",
+  supreme_healing_potion: "../consumables/supreme_healing_potion.png",
+  antitoxin: "../consumables/antitoxin.png",
+  acid_vial: "../consumables/acid_vial.png",
+  alchemists_fire: "../consumables/alchemists_fire.png",
+  holy_water: "../consumables/holy_water.png",
+  oil_flask: "../consumables/oil_flask.png",
+  caltrops: "../consumables/caltrops.png",
+  ball_bearings: "../consumables/ball_bearings.png",
+  hunting_trap: "../consumables/hunting_trap.png",
+  basic_poison: "../consumables/basic_poison.png",
+  healers_kit: "../consumables/healers_kit.png",
+  fire_granado: "../devices/fire_grenado.png",
+  smoke_jar: "../consumables/smoke_jar.png",
+  lightning_paper: "../devices/lightning_paper.png",
+  greater_lightning_paper: "../devices/greater_lightning_paper.png",
   dash: "../abilities/dash.png",
   dodge: "../abilities/dodge.png",
   hide: "../abilities/hide.png",
   cunning_action_dash: "../abilities/dash.png",
   cunning_action_disengage: "../abilities/cunning_action_disengage.png",
   cunning_action_hide: "../abilities/hide.png",
-  spell_rhythm: "ability-spell-rhythm.png",
   action_surge: "../abilities/action_surge.png",
   guard_second_wind: "../abilities/second_wind.png",
   durable_recovery: "../abilities/durable_recovery.png",
@@ -283,7 +299,7 @@ const WEAPON_BADGES = Object.freeze({
 const CATEGORY_FALLBACKS = Object.freeze({
   weapon: "../weapons/longsword.png",
   spell: "spell-fireball.png",
-  consumable: "consumable-healing-potion.png",
+  consumable: "../consumables/healing_potion.png",
   tactic: "tactic-dash.png",
   ability: "ability-spell-rhythm.png",
   channel_divinity: "ability-spell-rhythm.png",
@@ -296,7 +312,7 @@ export function actionIconCategory(action = {}) {
   if (action.tags?.weapon || action.iconCategory === "weapon") return "weapon";
   if (action.tags?.spell || action.kind === "spell" || action.iconCategory === "spell") return "spell";
   if (action.tags?.device || action.iconCategory === "device") return "device";
-  if (action.type === "consumable" || action.iconCategory === "consumable") return "consumable";
+  if (action.tags?.consumable || action.type === "consumable" || action.iconCategory === "consumable") return "consumable";
   if (action.resourceId === "channel_divinity" || action.iconCategory === "channel_divinity") return "channel_divinity";
   if (["dash", "dodge", "hide", "disengage"].includes(action.type) || ["hide", "disengage"].includes(action.actionKind) || action.iconCategory === "tactic") return "tactic";
   return "ability";
@@ -319,14 +335,25 @@ export function createActionIconImage(action, className = "action-icon-art") {
   container.dataset.iconFallback = String(resolved.isFallback);
 
   const base = document.createElement("img");
-  base.className = "action-icon-base-layer";
+  base.className = `action-icon-base-layer${action.weaponPair ? " action-icon-primary-weapon-layer" : ""}`;
   base.src = resolved.url;
   base.alt = "";
   base.draggable = false;
   container.append(base);
 
+  if (action.weaponPair?.secondaryIconId) {
+    const secondaryResolved = resolveActionIcon({ id: action.weaponPair.secondaryIconId, iconId: action.weaponPair.secondaryIconId, iconCategory: "weapon" });
+    const secondary = document.createElement("img");
+    secondary.className = "action-icon-secondary-weapon-layer";
+    secondary.src = secondaryResolved.url;
+    secondary.alt = "";
+    secondary.draggable = false;
+    container.classList.add(action.weaponPair.mode === "diagonal" ? "is-diagonal-weapon-pair" : "is-corner-weapon-pair");
+    container.append(secondary);
+  }
+
   const badgeFilename = WEAPON_BADGES[stableId];
-  if (badgeFilename) {
+  if (badgeFilename && !action.weaponPair) {
     const badge = document.createElement("img");
     badge.className = "action-icon-badge-layer";
     badge.src = new URL(`./icons/weapon_badges/${badgeFilename}`, import.meta.url).href;

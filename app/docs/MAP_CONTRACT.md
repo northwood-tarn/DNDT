@@ -98,6 +98,12 @@ It can define:
 
 Element states on `regions`, `nodes`, `routes`, and `exits` can still express local defaults, but `discovery` is the shared map-level contract.
 
+### Act-specific area-map reveal rules
+
+- **Act I — Greyharbour:** every area is visible immediately. Old City, Settlement, Docks, and Oil Refinery must all begin in `visibleIds`; visiting or resting does not gate their first appearance.
+- **Acts II and III:** areas begin hidden. Entering, crossing, or otherwise visiting an area does not reveal it on the area map. The area moves into canonical revealed/visible state only when the party rests at an ember located inside that area.
+- The reveal is permanent save-state discovery. Once a qualifying ember rest reveals an area, subsequent map openings continue to show it.
+
 ## Numbering
 
 The numbering convention is part of the data contract:

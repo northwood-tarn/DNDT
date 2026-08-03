@@ -1,6 +1,10 @@
 Do not add anything that the user has not asked for.
 When the user selects or locks an image, preserve that exact source image. Do not crop, regenerate, reinterpret, replace, or "improve" it unless the user explicitly asks for that specific change.
 
+The Dornhal area map is locked. Its canonical source, runtime copy, and checksum are recorded in `app/docs/layout_sketches/act_maps_v1/DORNHAL_AREA_MAP_LOCK.md`. Do not alter or replace either PNG unless the user explicitly unlocks the Dornhal area map.
+
+The Endless Plains area map is locked. Its canonical source, runtime copy, and checksum are recorded in `app/docs/layout_sketches/act_maps_v1/ENDLESS_PLAINS_AREA_MAP_LOCK.md`. Do not alter or replace either PNG unless the user explicitly unlocks the Endless Plains area map.
+
 SVG and vector graphics are banned throughout this repository unless the user explicitly asks for SVG or vector graphics. This ban includes final assets, drafts, intermediate source files, tracing, vector-based construction, and SVG/vector rendering pipelines. Use raster workflows for all image work by default.
 
 When the user asks to see images in the chat, display every requested image directly with GitHub-flavored Markdown image syntax using its absolute local path, with each image visibly labelled. Do not use raw HTML, plain file addresses, ordinary clickable links, or tool-side image previews as a substitute, because those may be hidden or rendered as text in the user's interface. Before responding, verify that the number of Markdown images equals the number requested, and never claim that images are visible merely because they appeared in internal or collapsed tool output.

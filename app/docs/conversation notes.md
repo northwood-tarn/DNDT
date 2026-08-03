@@ -28,3 +28,17 @@ An astonishing outburst that somehow expands Tahrone rather than embarassing him
 
 Oneliners
 Tara: keep drinking until it  tastes like your own spit.
+
+
+
+
+
+
+On the road:
+Act 2
+
+K+T
+K: You know, I wonder why you even stay, Tara, sometimes. It's always 'this soup sucks''this is definitely the wrong way''What a bunch of creeps' ..
+T: scowls, mutters under her breath 
+K: fake cheerful obliviousness: 'I'm sorry what was that?'
+T: scowl darkens, mutters 'Takes one to know one, creep'

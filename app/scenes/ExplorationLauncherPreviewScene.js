@@ -18,6 +18,45 @@ const LAUNCHERS = [
   ["Character", "character.png"],
 ];
 
+const ACT_MAPS = Object.freeze({
+  "1": Object.freeze({ title: "Greyharbour", source: "./assets/maps/act_1_greyharbour_fog.png" }),
+  "2": Object.freeze({ title: "Dornhal", source: "./assets/maps/act_2_necropolis_fog.png" }),
+  "3": Object.freeze({
+    title: "The Endless Plains",
+    source: "./assets/maps/act_3_backlands_full_map.png",
+    areaTitle: "The Endless Plains",
+    areaSource: "./assets/maps/endless_plains_area_map.png",
+  }),
+});
+
+const MAP_LEVEL_NAMES = Object.freeze({
+  world: "World map",
+  area: "Area map",
+  location: "Location map",
+});
+
+const WORLD_MAP_HOVERS = Object.freeze({
+  greyharbour: Object.freeze({
+    name: "Greyharbour",
+    epithet: "Last of the free settlements",
+  }),
+  dornhal: Object.freeze({
+    name: "Dornhal",
+    epithet: "Seat of the Bone Court",
+  }),
+  endlessPlains: Object.freeze({
+    name: "The Endless Plains",
+    epithet: "Ancient home of the forgotten",
+  }),
+});
+
+function resolveActMap(params = {}) {
+  const requested = String(
+    params.act ?? params.actId ?? new URLSearchParams(window.location.search).get("act") ?? "1",
+  ).replace(/^act[_-]?/i, "");
+  return ACT_MAPS[requested] || ACT_MAPS["1"];
+}
+
 function ensureStyles() {
   if (document.getElementById(STYLE_ID)) return;
   const style = document.createElement("style");
@@ -84,6 +123,30 @@ function ensureStyles() {
       -webkit-app-region: no-drag;
     }
 
+    .exploration-map-key {
+      display: grid;
+      place-items: center;
+      width: 56px;
+      height: 56px;
+      color: rgba(151, 187, 181, 0.34);
+      font-family: "DNDT Source Sans", var(--font-ui);
+      font-size: 29px;
+      font-weight: 300;
+      line-height: 1;
+      letter-spacing: 0.04em;
+      text-indent: 0.04em;
+      text-shadow: 0 0 5px rgba(75, 186, 173, 0.12);
+      transition: color 180ms ease, text-shadow 180ms ease;
+      pointer-events: none;
+    }
+
+    .exploration-map-launcher:hover .exploration-map-key,
+    .exploration-map-launcher:focus-visible .exploration-map-key,
+    .exploration-map-launcher.is-active .exploration-map-key {
+      color: rgba(176, 210, 202, 0.72);
+      text-shadow: 0 0 7px rgba(75, 186, 173, 0.18);
+    }
+
     .exploration-map-overlay {
       position: absolute;
       inset: 0;
@@ -112,6 +175,228 @@ function ensureStyles() {
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+
+    .world-map-regions,
+    .world-map-hover {
+      display: none;
+    }
+
+    .exploration-map-overlay.is-world-level .world-map-regions,
+    .exploration-map-overlay.is-world-level .world-map-hover:not([hidden]),
+    .exploration-map-overlay.is-area-level .world-map-hover:not([hidden]) {
+      display: block;
+    }
+
+    .world-map-regions {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .world-map-region {
+      appearance: none;
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: default;
+      pointer-events: auto;
+      -webkit-app-region: no-drag;
+    }
+
+    .world-map-region:focus-visible {
+      outline: none;
+    }
+
+    .world-map-region[data-world-region="greyharbour"] {
+      clip-path: polygon(1% 57%, 25% 57%, 49% 69%, 50% 100%, 0% 100%);
+    }
+
+    .world-map-region[data-world-region="dornhal"] {
+      clip-path: polygon(15% 18%, 38% 15%, 68% 24%, 92% 42%, 96% 74%, 55% 80%, 25% 65%, 10% 45%);
+    }
+
+    .world-map-region[data-world-region="endlessPlains"] {
+      clip-path: polygon(43% 0%, 100% 0%, 100% 46%, 89% 43%, 75% 31%, 61% 24%, 45% 20%);
+    }
+
+    .world-map-hover {
+      --hover-x: 50%;
+      --hover-y: 50%;
+      position: absolute;
+      left: var(--hover-x);
+      top: var(--hover-y);
+      z-index: 4;
+      min-width: 760px;
+      color: rgba(176, 210, 202, 0.76);
+      text-align: center;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      isolation: isolate;
+    }
+
+    .world-map-hover::before {
+      content: "";
+      position: absolute;
+      inset: -72px 2.5%;
+      z-index: -1;
+      background: url("./assets/ui/map_label_backdrop_blotch.png") center / 100% 100% no-repeat;
+      opacity: 0.585;
+      filter: blur(5px);
+      border-radius: 0;
+      transform: rotate(-1.2deg) skewX(-2deg);
+    }
+
+    .world-map-hover[data-region="greyharbour"] { --hover-x: 53%; --hover-y: 69%; }
+    .world-map-hover[data-region="dornhal"] { --hover-x: 55%; --hover-y: 40%; }
+    .world-map-hover[data-region="endlessPlains"] { --hover-x: 74%; --hover-y: 19%; }
+
+    .exploration-map-overlay.is-area-level .world-map-hover[data-region="greyharbour"] {
+      --hover-x: 53%;
+      --hover-y: 69%;
+    }
+
+    .exploration-map-overlay.is-area-level .world-map-hover[data-region="endlessPlains"] {
+      --hover-x: 74%;
+      --hover-y: 19%;
+    }
+
+    .exploration-map-overlay.is-area-level .world-map-hover[data-region="dornhal"] {
+      --hover-x: 55%;
+      --hover-y: 40%;
+    }
+
+    .world-map-hover[data-region="endlessPlains"]::before {
+      inset: -79.2px 7.5%;
+    }
+
+    .world-map-hover-name {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      margin: 0;
+      color: rgba(168, 205, 198, 0.72);
+      font-family: "DNDT Source Sans", var(--font-ui);
+      font-size: clamp(45px, 3.75vw, 63px);
+      font-weight: 300;
+      letter-spacing: 0.14em;
+      line-height: 1.1;
+      text-transform: uppercase;
+      text-shadow: 0 1px 8px rgba(0, 7, 9, 0.92);
+    }
+
+    .world-map-hover-name::before,
+    .world-map-hover-name::after {
+      content: "";
+      width: clamp(84px, 10.2vw, 162px);
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(132, 175, 167, 0.48));
+    }
+
+    .world-map-hover-name::after {
+      transform: scaleX(-1);
+    }
+
+    .world-map-hover-epithet {
+      margin: 13px 0 0;
+      color: rgba(198, 174, 123, 0.66);
+      font-family: Baskerville, "Baskerville Old Face", Garamond, "Times New Roman", serif;
+      font-size: clamp(20px, 1.55vw, 27px);
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: 0.045em;
+      line-height: 1.2;
+      text-shadow: 0 1px 7px rgba(0, 5, 7, 0.96);
+    }
+
+    .exploration-map-resolution-controls {
+      position: absolute;
+      top: 50%;
+      right: 18px;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
+      color: rgba(151, 187, 181, 0.54);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-50%);
+      transition: opacity 180ms ease, visibility 0s linear 180ms;
+      -webkit-app-region: no-drag;
+    }
+
+    .exploration-map-overlay.is-open .exploration-map-resolution-controls {
+      opacity: 1;
+      visibility: visible;
+      transition-delay: 0s;
+    }
+
+    .map-resolution-current {
+      width: 152px;
+      padding: 5px 0;
+      color: rgba(176, 210, 202, 0.50);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-align: right;
+      text-transform: uppercase;
+    }
+
+    .map-resolution-control {
+      appearance: none;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      min-width: 152px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: rgba(151, 187, 181, 0.42);
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .map-resolution-control[hidden] { display: none; }
+
+    .map-resolution-control-label {
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      transition: color 160ms ease;
+    }
+
+    .map-resolution-key {
+      display: grid;
+      place-items: center;
+      width: 31px;
+      height: 31px;
+      border: 1px solid rgba(151, 187, 181, 0.22);
+      color: rgba(176, 210, 202, 0.54);
+      font-size: 17px;
+      line-height: 1;
+      transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+    }
+
+    .map-resolution-control:hover,
+    .map-resolution-control:focus-visible {
+      outline: none;
+      color: rgba(176, 210, 202, 0.76);
+    }
+
+    .map-resolution-control:hover .map-resolution-key,
+    .map-resolution-control:focus-visible .map-resolution-key {
+      border-color: rgba(176, 210, 202, 0.48);
+      color: rgba(203, 226, 221, 0.86);
+      background: rgba(5, 25, 27, 0.38);
     }
 
     .exploration-panel {
@@ -527,18 +812,51 @@ export default class ExplorationLauncherPreviewScene {
     this.root = document.getElementById("game-root");
     this.container = null;
     this.activePanels = [];
+    this.mapLevels = [];
+    this.mapLevelIndex = 0;
   }
 
-  start() {
+  start(params = {}) {
+    this.params = params;
     ensureStyles();
     if (!this.root) return;
+    const actMap = resolveActMap(this.params);
+    this.mapLevels = [
+      { id: "world", label: MAP_LEVEL_NAMES.world, title: actMap.title, source: actMap.source },
+      {
+        id: "area",
+        label: MAP_LEVEL_NAMES.area,
+        title: this.params.areaMapTitle || actMap.areaTitle || "",
+        source: this.params.areaMapSource || actMap.areaSource || null,
+      },
+      { id: "location", label: MAP_LEVEL_NAMES.location, title: "", source: this.params.locationMapSource || null },
+    ];
+    this.mapLevelIndex = 0;
     this.container = document.createElement("section");
     this.container.className = "exploration-launcher-preview";
     this.container.innerHTML = `
       <img class="exploration-preview-flame" src="./assets/images/effects/flame-black.png" alt="">
-      <button class="exploration-launcher exploration-map-launcher" type="button" aria-label="Map" aria-expanded="false"><img class="exploration-launcher-icon" src="${ICON_ROOT}/map.png" alt=""><span class="exploration-launcher-label">Map</span></button>
+      <button class="exploration-launcher exploration-map-launcher" type="button" aria-label="Map" aria-expanded="false"><span class="exploration-map-key" aria-hidden="true">M</span><span class="exploration-launcher-label">Map</span></button>
       <section class="exploration-map-overlay" aria-label="World map" aria-hidden="true">
-        <img class="exploration-world-map" src="./assets/maps/world_map.png" alt="World map">
+        <img class="exploration-world-map" src="${actMap.source}" alt="${actMap.title} area map">
+        <div class="world-map-regions" aria-label="World map regions">
+          <button class="world-map-region" data-world-region="greyharbour" type="button" aria-label="Greyharbour — Last of the free settlements"></button>
+          <button class="world-map-region" data-world-region="dornhal" type="button" aria-label="Dornhal — Seat of the Bone Court"></button>
+          <button class="world-map-region" data-world-region="endlessPlains" type="button" aria-label="The Endless Plains — Ancient home of the forgotten"></button>
+        </div>
+        <aside class="world-map-hover" aria-live="polite" hidden>
+          <h1 class="world-map-hover-name"></h1>
+          <p class="world-map-hover-epithet"></p>
+        </aside>
+        <nav class="exploration-map-resolution-controls" aria-label="Map resolution">
+          <button class="map-resolution-control" data-map-direction="up" type="button">
+            <span class="map-resolution-control-label"></span><span class="map-resolution-key" aria-hidden="true">↑</span>
+          </button>
+          <div class="map-resolution-current" aria-live="polite"></div>
+          <button class="map-resolution-control" data-map-direction="down" type="button">
+            <span class="map-resolution-control-label"></span><span class="map-resolution-key" aria-hidden="true">↓</span>
+          </button>
+        </nav>
       </section>
       ${LAUNCHERS.map(([label]) => panel(label)).join("")}
       <nav class="exploration-launchers" aria-label="Exploration information">
@@ -549,17 +867,43 @@ export default class ExplorationLauncherPreviewScene {
     this.mapLauncher = this.container.querySelector(".exploration-map-launcher");
     this.mapLauncherLabel = this.mapLauncher?.querySelector(".exploration-launcher-label");
     this.mapOverlay = this.container.querySelector(".exploration-map-overlay");
+    this.mapImage = this.container.querySelector(".exploration-world-map");
+    this.mapResolutionCurrent = this.container.querySelector(".map-resolution-current");
+    this.mapResolutionControls = [...this.container.querySelectorAll("[data-map-direction]")];
+    this.worldMapRegions = [...this.container.querySelectorAll("[data-world-region]")];
+    this.worldMapHover = this.container.querySelector(".world-map-hover");
+    this.worldMapHoverName = this.container.querySelector(".world-map-hover-name");
+    this.worldMapHoverEpithet = this.container.querySelector(".world-map-hover-epithet");
     this.panelLaunchers = [...this.container.querySelectorAll("[data-launcher]")];
     this.panels = new Map(
       [...this.container.querySelectorAll("[data-panel]")].map((element) => [element.dataset.panel, element]),
     );
     this.mapLauncher?.addEventListener("click", this.toggleMap);
+    this.mapResolutionControls.forEach((button) => button.addEventListener("click", this.changeMapLevel));
+    this.worldMapRegions.forEach((region) => {
+      region.addEventListener("pointerenter", this.showWorldMapHover);
+      region.addEventListener("pointerleave", this.hideWorldMapHover);
+      region.addEventListener("focus", this.showWorldMapHover);
+      region.addEventListener("blur", this.hideWorldMapHover);
+    });
     this.panelLaunchers.forEach((button) => button.addEventListener("click", this.togglePanel));
+    window.addEventListener("keydown", this.handleMapKeyDown);
+    this.renderMapLevel();
     this.renderEquippedArmor();
     this.renderEquippedHeadwear();
     this.renderEquippedFootwear();
     this.renderEquippedRings();
     this.renderWeaponSets();
+    const previewQuery = new URLSearchParams(window.location.search);
+    if (previewQuery.get("map") === "open") {
+      requestAnimationFrame(() => {
+        this.toggleMap();
+        if (previewQuery.get("mapLevel") === "area") this.setMapLevel(1);
+        const hoverId = previewQuery.get("mapHover");
+        const hoverRegion = this.worldMapRegions.find((region) => region.dataset.worldRegion === hoverId);
+        if (hoverRegion) this.showWorldMapHover({ currentTarget: hoverRegion, force: true });
+      });
+    }
   }
 
   renderEquippedHeadwear() {
@@ -658,12 +1002,84 @@ export default class ExplorationLauncherPreviewScene {
 
   toggleMap = () => {
     const opening = !this.mapOverlay?.classList.contains("is-open");
+    if (opening) {
+      this.mapLevelIndex = 0;
+      this.renderMapLevel();
+    }
     this.mapOverlay?.classList.toggle("is-open", opening);
     this.container?.classList.toggle("map-is-open", opening);
     this.mapOverlay?.setAttribute("aria-hidden", String(!opening));
     this.mapLauncher?.setAttribute("aria-expanded", String(opening));
     this.mapLauncher?.setAttribute("aria-label", opening ? "Close map" : "Map");
+    this.mapLauncher?.classList.toggle("is-active", opening);
     if (this.mapLauncherLabel) this.mapLauncherLabel.textContent = opening ? "Click to close" : "Map";
+  };
+
+  handleMapKeyDown = (event) => {
+    if (event.key.toLowerCase() === "m") {
+      event.preventDefault();
+      if (!event.repeat) this.toggleMap();
+      return;
+    }
+    if (!this.mapOverlay?.classList.contains("is-open")) return;
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      this.setMapLevel(this.mapLevelIndex - 1);
+    } else if (event.key === "ArrowDown") {
+      event.preventDefault();
+      this.setMapLevel(this.mapLevelIndex + 1);
+    }
+  };
+
+  changeMapLevel = (event) => {
+    const delta = event.currentTarget?.dataset.mapDirection === "up" ? -1 : 1;
+    this.setMapLevel(this.mapLevelIndex + delta);
+  };
+
+  setMapLevel(index) {
+    if (!this.mapLevels[index]?.source) return;
+    this.mapLevelIndex = index;
+    this.renderMapLevel();
+  }
+
+  renderMapLevel() {
+    const level = this.mapLevels[this.mapLevelIndex];
+    if (!level || !this.mapImage) return;
+    this.mapImage.src = level.source;
+    this.mapImage.alt = `${level.title} ${level.label.toLowerCase()}`;
+    this.mapOverlay?.setAttribute("aria-label", `${level.title} ${level.label}`);
+    this.mapOverlay?.classList.toggle("is-world-level", level.id === "world");
+    this.mapOverlay?.classList.toggle("is-area-level", level.id === "area");
+    if (level.id !== "world") this.hideWorldMapHover();
+    if (this.mapResolutionCurrent) this.mapResolutionCurrent.textContent = level.label;
+
+    for (const button of this.mapResolutionControls || []) {
+      const direction = button.dataset.mapDirection;
+      const targetIndex = this.mapLevelIndex + (direction === "up" ? -1 : 1);
+      const target = this.mapLevels[targetIndex];
+      const available = Boolean(target?.source);
+      button.hidden = !available;
+      button.setAttribute("aria-label", available ? `${direction === "up" ? "Up" : "Down"} to ${target.label}` : "");
+      const label = button.querySelector(".map-resolution-control-label");
+      if (label) label.textContent = available ? target.label : "";
+    }
+  }
+
+  showWorldMapHover = (event) => {
+    if (this.mapLevels[this.mapLevelIndex]?.id !== "world" && !event.force) return;
+    const regionId = event.currentTarget?.dataset.worldRegion;
+    const content = WORLD_MAP_HOVERS[regionId];
+    if (!content || !this.worldMapHover || !this.worldMapHoverName || !this.worldMapHoverEpithet) return;
+    this.worldMapHover.dataset.region = regionId;
+    this.worldMapHoverName.textContent = content.name;
+    this.worldMapHoverEpithet.textContent = content.epithet;
+    this.worldMapHover.hidden = false;
+  };
+
+  hideWorldMapHover = () => {
+    if (!this.worldMapHover) return;
+    this.worldMapHover.hidden = true;
+    delete this.worldMapHover.dataset.region;
   };
 
   togglePanel = (event) => {
@@ -699,15 +1115,32 @@ export default class ExplorationLauncherPreviewScene {
 
   cleanup() {
     this.mapLauncher?.removeEventListener("click", this.toggleMap);
+    this.mapResolutionControls?.forEach((button) => button.removeEventListener("click", this.changeMapLevel));
+    this.worldMapRegions?.forEach((region) => {
+      region.removeEventListener("pointerenter", this.showWorldMapHover);
+      region.removeEventListener("pointerleave", this.hideWorldMapHover);
+      region.removeEventListener("focus", this.showWorldMapHover);
+      region.removeEventListener("blur", this.hideWorldMapHover);
+    });
     this.panelLaunchers?.forEach((button) => button.removeEventListener("click", this.togglePanel));
+    window.removeEventListener("keydown", this.handleMapKeyDown);
     this.container?.remove();
     this.container = null;
     this.mapLauncher = null;
     this.mapLauncherLabel = null;
     this.mapOverlay = null;
+    this.mapImage = null;
+    this.mapResolutionCurrent = null;
+    this.mapResolutionControls = null;
+    this.worldMapRegions = null;
+    this.worldMapHover = null;
+    this.worldMapHoverName = null;
+    this.worldMapHoverEpithet = null;
     this.panelLaunchers = null;
     this.panels = null;
     this.activePanels = [];
+    this.mapLevels = [];
+    this.mapLevelIndex = 0;
   }
 
   destroy() { this.cleanup(); }

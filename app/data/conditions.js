@@ -31,6 +31,20 @@ export const conditions = [
     ],
   },
   {
+    id: "chained",
+    name: "Chained",
+    category: "combat_special",
+    summary: "Spectral chains reduce Speed to 0 until they release.",
+    mechanics: {
+      speedZero: true,
+      blocksSpeedBonuses: true,
+    },
+    effects: [
+      "Speed becomes 0 and cannot benefit from bonuses to speed.",
+      "Attacks and defenses are otherwise unaffected.",
+    ],
+  },
+  {
     id: "confused",
     name: "Confused",
     category: "combat_special",
@@ -553,6 +567,19 @@ export const conditions = [
     },
     effects: [
       "Attack rolls against the creature have disadvantage until the start of its next turn.",
+    ],
+  },
+  {
+    id: "steady_aim_speed_zero",
+    name: "Steady Aim",
+    category: "combat_transient",
+    summary: "Speed is 0 for the rest of the current turn after taking Steady Aim.",
+    mechanics: {
+      speedZero: true,
+      duration: "turn_end",
+    },
+    effects: [
+      "Speed is 0 until the end of the current turn.",
     ],
   },
   {

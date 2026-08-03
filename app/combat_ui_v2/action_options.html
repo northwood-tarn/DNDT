@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="./equipmentExternal.css">
   </head>
   <body>
+    <button class="combat-ensemble-handle" type="button" aria-label="Move connected combat windows" hidden></button>
     <div class="pane-fog pane-fog-one" aria-hidden="true"></div>
     <div class="pane-fog pane-fog-two" aria-hidden="true"></div>
     <header class="pane-topbar">
@@ -20,18 +21,17 @@
       <div class="pane-window-drag-surface pane-window-drag-surface-title" aria-hidden="true"></div>
       <div>
         <h1 data-pane-title>Action Options</h1>
-        <span class="pane-kicker" data-actor-name></span>
       </div>
       <button class="pane-title-key" type="button" aria-label="Close pane"></button>
     </header>
     <main class="pane-scroll">
       <section class="pane-panel" data-pane-panel="action-options">
         <details class="economy-section">
-          <summary><span>Action</span><small>Available</small></summary>
+          <summary data-economy-summary="action"><span>Action</span></summary>
           <div class="category-list" data-action-options="action"></div>
         </details>
         <details class="economy-section">
-          <summary><span>Bonus Action</span><small>Available</small></summary>
+          <summary data-economy-summary="bonus"><span>Bonus Action</span></summary>
           <div class="category-list" data-action-options="bonus"></div>
         </details>
       </section>

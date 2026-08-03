@@ -48,6 +48,9 @@ export function resolveClass(sheet, draft, classRegistry = CLASSES) {
 
   resolveSubclass(sheet, draft, classRecord, getSubclassChoiceLevel(classRecord));
   resolvePact(sheet, draft, classRecord, getPactChoiceLevel(classRecord));
+  // Class advancement feats can change Constitution, so HP must be finalized
+  // after class, subclass, and pact features have resolved their choices.
+  sheet.durability.maxHp = calculateMaxHp(sheet, classRecord, draft);
 }
 
 function applySpellcastingFrame(sheet, classRecord) {
@@ -277,7 +280,15 @@ function applyFeatureEffects(sheet, draft, feature, featureId, level) {
     });
   }
   for (const expertise of effects.expertise || []) {
-    addExpertise(sheet, { ...expertise, source: featureId });
+    if (String(expertise.id || "").startsWith("choice:")) {
+      const choiceId = expertise.id.slice("choice:".length);
+      const chosen = getClassChoice(draft, choiceId);
+      for (const id of Array.isArray(chosen) ? chosen : [chosen].filter(Boolean)) {
+        addExpertise(sheet, { ...expertise, id, source: featureId });
+      }
+    } else {
+      addExpertise(sheet, { ...expertise, source: featureId });
+    }
   }
   addUniqueAll(sheet.proficiencies.skills, effects.proficiencies?.skills || []);
   addUniqueAll(sheet.proficiencies.tools, effects.proficiencies?.tools || []);

@@ -2,9 +2,11 @@
 import { attachExitListener, routeTo } from "./engine/sceneRouter.js";
 import { installSystemMenu } from "./ui/SystemMenu.js";
 import { initialiseAudio } from "./audio/index.js";
+import { installEmberModal } from "./ui/EmberModal.js";
 import "./scenes/index.js";
 
 installSystemMenu();
+installEmberModal();
 
 // === Dev console mirror -> in-game log (bottom pane) ===
 (function attachInGameLogMirror() {

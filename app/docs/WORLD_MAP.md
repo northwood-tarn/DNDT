@@ -31,6 +31,8 @@ This is a rough raster concept sketch of the three act-scale areas only. It is n
 
 Greyharbour and the Oil Refinery sit on the end of a broad promontory cut by a 100ft escarpment. The only way to the Oil Refinery is through Greyharbour. No-Man's Land sits between Greyharbour and the Necropolis.
 
+The Greyharbour area map is fully revealed from the beginning of Act I. Its four areas—Old City, Settlement, Docks, and Oil Refinery—are all visible before the party visits them.
+
 ### Act II: The Necropolis
 
 - Inside the Walls
@@ -41,6 +43,8 @@ Greyharbour and the Oil Refinery sit on the end of a broad promontory cut by a 1
 
 Inside the Walls faces No-Man's Land and stretches across the full city width. The Twilight Bazaar sits high/top and is small but culturally central. The Chalk Residences form a distinct Necropolis subsection. The Regnant Eternal is long and thin, culminating in the Black Apex Throne. The Administrative Encasement occupies the opposite full city edge.
 
+Act II areas do not appear on the area map merely because the party enters or crosses them. An area is revealed only after the party rests at an ember located inside that area.
+
 ### Act III: The Backlands
 
 - The Endless Plain
@@ -48,8 +52,11 @@ Inside the Walls faces No-Man's Land and stretches across the full city width. T
 - Carrow
 - The Escarpment of Eyes
 - Towards the Portal
+- Memphremagog
 
-The Endless Plain runs along the Necropolis wall. Untended Graves punctuates the northern/top plain. Carrow begins as a small southern slip and blooms outward. The far center of the Plain leads by massive bridge toward the Escarpment of Eyes, then Towards the Portal.
+The Endless Plain runs along the Necropolis wall. Untended Graves punctuates the northern/top plain. Carrow begins as a small southern slip and blooms outward. Memphremagog occupies the far top-left: a vast, low lake with shallow paths here and there. The far center of the Plain leads by massive bridge toward the Escarpment of Eyes, then Towards the Portal.
+
+Act III uses the same ember-rest reveal rule as Act II: an area appears on the area map only after the party rests at an ember located inside that area.
 
 ## Relegated
 

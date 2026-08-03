@@ -15,6 +15,8 @@ export function createStepCreatorCharacterRecord(draft, options = {}) {
     resolveOptions: { allowNonCreationLevel: false, ...(options.resolveOptions || {}) },
     registries: options.registries,
     id: options.id,
+    kind: options.kind,
+    definitionId: options.definitionId,
     savedAt: options.savedAt,
   });
 }

@@ -181,14 +181,16 @@ export default {
         ],
         7: [
           { name: "Chains of Vengeance", iconId: "chains_of_vengeance", type: "Passive",
-            description: "When your Vow target moves or attacks, they must make a STR save; on failure, its attack misses and it is restrained until the start of its next turn.",
+            description: "Once per round, after your Vow target moves at least 5 feet, it must make a Strength save against your Paladin save DC. On a failure, spectral chains bind it, reducing its Speed to 0 until the start of its next turn.",
             effects: {
               triggeredEffects: [{
                 id: "chains_of_vengeance",
-                trigger: "marked_target_moves_or_attacks",
+                trigger: "marked_target_moves",
                 requiresMark: { id: "vow_of_enmity", source: "self" },
+                minimumMovementFt: 5,
+                limit: "once_per_round",
                 save: { ability: "strength", dcFrom: "classSaveDC", onSave: "negates" },
-                onFailure: { cancelAttack: true, condition: "restrained", duration: { kind: "until_timing", timing: "turn_start" } }
+                onFailure: { condition: "chained", duration: { kind: "until_timing", timing: "turn_start" } }
               }]
             } }
         ],

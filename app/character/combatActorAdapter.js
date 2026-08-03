@@ -8,6 +8,7 @@ import { createConsumableAction, createNickAttackAction, createSpellAction, crea
 import { normalizeCombatActor, validateCombatActor } from "../combat/actor.js";
 import { createFeatureAction, createFeatureActionsFromFeatures } from "../combat/featureActionFactory.js";
 import { aggregateEquipmentModifiers, resolveEquippedAccessories, resolveEquippedItems } from "./equippedItemRuntime.js";
+import { createEquipmentGrantedActions } from "../combat/equipmentGrantedActions.js";
 
 const ABILITY_ABBREVIATIONS = {
   strength: "str",
@@ -136,7 +137,7 @@ function createCombatActionsFromSheet(sheet, context = {}) {
     ...createWeaponActions(sheet),
     ...createSpellActions(sheet, context.spellcastingItemBonus),
     ...createFirstCovenantSpellActions(sheet, context.equippedFoci, context.spellcastingItemBonus),
-    ...createFocusGrantedActions(context.equippedFoci),
+    ...createEquipmentGrantedActions(context.equippedFoci),
     ...createAccessoryActions(sheet, context.equippedAccessories, context.spellcastingItemBonus),
     ...createDeviceActions(sheet),
     ...createConsumableActions(sheet),
@@ -448,26 +449,6 @@ function createEquipmentFeatures(foci = []) {
     id: `equipment:${focus.id}`, name: focus.name,
     effects: { damageRiders: [structuredClone(focus.mechanics.damageRider)] },
   }] : []);
-}
-
-function createFocusGrantedActions(foci = []) {
-  const actions = [];
-  if (foci.some((focus) => focus.mechanics?.grantedAction === "restless_suffering_revivify")) actions.push({
-    id: "restless_suffering_revivify", name: "Symbol of Restless Suffering: Revivify",
-    iconId: "restless_suffering_revivify",
-    description: "Return a fallen ally to life at 1 HP, then take 3d10 unavoidable necrotic damage.",
-    type: "relic_revivify", cost: "action", range: 1, requiresTarget: true,
-    allowDefeatedTarget: true, requiresDefeatedTarget: true, uses: { max: 1, remaining: 1, recovery: "long_rest" },
-    tags: { spell: true, harmful: false, requiresHands: true },
-  });
-  if (foci.some((focus) => focus.mechanics?.grantedAction === "staff_of_the_adder_transform")) actions.push({
-    id: "staff_of_the_adder_transform", name: "Awaken the Adder",
-    iconId: "staff_of_the_adder",
-    description: "For one minute, the staff's attacks deal an additional 1d6 poison damage and prevent Opportunity Attacks until the start of the target's next turn.",
-    type: "feature_action", actionKind: "staff_of_the_adder_transform", cost: "action", requiresTarget: false,
-    resourceId: "staff_of_the_adder_transform", tags: { spell: false, harmful: false, requiresHands: true },
-  });
-  return actions;
 }
 
 function createEquipmentResources(foci = []) {

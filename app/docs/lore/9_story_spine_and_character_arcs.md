@@ -668,9 +668,9 @@ Her ship should probably be the roughest one: dockworkers, thieves, tavern peopl
 
 ### Danica, Oath of Vengeance Paladin
 
-Archetype: enormous blonde vengeance knight, daughter of the harbour priest, weaponized grief.
+Archetype: enormous black-haired vengeance knight, daughter of the harbour priest, weaponized grief.
 
-Danica is six feet tall, broad-shouldered, already formidable when the story begins. Blonde hair, either braided with severe practicality or left barely managed because hair is not a battlefield priority. She wears a scowl so often that people mistake it for her resting face, which it mostly is.
+Danica is six feet tall, broad-shouldered, already formidable when the story begins. Her black hair is tied back with severe practicality or left barely managed because hair is not a battlefield priority. She wears a scowl so often that people mistake it for her resting face, which it mostly is.
 
 Her life is defined intellectually by vengeance and justice, but emotionally by family: especially her father, Duncan, the priest of what remains of the harbour's faith.
 

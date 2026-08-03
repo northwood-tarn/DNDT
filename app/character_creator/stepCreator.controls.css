@@ -43,14 +43,16 @@
   position: fixed;
   right: 48px;
   bottom: 38px;
-  z-index: 12;
-  width: 24px;
-  height: 24px;
+  z-index: 70;
+  width: 48px;
+  height: 48px;
   padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 0;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.12);
+  background: transparent;
   opacity: 0.45;
+  cursor: pointer;
+  pointer-events: auto;
   -webkit-app-region: no-drag;
 }
 
@@ -67,7 +69,8 @@
 .creator-next-button::before {
   content: "";
   position: absolute;
-  inset: 3px;
+  inset: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 50%;
   background: rgba(150, 170, 170, 0.42);
   clip-path: inset(0 0 0 calc(100% - var(--moon-fill, 12.5%)));
@@ -97,6 +100,47 @@
   line-height: 1.35;
   pointer-events: none;
   text-transform: uppercase;
+}
+
+.create-another-prompt {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 28px;
+  background: rgba(2, 7, 7, 0.88);
+  text-align: center;
+}
+
+.create-another-prompt[hidden] {
+  display: none;
+}
+
+.create-another-prompt p {
+  margin: 0;
+  color: rgba(222, 235, 231, 0.86);
+  font-family: var(--font-speaker);
+  font-size: 24px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.create-another-prompt div {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+
+.create-another-prompt button {
+  min-width: 110px;
+  padding: 11px 24px;
+  border: 1px solid rgba(100, 156, 145, 0.52);
+  border-radius: 0;
+  background: rgba(5, 18, 17, 0.82);
+  color: rgba(222, 235, 231, 0.82);
+  font: inherit;
+  cursor: pointer;
 }
 
 .creator-details {

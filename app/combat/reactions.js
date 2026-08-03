@@ -9,6 +9,7 @@ import { resolveRiderDamageFormula } from "./damageRiders.js";
 import { addActiveEffect } from "./modifiers.js";
 import { isReactionPolicyRelevant, normalizeReactionPolicy } from "./reactionPolicy.js";
 import { lowestAvailableSpellSlot, spendSpellSlot } from "./spellSlots.js";
+import { canSeeActor } from "./perception.js";
 
 const REACTION_PRIORITY = {
   survival: 100,
@@ -36,32 +37,48 @@ export function resolveDamageReactionAdjustment(snapshot, context, dice, log) {
   if (!dice || !context?.target || context.amount <= 0) return context.amount;
   let amount = context.amount;
   const reaction = chooseAutomaticReaction(context.target, "takes_damage", context, (item) => item.damageReduction);
-  if (!reaction) return amount;
-  spendReactionUse(snapshot, context.target, reaction, log);
+  const halvingReaction = reaction || chooseAutomaticReaction(context.target, "takes_damage", context, (item) =>
+    Number.isFinite(item.damageMultiplier) &&
+    (!item.requiresVisibleSource || canSeeActor(snapshot, context.target, context.source))
+  );
+  if (!halvingReaction) return amount;
+  spendReactionUse(snapshot, context.target, halvingReaction, log);
 
-  if (reaction.actionKind === "crooked_step") {
+  if (halvingReaction.actionKind === "crooked_step") {
     const from = { ...context.target.position };
     const destination = neighbors(from)
       .filter((pos) => isWalkable(snapshot, pos, context.target.id))
       .sort((a, b) => distance(b, context.source.position) - distance(a, context.source.position))[0];
     if (destination) {
       context.target.position = { ...destination };
-      log.add("reaction.resolve", reactionDetail(snapshot, context.target, reaction, {
+      log.add("reaction.resolve", reactionDetail(snapshot, context.target, halvingReaction, {
         sourceId: context.source?.id,
         sourceName: context.source?.name,
         from,
         to: destination,
-        distanceFt: reaction.distanceFt || 5,
+        distanceFt: halvingReaction.distanceFt || 5,
       }));
     }
-    logSuppressedReactions(snapshot, context.target, suppressed, reaction, log);
+    logSuppressedReactions(snapshot, context.target, suppressed, halvingReaction, log);
     return;
   }
-  const formula = resolveRiderDamageFormula(context.target, reaction.damageReduction);
+  if (Number.isFinite(halvingReaction.damageMultiplier)) {
+    const originalAmount = amount;
+    amount = Math.max(0, Math.floor(amount * halvingReaction.damageMultiplier));
+    log.add("reaction.resolve", reactionDetail(snapshot, context.target, halvingReaction, {
+      sourceId: context.source?.id,
+      sourceName: context.source?.name,
+      originalAmount,
+      amount,
+      result: `damage reduced to ${amount}`,
+    }));
+    return amount;
+  }
+  const formula = resolveRiderDamageFormula(context.target, halvingReaction.damageReduction);
   const rolled = dice.rollDamage(formula);
   const reduction = Math.max(0, rolled.total || 0);
   amount = Math.max(0, amount - reduction);
-  log.add("reaction.resolve", reactionDetail(snapshot, context.target, reaction, {
+  log.add("reaction.resolve", reactionDetail(snapshot, context.target, halvingReaction, {
     targetId: context.target.id,
     targetName: context.target.name,
     amount: reduction,
@@ -303,6 +320,7 @@ function reactionMatchesRange(actor, reaction, context) {
 
 function reactionMatchesAction(reaction, action) {
   if (!action) return true;
+  if (reaction.requiresAttackRoll && action.tags?.attackRoll !== true) return false;
   if (reaction.meleeOnly && !(action.tags?.melee === true || action.range <= 1)) return false;
   if (Array.isArray(reaction.actionTypes) && !reaction.actionTypes.includes(action.type)) return false;
   return true;

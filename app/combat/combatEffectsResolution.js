@@ -432,6 +432,9 @@ function applyPostDamageRiders(snapshot, source, target, action, dice, log) {
 }
 
 function applyDamageRider(snapshot, source, target, rider, dice, log, { critical = false, sourceAction = null } = {}) {
+  if (rider.oncePerRoundPerTarget && riderAlreadyAppliedToTargetThisRound(snapshot, source, target, rider)) {
+    return { triggered: false, applied: false };
+  }
   let saveResult = null;
   if (rider.save) {
     saveResult = resolveInlineSave(snapshot, source, target, rider, dice, log);
@@ -450,6 +453,7 @@ function applyDamageRider(snapshot, source, target, rider, dice, log, { critical
     damageType: resolveRiderDamageType(sourceAction, rider),
     featureDamageRider: rider.featureDamageRider === true,
   }, rolled, amount, dice, log);
+  if (rider.oncePerRoundPerTarget) markRiderAppliedToTargetThisRound(snapshot, source, target, rider);
   applySplashConditionDamage(snapshot, source, target, rider, rolled, amount, dice, log, sourceAction);
   if (Array.isArray(rider.effects) && rider.effects.length) {
     applyActionEffects(snapshot, source, target, {
@@ -481,6 +485,7 @@ function applySplashConditionDamage(snapshot, source, primaryTarget, rider, roll
       condition.id === rider.splashCondition && (!condition.sourceActorId || condition.sourceActorId === source.id)
     ));
   for (const target of targets) {
+    if (rider.oncePerRoundPerTarget && riderAlreadyAppliedToTargetThisRound(snapshot, source, target, rider)) continue;
     applyDamageAmount(snapshot, source, target, {
       id: `${rider.id}_splash`,
       name: rider.name,
@@ -488,7 +493,22 @@ function applySplashConditionDamage(snapshot, source, primaryTarget, rider, roll
       damageType: resolveRiderDamageType(sourceAction, rider),
       featureDamageRider: rider.featureDamageRider === true,
     }, rolled, amount, dice, log);
+    if (rider.oncePerRoundPerTarget) markRiderAppliedToTargetThisRound(snapshot, source, target, rider);
   }
+}
+
+function riderAlreadyAppliedToTargetThisRound(snapshot, source, target, rider) {
+  const tracker = source?.combatFlags?.damageRiderTargetsByRound?.[rider.id];
+  return tracker?.round === snapshot.round && tracker.targetIds?.includes(target.id);
+}
+
+function markRiderAppliedToTargetThisRound(snapshot, source, target, rider) {
+  source.combatFlags ??= {};
+  source.combatFlags.damageRiderTargetsByRound ??= {};
+  const existing = source.combatFlags.damageRiderTargetsByRound[rider.id];
+  const tracker = existing?.round === snapshot.round ? existing : { round: snapshot.round, targetIds: [] };
+  if (!tracker.targetIds.includes(target.id)) tracker.targetIds.push(target.id);
+  source.combatFlags.damageRiderTargetsByRound[rider.id] = tracker;
 }
 
 function consumeActiveEffectRider(snapshot, source, effect, log) {

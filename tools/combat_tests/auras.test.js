@@ -182,8 +182,12 @@ function testHaloOfDaybreakCreatesPersistentAura() {
   const actor = snapshot.actors.find((item) => item.id === "cleric");
   const log = createCombatLog();
   assert.equal(resolveAction(snapshot, actor, "halo_of_daybreak", actor.position, fixedDice(), log), true);
-  assert.ok(snapshot.combatObjects.some((object) => object.name === "Halo of Daybreak" && object.followsSource), "Halo of Daybreak should create a source-following combat object");
-  assert.ok(log.events.some((event) => event.type === "object.created" && event.detail.logSummary?.includes("15-ft aura")), "Halo of Daybreak should describe its aura in the combat log");
+  const halo = snapshot.combatObjects.find((object) => object.name === "Halo of Daybreak");
+  assert.ok(halo?.followsSource, "Halo of Daybreak should create a source-following combat object");
+  assert.equal(halo.radiusSquares, 4, "Halo of Daybreak should have a 20-ft radius");
+  assert.equal(halo.effects.find((effect) => effect.id === "halo_enemy_start_damage")?.damage, "3+5", "Halo damage should resolve to Wisdom modifier plus proficiency bonus");
+  assert.equal(halo.effects.some((effect) => effect.id === "halo_enemy_attack_advantage_vs_source"), false, "Halo of Daybreak should not grant enemies advantage against Duncan");
+  assert.ok(log.events.some((event) => event.type === "object.created" && event.detail.logSummary?.includes("20-ft aura")), "Halo of Daybreak should describe its aura in the combat log");
 }
 
 function assertSaveBonus(snapshot, actor, expected, message) {

@@ -7,6 +7,7 @@ import { getFootwearById } from "../data/footwear.js";
 import { getHeadwearById } from "../data/headwear.js";
 import { getSpellcastingFocusById } from "../data/spellcastingFoci.js";
 import { normalizeSaveGameState } from "./saveGameState.js";
+import { acquireCluesAtSource } from "../secrets/secretSources.js";
 
 export function normalizeLootBundle(input = {}, options = {}) {
   const random = options.random || Math.random;
@@ -39,12 +40,20 @@ export function applyLootToSaveGame(saveGame, input, options = {}) {
     if (existing) existing.quantity = definition?.unique || definition?.stackable === false ? 1 : existing.quantity + awarded.quantity;
     else holdings.push({ id: awarded.id, quantity: definition?.unique || definition?.stackable === false ? 1 : awarded.quantity });
   }
-  return {
-    saveGame: normalizeSaveGameState({ ...save, inventory: {
+  let nextSave = normalizeSaveGameState({ ...save, inventory: {
       shared: holdings,
       currency: { ...save.inventory.currency, gold: save.inventory.currency.gold + loot.gold },
-    } }),
+    } });
+  const secretEvents = [];
+  if (options.secretSourceId && options.secretDefinitions) {
+    const acquired = acquireCluesAtSource(nextSave, options.secretDefinitions, { type: "loot", id: options.secretSourceId }, options);
+    nextSave = acquired.saveGame;
+    secretEvents.push(...acquired.events);
+  }
+  return {
+    saveGame: nextSave,
     awarded: loot,
+    secretEvents,
   };
 }
 

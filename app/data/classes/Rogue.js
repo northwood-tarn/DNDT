@@ -94,6 +94,35 @@ export default {
         type: "Passive",
         description: "You choose a Rogue subclass and gain its features at the listed levels.",
         effects: { narrativeTags: ["subclass_choice"] }
+      },
+      {
+        name: "Steady Aim",
+        iconId: "steady_aim",
+        type: "Bonus Action",
+        description: "As a bonus action, if you haven't moved during this turn, give yourself advantage on your next attack roll this turn. After you use this bonus action, your Speed is 0 for the rest of the current turn.",
+        effects: {
+          actionOptions: [{
+            id: "steady_aim",
+            iconId: "steady_aim",
+            name: "Steady Aim",
+            actionType: "bonus_action",
+            actionKind: "steady_aim",
+            requiresTarget: false,
+            requirement: { noMovementUsedThisTurn: true },
+            activeEffectOnResolve: {
+              id: "steady_aim_advantage",
+              label: "Steady Aim",
+              type: "modifier",
+              trigger: "passive",
+              target: "self",
+              stat: "attack_roll",
+              mode: "advantage",
+              consumeOn: "outgoing_attack",
+              duration: "turn_end"
+            },
+            selfCondition: { id: "steady_aim_speed_zero", duration: "turn_end" }
+          }]
+        }
       }
     ],
     4: [
@@ -104,6 +133,26 @@ export default {
         description:
           "Increase ability scores or take a feat (engine-defined advancement rule).",
         effects: { advancement: [{ type: "ability_score_improvement", choices: ["ability_score", "feat"] }] }
+      }
+    ],
+    5: [
+      {
+        name: "Uncanny Dodge",
+        iconId: "uncanny_dodge",
+        type: "Reaction",
+        description: "When an attacker you can see hits you with an attack roll, you can use your reaction to halve the attack's damage against you.",
+        effects: {
+          reactions: [{
+            id: "uncanny_dodge",
+            name: "Uncanny Dodge",
+            trigger: "takes_damage",
+            reactionMode: "automatic",
+            requiresAttackRoll: true,
+            requiresVisibleSource: true,
+            damageMultiplier: 0.5,
+            priority: 60
+          }]
+        }
       }
     ],
     6: [
@@ -223,7 +272,7 @@ export default {
                 id: "assassinate_upgrade",
                 name: "Assassinate Upgrade",
                 trigger: "source_hits_surprised_target",
-                damage: "2d6",
+                damage: "sneak_attack_dice",
                 damageType: "same_as_action"
               }]
             } }

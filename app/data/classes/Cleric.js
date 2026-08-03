@@ -281,7 +281,7 @@ export default {
         ],
         13: [
           { name: "Halo of Daybreak", iconId: "halo_of_daybreak", type: "Action", uses: "longRest",
-            description: "Create a 15-ft radius aura of bright light for 1 minute; you and allies inside have advantage on saves vs. fear and charm; enemies that start in the aura take radiant damage equal to your Wisdom modifier. Enemies in the aura have advantage on attack rolls against you.",
+            description: "Create a 20-ft radius aura of bright light for 1 minute; you and allies inside have advantage on saves vs. fear and charm; enemies that start in the aura take radiant damage equal to your Wisdom modifier plus your proficiency bonus.",
             effects: {
               resources: [{ id: "halo_of_daybreak", name: "Halo of Daybreak", max: 1, recovery: "long_rest" }],
               actionOptions: [{
@@ -294,10 +294,10 @@ export default {
                   id: "halo_of_daybreak",
                   name: "Halo of Daybreak",
                   shape: "radius",
-                  radiusFt: 15,
+                  radiusFt: 20,
                   followsSource: true,
                   duration: { kind: "rounds", rounds: 10, tick: "turn_end" },
-                  logSummary: "15-ft aura for 10 rounds: allies gain advantage on saves against fear and charm; enemies take radiant damage equal to your Wisdom modifier at the start of their turns and gain advantage on attacks against you.",
+                  logSummary: "20-ft aura for 10 rounds: allies gain advantage on saves against fear and charm; enemies take radiant damage equal to your Wisdom modifier plus your proficiency bonus at the start of their turns.",
                   effects: [
                     {
                       id: "halo_fear_charm_save_advantage",
@@ -313,17 +313,8 @@ export default {
                       type: "damage",
                       trigger: "turn_start",
                       affects: "enemies",
-                      damage: "wisdom_modifier",
+                      damage: "wisdom_modifier+proficiency_bonus",
                       damageType: "radiant"
-                    },
-                    {
-                      id: "halo_enemy_attack_advantage_vs_source",
-                      type: "modifier",
-                      trigger: "passive",
-                      stat: "attack_roll",
-                      mode: "advantage",
-                      affects: "enemies",
-                      targetSourceActorOnly: true
                     }
                   ]
                 }

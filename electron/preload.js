@@ -36,6 +36,12 @@ contextBridge.exposeInMainWorld('api', {
   clearGame: (slot) => safeInvoke('clearGame', { slot }),
   quit: () => ipcRenderer.send('app:quit'),
   launchAuthoringTool: (tool) => ipcRenderer.send('authoring:launch-tool', tool),
+  saveNpcCompanion: (companion) => safeInvoke('authoring:save-npc-companion', companion),
+  saveSecret: (secret) => safeInvoke('authoring:save-secret', secret),
+  listSecretReferences: () => safeInvoke('authoring:list-secret-references', {}),
+  getSecretAiStatus: () => safeInvoke('authoring:secret-ai-status', {}),
+  transcribeSecretDraft: (audio) => safeInvoke('authoring:secret-ai-transcribe', audio),
+  generateSecretDraft: (request) => safeInvoke('authoring:secret-ai-generate', request),
   enterFramedMode: () => ipcRenderer.send('app:enter-framed'),
   setFullscreen: (value) => ipcRenderer.send('app:set-fullscreen', value === true),
   setCombatActionOptionsVisible: (value) => ipcRenderer.send('combat:action-options:set-visible', value === true),
@@ -51,6 +57,40 @@ contextBridge.exposeInMainWorld('api', {
   mergeCombatPaneIntoGroup: (paneId, targetPaneId) => ipcRenderer.send('combat:pane:merge', { paneId, targetPaneId }),
   setCombatPaneGroupActive: (paneId) => ipcRenderer.send('combat:pane-group:set-active', { paneId }),
   dragCombatEnsemble: (phase, position) => ipcRenderer.send('combat:ensemble-drag', { phase, position }),
+  dragConnectedCombatWindows: (phase, position) => ipcRenderer.send('combat:connected-windows:drag', { phase, position }),
+  suppressCombatHandleResize: (value) => ipcRenderer.send('combat:ensemble-handle:suppress-resize', value === true),
+  requestInternalCombatPane: (paneId) => ipcRenderer.send('combat:pane:open-internal', { paneId }),
+  setEmberScreenOpen: (value) => ipcRenderer.send('ember:screen:set-open', value === true),
+  onEmberScreenState: (listener) => {
+    if (typeof listener !== 'function') return () => {};
+    const wrapped = (_event, open) => listener(open === true);
+    ipcRenderer.on('ember:screen:state', wrapped);
+    return () => ipcRenderer.removeListener('ember:screen:state', wrapped);
+  },
+  onOpenInternalCombatPane: (listener) => {
+    if (typeof listener !== 'function') return () => {};
+    const wrapped = (_event, paneId) => listener(paneId);
+    ipcRenderer.on('combat:pane:open-internal', wrapped);
+    return () => ipcRenderer.removeListener('combat:pane:open-internal', wrapped);
+  },
+  onCombatPaneDragState: (listener) => {
+    if (typeof listener !== 'function') return () => {};
+    const wrapped = (_event, state) => listener(state);
+    ipcRenderer.on('combat:pane-drag-state', wrapped);
+    return () => ipcRenderer.removeListener('combat:pane-drag-state', wrapped);
+  },
+  onCombatEnsembleHandle: (listener) => {
+    if (typeof listener !== 'function') return () => {};
+    const wrapped = (_event, state) => listener(state);
+    ipcRenderer.on('combat:ensemble-handle', wrapped);
+    return () => ipcRenderer.removeListener('combat:ensemble-handle', wrapped);
+  },
+  onCombatFogLayout: (listener) => {
+    if (typeof listener !== 'function') return () => {};
+    const wrapped = (_event, layout) => listener(layout);
+    ipcRenderer.on('combat:fog-layout', wrapped);
+    return () => ipcRenderer.removeListener('combat:fog-layout', wrapped);
+  },
   onCombatPaneState: (listener) => {
     if (typeof listener !== 'function') return () => {};
     const wrapped = (_event, state) => listener(state);

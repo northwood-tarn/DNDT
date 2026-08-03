@@ -137,7 +137,12 @@ function applyHitPointBonus(sheet, hitPointBonusPerLevel) {
 
 function applyFeatChoices(sheet, draft, feat, source = {}) {
   for (const choice of feat.choices || []) {
-    const selection = draft.choices.featChoices?.[feat.id]?.[choice.id];
+    const selection = (
+      (source.advancementId
+        ? draft.choices.advancementFeatChoices?.[source.advancementId]?.[choice.id]
+        : undefined)
+      ?? draft.choices.featChoices?.[feat.id]?.[choice.id]
+    );
     if (!selection) {
       sheet.metadata.unresolved.push(originFeatChoiceIssue("missing_origin_feat_choice", feat, choice, source));
       continue;

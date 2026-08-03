@@ -66,6 +66,12 @@
   width: 450px;
 }
 
+.appearance-selection.is-npc-single {
+  grid-template-columns: 219px;
+  grid-template-rows: auto;
+  justify-content: center;
+}
+
 .appearance-filter {
   grid-column: 1 / -1;
   display: grid;
@@ -113,6 +119,18 @@
 
 #portraitSelection .appearance-option > img {
   object-fit: cover;
+}
+
+#portraitSelection .appearance-option > img.preserve-full-image {
+  object-fit: contain;
+  object-position: center;
+}
+
+#portraitSelection .appearance-option > img.portrait-view {
+  object-fit: cover;
+  object-position: 50% 0;
+  transform: scale(3.65);
+  transform-origin: 58% 9%;
 }
 
 .appearance-option-label {
@@ -252,6 +270,10 @@
 
   .appearance-selection {
     grid-template-columns: repeat(2, 199px);
+  }
+
+  .appearance-selection.is-npc-single {
+    grid-template-columns: 199px;
   }
 
   .appearance-option {

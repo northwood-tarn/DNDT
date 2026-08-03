@@ -12,15 +12,36 @@ import { getArmorById } from "../data/armor.js";
 import { getSpellcastingFocusById } from "../data/spellcastingFoci.js";
 import { getWeaponById } from "../data/weapons.js";
 import { actionIconCategory, createActionIconImage } from "./actionIconRegistry.js";
-import { installCharacterPanel, installEquipmentPanelContent } from "./equipmentDrawer.js";
+import { equipDraggedItem, installCharacterPanel, installEquipmentPanelContent } from "./equipmentDrawer.js";
 import { createItemIconImage } from "../ui/itemIconRegistry.js";
+import { reconcileEquipmentGrantedActions } from "../combat/equipmentGrantedActions.js";
+import { getGreyharbourQuests } from "../data/quests.js";
 
 const scenarioId = new URLSearchParams(window.location.search).get("scenario");
 if (!scenarioId) throw new Error("Action Options requires combat scenario state.");
 const game = createCombatGame({ scenarioId });
 const actor = game.snapshot.actors.find((candidate) => candidate.team === "heroes");
 if (!actor) throw new Error("Action Options requires an active player or companion.");
-document.querySelector("[data-actor-name]").textContent = actor.name.split(",", 1)[0];
+const economyChannel = typeof BroadcastChannel === "function" ? new BroadcastChannel(`dndt-economy:${actor.id}`) : null;
+const equipmentDragChannel = typeof BroadcastChannel === "function" ? new BroadcastChannel(`dndt-equipment:${actor.id}`) : null;
+const spellOrderChannel = typeof BroadcastChannel === "function" ? new BroadcastChannel(`dndt-spell-order:${actor.id}`) : null;
+let curatedSpellOrder = {};
+try { curatedSpellOrder = JSON.parse(localStorage.getItem(`dndt.spellOrder:${actor.id}`) || "{}") || {}; } catch (_error) { curatedSpellOrder = {}; }
+let activeEquipmentDrag = null;
+let equipmentPanelState = null;
+let economyState = {
+  action: actor.economy?.actionAvailable !== false,
+  bonus: actor.economy?.bonusActionAvailable !== false,
+};
+equipmentDragChannel?.addEventListener("message", (event) => {
+  if (event.data?.type === "item-drag-start") activeEquipmentDrag = event.data.drag;
+  if (event.data?.type === "item-drag-end") activeEquipmentDrag = null;
+});
+spellOrderChannel?.addEventListener("message", (event) => {
+  if (event.data?.casterId !== actor.id || !event.data?.levels) return;
+  curatedSpellOrder = event.data.levels;
+  renderActionLibraries();
+});
 const PANE_LABELS = {
   "action-options": "Action Options",
   inventory: "Inventory",
@@ -31,22 +52,55 @@ const PANE_LABELS = {
 const PANE_KEYS = { "action-options": "O", inventory: "I", equipment: "E", character: "C", quests: "Q" };
 const PANE_BY_CODE = { KeyO: "action-options", KeyI: "inventory", KeyE: "equipment", KeyC: "character", KeyQ: "quests" };
 const paneQuery = new URLSearchParams(window.location.search);
+window.api?.onEmberScreenState?.((open) => {
+  document.body.classList.toggle("is-ember-inactive", open);
+});
 const detachedPaneId = paneQuery.get("panel");
 const embeddedPane = paneQuery.get("embedded") === "1";
 if (embeddedPane) document.body.classList.add("is-embedded-pane");
 const tabList = document.querySelector(".pane-tabs");
 const paneTitle = document.querySelector("[data-pane-title]");
 const paneSingleTitle = document.querySelector("[data-pane-single-title]");
-const ensembleDragSurface = document.querySelector(".pane-window-drag-surface-title");
+const ensembleDragSurfaces = [...document.querySelectorAll(".pane-window-drag-surface")];
 const panePanels = [...document.querySelectorAll("[data-pane-panel]")];
 const descriptionPanel = document.querySelector(".pane-description");
 const closeButton = document.querySelector(".pane-close");
+const ensembleHandle = document.querySelector(".combat-ensemble-handle");
 const titleKeyButton = document.querySelector(".pane-title-key");
 let activePaneId = detachedPaneId || "action-options";
 let groupedPaneIds = detachedPaneId ? [detachedPaneId] : [];
+let paneDock = null;
 const routedDescriptionActions = new WeakMap();
 let routedDescriptionElement = null;
 let ensembleDragPointerId = null;
+let ensembleHandlePointerId = null;
+
+ensembleHandle?.addEventListener("pointerdown", (event) => {
+  if (event.button !== 0) return;
+  event.preventDefault();
+  event.stopPropagation();
+  ensembleHandlePointerId = event.pointerId;
+  ensembleHandle.setPointerCapture?.(event.pointerId);
+  window.api?.dragConnectedCombatWindows?.("start", { x: event.screenX, y: event.screenY });
+});
+ensembleHandle?.addEventListener("pointerenter", () => window.api?.suppressCombatHandleResize?.(true));
+ensembleHandle?.addEventListener("pointerleave", () => {
+  if (ensembleHandlePointerId === null) window.api?.suppressCombatHandleResize?.(false);
+});
+document.addEventListener("pointermove", (event) => {
+  if (event.pointerId === ensembleHandlePointerId) window.api?.dragConnectedCombatWindows?.("move", { x: event.screenX, y: event.screenY });
+});
+const endConnectedWindowDrag = (event) => {
+  if (event.pointerId !== ensembleHandlePointerId) return;
+  window.api?.dragConnectedCombatWindows?.("end", { x: event.screenX, y: event.screenY });
+  ensembleHandlePointerId = null;
+  window.api?.suppressCombatHandleResize?.(false);
+};
+document.addEventListener("pointerup", endConnectedWindowDrag);
+document.addEventListener("pointercancel", endConnectedWindowDrag);
+window.api?.onCombatEnsembleHandle?.((state) => {
+  if (ensembleHandle) ensembleHandle.hidden = state?.visible !== true;
+});
 
 function beginEnsembleDrag(event) {
   if (!detachedPaneId || event.button !== 0) return;
@@ -67,7 +121,7 @@ function endEnsembleDrag(event) {
   ensembleDragPointerId = null;
 }
 
-ensembleDragSurface?.addEventListener("pointerdown", beginEnsembleDrag);
+for (const dragSurface of ensembleDragSurfaces) dragSurface.addEventListener("pointerdown", beginEnsembleDrag);
 for (const panel of panePanels) {
   panel.addEventListener("pointerdown", (event) => {
     if (event.target === panel) beginEnsembleDrag(event);
@@ -87,6 +141,7 @@ function economy(action) {
 function category(action) {
   if (action.tags?.weapon) return Number(action.weaponSet) === 2 ? "Weapon Set 2" : "Weapon Set 1";
   if (action.tags?.spell) return "Spells";
+  if (action.tags?.consumable || action.type === "consumable") return "Consumables";
   if (action.secondaryChoice) return "Abilities";
   if (action.type === "consumable" || (action.tags?.device && !action.choiceParentResourceId)) return "Consumables";
   if (action.resourceId === "channel_divinity") return "Channel Divinity";
@@ -109,10 +164,15 @@ function payload(action, secondaryChoice = null) {
     description: descriptionFor(action),
     available: availability.available,
     unavailableReason: availability.reason,
+    weaponPair: action.weaponPair || null,
   };
 }
 
 function availabilityFor(action, secondaryChoice = null) {
+  const actionEconomy = economy(action);
+  if (Object.hasOwn(economyState, actionEconomy) && !economyState[actionEconomy]) {
+    return { available: false, reason: `${actionEconomy === "bonus" ? "Bonus Action" : "Action"} already used` };
+  }
   const itemIds = [action.itemId, secondaryChoice?.itemId].filter(Boolean);
   for (const itemId of itemIds) {
     const quantity = actor.inventory?.find((item) => item.id === itemId)?.quantity || 0;
@@ -130,6 +190,20 @@ function availabilityFor(action, secondaryChoice = null) {
   }
   return { available: true, reason: "" };
 }
+
+function syncEconomyState(nextState) {
+  economyState = { ...economyState, ...nextState };
+  for (const summary of document.querySelectorAll("[data-economy-summary]")) {
+    const available = economyState[summary.dataset.economySummary] !== false;
+    const section = summary.closest(".economy-section");
+    section.classList.toggle("is-spent", !available);
+  }
+}
+
+economyChannel?.addEventListener("message", (event) => {
+  if (event.data?.type === "economy-state") syncEconomyState(event.data.economy);
+});
+economyChannel?.postMessage({ type: "economy-state-request" });
 
 function setDragData(event, data) {
   const encoded = JSON.stringify(data);
@@ -334,9 +408,25 @@ function abilityList(actions) {
   return container;
 }
 
-function weaponSlot(action, { twoHandedOccupancy = false, offHand = false, item = null } = {}) {
+function weaponSlot(action, { twoHandedOccupancy = false, offHand = false, item = null, equipmentSlotId = null } = {}) {
   const slot = document.createElement("div");
   slot.className = `weapon-set-slot${action ? " is-populated" : ""}${twoHandedOccupancy ? " is-two-handed-occupancy" : ""}${offHand ? " is-off-hand" : ""}`;
+  if (equipmentSlotId) {
+    slot.addEventListener("dragover", (event) => {
+      const draggedItem = resolveEquippedHandItem(activeEquipmentDrag?.itemId);
+      const acceptsShield = equipmentSlotId.endsWith("b") && isShieldItem(draggedItem);
+      if (!activeEquipmentDrag || (!isAttackWeapon(draggedItem) && !acceptsShield)) return;
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "move";
+      slot.classList.add("is-drag-over");
+    });
+    slot.addEventListener("dragleave", () => slot.classList.remove("is-drag-over"));
+    slot.addEventListener("drop", (event) => {
+      event.preventDefault();
+      slot.classList.remove("is-drag-over");
+      if (equipDraggedItem(equipmentPanelState, equipmentSlotId, activeEquipmentDrag)) activeEquipmentDrag = null;
+    });
+  }
   if (!action) {
     slot.setAttribute("aria-label", "Empty weapon slot");
     return slot;
@@ -354,7 +444,7 @@ function weaponSlot(action, { twoHandedOccupancy = false, offHand = false, item 
       registerDescriptionHover(slot, action);
     }
   }
-  const itemImage = item ? createItemIconImage(item, "action-icon-base-layer") : null;
+  const itemImage = item && !action.weaponPair ? createItemIconImage(item, "action-icon-base-layer") : null;
   if (itemImage) {
     const art = document.createElement("div");
     art.className = "action-icon-art";
@@ -391,11 +481,16 @@ function weaponSets(economyName) {
       const primaryAction = actionForEquippedItem(equippedIds[0]);
       const secondaryAction = actionForEquippedItem(equippedIds[1]);
       const twoHanded = primaryItem?.hands === 2;
+      const presentedPrimaryAction = weaponPairPresentation(
+        primaryAction || displayOnlyHandItem(primaryItem),
+        primaryItem,
+        secondaryItem,
+      );
       slots.append(
-        weaponSlot(primaryAction || displayOnlyHandItem(primaryItem), { item: primaryItem }),
+        weaponSlot(presentedPrimaryAction, { item: primaryItem, equipmentSlotId: `weapon${setNumber}a` }),
         twoHanded
-          ? weaponSlot(primaryAction || displayOnlyHandItem(primaryItem), { twoHandedOccupancy: true, item: primaryItem })
-          : weaponSlot(secondaryAction || displayOnlyHandItem(secondaryItem), { offHand: Boolean(secondaryItem), item: secondaryItem }),
+          ? weaponSlot(primaryAction || displayOnlyHandItem(primaryItem), { twoHandedOccupancy: true, item: primaryItem, equipmentSlotId: `weapon${setNumber}b` })
+          : weaponSlot(secondaryAction || displayOnlyHandItem(secondaryItem), { offHand: Boolean(secondaryItem), item: secondaryItem, equipmentSlotId: `weapon${setNumber}b` }),
       );
     } else {
       const twoHandedAction = actions.find((action) => action.tags?.two_handed === true);
@@ -416,11 +511,49 @@ function resolveEquippedHandItem(itemId) {
 }
 
 function actionForEquippedItem(itemId) {
-  return itemId ? actor.actions.find((action) => action.id === itemId) || null : null;
+  return itemId ? actor.actions.find((action) => action.id === itemId || action.itemId === itemId) || null : null;
+}
+
+function weaponPairPresentation(primaryAction, primaryItem, secondaryItem) {
+  if (!primaryAction || !isAttackWeapon(primaryItem) || !isAttackWeapon(secondaryItem) || primaryItem.id === secondaryItem.id) return primaryAction;
+  const bothLight = [primaryItem, secondaryItem].every((item) => (item.properties || []).includes("light"));
+  return {
+    ...primaryAction,
+    iconId: primaryItem.id,
+    weaponPair: {
+      mode: bothLight ? "diagonal" : "corner",
+      primaryIconId: primaryItem.id,
+      primaryName: primaryItem.name,
+      secondaryIconId: secondaryItem.id,
+      secondaryName: secondaryItem.name,
+    },
+  };
+}
+
+function isAttackWeapon(item) {
+  if (!item) return false;
+  const weapon = getWeaponById(item.id);
+  if (weapon) return true;
+  const focus = getSpellcastingFocusById(item.id);
+  return Boolean(focus && focus.canMakeWeaponAttack !== false && (focus.damageFormula || focus.functionsAsWeapon));
+}
+
+function isShieldItem(item) {
+  return Boolean(item && getArmorById(item.id)?.type === "shield");
 }
 
 function displayOnlyHandItem(item) {
-  return item ? { id: item.id, name: item.name, iconId: item.id, iconCategory: "weapon", tags: { weapon: true } } : null;
+  return item ? {
+    id: item.id,
+    itemId: item.id,
+    name: item.name,
+    type: "weapon_attack",
+    cost: "action",
+    iconId: item.id,
+    iconCategory: "weapon",
+    description: item.inspectText || item.description || `Attack with ${item.name}.`,
+    tags: { weapon: true },
+  } : null;
 }
 
 function nativeSpellLevel(action) {
@@ -432,11 +565,32 @@ function spellsFor(economyName) {
   return actor.actions.filter((action) => {
     if (!action.tags?.spell || economy(action) !== economyName) return false;
     if (!paneSettings.offerSpellUpcasting && action.spellLevel !== nativeSpellLevel(action)) return false;
+    const baseSpellId = action.sourceSpellId || String(action.id).split(":", 1)[0];
+    const baseLevel = nativeSpellLevel(action);
+    if (baseLevel > 0 && Object.keys(curatedSpellOrder).length > 0 && !(curatedSpellOrder[baseLevel] || []).includes(baseSpellId)) return false;
     const key = `${action.sourceSpellId || action.name}:${action.spellLevel}`;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
-  }).sort((left, right) => (left.spellLevel - right.spellLevel) || left.name.localeCompare(right.name));
+  }).sort((left, right) => {
+    const displayLevelDifference = left.spellLevel - right.spellLevel;
+    if (displayLevelDifference) return displayLevelDifference;
+    const leftNativeLevel = nativeSpellLevel(left);
+    const rightNativeLevel = nativeSpellLevel(right);
+    const nativeLevelDifference = leftNativeLevel - rightNativeLevel;
+    if (nativeLevelDifference) return nativeLevelDifference;
+    const leftId = left.sourceSpellId || String(left.id).split(":", 1)[0];
+    const rightId = right.sourceSpellId || String(right.id).split(":", 1)[0];
+    const order = curatedSpellOrder[leftNativeLevel] || [];
+    const leftIndex = order.indexOf(leftId);
+    const rightIndex = order.indexOf(rightId);
+    if (leftIndex >= 0 || rightIndex >= 0) {
+      if (leftIndex < 0) return 1;
+      if (rightIndex < 0) return -1;
+      if (leftIndex !== rightIndex) return leftIndex - rightIndex;
+    }
+    return left.name.localeCompare(right.name);
+  });
 }
 
 function slotPips(level) {
@@ -460,10 +614,13 @@ function spellList(economyName) {
     if (!grouped.has(action.spellLevel)) grouped.set(action.spellLevel, []);
     grouped.get(action.spellLevel).push(action);
   }
-  for (const [level, spells] of [...grouped].sort(([left], [right]) => left - right)) {
-    const section = document.createElement("section");
+  const spellGroups = [...grouped].sort(([left], [right]) => left - right);
+  const highestPopulatedLevel = spellGroups.at(-1)?.[0];
+  for (const [level, spells] of spellGroups) {
+    const section = document.createElement("details");
     section.className = "spell-level-section";
-    const heading = document.createElement("div");
+    section.open = level === highestPopulatedLevel;
+    const heading = document.createElement("summary");
     heading.className = "spell-level-heading";
     const label = document.createElement("span");
     label.textContent = level === 0 ? "Cantrips" : `Level ${level}`;
@@ -489,6 +646,30 @@ function spellList(economyName) {
   return container;
 }
 
+function spellCategoryHeading() {
+  const heading = document.createElement("summary");
+  const title = document.createElement("span");
+  title.textContent = "Spells";
+  const upcasting = document.createElement("label");
+  upcasting.className = "spell-upcasting-toggle";
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.checked = paneSettings.offerSpellUpcasting;
+  checkbox.setAttribute("aria-label", "Show upcasting");
+  checkbox.addEventListener("click", (event) => event.stopPropagation());
+  checkbox.addEventListener("change", () => {
+    paneSettings.offerSpellUpcasting = checkbox.checked;
+    window.api?.setCombatPaneSetting?.("offerSpellUpcasting", checkbox.checked);
+    renderActionLibraries();
+  });
+  const text = document.createElement("span");
+  text.textContent = "Show upcasting?";
+  upcasting.addEventListener("click", (event) => event.stopPropagation());
+  upcasting.append(checkbox, text);
+  heading.append(title, upcasting);
+  return heading;
+}
+
 function renderActionLibraries() {
   for (const economyName of ["action", "bonus"]) {
     const destination = document.querySelector(`[data-action-options="${economyName}"]`);
@@ -498,6 +679,7 @@ function renderActionLibraries() {
         if (economyName !== "action") continue;
         const section = document.createElement("details");
         section.className = "option-category";
+        section.dataset.actionCategory = "weapon-sets";
         const heading = document.createElement("summary");
         heading.textContent = "Weapon Sets";
         section.append(heading, weaponSets(economyName));
@@ -512,8 +694,9 @@ function renderActionLibraries() {
       if (!actions.length) continue;
       const section = document.createElement("details");
       section.className = "option-category";
-      const heading = document.createElement("summary");
-      heading.textContent = categoryName;
+      section.dataset.actionCategory = categoryName.toLowerCase().replaceAll(" ", "-");
+      const heading = categoryName === "Spells" ? spellCategoryHeading() : document.createElement("summary");
+      if (categoryName !== "Spells") heading.textContent = categoryName;
       const content = categoryName === "Spells"
         ? spellList(economyName)
         : categoryName === "Abilities"
@@ -527,6 +710,72 @@ function renderActionLibraries() {
       destination.append(section);
     }
   }
+  syncEconomyState(economyState);
+  if (document.body.classList.contains("is-wide-pane")) {
+    for (const section of document.querySelectorAll('[data-pane-panel="action-options"] > .economy-section')) section.open = true;
+    for (const section of document.querySelectorAll('[data-pane-panel="action-options"] .option-category')) section.open = true;
+  }
+}
+
+function questInformation(quest) {
+  const content = document.createElement("div");
+  content.className = "quest-information";
+  const metadata = document.createElement("dl");
+  for (const [label, value] of [["Given by", quest.giver], ["Location", quest.location]]) {
+    const term = document.createElement("dt");
+    term.textContent = label;
+    const description = document.createElement("dd");
+    description.textContent = value;
+    metadata.append(term, description);
+  }
+  const summary = document.createElement("p");
+  summary.className = "quest-summary";
+  summary.textContent = quest.summary;
+  const briefing = document.createElement("p");
+  briefing.className = "quest-details";
+  briefing.textContent = quest.briefing;
+  content.append(metadata, summary, briefing);
+  return content;
+}
+
+function renderQuests() {
+  const panel = document.querySelector('[data-pane-panel="quests"]');
+  if (!panel) return;
+  const quests = getGreyharbourQuests();
+  const vertical = document.createElement("div");
+  vertical.className = "quest-vertical-list";
+  for (const quest of quests) {
+    const entry = document.createElement("details");
+    entry.className = "quest-entry";
+    const heading = document.createElement("summary");
+    heading.textContent = quest.title;
+    entry.append(heading, questInformation(quest));
+    vertical.append(entry);
+  }
+
+  const horizontal = document.createElement("div");
+  horizontal.className = "quest-horizontal-layout";
+  const titles = document.createElement("nav");
+  titles.className = "quest-title-list";
+  titles.setAttribute("aria-label", "Quests in journal order");
+  const detail = document.createElement("article");
+  detail.className = "quest-selected-detail";
+  const selectQuest = (quest, button) => {
+    for (const candidate of titles.querySelectorAll("button")) candidate.classList.toggle("is-active", candidate === button);
+    const heading = document.createElement("h2");
+    heading.textContent = quest.title;
+    detail.replaceChildren(heading, questInformation(quest));
+  };
+  quests.forEach((quest, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = quest.title;
+    button.addEventListener("click", () => selectQuest(quest, button));
+    titles.append(button);
+    if (index === 0) selectQuest(quest, button);
+  });
+  horizontal.append(titles, detail);
+  panel.replaceChildren(vertical, horizontal);
 }
 
 function showPane(paneId) {
@@ -611,25 +860,36 @@ titleKeyButton.addEventListener("click", () => {
   else window.api?.closeCombatPaneHost?.();
 });
 document.addEventListener("keydown", (event) => {
-  if (embeddedPane) return;
   if (event.repeat || event.altKey || event.ctrlKey || event.metaKey) return;
   const paneId = PANE_BY_CODE[event.code];
   if (!paneId) return;
   const target = event.target;
   if (target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName))) return;
   event.preventDefault();
-  window.api?.toggleCombatPane?.(paneId);
+  if (embeddedPane) {
+    window.parent.postMessage({ type: "combat-pane-shortcut", paneId }, "*");
+    return;
+  }
+  window.api?.requestInternalCombatPane?.(paneId);
 }, true);
+window.api?.onCombatPaneDragState?.((state) => {
+  document.body.classList.toggle("is-pane-drag-target", state?.active === true);
+});
 descriptionPanel.addEventListener("mouseenter", () => clearTimeout(descriptionHideTimer));
 descriptionPanel.addEventListener("mouseleave", scheduleDescriptionHide);
 document.querySelector(".pane-scroll").addEventListener("mouseleave", scheduleDescriptionHide);
 window.api?.onCombatPaneState?.(renderPaneState);
-window.addEventListener("combat:equipment-changed", renderActionLibraries);
+window.addEventListener("combat:equipment-changed", () => {
+  reconcileEquipmentGrantedActions(actor, getSpellcastingFocusById);
+  renderActionLibraries();
+});
 window.api?.onCombatPaneGroup?.((group) => {
   if (!detachedPaneId || !Array.isArray(group?.paneIds)) return;
   groupedPaneIds = group.paneIds.filter((paneId) => PANE_LABELS[paneId]);
+  paneDock = group.dock || null;
   if (group.activePaneId && groupedPaneIds.includes(group.activePaneId)) activePaneId = group.activePaneId;
   renderPaneState();
+  syncPaneAspect();
 });
 document.addEventListener("dragover", (event) => {
   if (!detachedPaneId || !event.dataTransfer.types.includes("application/x-dndt-pane-tab")) return;
@@ -657,7 +917,16 @@ window.api?.onCombatPointerPosition?.(({ inside, x, y } = {}) => {
   else scheduleDescriptionHide();
 });
 function syncPaneAspect() {
-  document.body.classList.toggle("is-wide-pane", window.innerWidth >= 720);
+  const isWide = paneDock === "top" || paneDock === "bottom"
+    ? true
+    : paneDock === "left" || paneDock === "right"
+      ? false
+      : window.innerWidth >= window.innerHeight * 1.35;
+  document.body.classList.toggle("is-wide-pane", isWide);
+  if (activePaneId === "action-options") {
+    for (const section of document.querySelectorAll('[data-pane-panel="action-options"] > .economy-section')) section.open = isWide;
+    for (const section of document.querySelectorAll('[data-pane-panel="action-options"] .option-category')) section.open = isWide;
+  }
   document.body.classList.toggle("has-inline-pane-key", Boolean(detachedPaneId && groupedPaneIds.length < 2 && !document.body.classList.contains("is-wide-pane")));
   syncCompactTitlebar();
 }
@@ -667,9 +936,10 @@ function syncCompactTitlebar() {
 window.addEventListener("resize", syncPaneAspect);
 syncPaneAspect();
 renderActionLibraries();
-installEquipmentPanelContent(actor, {
+equipmentPanelState = installEquipmentPanelContent(actor, {
   equipmentPanel: document.querySelector('[data-pane-panel="equipment"]'),
   inventoryPanel: document.querySelector('[data-pane-panel="inventory"]'),
 });
 installCharacterPanel(actor, document.querySelector('[data-pane-panel="character"]'));
+renderQuests();
 renderPaneState();

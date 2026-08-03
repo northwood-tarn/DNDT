@@ -14,6 +14,7 @@ import { createStepCreatorCharacterRecord } from "../stepCreatorPipeline.js";
 import { createRendererSaveGameClient } from "../../state/saveGameClient.js";
 import { createSaveGameFromCharacterRecord, DEFAULT_SAVE_GAME_SLOT } from "../../state/saveGameState.js";
 import { DEFAULT_MINI_BASE_SELECTION, UNIQUE_MINI_BASES } from "../../mini_preview/base_asset_manifest.js";
+import { createActionIconImage, resolveActionIcon } from "../../combat_ui_v2/actionIconRegistry.js";
 
 const BASE_STEPS = [
   { id: "name", label: "Name" },
@@ -109,6 +110,8 @@ const els = {
   shell: document.querySelector("#creatorShell"),
   title: document.querySelector("#stepTitle"),
   nameInput: document.querySelector("#characterName"),
+  npcLevelField: document.querySelector("#npcLevelField"),
+  npcLevel: document.querySelector("#npcLevel"),
   chosenName: document.querySelector("#chosenName"),
   portraitTiles: document.querySelector("#portraitTiles"),
   infoPanel: document.querySelector("#infoPanel"),
@@ -143,6 +146,9 @@ const els = {
   details: document.querySelector("#creatorDetails"),
   detailsBody: document.querySelector("#detailsBody"),
   tooltip: document.querySelector("#uiTooltip"),
+  createAnotherPrompt: document.querySelector("#createAnotherPrompt"),
+  createAnotherYes: document.querySelector("#createAnotherYes"),
+  createAnotherNo: document.querySelector("#createAnotherNo"),
 };
 
 const state = {
@@ -175,6 +181,22 @@ const state = {
 };
 state.draft.presentation.miniatureBaseId = DEFAULT_MINI_BASE_SELECTION.uniqueBaseId;
 state.draft.presentation.miniatureBaseAsset = `mini_preview/${UNIQUE_MINI_BASES[0].asset}`;
+const npcCompanionMode = new URLSearchParams(window.location.search).get("mode") === "npc-companion";
+if (npcCompanionMode && els.npcLevel && els.npcLevelField) {
+  els.npcLevelField.hidden = false;
+  els.npcLevel.replaceChildren(...Array.from({ length: 20 }, (_, index) => {
+    const option = document.createElement("option");
+    option.value = String(index + 1);
+    option.textContent = String(index + 1);
+    return option;
+  }));
+  els.npcLevel.value = String(state.draft.identity.level || 1);
+  els.npcLevel.addEventListener("change", () => {
+    state.draft.identity.level = Math.max(1, Math.min(20, Number(els.npcLevel.value) || 1));
+    renderClassOptions();
+    render();
+  });
+}
 
 renderBackgroundOptions();
 renderSpeciesOptions();
@@ -208,7 +230,12 @@ document.addEventListener("click", (event) => {
 
 els.detailsToggle?.addEventListener("click", () => setDetailsOpen(els.details?.hidden));
 els.detailsClose?.addEventListener("click", () => setDetailsOpen(false));
-els.nextButton?.addEventListener("click", advanceStep);
+els.nextButton?.addEventListener("pointerdown", (event) => {
+  event.preventDefault();
+  advanceStep();
+});
+els.createAnotherYes?.addEventListener("click", () => window.location.reload());
+els.createAnotherNo?.addEventListener("click", () => window.api?.quit?.());
 if (els.nextButton) attachTooltip(els.nextButton, "Next", { placement: "top" });
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Enter") return;
@@ -218,7 +245,12 @@ document.addEventListener("keydown", (event) => {
 });
 
 function advanceStep() {
+  if (npcCompanionMode && state.stepId === "appearance") assignNpcAppearance();
   if (!canAdvanceStep()) return;
+  if (npcCompanionMode && state.stepId === "appearance") {
+    startGame();
+    return;
+  }
   if (state.stepId === "summary") {
     startGame();
     return;
@@ -246,7 +278,7 @@ function canAdvanceStep() {
   if (state.stepId === "features") return true;
   if (state.stepId === "spells") return true;
   if (state.stepId === "gear") return true;
-  if (state.stepId === "appearance") return Boolean(state.portraitId && state.miniatureId && state.miniatureBaseId);
+  if (state.stepId === "appearance") return npcCompanionMode || Boolean(state.portraitId && state.miniatureId && state.miniatureBaseId);
   if (state.stepId === "summary") return Boolean(state.portraitId && state.miniatureId && state.miniatureBaseId);
   return false;
 }
@@ -263,8 +295,10 @@ function setStep(stepId) {
 }
 
 function activeSteps() {
-  if (!hasSpellStep()) return BASE_STEPS;
-  return BASE_STEPS.flatMap((step) => step.id === "gear" ? [SPELL_STEP, step] : [step]);
+  const steps = hasSpellStep()
+    ? BASE_STEPS.flatMap((step) => step.id === "gear" ? [SPELL_STEP, step] : [step])
+    : BASE_STEPS;
+  return npcCompanionMode ? steps.filter((step) => step.id !== "summary") : steps;
 }
 
 function nextStepId() {
@@ -420,6 +454,17 @@ function renderBackgroundOptions() {
 function renderAppearanceChoices() {
   if (!els.portraitSelection || !els.miniatureSelection) return;
 
+  if (npcCompanionMode) {
+    const appearance = assignNpcAppearance();
+    els.portraitSelection.classList.add("is-npc-single");
+    els.miniatureSelection.classList.add("is-npc-single");
+    els.portraitSelection.replaceChildren(appearanceButton(appearance.portrait, "portrait"));
+    els.miniatureSelection.replaceChildren(appearanceButton(appearance.miniature, "miniature"));
+    return;
+  }
+  els.portraitSelection.classList.remove("is-npc-single");
+  els.miniatureSelection.classList.remove("is-npc-single");
+
   if (!state.portraitFilter) state.portraitFilter = state.speciesId;
   if (!state.miniatureFilter) state.miniatureFilter = state.speciesId;
   const allPortraitOptions = SPECIES_LIST.flatMap((species) => {
@@ -485,6 +530,40 @@ function renderAppearanceChoices() {
     renderAppearanceChoices();
   });
   els.miniatureSelection.replaceChildren(miniatureFilter, ...visibleMiniatures.map((option) => appearanceButton(option, "miniature")), miniatureNav);
+}
+
+function assignNpcAppearance() {
+  const appearance = npcAppearanceForName(state.name, state.speciesId);
+  state.portraitId = appearance.portrait.id;
+  state.miniatureId = appearance.miniature.id;
+  state.draft.presentation.portraitId = appearance.portrait.id;
+  state.draft.presentation.miniatureId = appearance.miniature.id;
+  return appearance;
+}
+
+function npcAppearanceForName(name, speciesId) {
+  const normalizedName = String(name || "companion").trim().toLowerCase();
+  if (normalizedName === "tara" || normalizedName.startsWith("tara ")) {
+    const id = "mini_preview/assets/tara_human_rapier_v4.png";
+    return {
+      portrait: { id, src: `../${id}`, label: "Portrait", speciesId: "human", portraitView: true },
+      miniature: { id, src: `../${id}`, label: "Figure", speciesId: "human", preserveFullImage: true },
+    };
+  }
+  const knownAppearance = [
+    { names: ["mara vey"], speciesId: "dwarf", form: "feminine", setId: "01" },
+    { names: ["nix calder"], speciesId: "halfling", form: "masculine", setId: "01" },
+    { names: ["sister elian", "elian"], speciesId: "aasimar", form: "feminine", setId: "02" },
+  ].find((entry) => entry.names.some((knownName) => normalizedName.includes(knownName)));
+  let hash = 0;
+  for (const character of normalizedName) hash = ((hash * 31) + character.codePointAt(0)) >>> 0;
+  const resolvedSpeciesId = knownAppearance?.speciesId || speciesId;
+  const form = knownAppearance?.form || (hash % 2 === 0 ? "feminine" : "masculine");
+  const setId = knownAppearance?.setId || "01";
+  return {
+    portrait: appearancePortraitOption(resolvedSpeciesId, form, setId, "Portrait"),
+    miniature: appearanceMiniatureOption(resolvedSpeciesId, form, "Figure"),
+  };
 }
 
 function appearanceFilter(labelText, value, onChange) {
@@ -581,6 +660,8 @@ function appearanceButton(option, kind) {
   const image = document.createElement("img");
   image.src = option.src;
   image.alt = "";
+  if (option.preserveFullImage) image.classList.add("preserve-full-image");
+  if (option.portraitView) image.classList.add("portrait-view");
   const label = document.createElement("span");
   label.className = "appearance-option-label";
   label.textContent = option.label;
@@ -1030,15 +1111,36 @@ function gearOption(option, pool) {
 function spellChoiceOption(option) {
   return {
     ...option,
+    iconId: option.id,
+    iconKind: "spell",
     meta: option.level === 0 ? "Cantrip" : `Level ${option.level}`,
   };
+}
+
+function creatorChoiceIcon(iconId, iconKind = "ability") {
+  if (!iconId) return null;
+  const action = iconKind === "spell"
+    ? { id: iconId, sourceSpellId: iconId, kind: "spell", tags: { spell: true } }
+    : { id: iconId, iconId };
+  if (resolveActionIcon(action).isFallback) return null;
+  const icon = createActionIconImage(action, "creator-choice-icon");
+  icon.setAttribute("aria-hidden", "true");
+  return icon;
+}
+
+function creatorChoiceLabel(text, iconId, iconKind = "ability") {
+  const label = document.createElement("span");
+  label.className = "creator-choice-label";
+  label.textContent = text;
+  const icon = creatorChoiceIcon(iconId, iconKind);
+  return icon ? [icon, label] : [label];
 }
 
 function fixedSpellButton(record) {
   const button = document.createElement("button");
   button.className = "background-option creator-choice-option";
   button.type = "button";
-  button.textContent = record.option.name;
+  button.replaceChildren(...creatorChoiceLabel(record.option.name, record.option.id, "spell"));
   const preview = () => previewSpellOption(record.option, record.source);
   button.addEventListener("mouseenter", preview);
   button.addEventListener("focus", preview);
@@ -1049,7 +1151,7 @@ function featureButton(record) {
   const button = document.createElement("button");
   button.className = "background-option creator-choice-option";
   button.type = "button";
-  button.textContent = record.feature.name;
+  button.replaceChildren(...creatorChoiceLabel(record.feature.name, record.feature.iconId || record.feature.id));
   const preview = () => {
     state.hoveredFeatureKey = record.key;
     renderGrants();
@@ -1140,7 +1242,7 @@ function featButton(feat, selected, pool = null, sourceLabel = "") {
   const button = document.createElement("button");
   button.className = `background-option creator-choice-option${selected ? " is-selected" : ""}`;
   button.type = "button";
-  button.textContent = feat.name;
+  button.replaceChildren(...creatorChoiceLabel(feat.name, feat.iconId || feat.id));
   const preview = () => {
     state.hoveredFeatId = feat.id;
     state.hoveredFeatSource = sourceLabel;
@@ -1251,7 +1353,10 @@ function updateMultiSelectButton(button, options, selected, count, emptyLabel, k
   const counter = document.createElement("span");
   counter.className = "feat-subchoice-count";
   counter.textContent = `(${selected.length}/${count})`;
-  button.replaceChildren(label, counter);
+  const selectedOption = options.find((option) => option.id === selected[0]);
+  const icon = creatorChoiceIcon(selectedOption?.iconId || selectedOption?.id, selectedOption?.iconKind);
+  button.classList.toggle("has-choice-icon", Boolean(icon));
+  button.replaceChildren(...(icon ? [icon, label, counter] : [label, counter]));
 }
 
 function nextMultiSelectValues(selected, optionId, max) {
@@ -1308,6 +1413,7 @@ function featChoiceSection(feat, choice) {
 
 function featOptionText(option) {
   const span = document.createElement("span");
+  span.className = "creator-choice-label";
   span.textContent = option.name;
   if (option.meta) {
     const meta = document.createElement("span");
@@ -1315,7 +1421,12 @@ function featOptionText(option) {
     meta.textContent = option.meta;
     span.append(meta);
   }
-  return span;
+  const icon = creatorChoiceIcon(option.iconId || option.id, option.iconKind);
+  if (!icon) return span;
+  const wrapper = document.createElement("span");
+  wrapper.className = "creator-choice-option-content";
+  wrapper.append(icon, span);
+  return wrapper;
 }
 
 function previewFeatChoice(feat, option) {
@@ -2203,6 +2314,8 @@ function summarySkillRowNode(line) {
 function summaryLineNode(line) {
   const item = document.createElement("li");
   const text = typeof line === "string" ? line : line.text;
+  const icon = typeof line === "object" ? creatorChoiceIcon(line.iconId, line.iconKind) : null;
+  if (icon) item.append(icon);
   item.append(text);
   if (typeof line === "object" && line.proficient) item.append(summaryProficiencyMark());
   if (typeof line === "object" && line.preview) {
@@ -2306,6 +2419,8 @@ function summarySpellGroups() {
     if (!levels.has(key)) levels.set(key, []);
     levels.get(key).push({
       text: spell.name,
+      iconId: spell.id,
+      iconKind: "spell",
       info: spell.text || `${spell.name}, ${spell.school}`,
       preview: () => {
         state.hoveredSpellOption = { option: spellOptionFromId(spell.id), source: "Summary" };
@@ -2452,7 +2567,48 @@ function hideTooltip() {
 }
 
 async function startGame() {
-  const characterRecord = createStepCreatorCharacterRecord(state.draft);
+  const companionId = slugId(state.draft.identity.characterName || "companion");
+  const characterRecord = createStepCreatorCharacterRecord(state.draft, npcCompanionMode ? {
+    id: companionId,
+    slot: companionId,
+    kind: "companion",
+    definitionId: `companion.${companionId}`,
+    actorOptions: { id: companionId, position: { x: 1, y: 1 } },
+    resolveOptions: { allowNonCreationLevel: true },
+  } : {});
+  if (npcCompanionMode) {
+    els.nextButton.disabled = true;
+    try {
+      if (characterRecord.status !== "ready" || !characterRecord.actorDefinition || !characterRecord.actorInstance) {
+        const messages = characterRecord.validityReport?.checks
+          ?.flatMap((check) => check.messages || [])
+          .filter(Boolean)
+          .join("; ");
+        throw new Error(messages || "The companion record is incomplete");
+      }
+      const result = await window.api?.saveNpcCompanion?.({
+        schemaVersion: 1,
+        id: companionId,
+        definition: characterRecord.actorDefinition,
+        instance: {
+          ...characterRecord.actorInstance,
+          id: companionId,
+          definitionId: characterRecord.actorDefinition.id,
+          team: "heroes",
+        },
+        characterRecord,
+      });
+      if (!result?.ok) throw new Error("Companion record was not written");
+      els.infoPanel.textContent = `${state.draft.identity.characterName} is ready as a companion. Saved to ${result.path}.`;
+      els.createAnotherPrompt.hidden = false;
+      els.createAnotherYes.focus();
+    } catch (error) {
+      console.error("Unable to save the NPC companion", error);
+      els.nextButton.disabled = false;
+      els.infoPanel.textContent = `The companion could not be saved: ${error.message}`;
+    }
+    return;
+  }
   const saveGame = createSaveGameFromCharacterRecord(characterRecord, { slot: characterRecord.slot });
   els.nextButton.disabled = true;
   try {
@@ -2463,6 +2619,14 @@ async function startGame() {
     els.nextButton.disabled = false;
     els.infoPanel.textContent = "Your character could not be saved. Please try again.";
   }
+}
+
+function slugId(value) {
+  return String(value || "companion")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "") || "companion";
 }
 
 function createDiamondSvg() {

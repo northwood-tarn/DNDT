@@ -313,7 +313,7 @@ export default {
             type: "Special",
             uses: "longRest",
             description:
-              "Once per long rest, brand all enemies you can see within 30 ft. Until one branded creature dies, every time you hit any branded creature, all branded creatures take damage equal to your Charisma modifier. When the first branded creature falls, all marks vanish.",
+              "Once per long rest, brand all enemies you can see within 30 ft that fail a Charisma saving throw against your Warlock spell-save DC. Until one branded creature dies, the first time each round you hit any branded creature, every branded creature takes force damage equal to your Charisma modifier. Each branded creature can take this linked damage only once per round. When the first branded creature falls, all marks vanish.",
             effects: {
               resources: [{ id: "cataclysmic_debt", name: "Cataclysmic Debt", max: 1, recovery: "long_rest" }],
               actionOptions: [{
@@ -324,6 +324,7 @@ export default {
                 rangeFt: 30,
                 targeting: { mode: "nearby_actors" },
                 targetFilter: { team: "enemies" },
+                save: { ability: "charisma", dcFrom: "spellSaveDC", onSave: "negates" },
                 effects: [{
                   type: "condition",
                   trigger: "failed_save",
@@ -339,7 +340,8 @@ export default {
                     requiresConditionOnTarget: "cataclysmic_debt",
                     splashCondition: "cataclysmic_debt",
                     damage: "charisma_modifier",
-                    damageType: "force"
+                    damageType: "force",
+                    oncePerRoundPerTarget: true
                   }
                 }
               }]
@@ -541,13 +543,13 @@ export default {
             name: "Wicklight",
             iconId: "wicklight",
             type: "Passive",
-            description: "When you damage a creature with a Warlock spell or cantrip, you may mark it with Wicklight until the start of your next turn. The next attack against that creature ignores Half Cover and Three-Quarters Cover, and the creature cannot benefit from being invisible against that attack.",
+            description: "When you damage a creature with a Warlock spell or cantrip, you may mark it with Wicklight until the end of your next turn. The next attack against that creature ignores Half Cover and Three-Quarters Cover, and the creature cannot benefit from being invisible against that attack.",
             effects: {
               triggeredEffects: [{
                 id: "wicklight_mark",
                 trigger: "warlock_spell_or_cantrip_damage",
                 condition: "wicklit",
-                duration: { until: "start_of_source_next_turn" },
+                duration: { until: "end_of_source_next_turn" },
                 nextAttackAgainstTarget: {
                   ignoreCover: ["half", "three_quarters"],
                   ignoreInvisible: true,

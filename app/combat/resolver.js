@@ -1,6 +1,7 @@
 import { actorAt, distance, inBounds, isMovementBlocked } from "./grid.js";
 import {
   getMovementRemaining,
+  addCondition,
   getItemQuantity,
   getStandingCost,
   hasCondition,
@@ -14,7 +15,7 @@ import {
   syncContextualActions,
   syncLegacyEconomyFields,
 } from "./actor.js";
-import { getConditionRules } from "./effects.js";
+import { createConditionInstance, getConditionRules } from "./effects.js";
 import { checkOutcome, currentActor, getActor, livingActors } from "./combatState.js";
 import { cleanupInvalidSourceConditions, processOngoingEffects } from "./conditionLifecycle.js";
 import { getMovementEntryHazards, getMovementStepCost } from "./movementRules.js";
@@ -160,8 +161,71 @@ export function moveActor(snapshot, actor, to, log, { force = false, dice = null
     }
   }
   if (!force) dispatchActorTrigger(snapshot, "enter_area", actor, dice, log, { from, to });
+  if (!force) resolveChainsOfVengeanceAfterMove(snapshot, actor, dice, log);
   cleanupInvalidSourceConditions(snapshot, log);
   return true;
+}
+
+function resolveChainsOfVengeanceAfterMove(snapshot, target, dice, log) {
+  const vow = (target.marks || []).find((mark) => mark.id === "vow_of_enmity" && mark.sourceActorId);
+  if (!vow || !dice) return;
+  const source = snapshot.actors.find((actor) => actor.id === vow.sourceActorId && actor.hp > 0);
+  if (!source) return;
+  const effect = (source.features || [])
+    .flatMap((feature) => feature.effects?.triggeredEffects || [])
+    .find((item) => item.id === "chains_of_vengeance" && item.trigger === "marked_target_moves");
+  if (!effect) return;
+  source.combatFlags ??= {};
+  if (source.combatFlags.chainsOfVengeanceRound === snapshot.round) return;
+  source.combatFlags.chainsOfVengeanceRound = snapshot.round;
+
+  const ability = "str";
+  const dc = source.spellSaveDC || 10;
+  const saveModifier = rollSaveModifier(snapshot, target, ability, { name: "Chains of Vengeance", saveAbility: ability }, dice);
+  const bonus = (target.saves?.[ability] || 0) + saveModifier.total;
+  const roll = rollSaveD20(target, { name: "Chains of Vengeance", saveAbility: ability }, dice, snapshot, source);
+  const total = roll.roll + bonus;
+  let success = !roll.autoFail && total >= dc;
+  ({ success } = applyLegendaryResistance({ snapshot, target, success, action: { name: "Chains of Vengeance" }, effect, log, total, dc }));
+  log.add("save.roll", {
+    round: snapshot.round,
+    actorId: source.id,
+    actorName: source.name,
+    targetId: target.id,
+    targetName: target.name,
+    spellName: "Chains of Vengeance",
+    ability,
+    roll: roll.roll,
+    rolls: roll.rolls,
+    mode: roll.mode,
+    reasons: roll.reasons,
+    bonus,
+    total,
+    targetNumber: dc,
+    success,
+  });
+  if (success) return;
+
+  const condition = createConditionInstance({
+    type: "condition",
+    condition: "chained",
+    duration: { kind: "until_timing", timing: "turn_start" },
+  }, source, {
+    id: "chains_of_vengeance",
+    name: "Chains of Vengeance",
+    spellSaveDC: dc,
+  });
+  addCondition(target, condition);
+  log.add("condition.applied", {
+    round: snapshot.round,
+    sourceId: source.id,
+    sourceName: source.name,
+    targetId: target.id,
+    targetName: target.name,
+    condition: "chained",
+    label: "Chained",
+    actionName: "Chains of Vengeance",
+  });
 }
 
 export function resolveAction(snapshot, actor, actionId, targetId, dice, log) {

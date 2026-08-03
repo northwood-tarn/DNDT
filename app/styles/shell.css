@@ -1,3 +1,5 @@
+@import url("./emberModal.css");
+
 :root {
   --bg: #0b0f14;
   --panel: #111823;
@@ -447,6 +449,133 @@ body:not(.shell-mode) .app-grid {
   width: 1ch;
   text-align: center;
   padding: 0;
+}
+
+/* Shared laptop Ember modal. Its workflows are intentionally added later. */
+.ember-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  width: 100vw;
+  max-width: none;
+  height: 100vh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: #050706;
+}
+
+.ember-modal[open] { display: block; }
+.ember-modal::backdrop { background: rgba(5, 7, 6, 0.92); }
+
+.ember-modal__fog {
+  position: absolute;
+  inset: -10%;
+  pointer-events: none;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 0.25;
+  will-change: transform;
+}
+
+.ember-modal__fog--one {
+  background-image: url("../assets/fog/fog_01.png");
+  animation: ember-fog-fade 4s ease both, ember-fog-drift-one 72s ease-in-out infinite alternate;
+}
+
+.ember-modal__fog--two {
+  background-image: url("../assets/fog/fog_05.png");
+  mix-blend-mode: screen;
+  animation: ember-fog-fade 4s ease both, ember-fog-drift-two 96s ease-in-out infinite alternate;
+}
+
+.ember-modal__fog--three {
+  background-image: url("../assets/fog/fog_09.png");
+  mix-blend-mode: lighten;
+  animation: ember-fog-fade 4s ease both, ember-fog-drift-three 124s ease-in-out infinite alternate;
+}
+
+.ember-modal__lanterna {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 87.5px;
+  height: 125px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: ember-lanterna-arrive 4s ease both;
+}
+
+.ember-modal__lanterna-fill,
+.ember-modal__lanterna img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.ember-modal__lanterna-fill {
+  opacity: 0.86;
+  background-image:
+    linear-gradient(rgba(205, 252, 244, 0.08), rgba(205, 252, 244, 0.08)),
+    url("../assets/fog/fog_02.png"),
+    url("../assets/fog/fog_07.png"),
+    url("../assets/fog/fog_09.png");
+  background-position: center, 42% 38%, 58% 64%, 50% 50%;
+  background-repeat: no-repeat;
+  background-size: cover, 300px auto, 240px auto, 270px auto;
+  mix-blend-mode: screen;
+  -webkit-mask: url("../assets/images/effects/flame.png") center / contain no-repeat;
+  mask: url("../assets/images/effects/flame.png") center / contain no-repeat;
+  animation: ember-flame-fog 25.6s ease-in-out infinite alternate;
+}
+
+.ember-modal__lanterna img {
+  object-fit: contain;
+  opacity: 0.16;
+  filter: drop-shadow(0 0 12px rgba(126, 225, 211, 0.12));
+}
+
+body.is-ember-modal-open #game-root,
+body.is-ember-modal-open .drag-region,
+body.is-ember-modal-open #game-log {
+  opacity: 0.12;
+  filter: blur(2px);
+  pointer-events: none;
+  transition: opacity 260ms ease, filter 260ms ease;
+}
+
+@keyframes ember-lanterna-arrive {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ember-fog-fade {
+  from { opacity: 0; }
+  to { opacity: 0.25; }
+}
+
+@keyframes ember-flame-fog {
+  from { background-position: center, 38% 34%, 62% 68%, 48% 46%; }
+  to { background-position: center, 58% 54%, 42% 42%, 55% 62%; }
+}
+
+@keyframes ember-fog-drift-one {
+  from { transform: translate3d(-2%, -1%, 0) scale(1.04); }
+  to { transform: translate3d(2%, 1%, 0) scale(1.1); }
+}
+
+@keyframes ember-fog-drift-two {
+  from { transform: translate3d(2%, -2%, 0) scale(1.08); }
+  to { transform: translate3d(-2%, 2%, 0) scale(1.02); }
+}
+
+@keyframes ember-fog-drift-three {
+  from { transform: translate3d(-1%, 2%, 0) scale(1.03); }
+  to { transform: translate3d(2%, -1%, 0) scale(1.09); }
 }
 
 /* Skill / class tags */

@@ -255,6 +255,7 @@ function armorClassSources({ armor, shield, dexMod, effectiveDex, shieldBonus, f
 
 function cappedDexMod(dexMod, cap) {
   if (cap === null || cap === undefined) return dexMod;
+  if (cap === 0) return 0;
   return Math.min(dexMod, cap);
 }
 

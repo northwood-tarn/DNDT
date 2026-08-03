@@ -811,6 +811,15 @@ function heroActor() {
 
 function renderCharacterState() {
   const actor = heroActor();
+  document.dispatchEvent(new CustomEvent("combat:economy-changed", {
+    detail: {
+      action: actor.economy?.actionAvailable !== false,
+      bonus: actor.economy?.bonusActionAvailable !== false,
+      movementRemaining: actor.movementRemaining,
+      movementMax: actor.economy?.movementMax ?? actor.speed,
+      spellSlots: structuredClone(actor.spellSlots || {}),
+    },
+  }));
   const name = document.querySelector("#combatCharacterName");
   const portrait = document.querySelector(".combat-ui-portrait");
   name.textContent = actor.name.split(",")[0];

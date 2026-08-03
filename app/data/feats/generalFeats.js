@@ -177,6 +177,22 @@ export const GENERAL_FEATS_BY_ID = {
     tags: ["ability", "save", "spellcaster_counter"]
   }),
 
+  war_caster: generalFeat({
+    id: "war_caster",
+    name: "War Caster",
+    requirements: { feature: "spellcasting" },
+    description: "Improve a spellcasting ability, gain Advantage on Constitution saves to maintain Concentration, perform Somatic components with occupied hands, and cast a spell as an opportunity attack.",
+    choices: [{ id: "ability", kind: "ability_score", count: 1, options: ["intelligence", "wisdom", "charisma"], amount: 1, scoreCap: 20 }],
+    effects: {
+      modifiers: [{ id: "war_caster_concentration", target: "saving_throw", ability: "constitution", mode: "advantage", condition: "maintaining_concentration" }],
+      featureHooks: [
+        { id: "war_caster_somatic_components", timing: "spell_components", allowSomaticWithOccupiedHands: true },
+        { id: "war_caster_reactive_spell", timing: "opportunity_attack", outcome: "cast_spell", targetCount: 1 }
+      ]
+    },
+    tags: ["ability", "spellcasting", "concentration", "reaction"]
+  }),
+
   martial_weapon_training: generalFeat({
     id: "martial_weapon_training",
     name: "Martial Weapon Training",
