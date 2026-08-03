@@ -1,7 +1,7 @@
 Do not add anything that the user has not asked for.
 When the user selects or locks an image, preserve that exact source image. Do not crop, regenerate, reinterpret, replace, or "improve" it unless the user explicitly asks for that specific change.
 
-The Dornhal area map is locked. Its canonical source, runtime copy, and checksum are recorded in `app/docs/layout_sketches/act_maps_v1/DORNHAL_AREA_MAP_LOCK.md`. Do not alter or replace either PNG unless the user explicitly unlocks the Dornhal area map.
+The Xebec area map is locked. Its canonical source, runtime copy, and checksum are recorded in `app/docs/layout_sketches/act_maps_v1/XEBEC_AREA_MAP_LOCK.md`. Do not alter or replace either PNG unless the user explicitly unlocks the Xebec area map.
 
 The Endless Plains area map is locked. Its canonical source, runtime copy, and checksum are recorded in `app/docs/layout_sketches/act_maps_v1/ENDLESS_PLAINS_AREA_MAP_LOCK.md`. Do not alter or replace either PNG unless the user explicitly unlocks the Endless Plains area map.
 

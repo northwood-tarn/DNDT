@@ -37,7 +37,7 @@ Navigation maps are display/navigation surfaces. They show a full-screen image, 
 
 Kinds:
 
-- `world_map`: top-level campaign geography. Current areas are `01 Greyharbour`, `02 Necropolis`, and `03 The Endless Plains`.
+- `world_map`: top-level campaign geography. Current areas are `01 Greyharbour`, `02 Xebec` (commonly called the Necropolis), and `03 The Endless Plains`.
 - `area_map`: one main area and its locations.
 - `location_map`: one location and its exits into more engaged map content.
 

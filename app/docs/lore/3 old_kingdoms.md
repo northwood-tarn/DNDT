@@ -90,7 +90,7 @@ Markets under the Dome sold silks, fresh fruit, and caged ember-flames. At night
 **Collapse:** A quake cracked the Dome’s base; the sea poured in, scattering light “like coins in the current.” Survivors clung to upper galleries for months before the final breach.
 
 **To the next kingdom:**  
-The refugees who escaped carried tales of a tunnel to the upper world — a story brought by scouts who had mapped far beyond Lurethis’s reach. They rallied under Queen Rhenn Cyrinth, founding a fortress at the tunnel mouth: Dornhal.
+The refugees who escaped carried tales of a tunnel to the upper world — a story brought by scouts who had mapped far beyond Lurethis’s reach. They rallied under Queen Rhenn Cyrinth, founding a fortress at the tunnel mouth: Xebec.
 
 ---
 
@@ -102,7 +102,7 @@ The refugees who escaped carried tales of a tunnel to the upper world — a stor
 ## V. Cyrinth, the Last Kingdom
 
 **Dates:** c. 680 AU – 812 AU  
-**Capital:** Dornhal, a fortress city of drills and dreams at the mouth of the only known tunnel to the surface.
+**Capital:** Xebec, a fortress city of drills and dreams at the mouth of the only known tunnel to the surface.
 
 Here, armourers forged Sun-Breaker plate — mirrored to “turn aside the surface sun.” Children climbed rope-lattices as high as the cavern roof, training for the day of Ascent. The Hall of Memory guarded the copper-coloured Cyrinth Fragment, believed to be a shard of the First Ember.
 
@@ -111,7 +111,7 @@ Here, armourers forged Sun-Breaker plate — mirrored to “turn aside the surfa
 - **Marshal Tor Velas**, designer of the Sun-Breaker armour.  
 - **High Voice Dren Malcor**, preacher of the Ascent.
 
-**Collapse:** In 812 AU, the Ascent was attempted with 300 soldiers and the Queen herself. The tunnel collapsed before they broke through. Faith shattered; Dornhal dissolved into petty realms — the fragile, quarrelling territories of the present day.
+**Collapse:** In 812 AU, the Ascent was attempted with 300 soldiers and the Queen herself. The tunnel collapsed before they broke through. Faith shattered; Xebec dissolved into petty realms — the fragile, quarrelling territories of the present day.
 
 ---
 

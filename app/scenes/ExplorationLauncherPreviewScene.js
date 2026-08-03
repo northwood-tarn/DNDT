@@ -20,10 +20,17 @@ const LAUNCHERS = [
 
 const ACT_MAPS = Object.freeze({
   "1": Object.freeze({ title: "Greyharbour", source: "./assets/maps/act_1_greyharbour_fog.png" }),
-  "2": Object.freeze({ title: "Dornhal", source: "./assets/maps/act_2_necropolis_fog.png" }),
+  "2": Object.freeze({
+    title: "Xebec",
+    source: "./assets/maps/act_2_necropolis_fog.png",
+    areaId: "xebec",
+    areaTitle: "Xebec",
+    areaSource: "./assets/maps/xebec_area_map.png",
+  }),
   "3": Object.freeze({
     title: "The Endless Plains",
     source: "./assets/maps/act_3_backlands_full_map.png",
+    areaId: "endlessPlains",
     areaTitle: "The Endless Plains",
     areaSource: "./assets/maps/endless_plains_area_map.png",
   }),
@@ -40,14 +47,32 @@ const WORLD_MAP_HOVERS = Object.freeze({
     name: "Greyharbour",
     epithet: "Last of the free settlements",
   }),
-  dornhal: Object.freeze({
-    name: "Dornhal",
+  xebec: Object.freeze({
+    name: "Xebec",
     epithet: "Seat of the Bone Court",
   }),
   endlessPlains: Object.freeze({
     name: "The Endless Plains",
     epithet: "Ancient home of the forgotten",
   }),
+});
+
+const XEBEC_AREA_HOVERS = Object.freeze({
+  wartornLands: Object.freeze({ name: "Wartorn Lands" }),
+  insideTheWall: Object.freeze({ name: "Inside the Walls" }),
+  twilightBazaar: Object.freeze({ name: "The Twilight Bazaar" }),
+  chalkResidences: Object.freeze({ name: "The Chalk\nResidences" }),
+  regnantEternal: Object.freeze({ name: "The Regnant Eternal" }),
+  zeret: Object.freeze({ name: "Zeret" }),
+});
+
+const ENDLESS_PLAINS_AREA_HOVERS = Object.freeze({
+  endlessPlainsArea: Object.freeze({ name: "The Endless Plains" }),
+  untendedGraves: Object.freeze({ name: "Untended\nGraves" }),
+  carrow: Object.freeze({ name: "Carrow" }),
+  memphremagog: Object.freeze({ name: "Memphremagog" }),
+  escarpmentOfEyes: Object.freeze({ name: "The Escarpment\nof Eyes" }),
+  towardsThePortal: Object.freeze({ name: "Towards the Portal" }),
 });
 
 function resolveActMap(params = {}) {
@@ -195,6 +220,85 @@ function ensureStyles() {
       pointer-events: none;
     }
 
+    .area-map-regions {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: none;
+      pointer-events: none;
+    }
+
+    .exploration-map-overlay.is-area-level[data-area-map="xebec"] .area-map-regions[data-area-map-regions="xebec"],
+    .exploration-map-overlay.is-area-level[data-area-map="endlessPlains"] .area-map-regions[data-area-map-regions="endlessPlains"] {
+      display: block;
+    }
+
+    .area-map-region {
+      appearance: none;
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: default;
+      pointer-events: auto;
+      -webkit-app-region: no-drag;
+    }
+
+    .area-map-region:focus-visible {
+      outline: none;
+    }
+
+    .area-map-region[data-area-region="wartornLands"] {
+      clip-path: polygon(23% 74%, 36% 70%, 37% 88%, 22% 91%);
+    }
+
+    .area-map-region[data-area-region="insideTheWall"] {
+      clip-path: polygon(10% 28%, 29% 31%, 31% 40%, 27% 48%, 38% 72%, 83% 79%, 77% 88%, 28% 80%, 12% 59%);
+    }
+
+    .area-map-region[data-area-region="twilightBazaar"] {
+      clip-path: polygon(23% 6%, 39% 9%, 36% 31%, 29% 34%, 21% 25%);
+    }
+
+    .area-map-region[data-area-region="chalkResidences"] {
+      clip-path: polygon(28% 34%, 45% 43%, 46% 58%, 35% 61%, 27% 48%);
+    }
+
+    .area-map-region[data-area-region="regnantEternal"] {
+      clip-path: polygon(29% 31%, 94% 42%, 95% 55%, 45% 48%, 35% 43%);
+    }
+
+    .area-map-region[data-area-region="zeret"] {
+      clip-path: polygon(37% 9%, 75% 17%, 94% 39%, 93% 43%, 36% 31%);
+    }
+
+    .area-map-region[data-area-region="memphremagog"] {
+      clip-path: polygon(3% 5%, 35% 3%, 42% 25%, 33% 38%, 8% 32%);
+    }
+
+    .area-map-region[data-area-region="untendedGraves"] {
+      clip-path: polygon(36% 9%, 58% 8%, 61% 31%, 39% 35%);
+    }
+
+    .area-map-region[data-area-region="escarpmentOfEyes"] {
+      clip-path: polygon(58% 12%, 99% 12%, 99% 65%, 83% 57%, 66% 38%);
+    }
+
+    .area-map-region[data-area-region="towardsThePortal"] {
+      clip-path: polygon(59% 0%, 100% 0%, 100% 14%, 58% 14%);
+    }
+
+    .area-map-region[data-area-region="carrow"] {
+      clip-path: polygon(0% 34%, 19% 35%, 37% 91%, 0% 91%);
+    }
+
+    .area-map-region[data-area-region="endlessPlainsArea"] {
+      clip-path: polygon(34% 33%, 61% 28%, 85% 58%, 100% 71%, 100% 100%, 25% 100%, 17% 56%);
+    }
+
     .world-map-region {
       appearance: none;
       position: absolute;
@@ -217,7 +321,7 @@ function ensureStyles() {
       clip-path: polygon(1% 57%, 25% 57%, 49% 69%, 50% 100%, 0% 100%);
     }
 
-    .world-map-region[data-world-region="dornhal"] {
+    .world-map-region[data-world-region="xebec"] {
       clip-path: polygon(15% 18%, 38% 15%, 68% 24%, 92% 42%, 96% 74%, 55% 80%, 25% 65%, 10% 45%);
     }
 
@@ -253,8 +357,30 @@ function ensureStyles() {
     }
 
     .world-map-hover[data-region="greyharbour"] { --hover-x: 53%; --hover-y: 69%; }
-    .world-map-hover[data-region="dornhal"] { --hover-x: 55%; --hover-y: 40%; }
+    .world-map-hover[data-region="xebec"] { --hover-x: 55%; --hover-y: 40%; }
     .world-map-hover[data-region="endlessPlains"] { --hover-x: 74%; --hover-y: 19%; }
+
+    .world-map-hover[data-region="wartornLands"] { --hover-x: 29%; --hover-y: 80%; }
+    .world-map-hover[data-region="insideTheWall"] { --hover-x: 58%; --hover-y: 70%; }
+    .world-map-hover[data-region="twilightBazaar"] { --hover-x: 29%; --hover-y: 19%; }
+    .world-map-hover[data-region="chalkResidences"] { --hover-x: 54%; --hover-y: 55%; }
+    .world-map-hover[data-region="regnantEternal"] { --hover-x: 66%; --hover-y: 43%; }
+    .world-map-hover[data-region="zeret"] { --hover-x: 57%; --hover-y: 28%; }
+
+    .world-map-hover[data-region="memphremagog"] { --hover-x: 20%; --hover-y: 20%; }
+    .world-map-hover[data-region="untendedGraves"] { --hover-x: 47%; --hover-y: 23%; }
+    .world-map-hover[data-region="escarpmentOfEyes"] { --hover-x: 74%; --hover-y: 29%; }
+    .world-map-hover[data-region="towardsThePortal"] { --hover-x: 82%; --hover-y: 10%; }
+    .world-map-hover[data-region="carrow"] { --hover-x: 20%; --hover-y: 63%; }
+    .world-map-hover[data-region="endlessPlainsArea"] { --hover-x: 54%; --hover-y: 68%; }
+
+    .world-map-hover[data-region="insideTheWall"] {
+      min-width: 1100px;
+    }
+
+    .world-map-hover[data-region="escarpmentOfEyes"] {
+      min-width: 1050px;
+    }
 
     .exploration-map-overlay.is-area-level .world-map-hover[data-region="greyharbour"] {
       --hover-x: 53%;
@@ -266,7 +392,7 @@ function ensureStyles() {
       --hover-y: 19%;
     }
 
-    .exploration-map-overlay.is-area-level .world-map-hover[data-region="dornhal"] {
+    .exploration-map-overlay.is-area-level .world-map-hover[data-region="xebec"] {
       --hover-x: 55%;
       --hover-y: 40%;
     }
@@ -289,6 +415,7 @@ function ensureStyles() {
       line-height: 1.1;
       text-transform: uppercase;
       text-shadow: 0 1px 8px rgba(0, 7, 9, 0.92);
+      white-space: pre-line;
     }
 
     .world-map-hover-name::before,
@@ -821,6 +948,7 @@ export default class ExplorationLauncherPreviewScene {
     ensureStyles();
     if (!this.root) return;
     const actMap = resolveActMap(this.params);
+    this.areaMapId = actMap.areaId || "";
     this.mapLevels = [
       { id: "world", label: MAP_LEVEL_NAMES.world, title: actMap.title, source: actMap.source },
       {
@@ -841,8 +969,24 @@ export default class ExplorationLauncherPreviewScene {
         <img class="exploration-world-map" src="${actMap.source}" alt="${actMap.title} area map">
         <div class="world-map-regions" aria-label="World map regions">
           <button class="world-map-region" data-world-region="greyharbour" type="button" aria-label="Greyharbour — Last of the free settlements"></button>
-          <button class="world-map-region" data-world-region="dornhal" type="button" aria-label="Dornhal — Seat of the Bone Court"></button>
+          <button class="world-map-region" data-world-region="xebec" type="button" aria-label="Xebec — Seat of the Bone Court"></button>
           <button class="world-map-region" data-world-region="endlessPlains" type="button" aria-label="The Endless Plains — Ancient home of the forgotten"></button>
+        </div>
+        <div class="area-map-regions" data-area-map-regions="xebec" aria-label="Xebec locations">
+          <button class="area-map-region" data-area-region="wartornLands" type="button" aria-label="Wartorn Lands"></button>
+          <button class="area-map-region" data-area-region="insideTheWall" type="button" aria-label="Inside the Walls"></button>
+          <button class="area-map-region" data-area-region="twilightBazaar" type="button" aria-label="The Twilight Bazaar"></button>
+          <button class="area-map-region" data-area-region="chalkResidences" type="button" aria-label="The Chalk Residences"></button>
+          <button class="area-map-region" data-area-region="regnantEternal" type="button" aria-label="The Regnant Eternal"></button>
+          <button class="area-map-region" data-area-region="zeret" type="button" aria-label="Zeret"></button>
+        </div>
+        <div class="area-map-regions" data-area-map-regions="endlessPlains" aria-label="Endless Plains locations">
+          <button class="area-map-region" data-area-region="endlessPlainsArea" type="button" aria-label="The Endless Plains"></button>
+          <button class="area-map-region" data-area-region="untendedGraves" type="button" aria-label="Untended Graves"></button>
+          <button class="area-map-region" data-area-region="carrow" type="button" aria-label="Carrow"></button>
+          <button class="area-map-region" data-area-region="memphremagog" type="button" aria-label="Memphremagog"></button>
+          <button class="area-map-region" data-area-region="escarpmentOfEyes" type="button" aria-label="The Escarpment of Eyes"></button>
+          <button class="area-map-region" data-area-region="towardsThePortal" type="button" aria-label="Towards the Portal"></button>
         </div>
         <aside class="world-map-hover" aria-live="polite" hidden>
           <h1 class="world-map-hover-name"></h1>
@@ -871,6 +1015,7 @@ export default class ExplorationLauncherPreviewScene {
     this.mapResolutionCurrent = this.container.querySelector(".map-resolution-current");
     this.mapResolutionControls = [...this.container.querySelectorAll("[data-map-direction]")];
     this.worldMapRegions = [...this.container.querySelectorAll("[data-world-region]")];
+    this.areaMapRegions = [...this.container.querySelectorAll("[data-area-region]")];
     this.worldMapHover = this.container.querySelector(".world-map-hover");
     this.worldMapHoverName = this.container.querySelector(".world-map-hover-name");
     this.worldMapHoverEpithet = this.container.querySelector(".world-map-hover-epithet");
@@ -884,6 +1029,12 @@ export default class ExplorationLauncherPreviewScene {
       region.addEventListener("pointerenter", this.showWorldMapHover);
       region.addEventListener("pointerleave", this.hideWorldMapHover);
       region.addEventListener("focus", this.showWorldMapHover);
+      region.addEventListener("blur", this.hideWorldMapHover);
+    });
+    this.areaMapRegions.forEach((region) => {
+      region.addEventListener("pointerenter", this.showAreaMapHover);
+      region.addEventListener("pointerleave", this.hideWorldMapHover);
+      region.addEventListener("focus", this.showAreaMapHover);
       region.addEventListener("blur", this.hideWorldMapHover);
     });
     this.panelLaunchers.forEach((button) => button.addEventListener("click", this.togglePanel));
@@ -901,7 +1052,9 @@ export default class ExplorationLauncherPreviewScene {
         if (previewQuery.get("mapLevel") === "area") this.setMapLevel(1);
         const hoverId = previewQuery.get("mapHover");
         const hoverRegion = this.worldMapRegions.find((region) => region.dataset.worldRegion === hoverId);
-        if (hoverRegion) this.showWorldMapHover({ currentTarget: hoverRegion, force: true });
+        const areaHoverRegion = this.areaMapRegions.find((region) => region.dataset.areaRegion === hoverId);
+        if (areaHoverRegion) this.showAreaMapHover({ currentTarget: areaHoverRegion, force: true });
+        else if (hoverRegion) this.showWorldMapHover({ currentTarget: hoverRegion, force: true });
       });
     }
   }
@@ -1050,7 +1203,8 @@ export default class ExplorationLauncherPreviewScene {
     this.mapOverlay?.setAttribute("aria-label", `${level.title} ${level.label}`);
     this.mapOverlay?.classList.toggle("is-world-level", level.id === "world");
     this.mapOverlay?.classList.toggle("is-area-level", level.id === "area");
-    if (level.id !== "world") this.hideWorldMapHover();
+    if (this.mapOverlay) this.mapOverlay.dataset.areaMap = level.id === "area" ? this.areaMapId : "";
+    this.hideWorldMapHover();
     if (this.mapResolutionCurrent) this.mapResolutionCurrent.textContent = level.label;
 
     for (const button of this.mapResolutionControls || []) {
@@ -1073,6 +1227,18 @@ export default class ExplorationLauncherPreviewScene {
     this.worldMapHover.dataset.region = regionId;
     this.worldMapHoverName.textContent = content.name;
     this.worldMapHoverEpithet.textContent = content.epithet;
+    this.worldMapHover.hidden = false;
+  };
+
+  showAreaMapHover = (event) => {
+    if (this.mapLevels[this.mapLevelIndex]?.id !== "area" && !event.force) return;
+    const regionId = event.currentTarget?.dataset.areaRegion;
+    const hoverSet = this.areaMapId === "xebec" ? XEBEC_AREA_HOVERS : ENDLESS_PLAINS_AREA_HOVERS;
+    const content = hoverSet[regionId];
+    if (!content || !this.worldMapHover || !this.worldMapHoverName || !this.worldMapHoverEpithet) return;
+    this.worldMapHover.dataset.region = regionId;
+    this.worldMapHoverName.textContent = content.name;
+    this.worldMapHoverEpithet.textContent = "";
     this.worldMapHover.hidden = false;
   };
 
@@ -1122,6 +1288,12 @@ export default class ExplorationLauncherPreviewScene {
       region.removeEventListener("focus", this.showWorldMapHover);
       region.removeEventListener("blur", this.hideWorldMapHover);
     });
+    this.areaMapRegions?.forEach((region) => {
+      region.removeEventListener("pointerenter", this.showAreaMapHover);
+      region.removeEventListener("pointerleave", this.hideWorldMapHover);
+      region.removeEventListener("focus", this.showAreaMapHover);
+      region.removeEventListener("blur", this.hideWorldMapHover);
+    });
     this.panelLaunchers?.forEach((button) => button.removeEventListener("click", this.togglePanel));
     window.removeEventListener("keydown", this.handleMapKeyDown);
     this.container?.remove();
@@ -1133,6 +1305,7 @@ export default class ExplorationLauncherPreviewScene {
     this.mapResolutionCurrent = null;
     this.mapResolutionControls = null;
     this.worldMapRegions = null;
+    this.areaMapRegions = null;
     this.worldMapHover = null;
     this.worldMapHoverName = null;
     this.worldMapHoverEpithet = null;

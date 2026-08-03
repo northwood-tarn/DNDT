@@ -13,7 +13,6 @@ import { SKILL_OPTIONS } from "../creatorHarnessOptions.js";
 import { createStepCreatorCharacterRecord } from "../stepCreatorPipeline.js";
 import { createRendererSaveGameClient } from "../../state/saveGameClient.js";
 import { createSaveGameFromCharacterRecord, DEFAULT_SAVE_GAME_SLOT } from "../../state/saveGameState.js";
-import { DEFAULT_MINI_BASE_SELECTION, UNIQUE_MINI_BASES } from "../../mini_preview/base_asset_manifest.js";
 import { createActionIconImage, resolveActionIcon } from "../../combat_ui_v2/actionIconRegistry.js";
 
 const BASE_STEPS = [
@@ -173,14 +172,11 @@ const state = {
   hoveredSpellOption: null,
   portraitId: "",
   miniatureId: "",
-  miniatureBaseId: DEFAULT_MINI_BASE_SELECTION.uniqueBaseId,
   portraitPage: 0,
   miniaturePage: 0,
   portraitFilter: "",
   miniatureFilter: "",
 };
-state.draft.presentation.miniatureBaseId = DEFAULT_MINI_BASE_SELECTION.uniqueBaseId;
-state.draft.presentation.miniatureBaseAsset = `mini_preview/${UNIQUE_MINI_BASES[0].asset}`;
 const npcCompanionMode = new URLSearchParams(window.location.search).get("mode") === "npc-companion";
 if (npcCompanionMode && els.npcLevel && els.npcLevelField) {
   els.npcLevelField.hidden = false;
@@ -278,8 +274,8 @@ function canAdvanceStep() {
   if (state.stepId === "features") return true;
   if (state.stepId === "spells") return true;
   if (state.stepId === "gear") return true;
-  if (state.stepId === "appearance") return npcCompanionMode || Boolean(state.portraitId && state.miniatureId && state.miniatureBaseId);
-  if (state.stepId === "summary") return Boolean(state.portraitId && state.miniatureId && state.miniatureBaseId);
+  if (state.stepId === "appearance") return npcCompanionMode || Boolean(state.portraitId && state.miniatureId);
+  if (state.stepId === "summary") return Boolean(state.portraitId && state.miniatureId);
   return false;
 }
 

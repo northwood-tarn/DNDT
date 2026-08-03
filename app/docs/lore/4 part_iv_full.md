@@ -2,7 +2,7 @@
 
 ## Subchapter 1: The Shard-Wars
 
-They say the dust from the tunnel collapse hung in Dornhal’s air for a week, fine enough to turn torchlight the colour of rust. Children coughed it from their lungs for months after, and the cobblestones kept their reddish film until the next year’s rains. The collapse didn’t just bury the tunnel — it buried the promise of the Ascent, and with it, whatever fragile unity the Last Kingdom had held together.
+They say the dust from the tunnel collapse hung in Xebec’s air for a week, fine enough to turn torchlight the colour of rust. Children coughed it from their lungs for months after, and the cobblestones kept their reddish film until the next year’s rains. The collapse didn’t just bury the tunnel — it buried the promise of the Ascent, and with it, whatever fragile unity the Last Kingdom had held together.
 
 The first fighting began before the dust had even settled. Not for the tunnel itself — no one had the means to dig it clear — but for what it had meant. Control of the Cyrinth Fragment became the symbol of legitimacy: whoever held it could claim to be the rightful heir to Queen Rhenn’s dream.
 
@@ -11,7 +11,7 @@ The Hall of Memory, where the Fragment had been displayed, sealed its great copp
 When words failed, knives came out. The first raid on the Hall left two guards dead and three attackers hanging by their necks from the rope-bridge at Outer Gate. From there, the fighting spread.
 
 **Life under the early Shard-Wars**  
-In the narrow streets of Dornhal’s Lower Quarter, people learned to keep their shutters closed after nightfall. Lanterns were hooded so their light wouldn’t draw archers’ attention. The smell of the city changed: less of the usual wet rope and riverweed, more of burnt lard and the acrid smoke of oil-fires used to drive opponents from choke-points.
+In the narrow streets of Xebec’s Lower Quarter, people learned to keep their shutters closed after nightfall. Lanterns were hooded so their light wouldn’t draw archers’ attention. The smell of the city changed: less of the usual wet rope and riverweed, more of burnt lard and the acrid smoke of oil-fires used to drive opponents from choke-points.
 
 Markets became dangerous places. Salt-fish from the lower caverns, once sold in neat plaited strings, now came wrapped in greasy paper with the vendor’s own mark burned into it — proof it hadn’t been stolen from a rival clan’s storehouse. Gold coins lost their shine; you couldn’t eat them, and no one trusted a mint when the dies could be seized by force.
 
@@ -39,7 +39,7 @@ By the third year, whispers spoke of captains who had begun selling not only the
 
 ## Subchapter 2: The Veil Compact
 
-By the fifth winter of the Shard-Wars, Dornhal was exhausted. Rope-bridges sagged under frost, unmaintained; markets stood half-empty even at midday. The price of lamp-oil had trebled, and it was common to see entire districts walking home by the light of a single borrowed torch. People stopped asking who held the Cyrinth Fragment — the fight had swallowed the question itself.
+By the fifth winter of the Shard-Wars, Xebec was exhausted. Rope-bridges sagged under frost, unmaintained; markets stood half-empty even at midday. The price of lamp-oil had trebled, and it was common to see entire districts walking home by the light of a single borrowed torch. People stopped asking who held the Cyrinth Fragment — the fight had swallowed the question itself.
 
 It was in this weariness that the first envoys of the Veil Compact appeared. They came not in bright banners, but in grey wool cloaks stitched with the image of a knotted veil. Their pitch was simple: an end to the raids, open markets again, and a unified defence against “emerging threats” — a phrase that could mean anything from food shortages to the whispered trade in corpses.
 
@@ -105,7 +105,7 @@ The famine changed the streets too. Where once the air had smelled of wood-smoke
 **Political consequences**  
 The Compact’s failure had left no single authority to coordinate relief. Captains hoarded stores, claiming they were for “the defence of their own people,” while sending agents to raid less-defended granaries. Guilds with access to food or lamp-oil became as powerful as warlords.
 
-The Grain Riots of Dornhal began when a shipment from the outer caverns arrived at Stone Quay and was claimed in full by Captain Rusk Merrow’s men. Crowds swarmed the quay, pelting the guards with stones and bits of broken pottery. Merrow’s men answered with crossbows. Eight were killed before the quay was cleared; the survivors were driven into the shallows, where the black water closed over their heads.
+The Grain Riots of Xebec began when a shipment from the outer caverns arrived at Stone Quay and was claimed in full by Captain Rusk Merrow’s men. Crowds swarmed the quay, pelting the guards with stones and bits of broken pottery. Merrow’s men answered with crossbows. Eight were killed before the quay was cleared; the survivors were driven into the shallows, where the black water closed over their heads.
 
 Rumours spread that certain captains were accepting necromancer “assistance” — food in exchange for service. Few believed the food came without a price, and some whispered that it was drawn from stores in which the grain sacks moved faintly, as if breathing.
 
@@ -146,7 +146,7 @@ By spring, the famine’s worst had passed, but the damage was permanent: popula
 19. Some districts welcomed the Retainers. Crime vanished where they walked, and their justice was swift. A pickpocket might be seized one day and gone the next, their stall replaced with one selling Court-approved goods.
 20. In poorer quarters, Retainers began distributing pale tokens — small, polished discs of bone. To carry one was to be exempt from tolls and taxes in Court-controlled streets. Those caught without one could be stopped, searched, or “invited” to speak with an envoy.
 21. The Courts’ control expanded not in sweeping conquests, but in tiny, permanent advances: one dock, then the next; a row of houses whose rents they quietly bought out; a warehouse converted into a House without public announcement.
-22. By the second year of their rise, there were five known Houses in Dornhal alone. Each had its own mask style, coin mint, and favoured Retainers — but all answered to the same unseen Court Lords, whose names were never spoken aloud.
+22. By the second year of their rise, there were five known Houses in Xebec alone. Each had its own mask style, coin mint, and favoured Retainers — but all answered to the same unseen Court Lords, whose names were never spoken aloud.
 23. Rumours of what lay inside the Houses grew stranger. Some claimed vast banquet halls, others endless shelves of books bound in skin, or gardens where pale flowers bloomed under no visible light. One dockworker swore he saw a skeletal figure writing in a ledger that used no ink, only the slow bleeding of the page itself.
 24. Necromantic craft became a visible part of daily life. The Bone Courts began selling laboured dead: corpses that could carry loads, haul nets, or pump bellows, each with the same bone-white mask and slow, deliberate movements.
 25. To some, these labourers were a miracle — tireless, obedient, needing no food. To others, they were an obscenity, a reminder that death no longer drew a firm boundary between neighbour and servant.
@@ -160,7 +160,7 @@ By spring, the famine’s worst had passed, but the damage was permanent: popula
 
 ## Subchapter 5: The Last Free Port
 
-1. By the time the rest of Dornhal bent to the Bone Courts, only one port remained outside their reach: Greyharbour. Perched on a shelf of rock at the edge of the Outer Caverns, it was a place the Courts found… inconvenient. The channels that led there twisted through narrow, collapsing tunnels, and the harbour itself lay under a ceiling so low that Bone Barges could not raise their long steering oars.
+1. By the time the rest of Xebec bent to the Bone Courts, only one port remained outside their reach: Greyharbour. Perched on a shelf of rock at the edge of the Outer Caverns, it was a place the Courts found… inconvenient. The channels that led there twisted through narrow, collapsing tunnels, and the harbour itself lay under a ceiling so low that Bone Barges could not raise their long steering oars.
 2. Greyharbour smelled of brine and smoke. Every surface seemed damp — from the moss-patched quay stones to the rough timber walls of its warehouses. Lanterns here burned with an orange flame, their oil mixed with pitch to give off a choking smoke that lingered in the air.
 3. The port’s survival was owed partly to Harbourmaster Veyra Soll, a woman whose voice could cut through a gale. Her ledger was legend: a tattered book of water-stained vellum pages in which she recorded every arrival and departure, each with notes in a cramped hand no one else could read.
 4. Veyra refused Court goods outright. Any cargo suspected of coming from their Houses was burned on the outer shoals, the fire visible for miles down the blackwater channels. She called it “smoke in their eyes.”
@@ -180,7 +180,7 @@ By spring, the famine’s worst had passed, but the damage was permanent: popula
 18. Veyra countered with her own network: dockside children who could slip unseen through crowds, tavern-keepers who listened more than they spoke, and ferrymen who would row a stranger into a dead-end channel “by mistake.”
 19. Every few months, a fishing boat would fail to return. Sometimes wreckage washed up; sometimes nothing. The older fishers swore the Courts had learned to move along the seabed, sending their barges like shadows under the keel.
 20. Greyharbour’s politics were simple on the surface: Veyra at the top, the Netbound as enforcers, and the fishing captains as her council. But beneath, rivalries simmered — between families whose boats had fished the same waters for generations, and younger crews eager to test deeper channels.
-21. The Courts played on these divisions. One captain was found with a purse of warm silver coins; another’s son vanished, returning months later with eyes like dull glass and an unshakable loyalty to a “benefactor” in Dornhal.
+21. The Courts played on these divisions. One captain was found with a purse of warm silver coins; another’s son vanished, returning months later with eyes like dull glass and an unshakable loyalty to a “benefactor” in Xebec.
 22. In response, Veyra enforced the One Net Law: no boat could leave the harbour without at least one Netbound aboard. It was protection, but also surveillance. Some captains grumbled; others welcomed it as the only thing keeping them alive.
 23. Life in Greyharbour was hard, but its people took pride in being the last place where the Courts’ coin meant nothing. Traders from other freeholds came to swap goods, bringing rumours of how deep the Courts’ control ran elsewhere.
 24. Among the more persistent rumours was that the Courts were building something — a portal, a gate, a mouth — in the deepest caverns, and that Greyharbour’s stubborn independence was the last obstacle to completing it.
@@ -208,7 +208,7 @@ By spring, the famine’s worst had passed, but the damage was permanent: popula
 11. The portal itself was never described the same way twice. Some called it an arch of shadow that swallowed all light; others said it was a whirlpool in the air, its edges lined with teeth of crystal.
 12. What most versions agreed on was that the portal was unfinished. It hung like a wound in the world, shrouded in currents of cold air, and it whispered to those who approached — words in a language no one could recall upon waking.
 13. Scholars in exile claimed the portal was a relic of the Age of Umbra, built as a passage to a place where the dead could not follow. The Bone Courts, they warned, sought to complete it for their own ends.
-14. The Courts’ interest was the most carefully kept secret in Dornhal. Only a handful of their Retainers had ever been seen in the vicinity of the Hidden Way, and those were always the masked kind — silent, patient, and gone before questions could be asked.
+14. The Courts’ interest was the most carefully kept secret in Xebec. Only a handful of their Retainers had ever been seen in the vicinity of the Hidden Way, and those were always the masked kind — silent, patient, and gone before questions could be asked.
 15. Some believed the Courts wanted to close the portal entirely, sealing off a threat from beyond. Others argued the opposite: that they sought to open it fully, to draw something through.
 16. Among Greyharbour’s oldest families, there persisted a rite: once a generation, a chosen member would walk as far along the Hidden Way as they dared, carrying a bundle of kelp-wrapped salt and a small lamp. They would return without either, their eyes reflecting the lamp’s pale light for the rest of their lives.
 17. The shrine-caves themselves held murals in ochre and ash, depicting figures with ember-bright eyes and shadows shaped like wings. Many were damaged — chipped away, defaced, or eroded by salt spray.

@@ -72,11 +72,11 @@ export const WORLD_MAP = {
       id: "necropolis",
       code: "02",
       slug: "necropolis",
-      name: "Necropolis",
+      name: "Xebec",
       act: 2,
       visualRole: "second radiant; walled city occupying the central span",
       summary:
-        "The death-city beyond No Man's Land: a full-width walled area organized by edge bands, a small cultural bazaar, a long regnant spine, and an administrative mass.",
+        "Xebec, commonly called the Necropolis: the death-city beyond No Man's Land, organized by edge bands, a small cultural bazaar, a long regnant spine, and an administrative mass.",
       travelModel: "ember_travel_within_act_area",
       subareas: [
         {

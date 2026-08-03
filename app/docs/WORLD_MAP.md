@@ -15,11 +15,11 @@ This owns the top-layer campaign geography:
 - attached grid-exploration map slots
 - placement notes for future map art
 
-## Current Sketch
+## Current Spatial Reference
 
-- `app/docs/layout_sketches/world_map_three_acts_negative_ink_v2_2.png`
+- `app/docs/layout_sketches/world_map_three_acts_negative_ink_v5.png`
 
-This is a rough raster concept sketch of the three act-scale areas only. It is not final art and should not be treated as an implemented map surface.
+This is the preserved top-level spatial reference from which the definitive act-map presentations were derived. Runtime map surfaces use the locked assets under `app/assets/maps/`.
 
 ## Current Topology
 
@@ -33,7 +33,7 @@ Greyharbour and the Oil Refinery sit on the end of a broad promontory cut by a 1
 
 The Greyharbour area map is fully revealed from the beginning of Act I. Its four areas—Old City, Settlement, Docks, and Oil Refinery—are all visible before the party visits them.
 
-### Act II: The Necropolis
+### Act II: Xebec
 
 - Inside the Walls
 - The Twilight Bazaar
@@ -41,7 +41,7 @@ The Greyharbour area map is fully revealed from the beginning of Act I. Its four
 - The Regnant Eternal
 - The Administrative Encasement
 
-Inside the Walls faces No-Man's Land and stretches across the full city width. The Twilight Bazaar sits high/top and is small but culturally central. The Chalk Residences form a distinct Necropolis subsection. The Regnant Eternal is long and thin, culminating in the Black Apex Throne. The Administrative Encasement occupies the opposite full city edge.
+Xebec is the city's fixed proper name; **the Necropolis** remains its ordinary descriptive name. Inside the Walls faces No-Man's Land and stretches across the full city width. The Twilight Bazaar sits high/top and is small but culturally central. The Chalk Residences form a distinct Necropolis subsection. The Regnant Eternal is long and thin, culminating in the Black Apex Throne. The Administrative Encasement occupies the opposite full city edge.
 
 Act II areas do not appear on the area map merely because the party enters or crosses them. An area is revealed only after the party rests at an ember located inside that area.
 

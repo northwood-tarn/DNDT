@@ -199,11 +199,7 @@ Size and broad body scale are species-locked. Do not expose separate height or b
 
 The final class list for PC minis is the same as the game data in `app/data/classes.js`: fighter, rogue, wizard, warlock, cleric, and paladin. Do not introduce mini-only classes.
 
-Base disc and ring colors should use the same muted metallic palette, but they must be selected independently. These choices select an authored base PNG rather than being baked into the character figure art. The range should feel like painted or tarnished miniature materials, not plastic toy colors. Every option should be dull, scratched, worn, and slightly tarnished. Avoid clean chrome, candy gloss, and pristine enamel.
-
-Base customization is intentionally simple, but the base art must be raster material artwork, not SVG or shape-rendered UI. Player-facing choices are only `disc` metal and `rim` metal. Each valid pairing should resolve to a pre-rendered bitmap base asset that feels like a real worn metal miniature plinth. Do not expose separate texture, noise, scratch, wear, or patina overlay choices. Those surface qualities belong inside the authored base image, not to player-facing options. The current asset contract lives in `app/mini_preview/base_asset_manifest.js`; it defines the metal IDs and expected PNG path for each disc/rim pairing. PC figure generation must never be used to create the base color; the compositor chooses the base asset.
-
-Character creation should default the PC mini to the unique Betrayer's Coin base. Present this as a selected/ticked unique-base choice. If the player unticks it, reveal the normal base builder using only the disc metal and rim metal controls from the 81 authored PNG combinations.
+Separate miniature-base customization has been retired. Production PC miniatures are authored runtime composites with their base already incorporated; character creation must not attach a second base asset or expose disc/rim controls.
 
 Locked runtime base footprint: PC mini bases display at 115 px wide on the combat map. This width is judged against the `generate_combat_map` grid diamond size: 128 x 64 px. Base source PNGs may remain larger for source quality, but runtime placement must center the visible base bounds inside the occupied 128 x 64 diamond. Do not use source canvas dimensions or old export anchors as the runtime footprint.
 
