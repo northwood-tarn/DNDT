@@ -39,7 +39,10 @@
     "start": "electron .",
     "map:author": "env -u ELECTRON_RUN_AS_NODE electron . --exploration-map-editor",
     "spike:author": "env -u ELECTRON_RUN_AS_NODE electron . --exploration-map-editor",
-    "verify:events": "node tools/verify-events.js --root . --registry app/docs/EVENTS_REGISTRY.md"
+    "verify:events": "node tools/verify-events.js --root . --registry app/docs/EVENTS_REGISTRY.md",
+    "assets:validate": "node tools/metric-asset-builder.mjs validate",
+    "assets:plan": "node tools/metric-asset-builder.mjs plan",
+    "assets:test": "node --test tools/metric_asset_tests/*.test.mjs"
   },
   "dependencies": {
     "inkjs": "^2.3.2",

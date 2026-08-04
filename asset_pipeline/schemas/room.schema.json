@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "room.schema.json",
+  "title": "Metric room scene",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "name", "dimensions", "camera", "doors", "props", "style_profile"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "name": { "type": "string", "minLength": 1 },
+    "dimensions": {
+      "type": "object", "additionalProperties": false,
+      "required": ["width", "length", "height"],
+      "properties": {
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "length": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "camera": {
+      "type": "object", "additionalProperties": false,
+      "required": ["facing"],
+      "properties": { "facing": { "enum": ["north", "east", "south", "west"] } }
+    },
+    "doors": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "type", "wall", "position"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+          "type": { "type": "string" },
+          "wall": { "enum": ["north", "east", "south", "west"] },
+          "position": { "type": "number", "minimum": 0 }
+        }
+      }
+    },
+    "props": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "type", "position", "rotation_degrees"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+          "type": { "type": "string" },
+          "position": {
+            "type": "object", "additionalProperties": false,
+            "required": ["x", "y"],
+            "properties": { "x": { "type": "number" }, "y": { "type": "number" } }
+          },
+          "rotation_degrees": { "type": "number", "multipleOf": 90 }
+        }
+      }
+    },
+    "style_profile": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }
+  }
+}

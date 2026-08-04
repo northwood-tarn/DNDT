@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "id": "industrial_military",
+  "theme": "industrial military",
+  "palette": ["cool grey", "navy", "off-white"],
+  "wear": "medium",
+  "lighting": "cool white",
+  "decoration": { "density": "low", "allowed": ["mug", "clipboard", "cable", "poster"] }
+}

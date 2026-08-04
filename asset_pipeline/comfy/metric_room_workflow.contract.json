@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "purpose": "Style deterministic geometry without changing structure or camera",
+  "required_inputs": ["beauty", "depth", "normal", "segmentation", "ambient_occlusion", "style_profile", "seed"],
+  "required_pins": ["checkpoint_sha256", "controlnet_sha256", "workflow_sha256", "sampler", "scheduler", "steps", "cfg"],
+  "structural_invariants": [
+    "output_width_and_height_match_inputs",
+    "camera_projection_is_unchanged",
+    "depth_silhouettes_are_unchanged",
+    "segmentation_boundaries_are_unchanged",
+    "doors_and_structural_props_are_not_added_removed_or_moved"
+  ],
+  "permitted_changes": ["materials", "surface_wear", "palette", "decals", "atmosphere", "non_colliding_decoration"]
+}

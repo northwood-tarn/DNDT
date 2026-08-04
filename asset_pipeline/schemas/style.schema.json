@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "style.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "theme", "palette", "wear", "lighting", "decoration"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "theme": { "type": "string", "minLength": 1 },
+    "palette": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "wear": { "enum": ["none", "low", "medium", "high"] },
+    "lighting": { "type": "string", "minLength": 1 },
+    "decoration": {
+      "type": "object", "additionalProperties": false,
+      "required": ["density", "allowed"],
+      "properties": {
+        "density": { "enum": ["none", "low", "medium", "high"] },
+        "allowed": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

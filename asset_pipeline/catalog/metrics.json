@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "unit": "metre",
+  "camera": {
+    "height": 1.7,
+    "fov_degrees": 60,
+    "pitch_degrees": 0,
+    "roll_degrees": 0,
+    "framing_margin": 0.08
+  },
+  "lighting": {
+    "ambient_strength": 0.25,
+    "main_temperature_kelvin": 6500,
+    "main_illuminance_lux": 800,
+    "bounce_enabled": true
+  },
+  "wall_thickness": 0.15,
+  "types": {
+    "door_standard": { "kind": "opening", "dimensions": [1.0, 0.15, 2.1] },
+    "table_standard": { "kind": "structural_prop", "dimensions": [1.6, 0.8, 0.75] },
+    "chair_standard": { "kind": "structural_prop", "dimensions": [0.6, 0.6, 1.0] },
+    "crate_standard": { "kind": "structural_prop", "dimensions": [0.6, 0.6, 0.6] },
+    "terminal_standard": { "kind": "structural_prop", "dimensions": [0.7, 0.5, 1.4] },
+    "locker_standard": { "kind": "structural_prop", "dimensions": [0.6, 0.6, 2.0] }
+  }
+}

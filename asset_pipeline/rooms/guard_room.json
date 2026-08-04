@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "id": "guard_room",
+  "name": "Guard Room",
+  "dimensions": { "width": 4, "length": 5, "height": 3 },
+  "camera": { "facing": "north" },
+  "doors": [
+    { "id": "south_entry", "type": "door_standard", "wall": "south", "position": 2 }
+  ],
+  "props": [
+    { "id": "table", "type": "table_standard", "position": { "x": 2, "y": 2.4 }, "rotation_degrees": 0 },
+    { "id": "terminal", "type": "terminal_standard", "position": { "x": 3.2, "y": 2.5 }, "rotation_degrees": 0 }
+  ],
+  "style_profile": "industrial_military"
+}
